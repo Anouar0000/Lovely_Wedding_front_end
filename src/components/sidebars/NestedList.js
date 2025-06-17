@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { FiPlus, FiMinus } from 'react-icons/fi'; // Import icons for toggle
+import React, { useState, useEffect } from 'react';
+import { FiPlus, FiMinus } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
-const NestedList = ({ items }) => {
+const NestedList = ({ items, resetKey }) => {
   const [openItems, setOpenItems] = useState({});
+    const navigate = useNavigate();
+
+  useEffect(() => {
+    // Close all open menus when resetKey changes (sidebar closes)
+    setOpenItems({});
+  }, [resetKey]);
 
   const toggleItem = (key) => {
     setOpenItems((prev) => ({
@@ -13,33 +20,43 @@ const NestedList = ({ items }) => {
 
   return (
     <ul className="list-none pl-4">
-      {items.map((item, index) => (
-        <li key={index} className="mb-4">
-          <div className="flex justify-between items-center cursor-pointer">
-            <span onClick={() => item.children && toggleItem(index)}>
-              {item.name}
-            </span>
-            {item.children && (
-              <button
-                onClick={() => toggleItem(index)}
-                className="text-gray-600 focus:outline-none"
-              >
-                {openItems[index] ? <FiMinus /> : <FiPlus />}
-              </button>
-            )}
-          </div>
+      {items.map((item, index) => {
+        const key = item.name + '-' + index;
+        const isOpen = openItems[key];
 
-          {item.children && (
-            <div
-              className={`${
-                openItems[index] ? 'block' : 'hidden'
-              } pl-4 border-t border-gray-300 mt-2 pt-2`}
-            >
-              <NestedList items={item.children} />
+        const handleClick = () => {
+          if (item.children && item.children.length > 0) {
+            toggleItem(key); // Expand/collapse
+          } else {
+            const path = `/invitations-physique/`;
+            navigate(path);
+          }
+        };
+
+        return (
+          <li key={key} className="mb-4">
+            <div className="flex justify-between items-center cursor-pointer">
+              <span onClick={handleClick}>
+                {item.name}
+              </span>
+              {item.children && (
+                <button
+                  onClick={() => toggleItem(key)}
+                  className="text-gray-600 focus:outline-none"
+                >
+                  {isOpen ? <FiMinus /> : <FiPlus />}
+                </button>
+              )}
             </div>
-          )}
-        </li>
-      ))}
+
+            {item.children && isOpen && (
+              <div className="pl-4 border-l border-gray-300 mt-2 ml-2">
+                <NestedList items={item.children} resetKey={resetKey} />
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 };

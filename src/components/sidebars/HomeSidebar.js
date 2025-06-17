@@ -1,5 +1,5 @@
 import React from 'react';
-import NestedList from './NestedList'; // Import the NestedList component
+import NestedList from './NestedList';
 
 const nestedItems = [
   {
@@ -47,19 +47,18 @@ const nestedItems = [
   },
 ];
 
-function HomeSidebar({ isOpen, onClose }) {
+function HomeSidebar({ isOpen, onClose, resetKey }) {
   return (
     <div
+      onClick={(e) => e.stopPropagation()}
       className={`fixed top-0 left-0 h-full w-80 bg-white text-black transform ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } transition-transform duration-300 ease-in-out z-50 shadow-lg`}
     >
-      {/* Sidebar Header */}
       <div className="flex justify-center items-center py-4 border-b border-gray-300">
         <h1 className="text-lg font-bold">Logo</h1>
       </div>
 
-      {/* Close Button */}
       <button
         onClick={onClose}
         className="text-black text-xl absolute top-4 right-4 focus:outline-none"
@@ -67,9 +66,8 @@ function HomeSidebar({ isOpen, onClose }) {
         ✕
       </button>
 
-      {/* Navigation and Nested List with Scroll */}
-      <nav className="p-4 overflow-y-auto h-[calc(100vh-64px)]"> {/* Adjust height to be scrollable */}
-        <NestedList items={nestedItems} /> {/* Render the nested list */}
+      <nav className="p-4 overflow-y-auto h-[calc(100vh-64px)]">
+        <NestedList items={nestedItems} resetKey={resetKey} />
       </nav>
     </div>
   );

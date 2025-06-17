@@ -1,0 +1,152 @@
+{
+  "categories": ["Mariage", "Outeya", "Soulameya", "Menus", "Cire", "Classique", "Rustique"],
+  "models": {
+    "Mariage": [
+      {
+        "name": "Modèle Mariage 1",
+        "price": "15",
+        "thumbnail": "assets/models/mariage/thumbnail/mariage1.jpg",
+        "modelImage": "assets/models/mariage/model/mariage1.jpg",
+        "dateAdded": "2023-01-12"
+      },
+      {
+        "name": "Modèle Mariage 2",
+        "price": "20",
+        "thumbnail": "assets/models/mariage/thumbnail/mariage2.png",
+        "modelImage": "assets/models/mariage/model/mariage2.jpg",
+        "dateAdded": "2022-11-03"
+      },
+      {
+        "name": "Modèle Mariage 3",
+        "price": "25",
+        "thumbnail": "assets/models/mariage/thumbnail/mariage3.png",
+        "modelImage": "assets/models/mariage/model/mariage3.jpg",
+        "dateAdded": "2023-05-18"
+      },
+      {
+        "name": "Modèle Mariage 4",
+        "price": "30",
+        "thumbnail": "assets/models/mariage/thumbnail/mariage4.png",
+        "modelImage": "assets/models/mariage/model/mariage4.png",
+        "dateAdded": "2021-08-22"
+      },
+      {
+        "name": "Modèle Mariage 5",
+        "price": "35",
+        "thumbnail": "assets/models/mariage/thumbnail/mariage5.png",
+        "modelImage": "assets/models/mariage/model/mariage5.jpg",
+        "dateAdded": "2024-02-07"
+      }
+    ],
+    "Outeya": [
+      {
+        "name": "Modèle Outeya 1",
+        "price": "12",
+        "thumbnail": "assets/models/outeya/thumbnail/outeya1.png",
+        "modelImage": "assets/models/outeya/model/outeya1.png",
+        "dateAdded": "2023-06-15"
+      },
+      {
+        "name": "Modèle Outeya 2",
+        "price": "18",
+        "thumbnail": "assets/models/outeya/thumbnail/outeya2.jpg",
+        "modelImage": "assets/models/outeya/model/outeya2.png",
+        "dateAdded": "2022-10-09"
+      },
+      {
+        "name": "Modèle Outeya 3",
+        "price": "22",
+        "thumbnail": "assets/models/outeya/thumbnail/outeya3.png",
+        "modelImage": "assets/models/outeya/model/outeya3.png",
+        "dateAdded": "2023-03-01"
+      }
+    ],
+    "Soulameya": [
+      {
+        "name": "Modèle Soulameya 1",
+        "price": "10",
+        "thumbnail": "assets/models/soulameya/thumbnail/soulameya1.jpg",
+        "modelImage": "assets/models/soulameya/model/soulameya1.png",
+        "dateAdded": "2021-12-20"
+      },
+      {
+        "name": "Modèle Soulameya 2",
+        "price": "15",
+        "thumbnail": "assets/models/soulameya/thumbnail/soulameya2.png",
+        "modelImage": "assets/models/soulameya/model/soulameya2.png",
+        "dateAdded": "2024-01-05"
+      }
+    ],
+    "Menus": [
+      {
+        "name": "Modèle Menu 1",
+        "price": "8",
+        "thumbnail": "assets/models/menus/thumbnail/menus1.png",
+        "modelImage": "assets/models/menus/model/menus1.jpg",
+        "dateAdded": "2023-09-28"
+      },
+      {
+        "name": "Modèle Menu 2",
+        "price": "12",
+        "thumbnail": "assets/models/menus/thumbnail/menus2.png",
+        "modelImage": "assets/models/menus/model/menus2.jpg",
+        "dateAdded": "2022-04-12"
+      }
+    ],
+    "Cire": [
+      {
+        "name": "Modèle Cire 1",
+        "price": "18",
+        "thumbnail": "assets/models/cire/thumbnail/cire1.png",
+        "modelImage": "assets/models/cire/model/cire1.jpg",
+        "dateAdded": "2022-02-16"
+      },
+      {
+        "name": "Modèle Cire 2",
+        "price": "22",
+        "thumbnail": "assets/models/cire/thumbnail/cire2.png",
+        "modelImage": "assets/models/cire/model/cire2.jpg",
+        "dateAdded": "2024-03-11"
+      }
+    ],
+    "Rustique": [
+      {
+        "name": "Modèle Rustique 1",
+        "price": "16",
+        "thumbnail": "assets/models/rustique/thumbnail/rustique1.png",
+        "modelImage": "assets/models/rustique/model/rustique1.png",
+        "dateAdded": "2023-07-21"
+      },
+      {
+        "name": "Modèle Rustique 2",
+        "price": "21",
+        "thumbnail": "assets/models/rustique/thumbnail/rustique2.png",
+        "modelImage": "assets/models/rustique/model/rustique2.jpg",
+        "dateAdded": "2022-06-08"
+      },
+      {
+        "name": "Modèle Rustique 3",
+        "price": "26",
+        "thumbnail": "assets/models/rustique/thumbnail/rustique3.png",
+        "modelImage": "assets/models/rustique/model/rustique3.png",
+        "dateAdded": "2023-10-03"
+      }
+    ],
+    "Classique": [
+      {
+        "name": "Modèle Classique 1",
+        "price": "14",
+        "thumbnail": "assets/models/rustique/thumbnail/rustique3.png",
+        "modelImage": "assets/models/rustique/model/rustique3.png",
+        "dateAdded": "2022-09-19"
+      },
+      {
+        "name": "Modèle Classique 2",
+        "price": "19",
+        "thumbnail": "assets/models/rustique/thumbnail/rustique3.png",
+        "modelImage": "assets/models/rustique/model/rustique3.png",
+        "dateAdded": "2023-02-27"
+      }
+    ]
+  }
+}
