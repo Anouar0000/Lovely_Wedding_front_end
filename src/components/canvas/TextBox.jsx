@@ -2,11 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import Draggable from 'react-draggable';
 import { FiMove } from 'react-icons/fi';
 
-function TextBox({ id, text, style, position, onSelect, onUpdate, onUpdatePosition, isSelected }) {
+function TextBox({ id, text, style, position, width: initialWidth, onSelect, onUpdate, onUpdatePosition, onUpdateWidth, isSelected }) {
     const [value, setValue] = useState(text);
     const [isEditing, setIsEditing] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [width, setWidth] = useState(100);
+    const [width, setWidth] = useState(initialWidth || 100);
+
+    useEffect(() => {
+        setWidth(initialWidth || 100);
+    }, [initialWidth]);
     const [boxPosition, setBoxPosition] = useState(position);
     const [resizing, setResizing] = useState(false);
 
@@ -68,6 +72,7 @@ function TextBox({ id, text, style, position, onSelect, onUpdate, onUpdatePositi
             setResizing(false);
             resizeDirection.current = null;
             onUpdatePosition?.(id, boxPosition);
+            onUpdateWidth?.(id, width);
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
@@ -107,6 +112,7 @@ function TextBox({ id, text, style, position, onSelect, onUpdate, onUpdatePositi
             setResizing(false);
             resizeDirection.current = null;
             onUpdatePosition?.(id, boxPosition);
+            onUpdateWidth?.(id, width);
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };

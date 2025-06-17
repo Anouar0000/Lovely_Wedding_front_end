@@ -23,12 +23,23 @@ function PersonalizeInvitationPage() {
     const location = useLocation();
     const { model, qté, format, motif } = location.state || {};
     const [selectedTemplate, setSelectedTemplate] = useState(model?.modelImage || null);
+    const [templateSize, setTemplateSize] = useState({ width: 400, height: 667 });
 
     useEffect(() => {
         if (!model) {
             navigate('/invitations-physique');
         }
     }, [model, navigate]);
+
+    // Load natural size of the template image
+    useEffect(() => {
+        if (!selectedTemplate) return;
+        const img = new Image();
+        img.onload = () => {
+            setTemplateSize({ width: img.naturalWidth, height: img.naturalHeight });
+        };
+        img.src = selectedTemplate;
+    }, [selectedTemplate]);
 
     const handleAddText = () => {
         const canvas = canvasRef.current;
@@ -47,7 +58,8 @@ function PersonalizeInvitationPage() {
                     fontFamily: 'Playfair Display',
                     color: '#000000'
                 },
-                position: { x: canvasWidth / 2 - 75, y: canvasHeight / 2 - 20 }
+                position: { x: canvasWidth / 2 - 75, y: canvasHeight / 2 - 20 },
+                width: 150,
             };
 
             setTextBoxes([...textBoxes, newTextBox]);
@@ -63,6 +75,12 @@ function PersonalizeInvitationPage() {
     const handleUpdatePosition = (id, position) => {
         setTextBoxes((prev) =>
             prev.map((box) => (box.id === id ? { ...box, position } : box))
+        );
+    };
+
+    const handleUpdateWidth = (id, width) => {
+        setTextBoxes((prev) =>
+            prev.map((box) => (box.id === id ? { ...box, width } : box))
         );
     };
 
@@ -88,10 +106,27 @@ function PersonalizeInvitationPage() {
     };
 
     const handleDownload = async () => {
+        const wrapper = wrapperRef.current;
+        if (!wrapper) return;
+
+        const widthScale = templateSize.width / wrapper.clientWidth;
+        const heightScale = templateSize.height / wrapper.clientHeight;
+
+        const scaledTextBoxes = textBoxes.map((box) => ({
+            ...box,
+            position: {
+                x: box.position.x * widthScale,
+                y: box.position.y * heightScale,
+            },
+            width: box.width * widthScale,
+        }));
+
         const blob = await pdf(
             <TestDocument
                 selectedTemplate={selectedTemplate}
-                textBoxes={textBoxes}
+                textBoxes={scaledTextBoxes}
+                canvasWidth={templateSize.width}
+                canvasHeight={templateSize.height}
                 model={model.name}
                 qte={qté}
                 format={format}
@@ -207,10 +242,12 @@ function PersonalizeInvitationPage() {
                                 text={box.text}
                                 style={box.style}
                                 position={box.position}
+                                width={box.width}
                                 isSelected={box.id === selectedTextId}
                                 onSelect={setSelectedTextId}
                                 onUpdate={handleUpdateText}
                                 onUpdatePosition={handleUpdatePosition}
+                                onUpdateWidth={handleUpdateWidth}
                             />
                         ))}
                     </div>
