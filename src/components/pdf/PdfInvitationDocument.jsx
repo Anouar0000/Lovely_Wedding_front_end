@@ -7,45 +7,44 @@ Font.register({
   src: `${window.location.origin}/fonts/PlayfairDisplay-Regular.ttf`,
 });
 
-const CANVAS_WIDTH = 400;
-const CANVAS_HEIGHT = 667;
+const createStyles = (canvasWidth, canvasHeight) =>
+  StyleSheet.create({
+    page: {
+      backgroundColor: '#fff',
+      padding: 20,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    modelInfo: {
+      width: '100%',
+      padding: 8,
+      marginBottom: 10,
+      backgroundColor: '#f3f3f3',
+      textAlign: 'center',
+      borderRadius: 5,
+    },
+    canvasWrapper: {
+      position: 'relative',
+      width: canvasWidth,
+      height: canvasHeight,
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+    },
+    textBox: {
+      position: 'absolute',
+      maxWidth: 250,
+      wordBreak: 'break-word',
+    },
+  });
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: '#fff',
-    padding: 20,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  modelInfo: {
-    width: '100%',
-    padding: 8,
-    marginBottom: 10,
-    backgroundColor: '#f3f3f3',
-    textAlign: 'center',
-    borderRadius: 5,
-  },
-  canvasWrapper: {
-    position: 'relative',
-    width: CANVAS_WIDTH,
-    height: CANVAS_HEIGHT,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  textBox: {
-    position: 'absolute',
-    maxWidth: 250,
-    wordBreak: 'break-word',
-  },
-});
-
-const PdfInvitationDocument = ({ selectedTemplate, textBoxes, model, qte, format, motif }) => {
+const PdfInvitationDocument = ({ selectedTemplate, textBoxes, model, qte, format, motif, canvasWidth = 400, canvasHeight = 667 }) => {
+  const styles = createStyles(canvasWidth, canvasHeight);
   return (
     <Document>
-      <Page size={{ width: CANVAS_WIDTH + 40, height: CANVAS_HEIGHT + 120 }} style={styles.page}>
+      <Page size={{ width: canvasWidth + 40, height: canvasHeight + 120 }} style={styles.page}>
         {/* Header Info */}
         <View style={styles.modelInfo}>
           <Text>Modèle: {model}</Text>
@@ -67,6 +66,7 @@ const PdfInvitationDocument = ({ selectedTemplate, textBoxes, model, qte, format
                 {
                   top: box.position.y,
                   left: box.position.x,
+                  width: box.width,
                 },
               ]}
             >
