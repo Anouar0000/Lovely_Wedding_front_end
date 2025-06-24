@@ -8,6 +8,8 @@ import {
 import {
   FiType, FiTrash2
 } from 'react-icons/fi';
+// Import our single source of truth for fonts
+import { fontOptions } from '../../config/fontConfig'; // Adjust this path if your config file is elsewhere
 
 function BottomMenu({
   onDelete, setSelectedTextId,
@@ -30,20 +32,6 @@ function BottomMenu({
     right: <CiTextAlignRight size={24} />
   };
 
-  const fontOptions = [
-    { name: 'Amiri Quran', family: 'font-amiri' },
-    { name: 'Playfair Display', family: 'font-playfair' },
-    { name: 'Pinyon Script', family: 'font-pinyon' },
-    { name: 'Josefin Sans', family: 'font-josefin' },
-    { name: 'Urbanist', family: 'font-urbanist' },
-    { name: 'Antic Didone', family: 'font-antic' },
-    { name: 'Roboto', family: 'font-roboto' },
-    { name: 'Montserrat', family: 'font-montserrat' },
-    { name: 'Lora', family: 'font-lora' },
-    { name: 'Raleway', family: 'font-raleway' },
-    { name: 'Open Sans', family: 'font-opensans' }
-  ];
-
   const colorOptions = [
     '#D8C3D5', '#E6E6E6', '#F2D8C7', '#EDEAD0', '#000000',
     '#FFFFFF', '#7F7F7F', '#E63946', '#4A4A4A'
@@ -52,8 +40,8 @@ function BottomMenu({
   const lineHeightOptions = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
   return (
-    <div className="fixed bottom-0 left-0 w-full h-[195px] bg-white shadow-md z-50">
-      <div className="flex justify-between items-center bg-gray-100">
+    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50">
+      <div className="flex justify-between items-center ">
         <button onClick={onDelete} className="bg-white px-4 py-1">
           <FiTrash2 className="text-xl" />
         </button>
@@ -62,7 +50,7 @@ function BottomMenu({
         </button>
       </div>
 
-      <div className="flex justify-center items-center w-full border-b">
+      <div className="flex justify-center items-center bg-white w-full border-b">
         <button
           className={`${activeTab === 'format' ? 'bg-gray-100' : ''} px-4 py-3`}
           onClick={() => { setActiveTab('format'); setActiveSubTab('FontSize'); }}
@@ -78,7 +66,7 @@ function BottomMenu({
       </div>
 
       {activeTab === 'format' && (
-        <div className="mt-3 px-4">
+        <div className="pt-3 px-4 bg-white">
           <div className="flex justify-around border-b">
             <button
               onClick={() => toggleSubTab('FontSize')}
@@ -147,18 +135,20 @@ function BottomMenu({
       {activeTab === 'textStyle' && (
         <div>
           <div className="flex overflow-x-auto border-b hide-scrollbar">
+            {/* The font list is now imported, not defined locally */}
             {fontOptions.map((font) => (
               <button
                 key={font.name}
-                className={`p-4 ${fontFamily === font.family ? 'bg-gray-100' : 'bg-white'} ${font.family}`}
-                onClick={() => setFontFamily(font.family)}
+                className={`p-4 ${fontFamily === font.pdfName ? 'bg-gray-100' : 'bg-white'}`}
+                style={{ fontFamily: font.pdfName }}
+                onClick={() => setFontFamily(font.pdfName)}
               >
                 {font.name}
               </button>
             ))}
           </div>
 
-          <div className="flex justify-center gap-4 overflow-x-auto hide-scrollbar py-2">
+          <div className="flex justify-center gap-4 overflow-x-auto hide-scrollbar py-2 bg-white">
             {colorOptions.map((color, index) => (
               <button
                 key={index}
