@@ -83,7 +83,7 @@ function InvitationsPhysiquePage() {
 
         {/* Category Selector */}
         <section className="py-8">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto hide-scrollbar">
             <div className="flex gap-6 justify-start items-center">
 
               {/* "Tous" button */}

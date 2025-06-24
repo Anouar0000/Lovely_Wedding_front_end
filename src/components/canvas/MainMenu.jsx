@@ -20,7 +20,7 @@ function MainMenu({
 
   useEffect(() => {
     if (model?.modelImage && model?.name) {
-      const category = model.name.split(' ')[1]; // e.g., "Mariage"
+      const category = model.name.split(' ')[1];
       const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
       const models = data.models[capitalizedCategory] || [];
 
@@ -31,7 +31,7 @@ function MainMenu({
           const index = i + 1;
           const base = `/assets/models/${category.toLowerCase()}/model/${category.toLowerCase()}${index}`;
 
-          const check = (ext) =>
+          const checkImage = (ext) =>
             new Promise((res) => {
               const img = new Image();
               img.src = `${base}.${ext}`;
@@ -39,7 +39,7 @@ function MainMenu({
               img.onerror = () => res(null);
             });
 
-          const [png, jpg] = await Promise.all([check('png'), check('jpg')]);
+          const [png, jpg] = await Promise.all([checkImage('png'), checkImage('jpg')]);
           const valid = png || jpg;
           if (valid) {
             options.push({ id: index, image: valid });
@@ -75,7 +75,7 @@ function MainMenu({
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white shadow-md border-t pt-6 z-50 min-h-[100px]">
       <div className="flex justify-center items-center space-x-10">
-        {/* Ajouter texte */}
+        {/* Add Text */}
         <button onClick={onAddText} className="flex flex-col items-center">
           <div className="border border-black rounded-md w-6 h-6 flex items-center justify-center mb-1">
             <FiType className="text-lg" />
@@ -96,10 +96,10 @@ function MainMenu({
         </button>
       </div>
 
-      {/* Design Scroll Grid (only shown when active) */}
+      {/* Design selection panel */}
       {activeTab === 'design' && (
         <div className="mt-4 px-4" ref={designRef}>
-          <div className="flex overflow-x-auto space-x-2 pb-2">
+          <div className="flex overflow-x-auto space-x-2 pb-2 hide-scrollbar">
             {designOptions.map((design) => (
               <div
                 key={design.id}
@@ -114,7 +114,7 @@ function MainMenu({
                   className="w-full h-full object-cover"
                 />
                 {selectedTemplate === design.image && (
-                  <div className="absolute inset-0 bg-blue-500 bg-opacity-20"></div>
+                  <div className="absolute inset-0 bg-blue-500 bg-opacity-20" />
                 )}
               </div>
             ))}

@@ -1,35 +1,33 @@
 import React, { useState } from 'react';
 import {
-  AiOutlineColumnHeight, AiOutlineFontSize
+  AiOutlineColumnHeight
 } from "react-icons/ai";
 import {
   CiTextAlignCenter, CiTextAlignLeft, CiTextAlignRight
 } from "react-icons/ci";
 import {
-  FiType, FiCornerDownLeft, FiCornerUpRight, FiTrash2
+  FiType, FiTrash2
 } from 'react-icons/fi';
 
 function BottomMenu({
-  onDelete,
+  onDelete, setSelectedTextId,
   fontSize, setFontSize,
   alignment, setAlignment,
   fontFamily, setFontFamily,
   setTextColor,
-  lineHeight, setLineHeight,
-  isBold, setIsBold,
-  isItalic, setIsItalic
+  lineHeight, setLineHeight
 }) {
   const [activeTab, setActiveTab] = useState('format');
-  const [activeSubTab, setActiveSubTab] = useState(null);
+  const [activeSubTab, setActiveSubTab] = useState('FontSize');
 
   const toggleSubTab = (tab) => {
-    setActiveSubTab((prev) => (prev === tab ? null : tab));
+    setActiveSubTab(tab);
   };
 
   const alignmentIcons = {
-    left: <CiTextAlignLeft />,
-    center: <CiTextAlignCenter />,
-    right: <CiTextAlignRight />
+    left: <CiTextAlignLeft size={24} />,
+    center: <CiTextAlignCenter size={24} />,
+    right: <CiTextAlignRight size={24} />
   };
 
   const fontOptions = [
@@ -54,45 +52,60 @@ function BottomMenu({
   const lineHeightOptions = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
   return (
-    <div className="absolute bottom-0 left-0 w-full h-[140px] bg-white shadow-md border-t z-50">
-      <div className="flex justify-between items-center px-4">
-        <button onClick={onDelete}>
+    <div className="fixed bottom-0 left-0 w-full h-[195px] bg-white shadow-md z-50">
+      <div className="flex justify-between items-center bg-gray-100">
+        <button onClick={onDelete} className="bg-white px-4 py-1">
           <FiTrash2 className="text-xl" />
         </button>
-        <div className="flex space-x-4">
-          <button
-            className={`${activeTab === 'format' ? 'border-b-2 border-black' : ''}`}
-            onClick={() => { setActiveTab('format'); setActiveSubTab(null); }}
-          >
-            Format
-          </button>
-          <button
-            className={`${activeTab === 'textStyle' ? 'border-b-2 border-black' : ''}`}
-            onClick={() => { setActiveTab('textStyle'); setActiveSubTab(null); }}
-          >
-            Police
-          </button>
-        </div>
-        <button onClick={() => setActiveTab(null)}>
+        <button onClick={() => setSelectedTextId(null)} className="bg-white px-4">
           <span className="text-xl">✕</span>
         </button>
       </div>
 
-      {/* Sub-tabs and content */}
+      <div className="flex justify-center items-center w-full border-b">
+        <button
+          className={`${activeTab === 'format' ? 'bg-gray-100' : ''} px-4 py-3`}
+          onClick={() => { setActiveTab('format'); setActiveSubTab('FontSize'); }}
+        >
+          Format
+        </button>
+        <button
+          className={`${activeTab === 'textStyle' ? 'bg-gray-100' : ''} px-4 py-3`}
+          onClick={() => { setActiveTab('textStyle'); setActiveSubTab(null); }}
+        >
+          Police
+        </button>
+      </div>
+
       {activeTab === 'format' && (
         <div className="mt-3 px-4">
-          <div className="flex justify-around mb-4">
-            <button onClick={() => toggleSubTab('FontSize')}><FiType /></button>
-            <button onClick={() => toggleSubTab('LineHeight')}><AiOutlineColumnHeight /></button>
-            <button onClick={() => toggleSubTab('TextAlign')}><CiTextAlignCenter /></button>
+          <div className="flex justify-around border-b">
+            <button
+              onClick={() => toggleSubTab('FontSize')}
+              className={`${activeSubTab === 'FontSize' ? 'border-b-2 border-black' : ''} px-1 pb-2`}
+            >
+              <FiType size={20} />
+            </button>
+            <button
+              onClick={() => toggleSubTab('LineHeight')}
+              className={`${activeSubTab === 'LineHeight' ? 'border-b-2 border-black' : ''} px-1 pb-2`}
+            >
+              <AiOutlineColumnHeight size={20} />
+            </button>
+            <button
+              onClick={() => toggleSubTab('TextAlign')}
+              className={`${activeSubTab === 'TextAlign' ? 'border-b-2 border-black' : ''} px-1 pb-2`}
+            >
+              <CiTextAlignCenter size={20} />
+            </button>
           </div>
 
           {activeSubTab === 'FontSize' && (
-            <div className="flex justify-center gap-2 overflow-x-auto">
+            <div className="flex justify-center gap-2 overflow-x-auto py-2 mt-2 hide-scrollbar">
               {[10, 12, 14, 16, 18, 20, 22, 24, 26, 28].map(size => (
                 <button
                   key={size}
-                  className={`px-2 py-1 ${fontSize === size ? 'bg-black text-white' : 'bg-gray-200'}`}
+                  className={`px-2 py-1 ${fontSize === size ? 'bg-gray-100' : ''}`}
                   onClick={() => setFontSize(size)}
                 >
                   {size}px
@@ -102,11 +115,11 @@ function BottomMenu({
           )}
 
           {activeSubTab === 'LineHeight' && (
-            <div className="flex justify-center gap-2 overflow-x-auto">
+            <div className="flex justify-center gap-2 overflow-x-auto py-2 mt-2 hide-scrollbar">
               {lineHeightOptions.map(height => (
                 <button
                   key={height}
-                  className={`px-2 py-1 ${lineHeight === height ? 'bg-black text-white' : 'bg-gray-200'}`}
+                  className={`px-2 py-1 ${lineHeight === height ? 'bg-gray-100' : ''}`}
                   onClick={() => setLineHeight(height)}
                 >
                   {height}
@@ -116,11 +129,11 @@ function BottomMenu({
           )}
 
           {activeSubTab === 'TextAlign' && (
-            <div className="flex justify-center gap-2 overflow-x-auto">
+            <div className="flex justify-center gap-2 overflow-x-auto hide-scrollbar py-2 mt-2">
               {['left', 'center', 'right'].map((align) => (
                 <button
                   key={align}
-                  className={`px-2 py-1 ${alignment === align ? 'bg-black text-white' : 'bg-gray-200'}`}
+                  className={`px-2 py-1 ${alignment === align ? 'bg-gray-100' : ''}`}
                   onClick={() => setAlignment(align)}
                 >
                   {alignmentIcons[align]}
@@ -132,12 +145,12 @@ function BottomMenu({
       )}
 
       {activeTab === 'textStyle' && (
-        <div className="mt-3 px-4">
-          <div className="flex gap-2 mb-4 overflow-x-auto">
+        <div>
+          <div className="flex overflow-x-auto border-b hide-scrollbar">
             {fontOptions.map((font) => (
               <button
                 key={font.name}
-                className={`p-2 rounded-lg ${fontFamily === font.family ? 'bg-black text-white' : 'bg-white'} ${font.family}`}
+                className={`p-4 ${fontFamily === font.family ? 'bg-gray-100' : 'bg-white'} ${font.family}`}
                 onClick={() => setFontFamily(font.family)}
               >
                 {font.name}
@@ -145,11 +158,11 @@ function BottomMenu({
             ))}
           </div>
 
-          <div className="flex justify-center gap-2 overflow-x-auto">
+          <div className="flex justify-center gap-4 overflow-x-auto hide-scrollbar py-2">
             {colorOptions.map((color, index) => (
               <button
                 key={index}
-                className="w-8 h-8 rounded-full"
+                className="w-5 h-5 rounded-full"
                 style={{ backgroundColor: color, border: color === '#FFFFFF' ? '1px solid #000' : 'none' }}
                 onClick={() => setTextColor(color)}
               />

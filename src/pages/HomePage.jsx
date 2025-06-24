@@ -124,7 +124,7 @@ function HomePage() {
           <h2 className="text-center mb-12 font-urbanist">Only Digital</h2>
 
           {/* Horizontal Scrollable Section */}
-          <div className="flex gap-4 overflow-x-auto">
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar">
             {/* Item 1 */}
             <div className="bg-white shadow-full p-4 flex-shrink-0 w-64">
               <div className="bg-gray-200 h-32 mb-4"><img className="w-full h-full object-cover" src={img1} alt="" /></div>

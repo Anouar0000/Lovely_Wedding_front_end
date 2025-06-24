@@ -34,6 +34,9 @@ module.exports = {
         abhaya: ['"Abhaya Libre"', 'serif'], // ✅ Added
       },      
     },
+    variants: {
+    scrollbar: ['rounded'],
+    },
   },
   plugins: [],
 };
