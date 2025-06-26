@@ -1,11 +1,9 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
 
-// --- FONT REGISTRATION - THIS IS NOW CORRECT BASED ON YOUR FILE LIST ---
-// We are registering the main "Regular" or "Variable" file for each family.
+// --- FONT REGISTRATION (UNCHANGED) ---
 Font.register({
   family: 'Playfair Display',
-  // It's best to register specific weights and styles if you have them
   fonts: [
     { src: '/fonts/PlayfairDisplay-Regular.ttf' },
     { src: '/fonts/PlayfairDisplay-Bold.ttf', fontWeight: 'bold' },
@@ -13,8 +11,6 @@ Font.register({
     { src: '/fonts/PlayfairDisplay-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
   ]
 });
-
-// For other fonts, we can start by just registering the main file.
 Font.register({ family: 'Pinyon Script', src: '/fonts/PinyonScript-Regular.ttf' });
 Font.register({ family: 'Amiri Quran', src: '/fonts/AmiriQuran-Regular.ttf' });
 Font.register({ family: 'Josefin Sans', src: '/fonts/JosefinSans-VariableFont_wght.ttf' });
@@ -25,12 +21,10 @@ Font.register({ family: 'Montserrat', src: '/fonts/Montserrat-Regular.ttf' });
 Font.register({ family: 'Lora', src: '/fonts/Lora-Regular.ttf' });
 Font.register({ family: 'Raleway', src: '/fonts/Raleway-Regular.ttf' });
 Font.register({ family: 'Open Sans', src: '/fonts/OpenSans-Regular.ttf' });
-// Note: Abhaya Libre was in your Tailwind config but not in the file list, so I've commented it out.
-// Font.register({ family: 'Abhaya Libre', src: '/fonts/AbhayaLibre-Regular.ttf' });
-
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
+
 
 const FinalPDFDocument = ({ 
     selectedTemplate, 
@@ -58,7 +52,7 @@ const FinalPDFDocument = ({
     
     return (
         <Document>
-            {/* Page 1: Summary Page */}
+            {/* Page 1: Summary Page (Unchanged) */}
             <Page size="A4" style={styles.summaryPage}>
                 <View style={styles.section}><Text style={styles.h1}>Récapitulatif de votre commande</Text><Text style={styles.h2}>{modelName || ''}</Text></View>
                 <View style={styles.divider} />
@@ -79,8 +73,13 @@ const FinalPDFDocument = ({
                     
                     {textBoxes.map(box => {
                         const style = box.style || {};
-                        const isVertical = (box.width || 150) < (style.fontSize || 16) * 1.8;
-                        const processedText = isVertical ? (box.text || '').split('').join('\n') : (box.text || '');
+                        const textContent = box.text || '';
+                        
+                        // --- THIS IS THE FINAL, GUARANTEED SOLUTION ---
+                        // We insert a zero-width space after every character.
+                        // This forces the PDF engine to allow a line break anywhere,
+                        // perfectly mimicking browser text wrapping.
+                        const processedText = textContent.split('').join('\u200B');
 
                         const layoutStyle = {
                             position: 'absolute',

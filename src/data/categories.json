@@ -7,7 +7,8 @@
         "price": "15",
         "thumbnail": "assets/models/mariage/thumbnail/mariage1.jpg",
         "modelImage": "assets/models/mariage/model/mariage1.jpg",
-        "dateAdded": "2023-01-12"
+        "dateAdded": "2023-01-12",
+        "templateId": "m1" 
       },
       {
         "name": "Modèle Mariage 2",
@@ -28,7 +29,8 @@
         "price": "30",
         "thumbnail": "assets/models/mariage/thumbnail/mariage4.png",
         "modelImage": "assets/models/mariage/model/mariage4.png",
-        "dateAdded": "2021-08-22"
+        "dateAdded": "2021-08-22",
+        "templateId": "mariageRosesRouges" 
       },
       {
         "name": "Modèle Mariage 5",
