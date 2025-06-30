@@ -141,9 +141,12 @@ function PersonalizeInvitationPage() {
   const activeCardStyle = { transform: 'scale(0.9) translateX(-5%)', zIndex: 10 };
   const inactiveCardStyle = { transform: 'scale(0.85) translateX(10%)', zIndex: 5 };
 
-  useEffect(() => {
+useEffect(() => {
   const handleClickOutside = (e) => {
-    if (!e.target.closest('.TextBox')) {
+    const clickedInsideCanvas = wrapperRef.current?.contains(e.target);
+    const clickedOnTextBox = e.target.closest('.TextBox');
+
+    if (clickedInsideCanvas && !clickedOnTextBox) {
       setSelectedTextId(null);
     }
   };
@@ -153,6 +156,7 @@ function PersonalizeInvitationPage() {
     document.removeEventListener('mousedown', handleClickOutside);
   };
 }, []);
+
 
 
   return (
