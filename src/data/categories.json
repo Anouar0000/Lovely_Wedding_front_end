@@ -7,6 +7,7 @@
         "price": "15",
         "thumbnail": "assets/models/mariage/thumbnail/mariage1.jpg",
         "modelImage": "assets/models/mariage/model/mariage1.jpg",
+        "modelImagep2":"assets/models/mariage/model/mariage1_p2.PNG",
         "dateAdded": "2023-01-12",
         "templateId": "m1" 
       },

@@ -1,23 +1,20 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Draggable from 'react-draggable';
 
-function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdatePosition, onUpdateWidth, isSelected }) {
+// We accept the `onInteractionChange` prop from the parent
+function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdatePosition, onUpdateWidth, isSelected, scale = 1, onInteractionChange }) {
     const [value, setValue] = useState(text);
     const [isEditing, setIsEditing] = useState(false);
-    const [isDragging, setIsDragging] = useState(false);
+    const [isDragging, setIsDragging] = useState(false); // Used for cursor style
     
     const [boxWidth, setBoxWidth] = useState(width); 
-    useEffect(() => {
-        setBoxWidth(width);
-    }, [width]);
+    useEffect(() => { setBoxWidth(width); }, [width]);
 
     const [boxPosition, setBoxPosition] = useState(position);
-    useEffect(() => {
-        setBoxPosition(position);
-    }, [position]);
+    useEffect(() => { setBoxPosition(position); }, [position]);
 
+    // Your original, working resize logic is fully restored here
     const [resizing, setResizing] = useState(false);
-
     const nodeRef = useRef(null);
     const inputRef = useRef(null);
     const resizeDirection = useRef(null);
@@ -37,12 +34,17 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
     useEffect(() => {
         if (isEditing && inputRef.current) {
             inputRef.current.focus();
+            document.execCommand('selectAll', false, null);
         }
     }, [isEditing]);
+     useEffect(() => {
+        if (!isSelected && isEditing) setIsEditing(false);
+    }, [isSelected, isEditing]);
     
+    // Your original `handleMove` for resizing is correct
     const handleMove = useCallback((e) => {
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const diffX = clientX - resizeStart.current.clientX;
+        const diffX = (clientX - resizeStart.current.clientX) / scale;
         const minWidth = 20;
 
         if (resizeDirection.current === 'right') {
@@ -52,47 +54,36 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
             setBoxWidth(newWidth);
             finalUpdateData.current.w = newWidth;
         } else if (resizeDirection.current === 'left') {
-            // *** THIS IS THE FIX ***
-            // 1. Calculate the maximum X position the left handle can reach.
-            // It's the original right edge minus the minimum width.
             const maxAllowedX = (resizeStart.current.x + resizeStart.current.width) - minWidth;
-
-            // 2. Calculate the proposed new X.
             const newX = resizeStart.current.x + diffX;
-
-            // 3. Clamp the new X between the left boundary (0) and our new right boundary (maxAllowedX).
             const clampedX = Math.max(0, Math.min(newX, maxAllowedX));
-
-            // 4. The rest of the logic now works perfectly using the correctly clamped position.
             const actualDiffX = clampedX - resizeStart.current.x;
             const newWidth = resizeStart.current.width - actualDiffX;
-
             setBoxWidth(newWidth);
             setBoxPosition({ x: clampedX, y: boxPosition.y });
-            
             finalUpdateData.current.w = newWidth;
             finalUpdateData.current.pos = { x: clampedX, y: boxPosition.y };
         }
-    }, [boxPosition.y]);
+    }, [boxPosition.y, scale]);
 
+    // Your original `handleUp` for resizing, with `onInteractionChange` added
     const handleUp = useCallback(() => {
+        onInteractionChange?.(false); // Tell parent we are done
         setResizing(false);
-        
         setTimeout(() => {
             onUpdatePosition?.(id, finalUpdateData.current.pos);
             onUpdateWidth?.(id, finalUpdateData.current.w);
         }, 0);
+    }, [id, onUpdatePosition, onUpdateWidth, onInteractionChange]);
 
-    }, [id, onUpdatePosition, onUpdateWidth]);
-
+    // Your original `useEffect` for resize listeners is correct
     useEffect(() => {
         if (!resizing) return;
-        
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('touchmove', handleMove);
+        const options = { passive: false };
+        window.addEventListener('mousemove', handleMove, options);
+        window.addEventListener('touchmove', handleMove, options);
         window.addEventListener('mouseup', handleUp);
         window.addEventListener('touchend', handleUp);
-
         return () => {
             window.removeEventListener('mousemove', handleMove);
             window.removeEventListener('touchmove', handleMove);
@@ -101,16 +92,17 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
         };
     }, [resizing, handleMove, handleUp]);
 
+    // Your original `startResize`, with `onInteractionChange` added
     const startResize = useCallback((e, side) => {
+        onInteractionChange?.(true); // Tell parent we are busy
         e.stopPropagation();
+        setResizing(true);
         resizeDirection.current = side;
         const parentWidth = nodeRef.current.parentElement.clientWidth;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        
         finalUpdateData.current = { pos: boxPosition, w: boxWidth };
         resizeStart.current = { clientX, width: boxWidth, x: boxPosition.x, parentWidth };
-        setResizing(true);
-    }, [boxPosition, boxWidth]); 
+    }, [boxPosition, boxWidth, onInteractionChange]); 
 
     return (
         <Draggable
@@ -119,24 +111,36 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
             position={boxPosition}
             disabled={isEditing || resizing}
             cancel=".no-drag"
+            scale={scale}
             onStart={(e, data) => {
+                onInteractionChange?.(true); // Tell parent we are busy
+                e.stopPropagation();
                 setIsDragging(true);
                 dragStartPos.current = { x: data.x, y: data.y };
             }}
             onStop={(e, data) => {
+                onInteractionChange?.(false); // Tell parent we are done
                 setIsDragging(false);
+
+                // This is the reliable tap vs. drag detection logic
                 const startPos = dragStartPos.current;
-                const dragThreshold = 3; 
+                const tapThreshold = 5; 
                 if (!startPos) return;
-                const movedDistance = Math.sqrt(Math.pow(data.x - startPos.x, 2) + Math.pow(data.y - startPos.y, 2));
                 
-                if (movedDistance < dragThreshold) {
-                    if (isSelected && !isEditing) {
-                        setIsEditing(true);
-                    } else {
+                const movedDistance = Math.hypot(data.x - startPos.x, data.y - startPos.y);
+                
+                if (movedDistance < tapThreshold) {
+                    // It was a TAP
+                    if (!isSelected) {
                         onSelect(id);
+                    } else {
+                        setIsEditing(true);
                     }
                 } else {
+                    // It was a DRAG
+                    if (!isSelected) {
+                        onSelect(id);
+                    }
                     const newPos = { x: data.x, y: data.y };
                     setBoxPosition(newPos);
                     onUpdatePosition?.(id, newPos);
@@ -145,6 +149,7 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
         >
             <div
                 ref={nodeRef}
+                onClick={(e) => e.stopPropagation()} // Prevents deselecting on tap
                 className={`relative rounded-md ${isSelected ? 'border border-purple-500' : 'border-transparent'} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                 style={{
                     position: 'absolute',
@@ -159,7 +164,8 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
                     width: `${boxWidth}px`,
                     maxWidth: '100%',
                     fontFamily: style.fontFamily || 'serif',
-                    userSelect: isDragging || resizing ? 'none' : 'auto',
+                    userSelect: isEditing || resizing ? 'none' : 'auto',
+                    touchAction: 'none', // Prevents page zoom on mobile
                 }}
             >
                 {isSelected && !isEditing && (
