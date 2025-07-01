@@ -50,23 +50,24 @@ function PersonalizeInvitationPage() {
     isChildInteracting.current = isInteracting;
   };
 
-  // THIS IS THE CORRECTED useEffect
+  // --- THE DEFINITIVE FIX: USING useRef TO STABILIZE THE FUNCTION ---
+  // 1. Create a ref to hold the setCardContent function.
+  const stableSetCardContent = useRef(setCardContent);
+  // 2. Keep the ref's value up-to-date with the latest function on every render.
+  useEffect(() => {
+    stableSetCardContent.current = setCardContent;
+  }, [setCardContent]);
+
+
+  // 3. The main template-loading effect.
   useEffect(() => {
     if (!model) { navigate('/invitations-physique'); return; }
+    if (!contentContainerRef.current) return; 
 
-    // Guard against running before the layout is ready.
-    if (!contentContainerRef.current) {
-      return; 
-    }
-
-    // Get the REAL dimensions of the container where text boxes will be placed.
     const containerWidth = contentContainerRef.current.clientWidth;
     const containerHeight = contentContainerRef.current.clientHeight;
 
-    // Another guard to prevent calculation with zero dimensions, which can happen briefly.
-    if (containerWidth === 0 || containerHeight === 0) {
-      return;
-    }
+    if (containerWidth === 0 || containerHeight === 0) return;
 
     const templateId = model?.templateId;
     let initialContent = { front: { textBoxes: [] }, back: { textBoxes: [] } };
@@ -76,29 +77,23 @@ function PersonalizeInvitationPage() {
       if (template.prefilledTextBoxes) {
         
         const responsiveTextBoxes = template.prefilledTextBoxes.map(box => {
-            // Calculate pixel values based on the CORRECT container dimensions.
             const pixelX = (box.position.x / 100) * containerWidth;
             const pixelY = (box.position.y / 100) * containerHeight;
             const pixelWidth = (box.width / 100) * containerWidth;
 
-            return {
-                ...box,
-                position: { x: pixelX, y: pixelY },
-                width: pixelWidth,
-            };
+            return { ...box, position: { x: pixelX, y: pixelY }, width: pixelWidth };
         });
-
         initialContent.front.textBoxes = responsiveTextBoxes;
       }
     }
     
-    // Only set the state if there's new content to avoid potential loops
-    if (JSON.stringify(initialContent) !== JSON.stringify({ front: { textBoxes: [] }, back: { textBoxes: [] } })) {
-      setCardContent(initialContent, true); 
-    }
+    // 4. Call the function from the ref. This is always the latest function,
+    // but the ref itself is stable and not needed in the dependency array.
+    stableSetCardContent.current(initialContent, true); 
     
-  // The hook now depends on the model and the canvasStyle (as a proxy for when the layout is stable).
-  }, [model, canvasStyle, navigate, setCardContent]);
+  // 5. The dependency array is now 100% stable and will not cause an infinite loop.
+  }, [model, canvasStyle.width, canvasStyle.height, navigate]);
+
   useEffect(() => {
     setSelectedTextId(null);
   }, [currentCard]);
@@ -133,39 +128,26 @@ function PersonalizeInvitationPage() {
   
   const handleCanvasClick = (e) => { if (e.target === e.currentTarget) { setSelectedTextId(null); } };
   
-// In PersonalizeInvitationPage.js
-
-const handleDownload = async () => {
+  const handleDownload = async () => {
     const canvas = contentContainerRef.current;
     if (!canvas) { alert("Erreur : La zone de personnalisation n'a pas pu être trouvée."); return; }
     
-    // We can use the parent of the card container to get reliable dimensions
     const canvasWidth = canvas.clientWidth;
     const canvasHeight = canvas.clientHeight;
 
-    // --- Prepare data for the PDF component ---
-    const frontData = {
-        image: model.modelImage,
-        textBoxes: cardContent.front.textBoxes
-    };
-
-    // Prepare back data only if a second image exists
-    const backData = model.modelImagep2 ? {
-        image: model.modelImagep2,
-        textBoxes: cardContent.back.textBoxes
-    } : null;
+    const frontData = { image: model.modelImage, textBoxes: cardContent.front.textBoxes };
+    const backData = model.modelImagep2 ? { image: model.modelImagep2, textBoxes: cardContent.back.textBoxes } : null;
 
     try {
         const blob = await pdf(
             <FinalPDFDocument 
                 frontData={frontData}
-                backData={backData} // Pass both objects
+                backData={backData}
                 canvasDimensions={{ width: canvasWidth, height: canvasHeight }} 
                 qte={qté} 
                 format={format} 
                 motif={motif} 
                 modelName={model.name}
-                // NOTE: Define your safeArea and verticalAlignmentPercent as needed
                 safeArea={{ top: 0, bottom: 0, left: 0, right: 0 }} 
                 verticalAlignmentPercent={50} 
             />
@@ -183,25 +165,21 @@ const handleDownload = async () => {
         console.error("Erreur lors de la génération du PDF:", error); 
         alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer."); 
     }
-};
+  };
 
-const handleDesignChange = (newTemplateId) => {
-    // Get the category from the current model (e.g., "Rustique")
+  const handleDesignChange = (newTemplateId) => {
     const category = model.name.split(' ')[1];
     const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
     
-    // Find the full data for the new design in your JSON
     const newModelData = data.models[capitalizedCategory]?.[newTemplateId];
 
     if (newModelData) {
-        // Use navigate to update the state. This will re-render the entire page
-        // with the new model, including both front and back cards.
         navigate(location.pathname, {
-            replace: true, // This is good practice for this kind of change
+            replace: true,
             state: { ...location.state, model: newModelData }
         });
     }
-};
+  };
 
   const renderTextBoxes = (cardKey) => {
     const boxes = cardContent[cardKey]?.textBoxes || [];
@@ -220,27 +198,24 @@ const handleDesignChange = (newTemplateId) => {
     );
   };
   
-  // Define styles for active (front) and inactive (back) cards
   const activeCardStyle = { transform: 'scale(0.9) translateX(-5%)', zIndex: 10 };
   const inactiveCardStyle = { transform: 'scale(0.85) translateX(10%)', zIndex: 5 };
 
-useEffect(() => {
-  const handleClickOutside = (e) => {
-    const clickedInsideCanvas = wrapperRef.current?.contains(e.target);
-    const clickedOnTextBox = e.target.closest('.TextBox');
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      const clickedInsideCanvas = wrapperRef.current?.contains(e.target);
+      const clickedOnTextBox = e.target.closest('.TextBox');
 
-    if (clickedInsideCanvas && !clickedOnTextBox) {
-      setSelectedTextId(null);
-    }
-  };
+      if (clickedInsideCanvas && !clickedOnTextBox) {
+        setSelectedTextId(null);
+      }
+    };
 
-  document.addEventListener('mousedown', handleClickOutside);
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, []);
-
-
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-gray-100">
@@ -261,8 +236,6 @@ useEffect(() => {
           <div ref={wrapperRef} className="absolute top-0 left-0 w-full h-full bg-transparent touch-none overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full" style={{ transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`, transition: isInteracting ? 'none' : 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)'}}>
               <div ref={contentContainerRef} onClick={handleCanvasClick} className="relative w-full h-full flex items-center justify-center">
-                
-                  {/* Back Card */}
                   {model?.modelImagep2 && (
                     <div
                       className="absolute w-full h-full transition-all duration-300 ease-in-out"
@@ -275,8 +248,6 @@ useEffect(() => {
                       {renderTextBoxes('back')}
                     </div>
                   )}
-
-                  {/* Front Card */}
                   <div
                     className="absolute w-full h-full transition-all duration-300 ease-in-out"
                     style={{
@@ -291,7 +262,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-                  <CardSwitcher model={model} currentCard={currentCard} setCurrentCard={setCurrentCard} />
+        <CardSwitcher model={model} currentCard={currentCard} setCurrentCard={setCurrentCard} />
       </main>
 
       <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40">

@@ -17,7 +17,8 @@
         "thumbnail": "assets/models/mariage/thumbnail/mariage2.png",
         "modelImage": "assets/models/mariage/model/mariage2.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage2_p2.PNG",
-        "dateAdded": "2022-11-03"
+        "dateAdded": "2022-11-03",
+        "templateId": "m2" 
       },
       {
         "name": "Modèle Mariage 3",
@@ -25,7 +26,8 @@
         "thumbnail": "assets/models/mariage/thumbnail/mariage3.png",
         "modelImage": "assets/models/mariage/model/mariage3.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage2_p2.PNG",
-        "dateAdded": "2023-05-18"
+        "dateAdded": "2023-05-18",
+        "templateId": "m3"
       },
       {
         "name": "Modèle Mariage 4",
@@ -34,7 +36,7 @@
         "modelImage": "assets/models/mariage/model/mariage4.png",
         "modelImagep2":"assets/models/mariage/model/mariage4_p2.PNG",
         "dateAdded": "2021-08-22",
-        "templateId": "mariageRosesRouges" 
+        "templateId": "m4" 
       },
       {
         "name": "Modèle Mariage 5",
@@ -42,7 +44,8 @@
         "thumbnail": "assets/models/mariage/thumbnail/mariage5.png",
         "modelImage": "assets/models/mariage/model/mariage5.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage5_p2.jpg",
-        "dateAdded": "2024-02-07"
+        "dateAdded": "2024-02-07",
+        "templateId": "m5"
       }
     ],
     "Outeya": [
