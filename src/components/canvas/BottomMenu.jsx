@@ -40,7 +40,7 @@ function BottomMenu({
   const lineHeightOptions = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
   return (
-    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50">
+    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50 bg-white">
       <div className="flex justify-between items-center ">
         <button onClick={onDelete} className="bg-white px-4 py-1">
           <FiTrash2 className="text-xl" />
@@ -135,15 +135,17 @@ function BottomMenu({
       {activeTab === 'textStyle' && (
         <div>
           <div className="flex overflow-x-auto border-b hide-scrollbar">
-            {/* The font list is now imported, not defined locally */}
+            {/* --- THIS IS THE ONLY CHANGE --- */}
             {fontOptions.map((font) => (
               <button
-                key={font.name}
+                key={font.name} // The internal name is a good key
                 className={`p-4 ${fontFamily === font.pdfName ? 'bg-gray-100' : 'bg-white'}`}
-                style={{ fontFamily: font.pdfName }}
+                // The style uses the pdfName to apply the correct font for the preview
+                style={{ fontFamily: font.pdfName, fontSize: '18px' }} 
                 onClick={() => setFontFamily(font.pdfName)}
               >
-                {font.name}
+                {/* The text displayed is the user-friendly displayName */}
+                {font.displayName}
               </button>
             ))}
           </div>

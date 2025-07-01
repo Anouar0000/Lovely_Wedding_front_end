@@ -1,6 +1,6 @@
 // PersonalizeInvitationPage.js
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react'; // Import useCallback
 import { useNavigate, useLocation } from 'react-router-dom';
 import MainMenu from '../components/canvas/MainMenu';
 import BottomMenu from '../components/canvas/BottomMenu';
@@ -13,7 +13,7 @@ import { templateData } from '../data/templateData.js';
 import { useCanvasLayout } from '../hooks/useCanvasLayout';
 import { usePanAndZoom } from '../hooks/usePanAndZoom';
 import CardSwitcher from '../components/canvas/CardSwitcher';
-import data from '../data/categories.json';
+import { fontOptions } from '../config/fontConfig';
 
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
@@ -23,7 +23,6 @@ function PersonalizeInvitationPage() {
   const location = useLocation();
   const { model, qté, format, motif } = location.state || {};
 
-  // Lazily initialize useHistory to ensure `model` is available for localStorage check
   const { 
     state: cardContent, 
     setState: setCardContent, 
@@ -36,11 +35,9 @@ function PersonalizeInvitationPage() {
     if (savedDataJSON) {
       const savedData = JSON.parse(savedDataJSON);
       if (savedData.modelName === model?.name) {
-        console.log("Loading saved work from localStorage...");
         return savedData.content;
       }
     }
-    console.log("Starting with a fresh state...");
     return { front: { textBoxes: [] }, back: { textBoxes: [] } };
   });
 
@@ -52,6 +49,7 @@ function PersonalizeInvitationPage() {
   const wrapperRef = useRef(null);
   const contentContainerRef = useRef(null);
   const isChildInteracting = useRef(false);
+  const prevSelectedTextIdRef = useRef();
 
   const { canvasStyle, mainPadding } = useCanvasLayout({ headerRef, mainMenuRef });
   const { scale, translate, isInteracting } = usePanAndZoom({ wrapperRef, isChildInteracting });
@@ -64,14 +62,27 @@ function PersonalizeInvitationPage() {
   useEffect(() => {
     stableSetCardContent.current = setCardContent;
   }, [setCardContent]);
+  
+  // --- FUNCTION MOVED HERE ---
+  // It's now defined before the useEffect that needs it.
+  // Wrapped in useCallback for stability, which is good practice.
+  const updateCurrentCardTextBoxes = useCallback((newTextBoxes) => {
+    setCardContent(cardContent => {
+      // If newTextBoxes is a function, execute it to get the new array
+      const resolvedTextBoxes = typeof newTextBoxes === 'function' 
+        ? newTextBoxes(cardContent[currentCard].textBoxes) 
+        : newTextBoxes;
+      
+      return {
+        ...cardContent,
+        [currentCard]: { ...cardContent[currentCard], textBoxes: resolvedTextBoxes },
+      };
+    });
+  }, [currentCard, setCardContent]);
 
-  // This consolidated effect handles initial template loading.
-  // It will NOT run if content was already loaded from localStorage.
   useEffect(() => {
     const hasExistingContent = cardContent.front.textBoxes.length > 0 || cardContent.back.textBoxes.length > 0;
-    if (hasExistingContent) {
-      return;
-    }
+    if (hasExistingContent) return;
 
     const templateId = model?.name?.toLowerCase().replace("modèle ", "").replace(" ", "-");
     if (!templateId) return;
@@ -98,7 +109,6 @@ function PersonalizeInvitationPage() {
   }, [model?.name, cardContent.front.textBoxes, cardContent.back.textBoxes]);
 
 
-  // This effect saves work to localStorage whenever content changes.
   useEffect(() => {
     if (cardContent.front.textBoxes.length > 0 || cardContent.back.textBoxes.length > 0) {
       const dataToSave = {
@@ -113,25 +123,28 @@ function PersonalizeInvitationPage() {
     setSelectedTextId(null);
   }, [currentCard]);
 
+  // This is the "delete on deselect" effect. It now correctly comes AFTER updateCurrentCardTextBoxes is defined.
   useEffect(() => {
-    if (selectedTextId === null) return;
-    if (!textBoxes.some(box => box.id === selectedTextId)) {
-      setSelectedTextId(null);
+    if (selectedTextId === null && prevSelectedTextIdRef.current) {
+      const deselectedBox = cardContent[currentCard]?.textBoxes.find(
+        (box) => box.id === prevSelectedTextIdRef.current
+      );
+
+      if (deselectedBox && deselectedBox.text.trim() === '') {
+        const newTextBoxes = cardContent[currentCard].textBoxes.filter(
+          (box) => box.id !== deselectedBox.id
+        );
+        updateCurrentCardTextBoxes(newTextBoxes);
+      }
     }
-  }, [textBoxes, selectedTextId]);
-
-  const updateCurrentCardTextBoxes = (newTextBoxes) => {
-    setCardContent({
-      ...cardContent,
-      [currentCard]: { ...cardContent[currentCard], textBoxes: newTextBoxes },
-    });
-  };
-
+    prevSelectedTextIdRef.current = selectedTextId;
+  }, [selectedTextId, cardContent, currentCard, updateCurrentCardTextBoxes]);
+  
   const handleAddText = () => {
     const cardRect = contentContainerRef.current?.getBoundingClientRect();
     if (!cardRect) return;
     const newTextBox = { id: Date.now(), text: 'Nouveau texte', style: { fontSize: 16, bold: false, italic: false, alignment: 'center', color: '#000000', lineHeight: 1.5, fontFamily: 'Playfair Display' }, position: { x: cardRect.width / 2 - 75, y: cardRect.height / 2 - 20 }, width: 150 };
-    updateCurrentCardTextBoxes([...textBoxes, newTextBox]); 
+    updateCurrentCardTextBoxes(prevTextBoxes => [...prevTextBoxes, newTextBox]); 
     setSelectedTextId(newTextBox.id);
   };
   
@@ -139,8 +152,30 @@ function PersonalizeInvitationPage() {
   const handleUpdatePosition = (id, position) => updateCurrentCardTextBoxes(textBoxes.map(box => box.id === id ? { ...box, position } : box));
   const handleUpdateWidth = (id, newWidth) => updateCurrentCardTextBoxes(textBoxes.map(box => (box.id === id ? { ...box, width: newWidth } : box)));
   const handleDeleteText = () => { updateCurrentCardTextBoxes(textBoxes.filter(box => box.id !== selectedTextId)); setSelectedTextId(null); };
-  const updateTextStyle = (key, value) => updateCurrentCardTextBoxes(textBoxes.map(box => box.id === selectedTextId ? { ...box, style: { ...box.style, [key]: value } } : box));
-  
+
+  const updateTextStyle = (key, value) => {
+    updateCurrentCardTextBoxes(textBoxes.map(box => {
+      if (box.id === selectedTextId) {
+        const newStyle = { ...box.style, [key]: value };
+        
+        if (key === 'fontFamily') {
+          const selectedFont = fontOptions.find(font => font.pdfName === value);
+          if (selectedFont?.isArabic) {
+            newStyle.direction = 'rtl';
+            newStyle.alignment = 'right';
+          } else {
+            newStyle.direction = 'ltr';
+            if (box.style.alignment === 'right') {
+              newStyle.alignment = 'left';
+            }
+          }
+        }
+        return { ...box, style: newStyle };
+      }
+      return box;
+    }));
+  };  
+
   const handleCanvasClick = (e) => { if (e.target === e.currentTarget) { setSelectedTextId(null); } };
   
   const handleDownload = async () => {

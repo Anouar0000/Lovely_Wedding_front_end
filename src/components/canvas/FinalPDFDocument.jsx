@@ -3,27 +3,24 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
 import RenderCardPage from './RenderCardPage'; // <-- IMPORT THE NEW COMPONENT
+import { fontOptions } from '../../config/fontConfig';
 
 // --- FONT REGISTRATION (UNCHANGED) ---
-Font.register({
-  family: 'Playfair Display',
-  fonts: [
-    { src: '/fonts/PlayfairDisplay-Regular.ttf' },
-    { src: '/fonts/PlayfairDisplay-Bold.ttf', fontWeight: 'bold' },
-    { src: '/fonts/PlayfairDisplay-Italic.ttf', fontStyle: 'italic' },
-    { src: '/fonts/PlayfairDisplay-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
-  ]
+// --- DYNAMIC FONT REGISTRATION ---
+fontOptions.forEach(font => {
+  if (font.files && Object.keys(font.files).length > 0) {
+    const fontSources = [];
+    if (font.files.regular) fontSources.push({ src: font.files.regular });
+    if (font.files.bold) fontSources.push({ src: font.files.bold, fontWeight: 'bold' });
+    if (font.files.italic) fontSources.push({ src: font.files.italic, fontStyle: 'italic' });
+    if (font.files.boldItalic) fontSources.push({ src: font.files.boldItalic, fontWeight: 'bold', fontStyle: 'italic' });
+    
+    Font.register({
+      family: font.pdfName,
+      fonts: fontSources
+    });
+  }
 });
-Font.register({ family: 'Pinyon Script', src: '/fonts/PinyonScript-Regular.ttf' });
-Font.register({ family: 'Amiri Quran', src: '/fonts/AmiriQuran-Regular.ttf' });
-Font.register({ family: 'Josefin Sans', src: '/fonts/JosefinSans-VariableFont_wght.ttf' });
-Font.register({ family: 'Urbanist', src: '/fonts/Urbanist-VariableFont_wght.ttf' });
-Font.register({ family: 'Antic Didone', src: '/fonts/AnticDidone-Regular.ttf' });
-Font.register({ family: 'Roboto', src: '/fonts/Roboto-Regular.ttf' });
-Font.register({ family: 'Montserrat', src: '/fonts/Montserrat-Regular.ttf' });
-Font.register({ family: 'Lora', src: '/fonts/Lora-Regular.ttf' });
-Font.register({ family: 'Raleway', src: '/fonts/Raleway-Regular.ttf' });
-Font.register({ family: 'Open Sans', src: '/fonts/OpenSans-Regular.ttf' });
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;

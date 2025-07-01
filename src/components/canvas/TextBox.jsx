@@ -166,6 +166,7 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
                     fontFamily: style.fontFamily || 'serif',
                     userSelect: isEditing || resizing ? 'none' : 'auto',
                     touchAction: 'none', // Prevents page zoom on mobile
+                    direction: style.direction || 'ltr', // Add this line
                 }}
             >
                 {isSelected && !isEditing && (
