@@ -1,5 +1,8 @@
+// src/components/canvas/FinalPDFDocument.js
+
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import RenderCardPage from './RenderCardPage'; // <-- IMPORT THE NEW COMPONENT
 
 // --- FONT REGISTRATION (UNCHANGED) ---
 Font.register({
@@ -25,10 +28,9 @@ Font.register({ family: 'Open Sans', src: '/fonts/OpenSans-Regular.ttf' });
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
 
-
 const FinalPDFDocument = ({ 
-    selectedTemplate, 
-    textBoxes, 
+    frontData,
+    backData,
     canvasDimensions, 
     qte, 
     format, 
@@ -38,7 +40,7 @@ const FinalPDFDocument = ({
     verticalAlignmentPercent
 }) => {
     
-    if (!canvasDimensions || !safeArea) return null;
+    if (!canvasDimensions || !safeArea || !frontData) return null;
 
     const scaleX = PAGE_WIDTH / canvasDimensions.width;
     const scaleY = PAGE_HEIGHT / canvasDimensions.height;
@@ -61,51 +63,29 @@ const FinalPDFDocument = ({
                 <View style={styles.section}><Text style={styles.label}>Motif:</Text><Text style={styles.value}>{motif || 'N/A'}</Text></View>
             </Page>
 
-            {/* Page 2: The WYSIWYG Design */}
-            <Page size="A4" style={styles.designPage}>
-                <View style={{ position: 'absolute', left: offsetX, top: offsetY, width: scaledContentWidth, height: scaledContentHeight }}>
-                    
-                    <View style={{ position: 'absolute', top: safeArea.top * scaleFactor, bottom: safeArea.bottom * scaleFactor, left: safeArea.left * scaleFactor, right: safeArea.right * scaleFactor }}>
-                        {selectedTemplate && (
-                            <Image src={selectedTemplate} style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: `center ${verticalAlignmentPercent || 50}%` }} />
-                        )}
-                    </View>
-                    
-                    {textBoxes.map(box => {
-                        const style = box.style || {};
-                        const textContent = box.text || '';
-                        
-                        // --- THIS IS THE FINAL, GUARANTEED SOLUTION ---
-                        // We insert a zero-width space after every character.
-                        // This forces the PDF engine to allow a line break anywhere,
-                        // perfectly mimicking browser text wrapping.
-                        const processedText = textContent.split('').join('\u200B');
+            {/* Page 2: Renders the Front Card using the imported component */}
+            <RenderCardPage 
+                cardData={frontData}
+                canvasDimensions={canvasDimensions}
+                scaleFactor={scaleFactor}
+                offsetX={offsetX}
+                offsetY={offsetY}
+                safeArea={safeArea}
+                verticalAlignmentPercent={verticalAlignmentPercent}
+            />
 
-                        const layoutStyle = {
-                            position: 'absolute',
-                            left: (box.position?.x || 0) * scaleFactor,
-                            top: (box.position?.y || 0) * scaleFactor,
-                            width: (box.width || 150) * scaleFactor,
-                        };
-
-                        const textStyle = {
-                            fontSize: (style.fontSize || 16) * scaleFactor,
-                            color: style.color || '#000000',
-                            textAlign: style.alignment || 'left',
-                            fontStyle: style.italic ? 'italic' : 'normal',
-                            fontWeight: style.bold ? 'bold' : 'normal',
-                            fontFamily: style.fontFamily || 'Helvetica', 
-                            lineHeight: style.lineHeight || 1.5,
-                        };
-
-                        return (
-                            <View key={box.id} style={layoutStyle}>
-                                <Text style={textStyle}>{processedText}</Text>
-                            </View>
-                        );
-                    })}
-                </View>
-            </Page>
+            {/* Page 3: Renders the Back Card (only if backData is provided) */}
+            {backData && backData.image && (
+                 <RenderCardPage 
+                    cardData={backData}
+                    canvasDimensions={canvasDimensions}
+                    scaleFactor={scaleFactor}
+                    offsetX={offsetX}
+                    offsetY={offsetY}
+                    safeArea={safeArea}
+                    verticalAlignmentPercent={verticalAlignmentPercent}
+                />
+            )}
         </Document>
     );
 };
@@ -118,7 +98,6 @@ const styles = StyleSheet.create({
     section: { marginBottom: 16 },
     label: { fontSize: 12, color: '#374151', marginBottom: 4 },
     value: { fontSize: 14, color: '#111827' },
-    designPage: { backgroundColor: '#FFFFFF' },
 });
 
 export default FinalPDFDocument;

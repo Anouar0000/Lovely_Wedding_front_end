@@ -13,6 +13,7 @@ import { templateData } from '../data/templateData.js';
 import { useCanvasLayout } from '../hooks/useCanvasLayout';
 import { usePanAndZoom } from '../hooks/usePanAndZoom';
 import CardSwitcher from '../components/canvas/CardSwitcher';
+import data from '../data/categories.json';
 
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
@@ -49,21 +50,55 @@ function PersonalizeInvitationPage() {
     isChildInteracting.current = isInteracting;
   };
 
+  // THIS IS THE CORRECTED useEffect
   useEffect(() => {
     if (!model) { navigate('/invitations-physique'); return; }
-    
+
+    // Guard against running before the layout is ready.
+    if (!contentContainerRef.current) {
+      return; 
+    }
+
+    // Get the REAL dimensions of the container where text boxes will be placed.
+    const containerWidth = contentContainerRef.current.clientWidth;
+    const containerHeight = contentContainerRef.current.clientHeight;
+
+    // Another guard to prevent calculation with zero dimensions, which can happen briefly.
+    if (containerWidth === 0 || containerHeight === 0) {
+      return;
+    }
+
     const templateId = model?.templateId;
     let initialContent = { front: { textBoxes: [] }, back: { textBoxes: [] } };
+
     if (templateId && templateData[templateId]) {
       const template = templateData[templateId];
       if (template.prefilledTextBoxes) {
-        initialContent.front.textBoxes = template.prefilledTextBoxes;
+        
+        const responsiveTextBoxes = template.prefilledTextBoxes.map(box => {
+            // Calculate pixel values based on the CORRECT container dimensions.
+            const pixelX = (box.position.x / 100) * containerWidth;
+            const pixelY = (box.position.y / 100) * containerHeight;
+            const pixelWidth = (box.width / 100) * containerWidth;
+
+            return {
+                ...box,
+                position: { x: pixelX, y: pixelY },
+                width: pixelWidth,
+            };
+        });
+
+        initialContent.front.textBoxes = responsiveTextBoxes;
       }
     }
-    setCardContent(initialContent, true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [model]);
-
+    
+    // Only set the state if there's new content to avoid potential loops
+    if (JSON.stringify(initialContent) !== JSON.stringify({ front: { textBoxes: [] }, back: { textBoxes: [] } })) {
+      setCardContent(initialContent, true); 
+    }
+    
+  // The hook now depends on the model and the canvasStyle (as a proxy for when the layout is stable).
+  }, [model, canvasStyle, navigate, setCardContent]);
   useEffect(() => {
     setSelectedTextId(null);
   }, [currentCard]);
@@ -98,27 +133,75 @@ function PersonalizeInvitationPage() {
   
   const handleCanvasClick = (e) => { if (e.target === e.currentTarget) { setSelectedTextId(null); } };
   
-  const handleDownload = async () => {
+// In PersonalizeInvitationPage.js
+
+const handleDownload = async () => {
     const canvas = contentContainerRef.current;
     if (!canvas) { alert("Erreur : La zone de personnalisation n'a pas pu être trouvée."); return; }
+    
+    // We can use the parent of the card container to get reliable dimensions
     const canvasWidth = canvas.clientWidth;
     const canvasHeight = canvas.clientHeight;
-    
-    const frontTextBoxes = cardContent.front.textBoxes;
-    const frontImage = model.modelImage;
+
+    // --- Prepare data for the PDF component ---
+    const frontData = {
+        image: model.modelImage,
+        textBoxes: cardContent.front.textBoxes
+    };
+
+    // Prepare back data only if a second image exists
+    const backData = model.modelImagep2 ? {
+        image: model.modelImagep2,
+        textBoxes: cardContent.back.textBoxes
+    } : null;
 
     try {
-      const blob = await pdf(<FinalPDFDocument selectedTemplate={frontImage} textBoxes={frontTextBoxes} canvasDimensions={{ width: canvasWidth, height: canvasHeight }} qte={qté} format={format} motif={motif} modelName={model.name} safeArea={{ top: 0, bottom: 0, left: 0, right: 0 }} verticalAlignmentPercent={50} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${model.name || 'invitation'}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) { console.error("Erreur lors de la génération du PDF:", error); alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer."); }
-  };
+        const blob = await pdf(
+            <FinalPDFDocument 
+                frontData={frontData}
+                backData={backData} // Pass both objects
+                canvasDimensions={{ width: canvasWidth, height: canvasHeight }} 
+                qte={qté} 
+                format={format} 
+                motif={motif} 
+                modelName={model.name}
+                // NOTE: Define your safeArea and verticalAlignmentPercent as needed
+                safeArea={{ top: 0, bottom: 0, left: 0, right: 0 }} 
+                verticalAlignmentPercent={50} 
+            />
+        ).toBlob();
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${model.name || 'invitation'}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    } catch (error) { 
+        console.error("Erreur lors de la génération du PDF:", error); 
+        alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer."); 
+    }
+};
+
+const handleDesignChange = (newTemplateId) => {
+    // Get the category from the current model (e.g., "Rustique")
+    const category = model.name.split(' ')[1];
+    const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
+    
+    // Find the full data for the new design in your JSON
+    const newModelData = data.models[capitalizedCategory]?.[newTemplateId];
+
+    if (newModelData) {
+        // Use navigate to update the state. This will re-render the entire page
+        // with the new model, including both front and back cards.
+        navigate(location.pathname, {
+            replace: true, // This is good practice for this kind of change
+            state: { ...location.state, model: newModelData }
+        });
+    }
+};
 
   const renderTextBoxes = (cardKey) => {
     const boxes = cardContent[cardKey]?.textBoxes || [];
@@ -212,7 +295,7 @@ useEffect(() => {
       </main>
 
       <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40">
-        <MainMenu onAddText={handleAddText} onDelete={handleDeleteText} selectedTemplate={model?.modelImage} setSelectedTemplate={() => {}} activeTab={activeTab} setActiveTab={setActiveTab} model={model} />
+        <MainMenu onDesignChange={handleDesignChange} onAddText={handleAddText} onDelete={handleDeleteText} activeTab={activeTab} setActiveTab={setActiveTab} model={model} />
         {selectedTextId && textBoxes.find(b => b.id === selectedTextId) && ( <BottomMenu onDelete={handleDeleteText} activeTab={activeTab} setActiveTab={setActiveTab} fontSize={textBoxes.find(b => b.id === selectedTextId)?.style.fontSize || 16} setFontSize={size => updateTextStyle('fontSize', size)} lineHeight={textBoxes.find(b => b.id === selectedTextId)?.style.lineHeight || 1.5} setLineHeight={line => updateTextStyle('lineHeight', line)} isBold={textBoxes.find(b => b.id === selectedTextId)?.style.bold || false} setIsBold={val => updateTextStyle('bold', val)} isItalic={textBoxes.find(b => b.id === selectedTextId)?.style.italic || false} setIsItalic={val => updateTextStyle('italic', val)} alignment={textBoxes.find(b => b.id === selectedTextId)?.style.alignment || 'center'} setAlignment={val => updateTextStyle('alignment', val)} fontFamily={textBoxes.find(b => b.id === selectedTextId)?.style.fontFamily} setFontFamily={val => updateTextStyle('fontFamily', val)} textColor={textBoxes.find(b => b.id === selectedTextId)?.style.color || '#000000'} setTextColor={val => updateTextStyle('color', val)} setSelectedTextId={setSelectedTextId} /> )}
       </div>
     </div>

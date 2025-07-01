@@ -1,14 +1,15 @@
+// src/components/canvas/MainMenu.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import { FiType, FiImage } from 'react-icons/fi';
 import data from '../../data/categories.json';
 
 function MainMenu({
   onAddText,
-  selectedTemplate,
-  setSelectedTemplate,
   activeTab,
   setActiveTab,
-  model
+  model,
+  onDesignChange // This is the key function we will now use
 }) {
   const [designOptions, setDesignOptions] = useState([]);
   const designRef = useRef(null);
@@ -18,40 +19,30 @@ function MainMenu({
     setActiveTab((prev) => (prev === tab ? null : tab));
   };
 
+  // This effect now reads the structured data from the JSON and prepares it for display.
   useEffect(() => {
-    if (model?.modelImage && model?.name) {
-      const category = model.name.split(' ')[1];
+    if (model?.name) {
+      // Find the category from the current model's name (e.g., "Rustique")
+      const category = model.name.split(' ')[1]; 
       const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
-      const models = data.models[capitalizedCategory] || [];
+      
+      // Get all the design objects for that category from the JSON file
+      const categoryDesigns = data.models[capitalizedCategory];
 
-      const loadImages = async () => {
-        const options = [];
-
-        for (let i = 0; i < models.length; i++) {
-          const index = i + 1;
-          const base = `/assets/models/${category.toLowerCase()}/model/${category.toLowerCase()}${index}`;
-
-          const checkImage = (ext) =>
-            new Promise((res) => {
-              const img = new Image();
-              img.src = `${base}.${ext}`;
-              img.onload = () => res(`${base}.${ext}`);
-              img.onerror = () => res(null);
-            });
-
-          const [png, jpg] = await Promise.all([checkImage('png'), checkImage('jpg')]);
-          const valid = png || jpg;
-          if (valid) {
-            options.push({ id: index, image: valid });
-          }
-        }
-
+      if (categoryDesigns) {
+        // Transform the designs into a format the menu can display.
+        // We iterate over the keys (e.g., "rustique-1", "rustique-2")
+        const options = Object.keys(categoryDesigns).map(templateId => {
+          const designData = categoryDesigns[templateId];
+          return {
+            templateId: templateId, // e.g., "rustique-3"
+            frontImage: designData.modelImage // The image to show in the thumbnail
+          };
+        });
         setDesignOptions(options);
-      };
-
-      loadImages();
+      }
     }
-  }, [model]);
+  }, [model]); // This runs whenever the model changes
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -70,7 +61,7 @@ function MainMenu({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [activeTab]);
+  }, [activeTab, setActiveTab]); // Added setActiveTab to dependencies
 
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white shadow-md border-t pt-6 z-50 min-h-[100px]">
@@ -96,24 +87,26 @@ function MainMenu({
         </button>
       </div>
 
-      {/* Design selection panel */}
+      {/* Design selection panel - This JSX is kept as you requested */}
       {activeTab === 'design' && (
         <div className="mt-4 px-4" ref={designRef}>
           <div className="flex overflow-x-auto space-x-2 pb-2 hide-scrollbar">
             {designOptions.map((design) => (
               <div
-                key={design.id}
+                key={design.templateId} // Use the unique templateId as the key
                 className={`relative flex-shrink-0 w-[80px] h-[100px] rounded-lg overflow-hidden border ${
-                  selectedTemplate === design.image ? 'border-blue-500' : 'border-gray-300'
+                  // The selection check is now based on the active model's image
+                  model.modelImage === design.frontImage ? 'border-blue-500' : 'border-gray-300'
                 } hover:opacity-80 transition-all duration-300 cursor-pointer`}
-                onClick={() => setSelectedTemplate(design.image)}
+                // THE CRITICAL CHANGE: Call onDesignChange with the templateId
+                onClick={() => onDesignChange(design.templateId)}
               >
                 <img
-                  src={design.image}
-                  alt={`Template ${design.id}`}
+                  src={design.frontImage} // Display the front image of the design
+                  alt={`Template ${design.templateId}`}
                   className="w-full h-full object-cover"
                 />
-                {selectedTemplate === design.image && (
+                {model.modelImage === design.frontImage && (
                   <div className="absolute inset-0 bg-blue-500 bg-opacity-20" />
                 )}
               </div>

@@ -16,6 +16,7 @@
         "price": "20",
         "thumbnail": "assets/models/mariage/thumbnail/mariage2.png",
         "modelImage": "assets/models/mariage/model/mariage2.jpg",
+        "modelImagep2":"assets/models/mariage/model/mariage2_p2.PNG",
         "dateAdded": "2022-11-03"
       },
       {
@@ -23,6 +24,7 @@
         "price": "25",
         "thumbnail": "assets/models/mariage/thumbnail/mariage3.png",
         "modelImage": "assets/models/mariage/model/mariage3.jpg",
+        "modelImagep2":"assets/models/mariage/model/mariage2_p2.PNG",
         "dateAdded": "2023-05-18"
       },
       {
@@ -30,6 +32,7 @@
         "price": "30",
         "thumbnail": "assets/models/mariage/thumbnail/mariage4.png",
         "modelImage": "assets/models/mariage/model/mariage4.png",
+        "modelImagep2":"assets/models/mariage/model/mariage4_p2.PNG",
         "dateAdded": "2021-08-22",
         "templateId": "mariageRosesRouges" 
       },
@@ -38,6 +41,7 @@
         "price": "35",
         "thumbnail": "assets/models/mariage/thumbnail/mariage5.png",
         "modelImage": "assets/models/mariage/model/mariage5.jpg",
+        "modelImagep2":"assets/models/mariage/model/mariage5_p2.jpg",
         "dateAdded": "2024-02-07"
       }
     ],
