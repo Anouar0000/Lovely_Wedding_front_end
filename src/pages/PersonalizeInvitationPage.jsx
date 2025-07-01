@@ -18,6 +18,12 @@ import data from '../data/categories.json';
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
   const [currentCard, setCurrentCard] = useState('front');
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { model, qté, format, motif } = location.state || {};
+
+  // Lazily initialize useHistory to ensure `model` is available for localStorage check
   const { 
     state: cardContent, 
     setState: setCardContent, 
@@ -25,17 +31,21 @@ function PersonalizeInvitationPage() {
     redo, 
     canUndo, 
     canRedo 
-  } = useHistory({
-    front: { textBoxes: [] },
-    back: { textBoxes: [] },
+  } = useHistory(() => {
+    const savedDataJSON = localStorage.getItem('savedInvitation');
+    if (savedDataJSON) {
+      const savedData = JSON.parse(savedDataJSON);
+      if (savedData.modelName === model?.name) {
+        console.log("Loading saved work from localStorage...");
+        return savedData.content;
+      }
+    }
+    console.log("Starting with a fresh state...");
+    return { front: { textBoxes: [] }, back: { textBoxes: [] } };
   });
 
   const textBoxes = cardContent[currentCard]?.textBoxes || [];
   const [selectedTextId, setSelectedTextId] = useState(null);
-
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { model, qté, format, motif } = location.state || {};
   
   const headerRef = useRef(null);
   const mainMenuRef = useRef(null);
@@ -50,49 +60,54 @@ function PersonalizeInvitationPage() {
     isChildInteracting.current = isInteracting;
   };
 
-  // --- THE DEFINITIVE FIX: USING useRef TO STABILIZE THE FUNCTION ---
-  // 1. Create a ref to hold the setCardContent function.
   const stableSetCardContent = useRef(setCardContent);
-  // 2. Keep the ref's value up-to-date with the latest function on every render.
   useEffect(() => {
     stableSetCardContent.current = setCardContent;
   }, [setCardContent]);
 
-
-  // 3. The main template-loading effect.
+  // This consolidated effect handles initial template loading.
+  // It will NOT run if content was already loaded from localStorage.
   useEffect(() => {
-    if (!model) { navigate('/invitations-physique'); return; }
+    const hasExistingContent = cardContent.front.textBoxes.length > 0 || cardContent.back.textBoxes.length > 0;
+    if (hasExistingContent) {
+      return;
+    }
+
+    const templateId = model?.name?.toLowerCase().replace("modèle ", "").replace(" ", "-");
+    if (!templateId) return;
     if (!contentContainerRef.current) return; 
 
     const containerWidth = contentContainerRef.current.clientWidth;
     const containerHeight = contentContainerRef.current.clientHeight;
-
     if (containerWidth === 0 || containerHeight === 0) return;
 
-    const templateId = model?.templateId;
-    let initialContent = { front: { textBoxes: [] }, back: { textBoxes: [] } };
-
-    if (templateId && templateData[templateId]) {
-      const template = templateData[templateId];
-      if (template.prefilledTextBoxes) {
+    const template = templateData[templateId];
+    if (template?.prefilledTextBoxes) {
+        const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
+            ...box,
+            position: { 
+                x: (box.position.x / 100) * containerWidth, 
+                y: (box.position.y / 100) * containerHeight 
+            },
+            width: (box.width / 100) * containerWidth,
+        }));
         
-        const responsiveTextBoxes = template.prefilledTextBoxes.map(box => {
-            const pixelX = (box.position.x / 100) * containerWidth;
-            const pixelY = (box.position.y / 100) * containerHeight;
-            const pixelWidth = (box.width / 100) * containerWidth;
-
-            return { ...box, position: { x: pixelX, y: pixelY }, width: pixelWidth };
-        });
-        initialContent.front.textBoxes = responsiveTextBoxes;
-      }
+        const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
+        stableSetCardContent.current(initialContent, true); 
     }
-    
-    // 4. Call the function from the ref. This is always the latest function,
-    // but the ref itself is stable and not needed in the dependency array.
-    stableSetCardContent.current(initialContent, true); 
-    
-  // 5. The dependency array is now 100% stable and will not cause an infinite loop.
-  }, [model, canvasStyle.width, canvasStyle.height, navigate]);
+  }, [model?.name, cardContent.front.textBoxes, cardContent.back.textBoxes]);
+
+
+  // This effect saves work to localStorage whenever content changes.
+  useEffect(() => {
+    if (cardContent.front.textBoxes.length > 0 || cardContent.back.textBoxes.length > 0) {
+      const dataToSave = {
+        modelName: model?.name,
+        content: cardContent
+      };
+      localStorage.setItem('savedInvitation', JSON.stringify(dataToSave));
+    }
+  }, [cardContent, model?.name]);
 
   useEffect(() => {
     setSelectedTextId(null);
@@ -167,17 +182,42 @@ function PersonalizeInvitationPage() {
     }
   };
 
-  const handleDesignChange = (newTemplateId) => {
-    const category = model.name.split(' ')[1];
-    const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
-    
-    const newModelData = data.models[capitalizedCategory]?.[newTemplateId];
+  const handleDesignChange = (newDesignData) => {
+    if (newDesignData) {
+        const updatedModel = {
+            ...model,
+            modelImage: newDesignData.modelImage,
+            modelImagep2: newDesignData.modelImagep2,
+        };
+        navigate(location.pathname, { replace: true, state: { ...location.state, model: updatedModel } });
+    }
+  };
 
-    if (newModelData) {
-        navigate(location.pathname, {
-            replace: true,
-            state: { ...location.state, model: newModelData }
-        });
+  const handleTemplateChange = (newTemplateData) => {
+    if (newTemplateData?.templateId && templateData[newTemplateData.templateId]?.prefilledTextBoxes) {
+        
+        if (!contentContainerRef.current) return;
+        const containerWidth = contentContainerRef.current.clientWidth;
+        const containerHeight = contentContainerRef.current.clientHeight;
+        if (containerWidth === 0 || containerHeight === 0) return;
+
+        const template = templateData[newTemplateData.templateId];
+        
+        const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
+            ...box,
+            position: { 
+                x: (box.position.x / 100) * containerWidth, 
+                y: (box.position.y / 100) * containerHeight 
+            },
+            width: (box.width / 100) * containerWidth,
+        }));
+        
+        const newContent = {
+            front: { textBoxes: responsiveTextBoxes },
+            back: { textBoxes: [] }
+        };
+
+        setCardContent(newContent, true);
     }
   };
 
@@ -214,6 +254,12 @@ function PersonalizeInvitationPage() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      // localStorage.removeItem('savedInvitation');
     };
   }, []);
 
@@ -266,7 +312,15 @@ function PersonalizeInvitationPage() {
       </main>
 
       <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40">
-        <MainMenu onDesignChange={handleDesignChange} onAddText={handleAddText} onDelete={handleDeleteText} activeTab={activeTab} setActiveTab={setActiveTab} model={model} />
+        <MainMenu 
+            onAddText={handleAddText} 
+            onDelete={handleDeleteText} 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            model={model}
+            onDesignChange={handleDesignChange}
+            onTemplateChange={handleTemplateChange}
+        />
         {selectedTextId && textBoxes.find(b => b.id === selectedTextId) && ( <BottomMenu onDelete={handleDeleteText} activeTab={activeTab} setActiveTab={setActiveTab} fontSize={textBoxes.find(b => b.id === selectedTextId)?.style.fontSize || 16} setFontSize={size => updateTextStyle('fontSize', size)} lineHeight={textBoxes.find(b => b.id === selectedTextId)?.style.lineHeight || 1.5} setLineHeight={line => updateTextStyle('lineHeight', line)} isBold={textBoxes.find(b => b.id === selectedTextId)?.style.bold || false} setIsBold={val => updateTextStyle('bold', val)} isItalic={textBoxes.find(b => b.id === selectedTextId)?.style.italic || false} setIsItalic={val => updateTextStyle('italic', val)} alignment={textBoxes.find(b => b.id === selectedTextId)?.style.alignment || 'center'} setAlignment={val => updateTextStyle('alignment', val)} fontFamily={textBoxes.find(b => b.id === selectedTextId)?.style.fontFamily} setFontFamily={val => updateTextStyle('fontFamily', val)} textColor={textBoxes.find(b => b.id === selectedTextId)?.style.color || '#000000'} setTextColor={val => updateTextStyle('color', val)} setSelectedTextId={setSelectedTextId} /> )}
       </div>
     </div>

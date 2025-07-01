@@ -92,7 +92,7 @@ export const templateData = {
       },
       {
         id: 5,
-        text: "Abir et Oussama",
+        text: "Erij et Mounir",
         style: { fontSize: 32, fontFamily: 'Pinyon Script', color: '#4a3a3a', alignment: 'center', bold: false, italic: false, lineHeight: 1.2 },
         position: { x: 14.2, y: 48.2 }, // (40 / 390), (240 / 844)
         width: 71.8,
