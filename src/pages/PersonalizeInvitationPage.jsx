@@ -23,23 +23,14 @@ function PersonalizeInvitationPage() {
   const location = useLocation();
   const { model, qté, format, motif } = location.state || {};
 
-  const { 
-    state: cardContent, 
-    setState: setCardContent, 
-    undo, 
-    redo, 
-    canUndo, 
-    canRedo 
-  } = useHistory(() => {
-    const savedDataJSON = localStorage.getItem('savedInvitation');
-    if (savedDataJSON) {
-      const savedData = JSON.parse(savedDataJSON);
-      if (savedData.modelName === model?.name) {
-        return savedData.content;
-      }
-    }
-    return { front: { textBoxes: [] }, back: { textBoxes: [] } };
-  });
+const { 
+  state: cardContent, 
+  setState: setCardContent, 
+  undo, 
+  redo, 
+  canUndo, 
+  canRedo 
+} = useHistory({ front: { textBoxes: [] }, back: { textBoxes: [] } });
 
   const textBoxes = cardContent[currentCard]?.textBoxes || [];
   const [selectedTextId, setSelectedTextId] = useState(null);
@@ -80,33 +71,46 @@ function PersonalizeInvitationPage() {
     });
   }, [currentCard, setCardContent]);
 
-  useEffect(() => {
-    const hasExistingContent = cardContent.front.textBoxes.length > 0 || cardContent.back.textBoxes.length > 0;
-    if (hasExistingContent) return;
-
-    const templateId = model?.name?.toLowerCase().replace("modèle ", "").replace(" ", "-");
-    if (!templateId) return;
-    if (!contentContainerRef.current) return; 
-
-    const containerWidth = contentContainerRef.current.clientWidth;
-    const containerHeight = contentContainerRef.current.clientHeight;
-    if (containerWidth === 0 || containerHeight === 0) return;
-
-    const template = templateData[templateId];
-    if (template?.prefilledTextBoxes) {
-        const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
-            ...box,
-            position: { 
-                x: (box.position.x / 100) * containerWidth, 
-                y: (box.position.y / 100) * containerHeight 
-            },
-            width: (box.width / 100) * containerWidth,
-        }));
-        
-        const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
-        stableSetCardContent.current(initialContent, true); 
+// This consolidated effect handles initial loading from either localStorage or the default template.
+useEffect(() => {
+  // Try to load from localStorage first.
+  const savedDataJSON = localStorage.getItem('savedInvitation');
+  if (savedDataJSON) {
+    const savedData = JSON.parse(savedDataJSON);
+    if (savedData.modelName === model?.name) {
+      console.log("Loading saved work from localStorage...");
+      // If found, load it and STOP.
+      stableSetCardContent.current(savedData.content, true);
+      return;
     }
-  }, [model?.name, cardContent.front.textBoxes, cardContent.back.textBoxes]);
+  }
+
+  // If no valid saved data was found, THEN load the default template.
+  console.log("Loading default template...");
+  const templateId = model?.name?.toLowerCase().replace("modèle ", "").replace(/ /g, "-");
+  if (!templateId) return;
+  if (!contentContainerRef.current) return;
+
+  const containerWidth = contentContainerRef.current.clientWidth;
+  const containerHeight = contentContainerRef.current.clientHeight;
+  if (containerWidth === 0 || containerHeight === 0) return;
+
+  const template = templateData[templateId];
+  if (template?.prefilledTextBoxes) {
+    const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
+      ...box,
+      position: { 
+        x: (box.position.x / 100) * containerWidth, 
+        y: (box.position.y / 100) * containerHeight 
+      },
+      width: (box.width / 100) * containerWidth,
+    }));
+    
+    const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
+    stableSetCardContent.current(initialContent, true); 
+  }
+// This effect runs only when the model changes or the canvas size is determined, ensuring it only runs once at the beginning.
+}, [model?.name, canvasStyle.width, canvasStyle.height]);
 
 
   useEffect(() => {
