@@ -9,7 +9,13 @@
         "modelImage": "assets/models/mariage/model/mariage1.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage1_p2.PNG",
         "dateAdded": "2023-01-12",
-        "templateId": "m1" 
+        "templateId": "m1",
+        "unsafeZones": [
+          { "id": "top", "x": 1, "y": 9, "width": 87, "height": 12 },
+          { "id": "bottom", "x": 1, "y": 78, "width": 87, "height": 12 },
+          { "id": "left", "x": 0, "y": 9, "width": 15, "height": 80 },
+          { "id": "right", "x": 77, "y": 9, "width": 15, "height": 80 }
+        ]
       },
       {
         "name": "Modèle Mariage 2",
@@ -18,7 +24,13 @@
         "modelImage": "assets/models/mariage/model/mariage2.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage2_p2.PNG",
         "dateAdded": "2022-11-03",
-        "templateId": "m2" 
+        "templateId": "m2",
+        "unsafeZones": [
+          { "id": "top", "x": 0, "y": 0, "width": 100, "height": 5 },
+          { "id": "bottom", "x": 0, "y": 95, "width": 100, "height": 5 },
+          { "id": "left", "x": 0, "y": 0, "width": 5, "height": 100 },
+          { "id": "right", "x": 95, "y": 0, "width": 5, "height": 100 }
+        ]
       },
       {
         "name": "Modèle Mariage 3",
@@ -27,7 +39,13 @@
         "modelImage": "assets/models/mariage/model/mariage3.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage2_p2.PNG",
         "dateAdded": "2023-05-18",
-        "templateId": "m3"
+        "templateId": "m3",
+        "unsafeZones": [
+          { "id": "top", "x": 0, "y": 0, "width": 100, "height": 5 },
+          { "id": "bottom", "x": 0, "y": 95, "width": 100, "height": 5 },
+          { "id": "left", "x": 0, "y": 0, "width": 5, "height": 100 },
+          { "id": "right", "x": 95, "y": 0, "width": 5, "height": 100 }
+        ]
       },
       {
         "name": "Modèle Mariage 4",
@@ -36,7 +54,13 @@
         "modelImage": "assets/models/mariage/model/mariage4.png",
         "modelImagep2":"assets/models/mariage/model/mariage4_p2.PNG",
         "dateAdded": "2021-08-22",
-        "templateId": "m4" 
+        "templateId": "m4",
+                "unsafeZones": [
+          { "id": "top", "x": 0, "y": 0, "width": 100, "height": 5 },
+          { "id": "bottom", "x": 0, "y": 95, "width": 100, "height": 5 },
+          { "id": "left", "x": 0, "y": 0, "width": 5, "height": 100 },
+          { "id": "right", "x": 95, "y": 0, "width": 5, "height": 100 }
+        ]
       },
       {
         "name": "Modèle Mariage 5",
@@ -45,7 +69,13 @@
         "modelImage": "assets/models/mariage/model/mariage5.jpg",
         "modelImagep2":"assets/models/mariage/model/mariage5_p2.jpg",
         "dateAdded": "2024-02-07",
-        "templateId": "m5"
+        "templateId": "m5",
+        "unsafeZones": [
+          { "id": "top", "x": 0, "y": 0, "width": 100, "height": 5 },
+          { "id": "bottom", "x": 0, "y": 95, "width": 100, "height": 5 },
+          { "id": "left", "x": 0, "y": 0, "width": 5, "height": 100 },
+          { "id": "right", "x": 95, "y": 0, "width": 5, "height": 100 }
+        ]
       }
     ],
     "Outeya": [

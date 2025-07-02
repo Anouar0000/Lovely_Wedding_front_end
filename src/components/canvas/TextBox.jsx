@@ -149,6 +149,7 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
         >
             <div
                 ref={nodeRef}
+                data-box-id={id}
                 onClick={(e) => e.stopPropagation()} // Prevents deselecting on tap
                 className={`TextBox relative rounded-md ${isSelected ? 'border border-purple-500' : 'border-transparent'} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                 style={{

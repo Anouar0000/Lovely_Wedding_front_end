@@ -1,6 +1,6 @@
 // PersonalizeInvitationPage.js
 
-import React, { useState, useRef, useEffect, useCallback } from 'react'; // Import useCallback
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import MainMenu from '../components/canvas/MainMenu';
 import BottomMenu from '../components/canvas/BottomMenu';
@@ -14,6 +14,7 @@ import { useCanvasLayout } from '../hooks/useCanvasLayout';
 import { usePanAndZoom } from '../hooks/usePanAndZoom';
 import CardSwitcher from '../components/canvas/CardSwitcher';
 import { fontOptions } from '../config/fontConfig';
+import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
 
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
@@ -23,14 +24,23 @@ function PersonalizeInvitationPage() {
   const location = useLocation();
   const { model, qté, format, motif } = location.state || {};
 
-const { 
-  state: cardContent, 
-  setState: setCardContent, 
-  undo, 
-  redo, 
-  canUndo, 
-  canRedo 
-} = useHistory({ front: { textBoxes: [] }, back: { textBoxes: [] } });
+  const { 
+    state: cardContent, 
+    setState: setCardContent, 
+    undo, 
+    redo, 
+    canUndo, 
+    canRedo 
+  } = useHistory(() => {
+    const savedDataJSON = localStorage.getItem('savedInvitation');
+    if (savedDataJSON) {
+      const savedData = JSON.parse(savedDataJSON);
+      if (savedData.modelName === model?.name) {
+        return savedData.content;
+      }
+    }
+    return { front: { textBoxes: [] }, back: { textBoxes: [] } };
+  });
 
   const textBoxes = cardContent[currentCard]?.textBoxes || [];
   const [selectedTextId, setSelectedTextId] = useState(null);
@@ -54,12 +64,8 @@ const {
     stableSetCardContent.current = setCardContent;
   }, [setCardContent]);
   
-  // --- FUNCTION MOVED HERE ---
-  // It's now defined before the useEffect that needs it.
-  // Wrapped in useCallback for stability, which is good practice.
   const updateCurrentCardTextBoxes = useCallback((newTextBoxes) => {
     setCardContent(cardContent => {
-      // If newTextBoxes is a function, execute it to get the new array
       const resolvedTextBoxes = typeof newTextBoxes === 'function' 
         ? newTextBoxes(cardContent[currentCard].textBoxes) 
         : newTextBoxes;
@@ -71,46 +77,40 @@ const {
     });
   }, [currentCard, setCardContent]);
 
-// This consolidated effect handles initial loading from either localStorage or the default template.
-useEffect(() => {
-  // Try to load from localStorage first.
-  const savedDataJSON = localStorage.getItem('savedInvitation');
-  if (savedDataJSON) {
-    const savedData = JSON.parse(savedDataJSON);
-    if (savedData.modelName === model?.name) {
-      console.log("Loading saved work from localStorage...");
-      // If found, load it and STOP.
-      stableSetCardContent.current(savedData.content, true);
-      return;
+  // Corrected initial load and template logic
+  useEffect(() => {
+    const savedDataJSON = localStorage.getItem('savedInvitation');
+    if (savedDataJSON) {
+      const savedData = JSON.parse(savedDataJSON);
+      if (savedData.modelName === model?.name) {
+        stableSetCardContent.current(savedData.content, true);
+        return;
+      }
     }
-  }
 
-  // If no valid saved data was found, THEN load the default template.
-  console.log("Loading default template...");
-  const templateId = model?.name?.toLowerCase().replace("modèle ", "").replace(/ /g, "-");
-  if (!templateId) return;
-  if (!contentContainerRef.current) return;
+    const templateId = model?.templateId;
+    if (!templateId) return;
+    if (!contentContainerRef.current) return;
 
-  const containerWidth = contentContainerRef.current.clientWidth;
-  const containerHeight = contentContainerRef.current.clientHeight;
-  if (containerWidth === 0 || containerHeight === 0) return;
+    const containerWidth = contentContainerRef.current.clientWidth;
+    const containerHeight = contentContainerRef.current.clientHeight;
+    if (containerWidth === 0 || containerHeight === 0) return;
 
-  const template = templateData[templateId];
-  if (template?.prefilledTextBoxes) {
-    const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
-      ...box,
-      position: { 
-        x: (box.position.x / 100) * containerWidth, 
-        y: (box.position.y / 100) * containerHeight 
-      },
-      width: (box.width / 100) * containerWidth,
-    }));
-    
-    const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
-    stableSetCardContent.current(initialContent, true); 
-  }
-// This effect runs only when the model changes or the canvas size is determined, ensuring it only runs once at the beginning.
-}, [model?.name, canvasStyle.width, canvasStyle.height]);
+    const template = templateData[templateId];
+    if (template?.prefilledTextBoxes) {
+      const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
+        ...box,
+        position: { 
+          x: (box.position.x / 100) * containerWidth, 
+          y: (box.position.y / 100) * containerHeight 
+        },
+        width: (box.width / 100) * containerWidth,
+      }));
+      
+      const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
+      stableSetCardContent.current(initialContent, true); 
+    }
+  }, [model?.templateId, model?.name, canvasStyle.width, canvasStyle.height]);
 
 
   useEffect(() => {
@@ -127,7 +127,6 @@ useEffect(() => {
     setSelectedTextId(null);
   }, [currentCard]);
 
-  // This is the "delete on deselect" effect. It now correctly comes AFTER updateCurrentCardTextBoxes is defined.
   useEffect(() => {
     if (selectedTextId === null && prevSelectedTextIdRef.current) {
       const deselectedBox = cardContent[currentCard]?.textBoxes.find(
@@ -220,21 +219,23 @@ useEffect(() => {
         alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer."); 
     }
   };
-
+  
+  // Corrected handler, now expects the full data object
   const handleDesignChange = (newDesignData) => {
     if (newDesignData) {
         const updatedModel = {
-            ...model,
+            ...model, // Keeps all old info, including the crucial templateId
             modelImage: newDesignData.modelImage,
             modelImagep2: newDesignData.modelImagep2,
+            unsafeZones: newDesignData.unsafeZones || [],
         };
         navigate(location.pathname, { replace: true, state: { ...location.state, model: updatedModel } });
     }
   };
 
+  // Corrected handler, now expects the full data object
   const handleTemplateChange = (newTemplateData) => {
-    if (newTemplateData?.templateId && templateData[newTemplateData.templateId]?.prefilledTextBoxes) {
-        
+    if (newTemplateData && newTemplateData.templateId && templateData[newTemplateData.templateId]?.prefilledTextBoxes) {
         if (!contentContainerRef.current) return;
         const containerWidth = contentContainerRef.current.clientWidth;
         const containerHeight = contentContainerRef.current.clientHeight;
@@ -279,7 +280,12 @@ useEffect(() => {
   
   const activeCardStyle = { transform: 'scale(0.9) translateX(-5%)', zIndex: 10 };
   const inactiveCardStyle = { transform: 'scale(0.85) translateX(10%)', zIndex: 5 };
+  
+// Determine the current active scale based on the card's style
+const currentScale = (currentCard === 'front' ? activeCardStyle : inactiveCardStyle).transform.match(/scale\(([^)]+)\)/)[1] || 1;
 
+// Pass this scale to the hook
+const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard, contentContainerRef, currentScale);
   useEffect(() => {
     const handleClickOutside = (e) => {
       const clickedInsideCanvas = wrapperRef.current?.contains(e.target);
@@ -321,6 +327,20 @@ useEffect(() => {
           <div ref={wrapperRef} className="absolute top-0 left-0 w-full h-full bg-transparent touch-none overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full" style={{ transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`, transition: isInteracting ? 'none' : 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)'}}>
               <div ref={contentContainerRef} onClick={handleCanvasClick} className="relative w-full h-full flex items-center justify-center">
+                   {(model?.unsafeZones || []).map(zone => (
+                      <div
+                          key={zone.id}
+                          className={`absolute transition-opacity duration-300 hashed-background pointer-events-none z-20 ${
+                              activeUnsafeZones.has(zone.id) ? 'opacity-100' : 'opacity-0'
+                          }`}
+                          style={{
+                              left: `${zone.x}%`,
+                              top: `${zone.y}%`,
+                              width: `${zone.width}%`,
+                              height: `${zone.height}%`,
+                          }}
+                      />
+                  ))}
                   {model?.modelImagep2 && (
                     <div
                       className="absolute w-full h-full transition-all duration-300 ease-in-out"
