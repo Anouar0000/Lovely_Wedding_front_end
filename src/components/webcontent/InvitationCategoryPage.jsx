@@ -58,7 +58,7 @@ function InvitationsCategoryPage({ title, models, selectedCategory, onResetCateg
   return (
     <div className="pb-4">
       <section className="py-8 px-4">
-        <h1 className="text-sm text-gray-600 pb-2">{filteredModels.length} produits trouvés</h1>
+        <h1 className="text-sm text-gray-600 pb-4">{filteredModels.length} produits trouvés</h1>
 
         {selectedCategory && (
           <div className="flex justify-between items-center mb-4 relative">

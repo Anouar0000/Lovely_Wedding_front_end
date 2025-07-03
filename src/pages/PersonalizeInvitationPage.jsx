@@ -15,6 +15,8 @@ import { usePanAndZoom } from '../hooks/usePanAndZoom';
 import CardSwitcher from '../components/canvas/CardSwitcher';
 import { fontOptions } from '../config/fontConfig';
 import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
+import ApparenceMenu from '../components/canvas/ApparenceMenu';
+import data from '../data/categories.json';
 
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
@@ -24,23 +26,14 @@ function PersonalizeInvitationPage() {
   const location = useLocation();
   const { model, qté, format, motif } = location.state || {};
 
-  const { 
-    state: cardContent, 
-    setState: setCardContent, 
-    undo, 
-    redo, 
-    canUndo, 
-    canRedo 
-  } = useHistory(() => {
-    const savedDataJSON = localStorage.getItem('savedInvitation');
-    if (savedDataJSON) {
-      const savedData = JSON.parse(savedDataJSON);
-      if (savedData.modelName === model?.name) {
-        return savedData.content;
-      }
-    }
-    return { front: { textBoxes: [] }, back: { textBoxes: [] } };
-  });
+const { 
+  state: cardContent, 
+  setState: setCardContent, 
+  undo, 
+  redo, 
+  canUndo, 
+  canRedo 
+} = useHistory({ front: { textBoxes: [] }, back: { textBoxes: [] } });
 
   const textBoxes = cardContent[currentCard]?.textBoxes || [];
   const [selectedTextId, setSelectedTextId] = useState(null);
@@ -78,50 +71,35 @@ function PersonalizeInvitationPage() {
   }, [currentCard, setCardContent]);
 
   // Corrected initial load and template logic
-  useEffect(() => {
-    const savedDataJSON = localStorage.getItem('savedInvitation');
-    if (savedDataJSON) {
-      const savedData = JSON.parse(savedDataJSON);
-      if (savedData.modelName === model?.name) {
-        stableSetCardContent.current(savedData.content, true);
-        return;
-      }
-    }
+useEffect(() => {
+  // This logic now runs only when the template ID changes.
+  const templateId = model?.templateId;
+  if (!templateId) return;
 
-    const templateId = model?.templateId;
-    if (!templateId) return;
-    if (!contentContainerRef.current) return;
+  // We check if there's already text. If so, it means the user has started editing,
+  // and we should not overwrite their work with the default template.
+  if (cardContent.front.textBoxes.length > 0) return;
 
-    const containerWidth = contentContainerRef.current.clientWidth;
-    const containerHeight = contentContainerRef.current.clientHeight;
-    if (containerWidth === 0 || containerHeight === 0) return;
+  if (!contentContainerRef.current) return;
+  const containerWidth = contentContainerRef.current.clientWidth;
+  const containerHeight = contentContainerRef.current.clientHeight;
+  if (containerWidth === 0 || containerHeight === 0) return;
 
-    const template = templateData[templateId];
-    if (template?.prefilledTextBoxes) {
-      const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
-        ...box,
-        position: { 
-          x: (box.position.x / 100) * containerWidth, 
-          y: (box.position.y / 100) * containerHeight 
-        },
-        width: (box.width / 100) * containerWidth,
-      }));
-      
-      const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
-      stableSetCardContent.current(initialContent, true); 
-    }
-  }, [model?.templateId, model?.name, canvasStyle.width, canvasStyle.height]);
-
-
-  useEffect(() => {
-    if (cardContent.front.textBoxes.length > 0 || cardContent.back.textBoxes.length > 0) {
-      const dataToSave = {
-        modelName: model?.name,
-        content: cardContent
-      };
-      localStorage.setItem('savedInvitation', JSON.stringify(dataToSave));
-    }
-  }, [cardContent, model?.name]);
+  const template = templateData[templateId];
+  if (template?.prefilledTextBoxes) {
+    const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
+      ...box,
+      position: { 
+        x: (box.position.x / 100) * containerWidth, 
+        y: (box.position.y / 100) * containerHeight 
+      },
+      width: (box.width / 100) * containerWidth,
+    }));
+    
+    const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
+    setCardContent(initialContent, true); 
+  }
+}, [model?.templateId, canvasStyle.width, canvasStyle.height, setCardContent]);
 
   useEffect(() => {
     setSelectedTextId(null);
@@ -221,17 +199,21 @@ function PersonalizeInvitationPage() {
   };
   
   // Corrected handler, now expects the full data object
-  const handleDesignChange = (newDesignData) => {
-    if (newDesignData) {
-        const updatedModel = {
-            ...model, // Keeps all old info, including the crucial templateId
-            modelImage: newDesignData.modelImage,
-            modelImagep2: newDesignData.modelImagep2,
-            unsafeZones: newDesignData.unsafeZones || [],
-        };
-        navigate(location.pathname, { replace: true, state: { ...location.state, model: updatedModel } });
-    }
-  };
+const handleDesignChange = (newDesignData) => {
+  if (newDesignData) {
+      const updatedModel = {
+          ...model,
+          modelImage: newDesignData.modelImage,
+          modelImagep2: newDesignData.modelImagep2,
+          unsafeZones: newDesignData.unsafeZones || [],
+      };
+      
+      // Reset history with the current text content for the new design
+      setCardContent(cardContent, true); 
+
+      navigate(location.pathname, { replace: true, state: { ...location.state, model: updatedModel } });
+  }
+};
 
   // Corrected handler, now expects the full data object
   const handleTemplateChange = (newTemplateData) => {
@@ -302,6 +284,30 @@ const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard
     };
   }, []);
 
+  // NEW: State for design options, moved up from MainMenu
+  const [designOptions, setDesignOptions] = useState([]);
+  // NEW: useEffect to calculate designOptions. This logic is now here.
+  useEffect(() => {
+    if (model?.name) {
+      const nameParts = model.name.split(' ');
+      const category = nameParts[nameParts.length - 1];
+      const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
+      const categoryModels = data.models[capitalizedCategory];
+
+      if (categoryModels) {
+        const options = Object.keys(categoryModels).map(templateId => ({
+            templateId: templateId,
+            name: categoryModels[templateId].name,
+            frontImage: categoryModels[templateId].modelImage,
+            fullData: categoryModels[templateId]
+        }));
+        setDesignOptions(options);
+      } else {
+        setDesignOptions([]);
+      }
+    }
+  }, [model]);
+
   useEffect(() => {
     return () => {
       // localStorage.removeItem('savedInvitation');
@@ -371,16 +377,42 @@ const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard
       </main>
 
       <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40">
-        <MainMenu 
-            onAddText={handleAddText} 
-            onDelete={handleDeleteText} 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab} 
+        {selectedTextId && textBoxes.find(b => b.id === selectedTextId) ? (
+          <BottomMenu
+            onDelete={handleDeleteText}
+            setSelectedTextId={setSelectedTextId}
+            fontSize={textBoxes.find(b => b.id === selectedTextId)?.style.fontSize || 16}
+            setFontSize={size => updateTextStyle('fontSize', size)}
+            lineHeight={textBoxes.find(b => b.id === selectedTextId)?.style.lineHeight || 1.5}
+            setLineHeight={line => updateTextStyle('lineHeight', line)}
+            alignment={textBoxes.find(b => b.id === selectedTextId)?.style.alignment || 'center'}
+            setAlignment={val => updateTextStyle('alignment', val)}
+            fontFamily={textBoxes.find(b => b.id === selectedTextId)?.style.fontFamily}
+            setFontFamily={val => updateTextStyle('fontFamily', val)}
+            textColor={textBoxes.find(b => b.id === selectedTextId)?.style.color || '#000000'}
+            setTextColor={val => updateTextStyle('color', val)}
+            activeTab={activeTab} // Pass these for BottomMenu's own tabs
+            setActiveTab={setActiveTab}
+            // Pass any other missing props like isBold, isItalic if your BottomMenu needs them
+            isBold={textBoxes.find(b => b.id === selectedTextId)?.style.bold || false}
+            setIsBold={val => updateTextStyle('bold', val)}
+            isItalic={textBoxes.find(b => b.id === selectedTextId)?.style.italic || false}
+            setIsItalic={val => updateTextStyle('italic', val)}
+          />
+        ) : activeTab === 'design' ? (
+          <ApparenceMenu
             model={model}
+            designOptions={designOptions}
             onDesignChange={handleDesignChange}
             onTemplateChange={handleTemplateChange}
-        />
-        {selectedTextId && textBoxes.find(b => b.id === selectedTextId) && ( <BottomMenu onDelete={handleDeleteText} activeTab={activeTab} setActiveTab={setActiveTab} fontSize={textBoxes.find(b => b.id === selectedTextId)?.style.fontSize || 16} setFontSize={size => updateTextStyle('fontSize', size)} lineHeight={textBoxes.find(b => b.id === selectedTextId)?.style.lineHeight || 1.5} setLineHeight={line => updateTextStyle('lineHeight', line)} isBold={textBoxes.find(b => b.id === selectedTextId)?.style.bold || false} setIsBold={val => updateTextStyle('bold', val)} isItalic={textBoxes.find(b => b.id === selectedTextId)?.style.italic || false} setIsItalic={val => updateTextStyle('italic', val)} alignment={textBoxes.find(b => b.id === selectedTextId)?.style.alignment || 'center'} setAlignment={val => updateTextStyle('alignment', val)} fontFamily={textBoxes.find(b => b.id === selectedTextId)?.style.fontFamily} setFontFamily={val => updateTextStyle('fontFamily', val)} textColor={textBoxes.find(b => b.id === selectedTextId)?.style.color || '#000000'} setTextColor={val => updateTextStyle('color', val)} setSelectedTextId={setSelectedTextId} /> )}
+            onClose={() => setActiveTab(null)}
+          />
+        ) : (
+          <MainMenu
+            onAddText={handleAddText}
+            onShowApparenceMenu={() => setActiveTab('design')}
+          />
+        )}
       </div>
     </div>
   );

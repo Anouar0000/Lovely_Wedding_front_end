@@ -15,20 +15,20 @@ function ExpandableSections() {
   ];
 
   return (
-    <div className="px-6 mt-6">
+    <div className="px-4 mt-16 mb-8">
       {sections.map((section) => (
-        <div key={section.title} className="border-b border-gray-300 bg-white py-3">
+        <div key={section.title} className="border-b border-gray-100 bg-white py-3">
           <div
             className="flex justify-between items-center cursor-pointer"
             onClick={() => toggleSection(section.title)}
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 px-4 py-2">
               {expandedSection === section.title ? (
                 <FiMinus className="text-black" />
               ) : (
                 <FiPlus className="text-black" />
               )}
-              <span className="text-sm font-medium text-black">{section.title}</span>
+              <span className="text-sm font-medium font-urbanist text-black">{section.title}</span>
             </div>
 
             {/* Optional: Show arrow for clarity */}
@@ -38,7 +38,7 @@ function ExpandableSections() {
           </div>
 
           {expandedSection === section.title && (
-            <div className="mt-2 text-sm text-gray-600">{section.content}</div>
+            <div className=" px-4 mt-2 text-sm text-gray-600">{section.content}</div>
           )}
         </div>
       ))}

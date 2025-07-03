@@ -6,6 +6,8 @@ import BaseSection from "../components/webcontent/BaseSection";
 import data from "../data/categories.json";
 import { useLocation } from "react-router-dom";
 import img from "../assets/icons/Asset2.png";
+import calimg from '../assets/images/caligraphy.png';
+
 
 // Shuffle all models randomly
 const getShuffledModels = (modelsData) => {
@@ -70,7 +72,7 @@ function InvitationsPhysiquePage() {
 
   return (
     <div className="font-sans flex flex-col min-h-screen bg-[#F4F4F4]">
-      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+      <div className="fixed top-0 left-0 w-full z-50 bg-white">
         <Header />
       </div>
 
@@ -82,7 +84,7 @@ function InvitationsPhysiquePage() {
         />
 
         {/* Category Selector */}
-        <section className="py-8">
+        <section className="py-4">
           <div className="overflow-x-auto hide-scrollbar">
             <div className="flex gap-6 justify-start items-center">
 
@@ -93,7 +95,7 @@ function InvitationsPhysiquePage() {
                 }`}
                 onClick={() => setSelectedCategory(null)}
               >
-                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
+                <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center">
                   <img src={img} alt="All Models" className="w-full h-full object-cover rounded-full" />
                 </div>
                 <p className="mt-2 text-sm font-urbanist">Tous</p>
@@ -110,7 +112,7 @@ function InvitationsPhysiquePage() {
                     }`}
                     onClick={() => setSelectedCategory(category)}
                   >
-                    <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
+                    <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center">
                       {imageSrc ? (
                         <img src={imageSrc} alt={category} className="w-full h-full object-cover rounded-full" />
                       ) : (
@@ -133,6 +135,19 @@ function InvitationsPhysiquePage() {
           onResetCategory={() => setSelectedCategory("")}
         />
       </div>
+
+              <section className="py-8 px-4 bg-white">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="mb-4"><img src={calimg} alt="" /></div>
+            <div>
+              <h2 className="text-xl test-left font-abhaya mb-2">Calligraphie</h2>              
+              <p className="text-gray-700 mb-4 text-sm">
+              Optez pour un faire-part mariage luxueux et chic qui reflètera l'élégance et le raffinement de votre événement. Avec des designs haut de gamme
+                </p>
+                <button className="py-2 bg-transparent text-black border-b-2 border-black mb-3">Découvrir</button>
+            </div>  
+          </div>
+        </section> 
 
       <Footer />
     </div>

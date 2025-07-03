@@ -13,7 +13,7 @@ function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 bg-white shadow-md relative z-50">
+      <header className="flex items-center justify-between px-4 pt-8 pb-4 bg-white relative z-50">
         <button
           onClick={handleSidebarToggle}
           className="text-2xl focus:outline-none"
