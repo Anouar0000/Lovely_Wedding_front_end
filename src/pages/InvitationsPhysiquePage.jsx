@@ -8,8 +8,6 @@ import { useLocation } from "react-router-dom";
 import img from "../assets/icons/Asset2.png";
 import calimg from '../assets/images/caligraphy.png';
 
-
-// Shuffle all models randomly
 const getShuffledModels = (modelsData) => {
   let allModels = Object.values(modelsData).flat();
   for (let i = allModels.length - 1; i > 0; i--) {
@@ -19,7 +17,6 @@ const getShuffledModels = (modelsData) => {
   return allModels;
 };
 
-// Try to load thumbnail (PNG or JPG fallback)
 const getImageSrc = (category) => {
   try {
     return require(`../assets/models/${category.toLowerCase()}/thumbnail/${category.toLowerCase()}1.png`);
@@ -38,14 +35,15 @@ function InvitationsPhysiquePage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const categories = data.categories;
+
+  // FIX #3: Added a fallback `|| []` to prevent the app from crashing.
+  // If `data.models[selectedCategory]` is not found, `models` will be an empty array.
   const models = selectedCategory
-    ? data.models[selectedCategory]
+    ? (data.models[selectedCategory] || [])
     : getShuffledModels(data.models);
 
-  // Initialize selectedCategory based on navigation or localStorage
   useEffect(() => {
     const stateCat = location.state?.selectedCategory;
-
     if (stateCat) {
       setSelectedCategory(stateCat);
       localStorage.setItem("selectedCategory", stateCat);
@@ -55,13 +53,11 @@ function InvitationsPhysiquePage() {
         setSelectedCategory(storedCat);
       }
     } else {
-      // Navigated without category → reset
       setSelectedCategory(null);
       localStorage.removeItem("selectedCategory");
     }
-  }, []);
+  }, [location.state]); // Updated dependency for clarity
 
-  // Persist to localStorage on change
   useEffect(() => {
     if (selectedCategory) {
       localStorage.setItem("selectedCategory", selectedCategory);
@@ -83,16 +79,11 @@ function InvitationsPhysiquePage() {
           setSelectedCategory={setSelectedCategory}
         />
 
-        {/* Category Selector */}
         <section className="py-4">
           <div className="overflow-x-auto hide-scrollbar">
             <div className="flex gap-6 justify-start items-center">
-
-              {/* "Tous" button */}
               <div
-                className={`flex-shrink-0 flex flex-col items-center text-center w-28 cursor-pointer ${
-                  !selectedCategory ? "font-bold text-black" : ""
-                }`}
+                className={`flex-shrink-0 flex flex-col items-center text-center w-28 cursor-pointer ${!selectedCategory ? "font-bold text-black" : ""}`}
                 onClick={() => setSelectedCategory(null)}
               >
                 <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center">
@@ -101,23 +92,16 @@ function InvitationsPhysiquePage() {
                 <p className="mt-2 text-sm font-urbanist">Tous</p>
               </div>
 
-              {/* Category buttons */}
               {categories.map((category, index) => {
                 const imageSrc = getImageSrc(category);
                 return (
                   <div
                     key={index}
-                    className={`flex-shrink-0 flex flex-col items-center text-center w-28 cursor-pointer ${
-                      selectedCategory === category ? "font-bold text-black" : ""
-                    }`}
+                    className={`flex-shrink-0 flex flex-col items-center text-center w-28 cursor-pointer ${selectedCategory === category ? "font-bold text-black" : ""}`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center">
-                      {imageSrc ? (
-                        <img src={imageSrc} alt={category} className="w-full h-full object-cover rounded-full" />
-                      ) : (
-                        <p>Image not found</p>
-                      )}
+                      {imageSrc ? <img src={imageSrc} alt={category} className="w-full h-full object-cover rounded-full" /> : <p>Image not found</p>}
                     </div>
                     <p className="mt-2 text-sm font-urbanist">{category}</p>
                   </div>
@@ -127,7 +111,6 @@ function InvitationsPhysiquePage() {
           </div>
         </section>
 
-        {/* Models Section */}
         <InvitationCategoryPage
           title={`${selectedCategory || ""}`}
           models={models}
@@ -136,18 +119,16 @@ function InvitationsPhysiquePage() {
         />
       </div>
 
-              <section className="py-8 px-4 bg-white">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="mb-4"><img src={calimg} alt="" /></div>
-            <div>
-              <h2 className="text-xl test-left font-abhaya mb-2">Calligraphie</h2>              
-              <p className="text-gray-700 mb-4 text-sm">
-              Optez pour un faire-part mariage luxueux et chic qui reflètera l'élégance et le raffinement de votre événement. Avec des designs haut de gamme
-                </p>
-                <button className="py-2 bg-transparent text-black border-b-2 border-black mb-3">Découvrir</button>
-            </div>  
+      <section className="py-8 px-4 bg-white">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="mb-4"><img src={calimg} alt="" /></div>
+          <div>
+            <h2 className="text-xl test-left font-abhaya mb-2">Calligraphie</h2>
+            <p className="text-gray-700 mb-4 text-sm">Optez pour un faire-part mariage luxueux et chic qui reflètera l'élégance et le raffinement de votre événement. Avec des designs haut de gamme</p>
+            <button className="py-2 bg-transparent text-black border-b-2 border-black mb-3">Découvrir</button>
           </div>
-        </section> 
+        </div>
+      </section>
 
       <Footer />
     </div>

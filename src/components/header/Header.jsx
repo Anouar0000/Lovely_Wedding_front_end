@@ -13,7 +13,9 @@ function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-4 pt-8 pb-4 bg-white relative z-50">
+      {/* The header is given a z-index of 50 to place it in the stacking context. */}
+      <header className="flex items-center justify-between px-4 pt-8 pb-6 bg-white relative z-50">
+        {/* Hamburger Menu Button */}
         <button
           onClick={handleSidebarToggle}
           className="text-2xl focus:outline-none"
@@ -21,6 +23,7 @@ function Header() {
           <FiMenu />
         </button>
 
+        {/* Centered Logo/Title */}
         <div
           className="absolute left-1/2 transform -translate-x-1/2 cursor-pointer"
           onClick={() => navigate('/')}
@@ -29,10 +32,13 @@ function Header() {
         </div>
       </header>
 
-      {/* Sidebar and overlay */}
+      {/* This block handles the sidebar and the overlay */}
       {isSidebarOpen && (
+        // The overlay has a z-index of 55, which is HIGHER than the header's z-50.
+        // This makes it cover the entire screen, including the header, so any click
+        // outside the sidebar will be caught by this overlay's onClick handler.
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-[55]"
           onClick={() => setSidebarOpen(false)}
         >
           <HomeSidebar
