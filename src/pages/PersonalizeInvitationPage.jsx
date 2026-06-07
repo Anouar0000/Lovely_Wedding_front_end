@@ -1,12 +1,12 @@
 // PersonalizeInvitationPage.js
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import MainMenu from '../components/canvas/MainMenu';
 import BottomMenu from '../components/canvas/BottomMenu';
 import TextBox from '../components/canvas/TextBox';
-import { pdf } from '@react-pdf/renderer';
-import FinalPDFDocument from '../components/canvas/FinalPDFDocument';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { FiCornerDownLeft, FiCornerUpRight } from 'react-icons/fi';
 import useHistory from '../hooks/useHistory';
 import { templateData } from '../data/templateData.js';
@@ -18,13 +18,81 @@ import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
 import ApparenceMenu from '../components/canvas/ApparenceMenu';
 import data from '../data/categories.json';
 
+const DEFAULT_CARD_SIZE_MM = { width: 100, height: 141.4 };
+
+const getCardSizeFromFormat = (formatValue) => {
+  if (!formatValue) return DEFAULT_CARD_SIZE_MM;
+
+  if (formatValue.includes('9.5 x 21')) return { width: 95, height: 210 };
+  if (formatValue.includes('10 x 15')) return { width: 100, height: 150 };
+  if (formatValue.includes('14 x 14')) return { width: 140, height: 140 };
+
+  return DEFAULT_CARD_SIZE_MM;
+};
+
+const waitForImages = async (element) => {
+  const images = Array.from(element.querySelectorAll('img'));
+  await Promise.all(images.map((image) => {
+    if (image.complete) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    });
+  }));
+};
+
+const downloadBlob = (blob, filename) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+const getCanvasDimensionsFromStyle = (canvasStyle) => ({
+  width: parseFloat(canvasStyle.width) || 0,
+  height: parseFloat(canvasStyle.height) || 0,
+});
+
+const toPixelTextBox = (box, dimensions) => ({
+  ...box,
+  position: {
+    x: ((box.position?.x || 0) / 100) * dimensions.width,
+    y: ((box.position?.y || 0) / 100) * dimensions.height,
+  },
+  width: ((box.width || 0) / 100) * dimensions.width,
+});
+
+const toPercentPosition = (position, dimensions) => ({
+  x: dimensions.width ? ((position?.x || 0) / dimensions.width) * 100 : 0,
+  y: dimensions.height ? ((position?.y || 0) / dimensions.height) * 100 : 0,
+});
+
+const toPercentWidth = (width, dimensions) => (
+  dimensions.width ? ((width || 0) / dimensions.width) * 100 : 0
+);
+
+const getResponsiveFontSize = (fontSize, dimensions) => {
+  const scale = dimensions.width ? dimensions.width / 390 : 1;
+  return Math.max(8, Math.round((fontSize || 16) * scale * 10) / 10);
+};
+
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
   const [currentCard, setCurrentCard] = useState('front');
+  const unsafeZoneEditorEnabled = process.env.REACT_APP_UNSAFE_ZONE_EDITOR === 'true';
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { model, qté, format, motif } = location.state || {};
+  const { model, format, motif } = location.state || {};
+  const selectedCardSize = useMemo(() => getCardSizeFromFormat(format), [format]);
+  const [designAspectRatio, setDesignAspectRatio] = useState(DEFAULT_CARD_SIZE_MM.width / DEFAULT_CARD_SIZE_MM.height);
+  const [unsafeZoneEditorOpen, setUnsafeZoneEditorOpen] = useState(false);
+  const [editableUnsafeZones, setEditableUnsafeZones] = useState(model?.unsafeZones || []);
+  const [selectedUnsafeZoneId, setSelectedUnsafeZoneId] = useState(model?.unsafeZones?.[0]?.id || '');
 
 const { 
   state: cardContent, 
@@ -42,10 +110,41 @@ const {
   const mainMenuRef = useRef(null);
   const wrapperRef = useRef(null);
   const contentContainerRef = useRef(null);
+  const exportFrontRef = useRef(null);
+  const exportBackRef = useRef(null);
   const isChildInteracting = useRef(false);
   const prevSelectedTextIdRef = useRef();
 
-  const { canvasStyle, mainPadding } = useCanvasLayout({ headerRef, mainMenuRef });
+  const { canvasStyle, mainPadding } = useCanvasLayout({
+    headerRef,
+    mainMenuRef,
+    aspectRatio: designAspectRatio,
+  });
+  const effectiveModel = useMemo(() => ({
+    ...model,
+    unsafeZones: editableUnsafeZones,
+  }), [model, editableUnsafeZones]);
+  const canvasDimensions = useMemo(() => getCanvasDimensionsFromStyle(canvasStyle), [canvasStyle]);
+  const renderedCardContent = useMemo(() => ({
+    front: {
+      textBoxes: (cardContent.front?.textBoxes || []).map((box) => ({
+        ...toPixelTextBox(box, canvasDimensions),
+        style: {
+          ...box.style,
+          fontSize: getResponsiveFontSize(box.style?.fontSize, canvasDimensions),
+        },
+      })),
+    },
+    back: {
+      textBoxes: (cardContent.back?.textBoxes || []).map((box) => ({
+        ...toPixelTextBox(box, canvasDimensions),
+        style: {
+          ...box.style,
+          fontSize: getResponsiveFontSize(box.style?.fontSize, canvasDimensions),
+        },
+      })),
+    },
+  }), [cardContent, canvasDimensions]);
   const { scale, translate, isInteracting } = usePanAndZoom({ wrapperRef, isChildInteracting });
 
   const handleChildInteraction = (isInteracting) => {
@@ -56,6 +155,24 @@ const {
   useEffect(() => {
     stableSetCardContent.current = setCardContent;
   }, [setCardContent]);
+
+  useEffect(() => {
+    if (!model?.modelImage) return;
+
+    const image = new Image();
+    image.onload = () => {
+      if (image.naturalWidth > 0 && image.naturalHeight > 0) {
+        setDesignAspectRatio(image.naturalWidth / image.naturalHeight);
+      }
+    };
+    image.src = model.modelImage;
+  }, [model?.modelImage]);
+
+  useEffect(() => {
+    const zones = model?.unsafeZones || [];
+    setEditableUnsafeZones(zones);
+    setSelectedUnsafeZoneId(zones[0]?.id || '');
+  }, [model?.unsafeZones]);
   
   const updateCurrentCardTextBoxes = useCallback((newTextBoxes) => {
     setCardContent(cardContent => {
@@ -80,26 +197,18 @@ useEffect(() => {
   // and we should not overwrite their work with the default template.
   if (cardContent.front.textBoxes.length > 0) return;
 
-  if (!contentContainerRef.current) return;
-  const containerWidth = contentContainerRef.current.clientWidth;
-  const containerHeight = contentContainerRef.current.clientHeight;
-  if (containerWidth === 0 || containerHeight === 0) return;
-
   const template = templateData[templateId];
   if (template?.prefilledTextBoxes) {
     const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
       ...box,
-      position: { 
-        x: (box.position.x / 100) * containerWidth, 
-        y: (box.position.y / 100) * containerHeight 
-      },
-      width: (box.width / 100) * containerWidth,
+      position: { x: box.position.x, y: box.position.y },
+      width: box.width,
     }));
     
     const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
     setCardContent(initialContent, true); 
   }
-}, [model?.templateId, canvasStyle.width, canvasStyle.height, setCardContent]);
+}, [model?.templateId, cardContent.front.textBoxes.length, setCardContent]);
 
   useEffect(() => {
     setSelectedTextId(null);
@@ -122,16 +231,26 @@ useEffect(() => {
   }, [selectedTextId, cardContent, currentCard, updateCurrentCardTextBoxes]);
   
   const handleAddText = () => {
-    const cardRect = contentContainerRef.current?.getBoundingClientRect();
-    if (!cardRect) return;
-    const newTextBox = { id: Date.now(), text: 'Nouveau texte', style: { fontSize: 16, bold: false, italic: false, alignment: 'center', color: '#000000', lineHeight: 1.5, fontFamily: 'Playfair Display' }, position: { x: cardRect.width / 2 - 75, y: cardRect.height / 2 - 20 }, width: 150 };
+    if (!canvasDimensions.width || !canvasDimensions.height) return;
+    const defaultWidth = Math.min(150, canvasDimensions.width * 0.45);
+    const newTextBox = {
+      id: Date.now(),
+      text: 'Nouveau texte',
+      style: { fontSize: 16, bold: false, italic: false, alignment: 'center', color: '#000000', lineHeight: 1.5, fontFamily: 'Playfair Display' },
+      position: toPercentPosition({ x: canvasDimensions.width / 2 - defaultWidth / 2, y: canvasDimensions.height / 2 - 20 }, canvasDimensions),
+      width: toPercentWidth(defaultWidth, canvasDimensions),
+    };
     updateCurrentCardTextBoxes(prevTextBoxes => [...prevTextBoxes, newTextBox]); 
     setSelectedTextId(newTextBox.id);
   };
   
   const handleUpdateText = (id, newText) => updateCurrentCardTextBoxes(textBoxes.map(box => box.id === id ? { ...box, text: newText } : box));
-  const handleUpdatePosition = (id, position) => updateCurrentCardTextBoxes(textBoxes.map(box => box.id === id ? { ...box, position } : box));
-  const handleUpdateWidth = (id, newWidth) => updateCurrentCardTextBoxes(textBoxes.map(box => (box.id === id ? { ...box, width: newWidth } : box)));
+  const handleUpdatePosition = (id, position) => updateCurrentCardTextBoxes(textBoxes.map(box => (
+    box.id === id ? { ...box, position: toPercentPosition(position, canvasDimensions) } : box
+  )));
+  const handleUpdateWidth = (id, newWidth) => updateCurrentCardTextBoxes(textBoxes.map(box => (
+    box.id === id ? { ...box, width: toPercentWidth(newWidth, canvasDimensions) } : box
+  )));
   const handleDeleteText = () => { updateCurrentCardTextBoxes(textBoxes.filter(box => box.id !== selectedTextId)); setSelectedTextId(null); };
 
   const updateTextStyle = (key, value) => {
@@ -159,42 +278,59 @@ useEffect(() => {
 
   const handleCanvasClick = (e) => { if (e.target === e.currentTarget) { setSelectedTextId(null); } };
   
-  const handleDownload = async () => {
+  const handleDownloadExact = async () => {
     const canvas = contentContainerRef.current;
-    if (!canvas) { alert("Erreur : La zone de personnalisation n'a pas pu être trouvée."); return; }
-    
-    const canvasWidth = canvas.clientWidth;
-    const canvasHeight = canvas.clientHeight;
-
-    const frontData = { image: model.modelImage, textBoxes: cardContent.front.textBoxes };
-    const backData = model.modelImagep2 ? { image: model.modelImagep2, textBoxes: cardContent.back.textBoxes } : null;
+    if (!canvas) { alert("Erreur : La zone de personnalisation n'a pas pu etre trouvee."); return; }
 
     try {
-        const blob = await pdf(
-            <FinalPDFDocument 
-                frontData={frontData}
-                backData={backData}
-                canvasDimensions={{ width: canvasWidth, height: canvasHeight }} 
-                qte={qté} 
-                format={format} 
-                motif={motif} 
-                modelName={model.name}
-                safeArea={{ top: 0, bottom: 0, left: 0, right: 0 }} 
-                verticalAlignmentPercent={50} 
-            />
-        ).toBlob();
-        
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${model.name || 'invitation'}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    } catch (error) { 
-        console.error("Erreur lors de la génération du PDF:", error); 
-        alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer."); 
+        if (document.fonts?.ready) {
+          await document.fonts.ready;
+        }
+
+        const quantityValue = Object.entries(location.state || {}).find(([key]) => key.startsWith('qt'))?.[1];
+        const cardSize = {
+          width: selectedCardSize.width,
+          height: selectedCardSize.width / designAspectRatio,
+        };
+        const pdfDoc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        pdfDoc.setFont('helvetica', 'bold');
+        pdfDoc.setFontSize(20);
+        pdfDoc.text('Recapitulatif de votre commande', 20, 30);
+        pdfDoc.setFont('helvetica', 'normal');
+        pdfDoc.setFontSize(12);
+        pdfDoc.text(model?.name || '', 20, 42);
+        pdfDoc.text(`Quantite: ${quantityValue || 'N/A'}`, 20, 60);
+        pdfDoc.text(`Format: ${format || 'N/A'}`, 20, 72);
+        pdfDoc.text(`Motif: ${motif || 'N/A'}`, 20, 84);
+
+        const exportCards = [
+          { ref: exportFrontRef },
+          ...(model?.modelImagep2 ? [{ ref: exportBackRef }] : []),
+        ];
+
+        for (const card of exportCards) {
+          const element = card.ref.current;
+          if (!element) continue;
+
+          await waitForImages(element);
+          const cardCanvas = await html2canvas(element, {
+            backgroundColor: '#ffffff',
+            scale: 4,
+            useCORS: true,
+            logging: false,
+          });
+
+          const imageData = cardCanvas.toDataURL('image/png');
+          pdfDoc.addPage([cardSize.width, cardSize.height], cardSize.width > cardSize.height ? 'landscape' : 'portrait');
+          pdfDoc.addImage(imageData, 'PNG', 0, 0, cardSize.width, cardSize.height);
+        }
+
+        const blob = pdfDoc.output('blob');
+        downloadBlob(blob, `${model?.name || 'invitation'}.pdf`);
+    } catch (error) {
+        console.error("Erreur lors de la generation du PDF:", error);
+        alert("Une erreur est survenue lors de la creation du PDF. Veuillez reessayer.");
     }
   };
   
@@ -215,23 +351,32 @@ const handleDesignChange = (newDesignData) => {
   }
 };
 
+  const updateUnsafeZone = (id, key, value) => {
+    const numericValue = Number(value);
+    if (!Number.isFinite(numericValue)) return;
+
+    setEditableUnsafeZones((zones) => zones.map((zone) => (
+      zone.id === id ? { ...zone, [key]: numericValue } : zone
+    )));
+  };
+
+  const nudgeUnsafeZone = (id, key, amount) => {
+    setEditableUnsafeZones((zones) => zones.map((zone) => (
+      zone.id === id ? { ...zone, [key]: Math.round(((zone[key] || 0) + amount) * 10) / 10 } : zone
+    )));
+  };
+
+  const selectedUnsafeZone = editableUnsafeZones.find((zone) => zone.id === selectedUnsafeZoneId) || editableUnsafeZones[0];
+
   // Corrected handler, now expects the full data object
   const handleTemplateChange = (newTemplateData) => {
     if (newTemplateData && newTemplateData.templateId && templateData[newTemplateData.templateId]?.prefilledTextBoxes) {
-        if (!contentContainerRef.current) return;
-        const containerWidth = contentContainerRef.current.clientWidth;
-        const containerHeight = contentContainerRef.current.clientHeight;
-        if (containerWidth === 0 || containerHeight === 0) return;
-
         const template = templateData[newTemplateData.templateId];
         
         const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
             ...box,
-            position: { 
-                x: (box.position.x / 100) * containerWidth, 
-                y: (box.position.y / 100) * containerHeight 
-            },
-            width: (box.width / 100) * containerWidth,
+            position: { x: box.position.x, y: box.position.y },
+            width: box.width,
         }));
         
         const newContent = {
@@ -244,7 +389,7 @@ const handleDesignChange = (newDesignData) => {
   };
 
   const renderTextBoxes = (cardKey) => {
-    const boxes = cardContent[cardKey]?.textBoxes || [];
+    const boxes = renderedCardContent[cardKey]?.textBoxes || [];
     return (
       <div 
         className="absolute top-0 left-0 w-full h-full"
@@ -259,15 +404,85 @@ const handleDesignChange = (newDesignData) => {
       </div>
     );
   };
+
+  const renderExportTextBoxes = (cardKey) => {
+    const boxes = cardContent[cardKey]?.textBoxes || [];
+
+    return boxes.map((box) => {
+      const style = box.style || {};
+
+      return (
+        <div
+          key={box.id}
+          style={{
+            position: 'absolute',
+            left: `${box.position?.x || 0}%`,
+            top: `${box.position?.y || 0}%`,
+            width: `${box.width || 40}%`,
+            maxWidth: '100%',
+            wordWrap: 'break-word',
+            whiteSpace: 'normal',
+            fontSize: `${getResponsiveFontSize(style.fontSize, canvasDimensions)}px`,
+            fontWeight: style.bold ? 'bold' : 'normal',
+            fontStyle: style.italic ? 'italic' : 'normal',
+            textAlign: style.alignment || 'center',
+            color: style.color || '#000000',
+            lineHeight: style.lineHeight || 1.5,
+            fontFamily: style.fontFamily || 'serif',
+            direction: style.direction || 'ltr',
+          }}
+        >
+          <div style={{ padding: '4px' }}>{box.text}</div>
+        </div>
+      );
+    });
+  };
+
+  const renderExportCard = (cardKey, image, ref) => (
+    <div
+      ref={ref}
+      className="relative overflow-hidden bg-white"
+      style={{
+        width: canvasStyle.width,
+        height: canvasStyle.height,
+        backgroundImage: image ? `url(${image})` : undefined,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {image && <img src={image} alt="" className="hidden" crossOrigin="anonymous" />}
+      {renderExportTextBoxes(cardKey)}
+    </div>
+  );
+
+  const renderUnsafeZones = () => (
+    (effectiveModel?.unsafeZones || []).map(zone => (
+      <div
+        key={zone.id}
+        className={`absolute transition-opacity duration-300 hashed-background pointer-events-none z-20 outline outline-1 ${
+          unsafeZoneEditorOpen || activeUnsafeZones.has(zone.id) ? 'opacity-100' : 'opacity-0'
+        } ${
+          selectedUnsafeZoneId === zone.id ? 'outline-red-600' : 'outline-transparent'
+        }`}
+        style={{
+          left: `${zone.x}%`,
+          top: `${zone.y}%`,
+          width: `${zone.width}%`,
+          height: `${zone.height}%`,
+        }}
+      />
+    ))
+  );
   
-  const activeCardStyle = { transform: 'scale(0.9) translateX(-5%)', zIndex: 10 };
-  const inactiveCardStyle = { transform: 'scale(0.85) translateX(10%)', zIndex: 5 };
+  const activeCardStyle = { transform: 'scale(1) translateX(-3%)', zIndex: 10 };
+  const inactiveCardStyle = { transform: 'scale(0.92) translateX(9%)', zIndex: 5 };
   
 // Determine the current active scale based on the card's style
 const currentScale = (currentCard === 'front' ? activeCardStyle : inactiveCardStyle).transform.match(/scale\(([^)]+)\)/)[1] || 1;
 
 // Pass this scale to the hook
-const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard, contentContainerRef, currentScale);
+const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardContent, currentCard, contentContainerRef, currentScale);
   useEffect(() => {
     const handleClickOutside = (e) => {
       const clickedInsideCanvas = wrapperRef.current?.contains(e.target);
@@ -316,6 +531,15 @@ const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard
 
   return (
     <div className="relative min-h-screen bg-gray-100">
+      <div
+        aria-hidden="true"
+        className="fixed pointer-events-none"
+        style={{ left: '-10000px', top: 0, zIndex: -1 }}
+      >
+        {renderExportCard('front', model?.modelImage, exportFrontRef)}
+        {model?.modelImagep2 && renderExportCard('back', model?.modelImagep2, exportBackRef)}
+      </div>
+
       <div ref={headerRef} className="fixed top-0 left-0 w-full bg-white z-50 py-6">
         <div className="flex items-center justify-between px-4">
             <div className="flex space-x-2">
@@ -324,29 +548,88 @@ const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard
                 <button onClick={redo} disabled={!canRedo} className="border border-black p-1 rounded disabled:opacity-50 disabled:cursor-not-allowed"><FiCornerUpRight /></button>
             </div>
             <h1 className="text-base font-urbanist font-medium flex-1 text-center">{model?.name?.replace(/^Modèle\s/, '') || 'Personnalisation'}</h1>
-            <button onClick={handleDownload} className="bg-black text-white px-4 py-2 font-urbanist text-sm">Commander</button>
+            <div className="flex items-center gap-2">
+              {unsafeZoneEditorEnabled && (
+                <button
+                  onClick={() => setUnsafeZoneEditorOpen((isOpen) => !isOpen)}
+                  className={`border border-black px-3 py-2 font-urbanist text-sm ${
+                    unsafeZoneEditorOpen ? 'bg-black text-white' : 'bg-white text-black'
+                  }`}
+                >
+                  Zones
+                </button>
+              )}
+              <button onClick={handleDownloadExact} className="bg-black text-white px-4 py-2 font-urbanist text-sm">Commander</button>
+            </div>
         </div>
       </div>
+
+      {unsafeZoneEditorEnabled && unsafeZoneEditorOpen && selectedUnsafeZone && (
+        <div className="fixed top-24 right-2 z-50 w-[min(92vw,320px)] bg-white border border-gray-300 shadow-xl rounded-md p-3 font-urbanist text-xs">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <strong className="text-sm">Unsafe zones</strong>
+            <button
+              onClick={() => setUnsafeZoneEditorOpen(false)}
+              className="border border-gray-400 px-2 py-1"
+            >
+              Fermer
+            </button>
+          </div>
+
+          <select
+            className="w-full border border-gray-300 px-2 py-2 mb-3 bg-white"
+            value={selectedUnsafeZone.id}
+            onChange={(event) => setSelectedUnsafeZoneId(event.target.value)}
+          >
+            {editableUnsafeZones.map((zone) => (
+              <option key={zone.id} value={zone.id}>{zone.id}</option>
+            ))}
+          </select>
+
+          <div className="grid grid-cols-2 gap-2">
+            {['x', 'y', 'width', 'height'].map((key) => (
+              <label key={key} className="flex flex-col gap-1">
+                <span className="uppercase text-[10px] text-gray-500">{key}</span>
+                <input
+                  type="number"
+                  step="0.5"
+                  value={selectedUnsafeZone[key]}
+                  onChange={(event) => updateUnsafeZone(selectedUnsafeZone.id, key, event.target.value)}
+                  className="border border-gray-300 px-2 py-1"
+                />
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => nudgeUnsafeZone(selectedUnsafeZone.id, key, -0.5)}
+                    className="border border-gray-300 py-1"
+                  >
+                    -0.5
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => nudgeUnsafeZone(selectedUnsafeZone.id, key, 0.5)}
+                    className="border border-gray-300 py-1"
+                  >
+                    +0.5
+                  </button>
+                </div>
+              </label>
+            ))}
+          </div>
+
+          <textarea
+            readOnly
+            className="mt-3 h-24 w-full resize-none border border-gray-300 p-2 font-mono text-[10px]"
+            value={JSON.stringify(editableUnsafeZones, null, 2)}
+          />
+        </div>
+      )}
       
       <main style={{ paddingTop: `${mainPadding.top}px`, paddingBottom: `${mainPadding.bottom}px` }}>
         <div className="relative mx-auto" style={{ width: canvasStyle.width, height: canvasStyle.height }}>
           <div ref={wrapperRef} className="absolute top-0 left-0 w-full h-full bg-transparent touch-none overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full" style={{ transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`, transition: isInteracting ? 'none' : 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)'}}>
               <div ref={contentContainerRef} onClick={handleCanvasClick} className="relative w-full h-full flex items-center justify-center">
-                   {(model?.unsafeZones || []).map(zone => (
-                      <div
-                          key={zone.id}
-                          className={`absolute transition-opacity duration-300 hashed-background pointer-events-none z-20 ${
-                              activeUnsafeZones.has(zone.id) ? 'opacity-100' : 'opacity-0'
-                          }`}
-                          style={{
-                              left: `${zone.x}%`,
-                              top: `${zone.y}%`,
-                              width: `${zone.width}%`,
-                              height: `${zone.height}%`,
-                          }}
-                      />
-                  ))}
                   {model?.modelImagep2 && (
                     <div
                       className="absolute w-full h-full transition-all duration-300 ease-in-out"
@@ -367,6 +650,7 @@ const activeUnsafeZones = useUnsafeZoneCollision(model, cardContent, currentCard
                       ...(currentCard === 'front' ? activeCardStyle : (model?.modelImagep2 ? inactiveCardStyle : activeCardStyle)),
                     }}
                   >
+                    {renderUnsafeZones()}
                     {renderTextBoxes('front')}
                   </div>
               </div>

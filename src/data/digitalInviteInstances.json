@@ -1,0 +1,25 @@
+[
+  {
+    "slug": "bilel-dorra",
+    "template": "dolce-vita",
+    "status": "published",
+    "title": "La Dolce Vita",
+    "coupleNames": "Bilel & Dorra",
+    "introLabel": "We are getting married",
+    "introText": "We would like to invite you to celebrate with us the most special day of our lives",
+    "eventDate": "2026-08-12",
+    "dateLabel": "12.08.2026",
+    "venueName": "Dar Bouraoui Carthage",
+    "city": "Carthage",
+    "locationLabel": "MALAGA",
+    "time": "19H00",
+    "mapUrl": "https://maps.google.com",
+    "rsvpEnabled": true,
+    "closingText": "We hope you can make it",
+    "timeline": [
+      { "time": "20h", "title": "Accueil", "subtitle": "des invites" },
+      { "time": "20h30", "title": "Arrivee", "subtitle": "des maries" },
+      { "time": "21h", "title": "Contrat", "subtitle": "de mariage" }
+    ]
+  }
+]

@@ -116,7 +116,7 @@ function HomePage() {
 
         <button
           className="w-full h-[56px] flex justify-center items-center bg-transparent text-white border-b-2 border-white"
-          onClick={() => navigate('/canvas')}
+          onClick={() => navigate('/invitations-digital')}
         >
           Invitations Digital
         </button>

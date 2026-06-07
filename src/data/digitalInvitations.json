@@ -1,0 +1,86 @@
+{
+  "categories": ["Mariage", "Outeya", "Anniversaire", "Business"],
+  "templates": {
+    "Mariage": [
+      {
+        "name": "Dolce Vita E-invite",
+        "price": "80",
+        "thumbnail": "assets/digital/dolce-vita/figma-layer-01.png",
+        "description": "Une page partageable pour annoncer le mariage, regrouper les informations et recevoir les confirmations.",
+        "features": ["Lien personnalise", "RSVP", "Programme", "Plan d'acces"],
+        "format": "Landing page",
+        "previewPath": "/e/bilel-dorra"
+      },
+      {
+        "name": "Landing Mariage Floral",
+        "price": "95",
+        "thumbnail": "assets/images/wedimg1.jpg",
+        "description": "Un site d'invitation doux et visuel avec photos, date, lieu et details de reception.",
+        "features": ["Galerie", "Compte a rebours", "RSVP", "Partage WhatsApp"],
+        "format": "Landing page"
+      },
+      {
+        "name": "Post Mariage Minimal",
+        "price": "45",
+        "thumbnail": "assets/images/wedimg2.jpg",
+        "description": "Un format digital court pour partager rapidement l'annonce sur les reseaux sociaux.",
+        "features": ["Image mobile", "Story", "Lien court", "Texte personnalise"],
+        "format": "Post digital"
+      }
+    ],
+    "Outeya": [
+      {
+        "name": "Landing Outeya Chic",
+        "price": "70",
+        "thumbnail": "assets/images/outeya.png",
+        "description": "Une invitation digitale dediee a l'outeya avec programme, adresse et confirmation des invites.",
+        "features": ["Lien partageable", "RSVP", "Adresse", "Photos"],
+        "format": "Landing page"
+      },
+      {
+        "name": "Post Outeya Rose",
+        "price": "40",
+        "thumbnail": "assets/models/outeya/thumbnail/outeya1.png",
+        "description": "Une annonce elegante au format mobile pour WhatsApp, Instagram ou Facebook.",
+        "features": ["Format mobile", "Story", "Texte personnalise", "Export image"],
+        "format": "Post digital"
+      }
+    ],
+    "Anniversaire": [
+      {
+        "name": "Birthday Landing",
+        "price": "60",
+        "thumbnail": "assets/images/wedimg3.png",
+        "description": "Une page festive avec date, lieu, theme et confirmation de presence.",
+        "features": ["RSVP", "Theme", "Adresse", "Partage rapide"],
+        "format": "Landing page"
+      },
+      {
+        "name": "Birthday Story",
+        "price": "35",
+        "thumbnail": "assets/images/wedimg4.jpg",
+        "description": "Une invitation mobile simple et rapide a publier ou envoyer directement.",
+        "features": ["Story", "Post", "Texte personnalise", "Export image"],
+        "format": "Post digital"
+      }
+    ],
+    "Business": [
+      {
+        "name": "Event Landing Pro",
+        "price": "120",
+        "thumbnail": "assets/images/wedimg6.jpg",
+        "description": "Une page claire pour presenter un evenement professionnel et collecter les inscriptions.",
+        "features": ["Inscriptions", "Programme", "Lieu", "Contact"],
+        "format": "Landing page"
+      },
+      {
+        "name": "Launch Event",
+        "price": "110",
+        "thumbnail": "assets/images/wedimg7.jpg",
+        "description": "Un mini-site pour annoncer une inauguration, un lancement ou une soiree d'entreprise.",
+        "features": ["Lien public", "RSVP", "Agenda", "Partage LinkedIn"],
+        "format": "Landing page"
+      }
+    ]
+  }
+}
