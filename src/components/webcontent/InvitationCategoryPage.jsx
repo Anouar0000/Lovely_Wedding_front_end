@@ -57,7 +57,7 @@ function InvitationsCategoryPage({ title, models, selectedCategory, onResetCateg
 
   return (
     <div className="pb-4">
-      <section className="py-8 px-4">
+      <section className="mx-auto max-w-6xl py-8 px-4">
         <h1 className="text-sm text-gray-600 pb-4">{filteredModels.length} produits trouvés</h1>
 
         {selectedCategory && (
@@ -119,7 +119,7 @@ function InvitationsCategoryPage({ title, models, selectedCategory, onResetCateg
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
           {filteredModels.slice(0, visibleCount).map((model, index) => (
             <div
               key={index}
@@ -130,7 +130,7 @@ function InvitationsCategoryPage({ title, models, selectedCategory, onResetCateg
                 })
               }
             >
-              <div className="bg-gray-200 h-44 w-full flex items-center justify-center">
+              <div className="bg-gray-200 h-44 w-full flex items-center justify-center overflow-hidden md:h-auto md:aspect-[3/4]">
                 <img
                   src={require(`../../${model.thumbnail}`)}
                   alt={model.name}

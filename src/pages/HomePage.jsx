@@ -81,7 +81,7 @@ function HomePage() {
       <div className="pt-[57px]"> {/* Adjust for fixed header height */}
         {/* Hero Section */}
 <section
-  className="relative overflow-hidden pt-4 w-full h-[508px] max-w-full mx-auto flex flex-col justify-center items-center text-white"
+  className="relative overflow-hidden pt-4 w-full h-[508px] lg:h-[560px] max-w-full mx-auto flex flex-col justify-center items-center text-white"
 >
   {/* The Video Element - This part was already perfect! */}
   <video
@@ -98,7 +98,7 @@ function HomePage() {
 
   {/* Your content (titles and buttons) remains the same. */}
   {/* It's good practice to wrap it to ensure it stays on top. */}
-  <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+  <div className="relative z-10 flex h-full w-full max-w-5xl flex-col items-center justify-center px-4">
       {/* Titles */}
       <div className="flex flex-col items-center mb-6 w-full">
         <h1 className="text-2xl text-center font-abhaya">Pour tous les moments qui comptent.</h1>
@@ -106,7 +106,7 @@ function HomePage() {
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-4 w-full px-4">
+      <div className="flex w-full max-w-2xl gap-4">
         <button
           className="w-full h-[56px] flex justify-center items-center bg-transparent text-white border-b-2 border-white"
           onClick={() => navigate('/invitations-physique')}
@@ -126,10 +126,11 @@ function HomePage() {
 
         {/* Shop Wedding Essentials Section */}
         <section className="pb-8 px-4 pt-16">
+          <div className="mx-auto max-w-6xl">
           <h2 className="text-center text-2xl font-abhaya">Shop Wedding Essentials</h2>
           <h2 className="text-center mb-12 font-urbanist">Shop Wedding Essentials</h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
             {essentialsData.map((category) => (
               <div
                 key={category.name}
@@ -151,14 +152,16 @@ function HomePage() {
               </div>
             ))}
           </div>
+          </div>
         </section>
 
         {/* Digital-Only Section */}
         <section className="py-8 px-4">
+          <div className="mx-auto max-w-6xl">
           <h2 className="text-center text-2xl font-abhaya">Only Digital</h2>
           <h2 className="text-center mb-12 font-urbanist">Only Digital</h2>
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar">
-            <div className="bg-white shadow-full p-4 flex-shrink-0 w-64">
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar lg:grid lg:grid-cols-3 lg:justify-items-center lg:overflow-visible">
+            <div className="bg-white shadow-full p-4 flex-shrink-0 w-64 lg:w-full lg:max-w-sm">
               <div className="bg-gray-200 h-32 mb-4"><img className="w-full h-full object-cover" src={img1} alt="" /></div>
               <h2 className="text-xl test-left font-abhaya mb-2">Only Digital</h2>
               <p className="text-gray-700 mb-4 text-sm">
@@ -169,7 +172,7 @@ function HomePage() {
               </p>
               <button className="py-2 bg-transparent text-black border-b-2 border-black mb-3">Voir plus</button>
             </div>
-            <div className="bg-white shadow-full p-4 flex-shrink-0 w-64">
+            <div className="bg-white shadow-full p-4 flex-shrink-0 w-64 lg:w-full lg:max-w-sm">
               <div className="bg-gray-200 h-32 mb-4"><img className="w-full h-full object-cover" src={img2} alt="" /></div>
               <h2 className="text-xl test-left font-abhaya mb-2">Only Digital</h2>
               <p className="text-gray-700 mb-4 text-sm">
@@ -180,7 +183,7 @@ function HomePage() {
               </p>
               <button className="py-2 bg-transparent text-black border-b-2 border-black mb-3">Voir plus</button>
             </div>
-            <div className="bg-white shadow-full p-4 flex-shrink-0 w-64">
+            <div className="bg-white shadow-full p-4 flex-shrink-0 w-64 lg:w-full lg:max-w-sm">
               <div className="bg-gray-200 h-32 mb-4"><img className="w-full h-full object-cover" src={mainimg} alt="" /></div>
               <h2 className="text-xl test-left font-abhaya mb-2">Only Digital</h2>
               <p className="text-gray-700 mb-4 text-sm">
@@ -192,11 +195,12 @@ function HomePage() {
               <button className="py-2 bg-transparent text-black border-b-2 border-black mb-3">Voir plus</button>
             </div>
           </div>
+          </div>
         </section>
 
         <section className="py-8 px-4 bg-white">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="mb-4"><img src={calimg} alt="" /></div>
+          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 md:items-center md:gap-10">
+            <div className="mb-4"><img src={calimg} alt="" className="mx-auto max-h-[360px] object-contain" /></div>
             <div>
               <h2 className="text-xl test-left font-abhaya mb-2">Calligraphie</h2>
               <p className="text-gray-700 mb-4 text-sm">

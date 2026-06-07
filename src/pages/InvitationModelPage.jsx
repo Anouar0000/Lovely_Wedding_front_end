@@ -90,7 +90,7 @@ function InvitationModelPage() {
             <Header />
 
             {/* Breadcrumb Navigation */}
-            <div className="text-xs font-urbanist px-6 pt-10 flex items-center space-x-2 overflow-hidden whitespace-nowrap">
+            <div className="mx-auto w-full max-w-6xl text-xs font-urbanist px-6 pt-10 flex items-center space-x-2 overflow-hidden whitespace-nowrap">
                 <span className="cursor-pointer hover:underline" onClick={() => navigate("/")}>
                     Accueil
                 </span>
@@ -108,15 +108,15 @@ function InvitationModelPage() {
                 <span className="truncate flex-1 font-bold">{model.name}</span>
                 </div>
 
-
+            <main className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)] lg:items-start lg:px-6">
             {/* Model Image */}
-            <div className="p-4">
-                <img src={require(`../${model.thumbnail}`)} alt={model.name} className="w-full h-[450px] " />
+            <div className="bg-white p-4 lg:sticky lg:top-6">
+                <img src={require(`../${model.thumbnail}`)} alt={model.name} className="h-[450px] w-full lg:mx-auto lg:h-[640px] lg:object-contain" />
             </div>
 
             {/* Model Details */}
-            <div className="px-4">
-                <h1 className="text-xl font-bold">{model.name}</h1>
+            <div className="px-0 lg:bg-white lg:p-6">
+                <h1 className="text-xl font-bold lg:text-3xl">{model.name}</h1>
                 <h2 className="text-gray-500">{selectedCategory || "Invitations Physique"}</h2>
 
                 {/* Dropdown Selections */}
@@ -128,7 +128,7 @@ function InvitationModelPage() {
                     ].map(({ label, value }) => (
                         <div
                             key={label}
-                            className="flex justify-between items-center border-b mt-4 pb-4 border-gray-400  cursor-pointer"
+                            className="flex justify-between items-center border-b mt-4 -mx-2 px-2 py-3 border-gray-400 cursor-pointer transition-colors hover:bg-gray-50"
                             onClick={() => openPopup(label)}
                         >
                             <span>{label} :</span>
@@ -141,7 +141,7 @@ function InvitationModelPage() {
                 </div>
 
                 {/* Pricing and Personalization */}
-                <div className="px-4 mt-10 text-center">
+                <div className="px-0 mt-10 text-center">
                     <p className="text-lg font-bold">À partir de {model.price}DT la pièce</p>
                     <button
                         className={`px-6 py-4 mt-2 w-full font-urbanist ${
@@ -153,15 +153,15 @@ function InvitationModelPage() {
                         PERSONNALISER
                     </button>
                 </div>
-            </div>
 
-            {/* Expandable Sections */}
-            <ExpandableSections />
+                <ExpandableSections className="mt-10" />
+            </div>
+            </main>
 
             {recommendedModels.length > 0 && (
-                <section className=" p-2">
+                <section className="mx-auto w-full max-w-6xl p-2">
                     <h2 className="text-center text-xl font-abhaya mb-6">Autres Recommendation</h2>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 px-2">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 px-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
                         {/* Map over the NEW recommendedModels array */}
                         {recommendedModels.map((recModel) => (
                             <div
@@ -174,7 +174,7 @@ function InvitationModelPage() {
                                     })
                                 }
                             >
-                                <div className="bg-gray-200 h-44 w-full flex items-center justify-center overflow-hidden">
+                                <div className="bg-gray-200 h-44 w-full flex items-center justify-center overflow-hidden md:h-auto md:aspect-[3/4]">
                                     <img
                                         src={require(`../${recModel.thumbnail}`)}
                                         alt={recModel.name}
@@ -190,19 +190,19 @@ function InvitationModelPage() {
             )}
             {/* Popup Modal for Selection */}
             {popup && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center">
-                    <div ref={popupRef} className="w-full bg-white p-4 rounded-t-lg">
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center sm:items-center">
+                    <div ref={popupRef} className="max-h-[75vh] w-full overflow-hidden rounded-t-lg bg-white p-4 sm:max-w-md sm:rounded-lg">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-bold">{popup}</h2>
                             <FiX className="text-xl cursor-pointer" onClick={closePopup} />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="max-h-[58vh] space-y-2 overflow-y-auto pr-1">
                             {popup === "Quantité" &&
                                 quantityOptions.map((option, index) => (
                                     <div
                                         key={index}
-                                        className="flex justify-between items-center border-b py-2 cursor-pointer"
+                                        className="flex justify-between items-center border-b px-3 py-3 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100"
                                         onClick={() => {
                                             setQté(`${option} (à 1.5DT l’unité)`);
                                             closePopup();
@@ -217,7 +217,7 @@ function InvitationModelPage() {
                                 formatOptions.map((option, index) => (
                                     <div
                                         key={index}
-                                        className="flex justify-between items-center border-b py-2 cursor-pointer"
+                                        className="flex justify-between items-center border-b px-3 py-3 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100"
                                         onClick={() => {
                                             setFormat(option);
                                             closePopup();
@@ -231,7 +231,7 @@ function InvitationModelPage() {
                                 motifOptions.map((option, index) => (
                                     <div
                                         key={index}
-                                        className="flex justify-between items-center border-b py-2 cursor-pointer"
+                                        className="flex justify-between items-center border-b px-3 py-3 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100"
                                         onClick={() => {
                                             setMotif(option);
                                             closePopup();

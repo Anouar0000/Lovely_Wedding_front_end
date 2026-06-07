@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
-function ExpandableSections() {
+function ExpandableSections({ className = "px-4 mt-16 mb-8" }) {
   const [expandedSection, setExpandedSection] = useState(null);
 
   const toggleSection = (section) => {
@@ -15,11 +15,11 @@ function ExpandableSections() {
   ];
 
   return (
-    <div className="px-4 mt-16 mb-8">
+    <div className={className}>
       {sections.map((section) => (
         <div key={section.title} className="border-b border-gray-100 bg-white py-3">
           <div
-            className="flex justify-between items-center cursor-pointer"
+            className="flex justify-between items-center cursor-pointer transition-colors hover:bg-gray-50"
             onClick={() => toggleSection(section.title)}
           >
             <div className="flex items-center space-x-2 px-4 py-2">

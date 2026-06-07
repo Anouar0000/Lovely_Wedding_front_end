@@ -79,9 +79,9 @@ function InvitationsPhysiquePage() {
           setSelectedCategory={setSelectedCategory}
         />
 
-        <section className="py-4">
-          <div className="overflow-x-auto hide-scrollbar">
-            <div className="flex gap-6 justify-start items-center">
+        <section className="py-4 px-4">
+          <div className="mx-auto max-w-6xl overflow-x-auto hide-scrollbar">
+            <div className="flex gap-6 justify-start items-center lg:justify-center">
               <div
                 className={`flex-shrink-0 flex flex-col items-center text-center w-28 cursor-pointer ${!selectedCategory ? "font-bold text-black" : ""}`}
                 onClick={() => setSelectedCategory(null)}
@@ -120,8 +120,8 @@ function InvitationsPhysiquePage() {
       </div>
 
       <section className="py-8 px-4 bg-white">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="mb-4"><img src={calimg} alt="" /></div>
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 md:items-center md:gap-10">
+          <div className="mb-4"><img src={calimg} alt="" className="mx-auto max-h-[360px] object-contain" /></div>
           <div>
             <h2 className="text-xl test-left font-abhaya mb-2">Calligraphie</h2>
             <p className="text-gray-700 mb-4 text-sm">Optez pour un faire-part mariage luxueux et chic qui reflètera l'élégance et le raffinement de votre événement. Avec des designs haut de gamme</p>
