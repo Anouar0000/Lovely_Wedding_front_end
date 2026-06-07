@@ -1,6 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
+  FiArrowLeft,
+  FiCalendar,
+  FiCheck,
+  FiClock,
+  FiCopy,
+  FiEdit2,
+  FiExternalLink,
+  FiFileText,
+  FiHome,
+  FiLink,
+  FiMapPin,
+  FiPlus,
+  FiSave,
+  FiSettings,
+  FiTrash2,
+} from "react-icons/fi";
+import {
   createDigitalInviteDraft,
   deleteDigitalInvite,
   getDigitalInviteById,
@@ -41,7 +58,7 @@ function formatDateLabel(dateValue) {
 function Field({ label, children }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold">{label}</span>
+      <span className="mb-2 block text-sm font-semibold text-gray-700">{label}</span>
       {children}
     </label>
   );
@@ -51,7 +68,7 @@ function TextInput(props) {
   return (
     <input
       {...props}
-      className="w-full border border-[#D7CEC3] bg-white px-4 py-3 text-base outline-none focus:border-black"
+      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
     />
   );
 }
@@ -60,8 +77,31 @@ function TextArea(props) {
   return (
     <textarea
       {...props}
-      className="min-h-28 w-full resize-y border border-[#D7CEC3] bg-white px-4 py-3 text-base outline-none focus:border-black"
+      className="min-h-28 w-full resize-y border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
     />
+  );
+}
+
+function SectionHeader({ icon: Icon, title, action }) {
+  return (
+    <div className="flex flex-col gap-3 border-b border-[#E4E8EA] bg-[#F9FAF8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <h2 className="inline-flex items-center gap-3 font-abhaya text-3xl leading-none">
+        <span className="inline-flex h-9 w-9 items-center justify-center border border-[#D8DDE2] bg-white text-base">
+          <Icon aria-hidden="true" />
+        </span>
+        {title}
+      </h2>
+      {action}
+    </div>
+  );
+}
+
+function EditorSection({ icon, title, children, action }) {
+  return (
+    <div className="border border-[#D8DDE2] bg-white shadow-sm">
+      <SectionHeader icon={icon} title={title} action={action} />
+      <div className="p-5">{children}</div>
+    </div>
   );
 }
 
@@ -75,6 +115,7 @@ function DigitalInviteEditorPage() {
   const [initialDocId, setInitialDocId] = useState(id || "");
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -135,6 +176,14 @@ function DigitalInviteEditorPage() {
 
     return `/e/${invite.slug}`;
   }, [invite.slug]);
+
+  const publicUrl = useMemo(() => {
+    if (!publicPath) {
+      return "";
+    }
+
+    return `${window.location.origin}${publicPath}`;
+  }, [publicPath]);
 
   const selectedTemplate = getDigitalInviteTemplate(invite.template) || defaultTemplate;
 
@@ -243,6 +292,33 @@ function DigitalInviteEditorPage() {
     }
   };
 
+  const handleCopyLink = async () => {
+    if (!publicUrl) {
+      return;
+    }
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(publicUrl);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = publicUrl;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch (copyError) {
+      setError("Impossible de copier le lien.");
+    }
+  };
+
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F6F4EF] font-urbanist">
@@ -252,16 +328,24 @@ function DigitalInviteEditorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F4EF] font-urbanist text-[#141414]">
-      <header className="border-b border-[#D8C9B8] bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414]">
+      <header className="border-b border-[#D8DDE2] bg-white px-5 py-4">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="flex flex-wrap gap-3 text-sm font-semibold text-gray-500">
-              <button type="button" onClick={() => navigate(-1)}>
-                Retour
+            <div className="flex flex-wrap gap-2 text-sm font-semibold">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600"
+              >
+                <FiArrowLeft aria-hidden="true" /> Retour
               </button>
-              <Link to="/dashboard">Dashboard</Link>
-              <Link to="/">Site Lovely Wedding</Link>
+              <Link to="/dashboard" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
+                <FiFileText aria-hidden="true" /> Dashboard
+              </Link>
+              <Link to="/" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
+                <FiHome aria-hidden="true" /> Site
+              </Link>
             </div>
             <h1 className="mt-2 font-abhaya text-4xl leading-none">
               {isEditing ? "Modifier l'invitation" : "Nouvelle invitation"}
@@ -274,18 +358,18 @@ function DigitalInviteEditorPage() {
                 to={publicPath}
                 target="_blank"
                 rel="noreferrer"
-                className="border border-black px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
               >
-                Apercu
+                <FiExternalLink aria-hidden="true" /> Apercu
               </Link>
             ) : null}
             <button
               type="submit"
               form="digital-invite-form"
               disabled={saving}
-              className="bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
             >
-              {saving ? "Sauvegarde..." : "Enregistrer"}
+              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
             </button>
           </div>
         </div>
@@ -303,9 +387,8 @@ function DigitalInviteEditorPage() {
             </div>
           ) : null}
 
-          <div className="border border-[#D8C9B8] bg-white p-5">
-            <h2 className="font-abhaya text-3xl">Informations</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <EditorSection icon={FiSettings} title="Informations">
+            <div className="grid gap-4 md:grid-cols-2">
               <Field label="Noms du couple">
                 <TextInput
                   value={invite.coupleNames}
@@ -327,7 +410,7 @@ function DigitalInviteEditorPage() {
                 <select
                   value={invite.template}
                   onChange={(event) => handleTemplateChange(event.target.value)}
-                  className="w-full border border-[#D7CEC3] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
                 >
                   {digitalInviteTemplates.map((template) => (
                     <option key={template.id} value={template.id}>
@@ -340,18 +423,17 @@ function DigitalInviteEditorPage() {
                 <select
                   value={invite.status}
                   onChange={(event) => updateInvite("status", event.target.value)}
-                  className="w-full border border-[#D7CEC3] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
                 >
                   <option value="draft">Brouillon</option>
                   <option value="published">Publiee</option>
                 </select>
               </Field>
             </div>
-          </div>
+          </EditorSection>
 
-          <div className="border border-[#D8C9B8] bg-white p-5">
-            <h2 className="font-abhaya text-3xl">Contenu</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <EditorSection icon={FiEdit2} title="Contenu">
+            <div className="grid gap-4 md:grid-cols-2">
               <Field label="Titre">
                 <TextInput
                   value={invite.title}
@@ -383,18 +465,17 @@ function DigitalInviteEditorPage() {
                 <select
                   value={invite.rsvpEnabled ? "yes" : "no"}
                   onChange={(event) => updateInvite("rsvpEnabled", event.target.value === "yes")}
-                  className="w-full border border-[#D7CEC3] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
                 >
                   <option value="yes">Actif</option>
                   <option value="no">Masque</option>
                 </select>
               </Field>
             </div>
-          </div>
+          </EditorSection>
 
-          <div className="border border-[#D8C9B8] bg-white p-5">
-            <h2 className="font-abhaya text-3xl">Date et lieu</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <EditorSection icon={FiMapPin} title="Date et lieu">
+            <div className="grid gap-4 md:grid-cols-2">
               <Field label="Date">
                 <TextInput
                   type="date"
@@ -446,22 +527,24 @@ function DigitalInviteEditorPage() {
                 </Field>
               </div>
             </div>
-          </div>
+          </EditorSection>
 
-          <div className="border border-[#D8C9B8] bg-white p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="font-abhaya text-3xl">Timeline</h2>
+          <EditorSection
+            icon={FiClock}
+            title="Timeline"
+            action={
               <button
                 type="button"
                 onClick={addTimelineItem}
-                className="border border-black px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
               >
-                Ajouter une etape
+                <FiPlus aria-hidden="true" /> Ajouter une etape
               </button>
-            </div>
-            <div className="mt-5 space-y-4">
+            }
+          >
+            <div className="space-y-4">
               {invite.timeline.map((item, index) => (
-                <div key={index} className="grid gap-3 md:grid-cols-[0.5fr_1fr_1fr_auto] md:items-end">
+                <div key={index} className="grid gap-3 border border-[#E4E8EA] bg-[#FCFCFB] p-4 md:grid-cols-[0.5fr_1fr_1fr_auto] md:items-end">
                   <Field label={`Heure ${index + 1}`}>
                     <TextInput
                       value={item.time}
@@ -486,42 +569,70 @@ function DigitalInviteEditorPage() {
                     type="button"
                     onClick={() => removeTimelineItem(index)}
                     disabled={invite.timeline.length <= 1}
-                    className="border border-red-200 px-3 py-3 text-sm font-semibold text-red-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                    title="Supprimer"
+                    aria-label={`Supprimer l'etape ${index + 1}`}
+                    className="inline-flex h-12 w-12 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
                   >
-                    Supprimer
+                    <FiTrash2 aria-hidden="true" />
                   </button>
                 </div>
               ))}
             </div>
-          </div>
+          </EditorSection>
         </section>
 
-        <aside className="h-fit border border-[#D8C9B8] bg-white p-5 lg:sticky lg:top-6">
+        <aside className="h-fit border border-[#D8DDE2] bg-white p-5 shadow-sm lg:sticky lg:top-6">
           <h2 className="font-abhaya text-3xl">{selectedTemplate.label}</h2>
           <p className="mt-2 text-sm leading-6 text-gray-600">{selectedTemplate.description}</p>
-          <div className="my-5 h-px bg-[#E5DCD1]" />
-          <h3 className="font-abhaya text-2xl">Lien public</h3>
+          <div className="my-5 h-px bg-[#E4E8EA]" />
+          <h3 className="inline-flex items-center gap-2 font-abhaya text-2xl">
+            <FiLink aria-hidden="true" /> Lien public
+          </h3>
           <p className="mt-3 break-all text-sm text-gray-600">
-            {publicPath || "Le lien apparaitra apres avoir ajoute un slug."}
+            {publicUrl || "Le lien apparaitra apres avoir ajoute un slug."}
           </p>
           <div className="mt-5 grid gap-3">
             <button
               type="submit"
               disabled={saving}
-              className="bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
             >
-              {saving ? "Sauvegarde..." : "Enregistrer"}
+              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
             </button>
             {publicPath ? (
-              <Link
-                to={publicPath}
-                target="_blank"
-                rel="noreferrer"
-                className="border border-black px-5 py-3 text-center text-sm font-semibold"
-              >
-                Ouvrir l'apercu
-              </Link>
+              <>
+                <Link
+                  to={publicPath}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
+                >
+                  <FiExternalLink aria-hidden="true" /> Ouvrir l'apercu
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-5 py-3 text-sm font-semibold"
+                >
+                  {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+                  {copied ? "Lien copie" : "Copier le lien"}
+                </button>
+              </>
             ) : null}
+            <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-gray-600">
+              <div className="border border-[#E4E8EA] p-3">
+                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
+                  <FiCalendar aria-hidden="true" /> Date
+                </div>
+                {invite.dateLabel || "Non definie"}
+              </div>
+              <div className="border border-[#E4E8EA] p-3">
+                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
+                  <FiMapPin aria-hidden="true" /> Lieu
+                </div>
+                {invite.city || "Non defini"}
+              </div>
+            </div>
           </div>
         </aside>
       </form>

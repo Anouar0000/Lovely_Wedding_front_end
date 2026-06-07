@@ -1,5 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  FiCheck,
+  FiCopy,
+  FiEdit2,
+  FiExternalLink,
+  FiEye,
+  FiHome,
+  FiLogOut,
+  FiPlus,
+  FiRefreshCw,
+  FiSearch,
+  FiTrash2,
+} from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
 import sampleInvites from "../data/digitalInviteInstances.json";
 import {
@@ -14,7 +27,35 @@ function DashboardPage() {
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
+  const [copiedId, setCopiedId] = useState("");
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredInvites = invites.filter((invite) => {
+    const term = searchTerm.trim().toLowerCase();
+    const matchesStatus = statusFilter === "all" || invite.status === statusFilter;
+    const searchableText = [
+      invite.coupleNames,
+      invite.slug,
+      invite.venueName,
+      invite.city,
+      getDigitalInviteTemplate(invite.template)?.label,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return matchesStatus && (!term || searchableText.includes(term));
+  });
+
+  const statusCounts = invites.reduce(
+    (counts, invite) => ({
+      ...counts,
+      [invite.status]: (counts[invite.status] || 0) + 1,
+    }),
+    { all: invites.length, draft: 0, published: 0 }
+  );
 
   const loadInvites = useCallback(async () => {
     setError("");
@@ -71,27 +112,61 @@ function DashboardPage() {
     }
   };
 
+  const getPublicInviteUrl = (slug) => {
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/e/${slug}`;
+  };
+
+  const handleCopyLink = async (invite) => {
+    const url = getPublicInviteUrl(invite.slug);
+    setError("");
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
+      setCopiedId(invite.id);
+      window.setTimeout(() => setCopiedId(""), 1800);
+    } catch (copyError) {
+      setError("Impossible de copier le lien. Ouvre l'apercu et copie l'URL manuellement.");
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-[#F6F4EF] font-urbanist text-[#141414]">
-      <header className="border-b border-[#D8C9B8] bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414]">
+      <header className="border-b border-[#D8DDE2] bg-white px-5 py-4">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8A6C4D]">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#42625B]">
               Lovely Wedding
             </p>
             <h1 className="font-abhaya text-3xl leading-none">Dashboard</h1>
           </div>
 
           <div className="flex flex-wrap justify-end gap-2">
-            <Link to="/" className="border border-[#D8C9B8] px-4 py-2 text-sm font-semibold">
-              Site Lovely Wedding
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 border border-[#D8DDE2] px-4 py-2 text-sm font-semibold"
+            >
+              <FiHome aria-hidden="true" /> Site
             </Link>
             <button
               type="button"
               onClick={logout}
-              className="border border-black px-4 py-2 text-sm font-semibold"
+              className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
             >
-              Deconnexion
+              <FiLogOut aria-hidden="true" /> Deconnexion
             </button>
           </div>
         </div>
@@ -108,14 +183,54 @@ function DashboardPage() {
 
           <Link
             to="/dashboard/invitations/new"
-            className="inline-flex items-center justify-center bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white"
+            className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white"
           >
-            Nouvelle invitation
+            <FiPlus aria-hidden="true" /> Nouvelle invitation
           </Link>
         </div>
 
-        <div className="border border-[#D8C9B8] bg-white">
-          <div className="grid grid-cols-1 gap-4 border-b border-[#E5DCD1] px-5 py-4 text-sm font-semibold text-gray-500 md:grid-cols-[1.2fr_0.8fr_0.6fr_1fr]">
+        <div className="mb-4 grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-center">
+          <label className="relative block">
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Rechercher"
+              className="w-full border border-[#D8DDE2] bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-black"
+            />
+          </label>
+
+          <div className="flex overflow-hidden border border-[#D8DDE2] bg-white text-sm font-semibold">
+            {[
+              ["all", `Tout ${statusCounts.all}`],
+              ["published", `Publiees ${statusCounts.published}`],
+              ["draft", `Brouillons ${statusCounts.draft}`],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setStatusFilter(value)}
+                className={`px-4 py-3 ${
+                  statusFilter === value ? "bg-black text-white" : "text-gray-600"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={loadInvites}
+            className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] bg-white px-4 py-3 text-sm font-semibold"
+          >
+            <FiRefreshCw aria-hidden="true" /> Actualiser
+          </button>
+        </div>
+
+        <div className="border border-[#D8DDE2] bg-white shadow-sm">
+          <div className="grid grid-cols-1 gap-4 border-b border-[#E4E8EA] bg-[#F9FAF8] px-5 py-4 text-sm font-semibold text-gray-500 md:grid-cols-[1.25fr_0.75fr_0.55fr_1fr]">
             <span>Client</span>
             <span>Template</span>
             <span>Status</span>
@@ -145,56 +260,91 @@ function DashboardPage() {
                 type="button"
                 onClick={handleAddSample}
                 disabled={Boolean(busyId)}
-                className="mt-6 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="mt-6 inline-flex items-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
               >
-                {busyId ? "Ajout..." : "Ajouter l'exemple"}
+                <FiPlus aria-hidden="true" /> {busyId ? "Ajout..." : "Ajouter l'exemple"}
               </button>
             </div>
           ) : null}
 
-          {!loading && invites.length > 0 ? (
-            <div className="divide-y divide-[#E5DCD1]">
-              {invites.map((invite) => (
+          {!loading && invites.length > 0 && filteredInvites.length === 0 ? (
+            <div className="px-5 py-12 text-center">
+              <h3 className="font-abhaya text-3xl">Aucun resultat</h3>
+              <p className="mt-2 text-sm text-gray-600">Modifie la recherche ou le filtre.</p>
+            </div>
+          ) : null}
+
+          {!loading && filteredInvites.length > 0 ? (
+            <div className="divide-y divide-[#E4E8EA]">
+              {filteredInvites.map((invite) => {
+                const isPublished = invite.status === "published";
+
+                return (
                 <div
                   key={invite.id}
-                  className="grid grid-cols-1 gap-4 px-5 py-4 text-sm md:grid-cols-[1.2fr_0.8fr_0.6fr_1fr] md:items-center"
+                  className="grid grid-cols-1 gap-4 px-5 py-4 text-sm transition-colors hover:bg-[#FAFAF8] md:grid-cols-[1.25fr_0.75fr_0.55fr_1fr] md:items-center"
                 >
                   <div>
                     <p className="font-semibold">{invite.coupleNames || invite.slug}</p>
-                    <p className="mt-1 text-xs text-gray-500">/{invite.slug}</p>
+                    <p className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+                      <FiExternalLink aria-hidden="true" /> /{invite.slug}
+                    </p>
                   </div>
                   <span>{getDigitalInviteTemplate(invite.template)?.label || invite.template}</span>
                   <span>
-                    <span className="inline-flex border border-[#D8C9B8] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]">
+                    <span
+                      className={`inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${
+                        isPublished
+                          ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+                          : "border border-amber-200 bg-amber-50 text-amber-800"
+                      }`}
+                    >
+                      <span className={`h-2 w-2 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`} />
                       {invite.status}
                     </span>
                   </span>
                   <div className="flex flex-wrap gap-2">
                     <Link
                       to={`/dashboard/invitations/${invite.id}/edit`}
-                      className="border border-[#D8C9B8] px-3 py-2 font-semibold"
+                      title="Modifier"
+                      aria-label={`Modifier ${invite.coupleNames || invite.slug}`}
+                      className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
                     >
-                      Modifier
+                      <FiEdit2 aria-hidden="true" />
                     </Link>
                     <Link
                       to={`/e/${invite.slug}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="border border-[#D8C9B8] px-3 py-2 font-semibold"
+                      title="Apercu"
+                      aria-label={`Apercu ${invite.coupleNames || invite.slug}`}
+                      className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
                     >
-                      Apercu
+                      <FiEye aria-hidden="true" />
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyLink(invite)}
+                      title="Copier le lien"
+                      aria-label={`Copier le lien ${invite.coupleNames || invite.slug}`}
+                      className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
+                    >
+                      {copiedId === invite.id ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(invite)}
                       disabled={busyId === invite.id}
-                      className="border border-red-200 px-3 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                      title="Supprimer"
+                      aria-label={`Supprimer ${invite.coupleNames || invite.slug}`}
+                      className="inline-flex h-10 w-10 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
                     >
-                      {busyId === invite.id ? "..." : "Supprimer"}
+                      {busyId === invite.id ? "..." : <FiTrash2 aria-hidden="true" />}
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           ) : null}
         </div>
