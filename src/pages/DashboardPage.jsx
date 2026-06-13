@@ -14,7 +14,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
-import sampleInvites from "../data/digitalInviteInstances.json";
+import sampleInvites from "../data/digital/instances.json";
 import {
   deleteDigitalInvite,
   listDigitalInvites,

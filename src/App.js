@@ -5,6 +5,7 @@ import CanvasContainer from './pages/CanvasContainer';
 import InvitationsPhysiquePage from './pages/InvitationsPhysiquePage';
 import InvitationsDigitalPage from './pages/InvitationsDigitalPage';
 import DolceVitaInvitePage from './pages/DolceVitaInvitePage';
+import SidiBouSaidInvitePage from './pages/SidiBouSaidInvitePage';
 import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/e/:slug" element={<SharedDigitalInvitePage />} />
           <Route path="/invitations-digital/e/:slug" element={<SharedDigitalInvitePage />} />
           <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
+          <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/dashboard"

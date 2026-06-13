@@ -1,0 +1,215 @@
+{
+  "id": "sidi-bousaid",
+  "label": "Sidi Bou Said",
+  "name": "Sidi Bou Said E-invite",
+  "price": "90",
+  "thumbnail": "assets/images/onlydigital1.png",
+  "description": "Une invitation digitale inspiree de Sidi Bou Said avec une ouverture video et une page partageable.",
+  "features": ["Ouverture video", "Lien personnalise", "RSVP", "Programme"],
+  "format": "Landing page",
+  "previewPath": "/digital-invitation/sidi-bousaid",
+  "sample": {
+    "template": "sidi-bousaid",
+    "status": "published",
+    "title": "Sidi Bou Said",
+    "coupleNames": "Bilel & Dorra",
+    "eventDate": "2026-08-12",
+    "venueName": "Dar Sidi Bou Said",
+    "city": "Sidi Bou Said",
+    "locationLabel": "TUNISIE",
+    "time": "19H00",
+    "mapUrl": "https://maps.google.com",
+    "rsvpEnabled": true,
+    "timeline": [
+      { "time": "20h" },
+      { "time": "20h30" },
+      { "time": "21h" }
+    ]
+  },
+  "fixedText": {
+    "introLabel": "We are getting married",
+    "introText": "We would like to invite you to celebrate with us the most special day of our lives",
+    "locationIntro": "The ceremony will take place at",
+    "closingText": "We hope you can make it"
+  },
+  "fixedTimelineSteps": [
+    { "title": "Accueil" },
+    { "title": "Arrivee" },
+    { "title": "Ceremonie" }
+  ],
+  "design": {
+    "colors": {
+      "pageBackground": "#dcebf0",
+      "cardBackground": "#fbfcf5",
+      "primaryText": "#08306b",
+      "heading": "#0d3b7a",
+      "accent": "#f4d23b",
+      "heroText": "#ffffff",
+      "heroOverlay": "linear-gradient(to bottom, rgba(7, 29, 63, 0.55), rgba(7, 29, 63, 0.15), rgba(7, 29, 63, 0.7))"
+    },
+    "fonts": {
+      "body": "Urbanist, sans-serif",
+      "script": "\"Pinyon Script\", cursive",
+      "serif": "Crimson Text, sans-serif"
+    },
+    "card": {
+      "maxWidth": 430
+    },
+    "hero": {
+      "minHeight": 620,
+      "paddingX": 36,
+      "paddingY": 64,
+      "intro": {
+        "fontFamily": "Urbanist, sans-serif",
+        "fontSize": 10,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "letterSpacing": "0.22em",
+        "textTransform": "uppercase"
+      },
+      "title": {
+        "fontFamily": "\"Pinyon Script\", cursive",
+        "fontSize": 56,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "lineHeight": 1
+      },
+      "coupleNames": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 16,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "letterSpacing": "0.16em",
+        "marginTop": 20
+      },
+      "introText": {
+        "fontFamily": "Urbanist, sans-serif",
+        "fontSize": 10,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "lineHeight": 1.6,
+        "letterSpacing": "0.12em",
+        "textTransform": "uppercase",
+        "marginTop": 20,
+        "maxWidth": 280
+      },
+      "arrow": { "width": "auto", "height": 18 }
+    },
+    "sections": {
+      "heading": {
+        "fontFamily": "\"Pinyon Script\", cursive",
+        "fontSize": 44,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "lineHeight": 1
+      },
+      "smallText": {
+        "fontFamily": "Urbanist, sans-serif",
+        "fontSize": 8,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "lineHeight": 1.5,
+        "letterSpacing": "0.1em",
+        "textTransform": "uppercase"
+      },
+      "countdownValue": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 16,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "letterSpacing": "0.1em"
+      },
+      "countdownLabel": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 8,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "letterSpacing": "0.1em",
+        "textTransform": "uppercase"
+      },
+      "locationName": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 14,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "letterSpacing": "0.1em"
+      },
+      "timelineTime": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 14,
+        "fontWeight": 400,
+        "fontStyle": "normal"
+      },
+      "timelineTitle": {
+        "fontFamily": "\"Pinyon Script\", cursive",
+        "fontSize": 24,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "lineHeight": 1
+      },
+      "timelineSubtitle": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 12,
+        "fontWeight": 400,
+        "fontStyle": "normal"
+      },
+      "closingText": {
+        "fontFamily": "Crimson Text, sans-serif",
+        "fontSize": 14,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "letterSpacing": "0.1em"
+      },
+      "closingNames": {
+        "fontFamily": "\"Pinyon Script\", cursive",
+        "fontSize": 34,
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "lineHeight": 1
+      },
+      "countdown": { "paddingTop": 56, "paddingBottom": 56, "sunWidth": 96, "headingMarginTop": 16, "dateMarginTop": 12, "gridMarginTop": 32 },
+      "location": { "paddingBottom": 64, "copyMarginTop": 20, "stageMarginTop": 24, "stageHeight": 220, "stageMaxWidth": 348, "venueNameMarginTop": 0 },
+      "timeline": { "paddingBottom": 64, "stageMarginTop": 32, "stageHeight": 350, "stageMaxWidth": 285, "imageHeight": 350, "itemGap": 110 },
+      "actions": { "paddingBottom": 64 },
+      "closing": { "paddingBottom": 96, "paddingTop": 16, "textTop": 82 }
+    },
+    "locationAssets": {
+      "lineLeft": { "top": 4, "left": -40, "width": 146 },
+      "lineRight": { "top": -12, "right": -40, "width": 143 },
+      "lineLowerLeft": { "top": 100, "left": -40, "width": 149 },
+      "lineLowerRight": { "top": 90, "right": -40, "width": 152 },
+      "venueSoft": { "top": 0, "left": "50%", "width": 143, "transform": "translateX(-50%)", "filter": "blur(4px)" },
+      "venue": { "top": 8, "left": "50%", "width": 126, "transform": "translateX(-50%)" },
+      "portrait": { "top": 64, "left": 0, "width": 96 },
+      "lemons": { "top": 32, "right": 0, "width": 96 }
+    },
+    "timelineItems": [
+      { "top": 16, "left": 0, "width": 112, "textAlign": "left", "timeTextAlign": "left" },
+      { "top": 118, "right": 0, "width": 112, "textAlign": "right", "timeTextAlign": "right" },
+      { "top": 238, "left": 0, "width": 112, "textAlign": "left", "timeTextAlign": "left" },
+      { "top": 348, "right": 0, "width": 112, "textAlign": "right", "timeTextAlign": "right" },
+      { "top": 458, "left": 0, "width": 112, "textAlign": "left", "timeTextAlign": "left" },
+      { "top": 568, "right": 0, "width": 112, "textAlign": "right", "timeTextAlign": "right" }
+    ]
+  },
+  "defaults": {
+    "template": "sidi-bousaid",
+    "status": "draft",
+    "title": "Sidi Bou Said",
+    "coupleNames": "",
+    "eventDate": "",
+    "venueName": "",
+    "city": "Sidi Bou Said",
+    "locationLabel": "",
+    "time": "",
+    "mapUrl": "",
+    "rsvpEnabled": true,
+    "timeline": [
+      { "time": "20h" },
+      { "time": "20h30" },
+      { "time": "21h" }
+    ]
+  }
+}
+
+

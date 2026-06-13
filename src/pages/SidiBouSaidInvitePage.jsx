@@ -1,30 +1,19 @@
 import React from "react";
 import { FiCalendar, FiClock, FiMapPin, FiSend } from "react-icons/fi";
-import columns from "../assets/digital/dolce-vita/figma-layer-01.png";
-import flourishLeft from "../assets/digital/dolce-vita/figma-layer-02.png";
-import flourishRight from "../assets/digital/dolce-vita/figma-layer-03.png";
-import divider from "../assets/digital/dolce-vita/figma-layer-04.png";
+import openingVideo from "../assets/digital/sidi-bousaid/can_you_create_a_video_,_of_a_tunisian_double_opening_door_door_(_of_sidi_bousaid_)_opening_to_revea_seed458836054.mp4";
 import sun from "../assets/digital/dolce-vita/figma-layer-05.png";
 import venueSoft from "../assets/digital/dolce-vita/figma-layer-06.png";
 import venue from "../assets/digital/dolce-vita/figma-layer-07.png";
 import portrait from "../assets/digital/dolce-vita/figma-layer-08.png";
 import lemons from "../assets/digital/dolce-vita/figma-layer-09.png";
 import noteCard from "../assets/digital/dolce-vita/figma-layer-10.png";
-import accueilTimeline from "../assets/digital/dolce-vita/accueil-des-invites.png";
-import arriveeTimeline from "../assets/digital/dolce-vita/arrivee-des-maries.png";
-import contratTimeline from "../assets/digital/dolce-vita/contrat-de-mariage.png";
-import soireeTimeline from "../assets/digital/dolce-vita/soirée-dansante.png";
-import finTimeline from "../assets/digital/dolce-vita/la-fin.png";
-import timelineArrow1 from "../assets/digital/dolce-vita/arrow1.png";
-import timelineArrow2 from "../assets/digital/dolce-vita/arrow2.png";
-import timelineArrow3 from "../assets/digital/dolce-vita/arrow3.png";
-import timelineArrow4 from "../assets/digital/dolce-vita/arrow4.png";
+import timelineDoodle from "../assets/digital/dolce-vita/timeline-doodle.png";
 import locationLineLeft from "../assets/digital/dolce-vita/figma-vector-38.svg";
 import locationLineLowerLeft from "../assets/digital/dolce-vita/figma-vector-02.svg";
 import locationLineRight from "../assets/digital/dolce-vita/figma-vector-37.svg";
 import locationLineLowerRight from "../assets/digital/dolce-vita/figma-vector-39.svg";
 import topArrow from "../assets/digital/dolce-vita/figma-vector-01.svg";
-import templateConfig from "../data/digital/templates/dolce-vita.json";
+import templateConfig from "../data/digital/templates/sidi-bousaid.json";
 import { boxStyle, textStyle, toCssSize } from "../utils/digitalTemplateDesign";
 
 const defaultInvite = templateConfig.sample;
@@ -33,18 +22,6 @@ const fixedText = templateConfig.fixedText;
 const fixedTimelineSteps = templateConfig.fixedTimelineSteps || [];
 const fonts = design.fonts;
 const colors = design.colors;
-const timelineImages = {
-  accueil: accueilTimeline,
-  arrivee: arriveeTimeline,
-  contrat: contratTimeline,
-  soiree: soireeTimeline,
-  fin: finTimeline,
-};
-const timelineArrows = [timelineArrow1, timelineArrow2, timelineArrow3, timelineArrow4];
-const getTimelineStep = (item, index) => {
-  const stepKey = item.step || item.image || fixedTimelineSteps[index]?.image;
-  return fixedTimelineSteps.find((step) => step.image === stepKey) || fixedTimelineSteps[index] || {};
-};
 
 const getCountdown = (dateString) => {
   if (!dateString) {
@@ -78,22 +55,20 @@ const formatDisplayDate = (dateString) => {
   return `${day}.${month}.${year}`;
 };
 
-function DolceVitaInvitePage({ invite = defaultInvite }) {
+function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   const countdown = getCountdown(invite.eventDate);
   const displayDate = formatDisplayDate(invite.eventDate);
   const timelineEntries = (invite.timeline || [])
-    .map((item, index) => {
-      const timelineStep = getTimelineStep(item, index);
-
-      return {
-        ...item,
-        title: timelineStep.title || item.title || "",
-        image: timelineStep.image || item.image || "",
-        imageWidth: timelineStep.imageWidth || item.imageWidth,
-      };
-    })
+    .map((item, index) => ({
+      ...item,
+      title: fixedTimelineSteps[index]?.title || item.title || "",
+    }))
     .filter((item) => item.time || item.title);
   const timelineGap = design.sections.timeline.itemGap || 110;
+  const timelineStepCount = Math.max(fixedTimelineSteps.length, timelineEntries.length, 1);
+  const timelineImageHeight = design.sections.timeline.imageHeight || design.sections.timeline.stageHeight;
+  const timelineImageWidth = design.sections.timeline.imageWidth || 112;
+  const timelineSegmentHeight = timelineImageHeight / timelineStepCount;
   const getTimelineItemLayout = (index) => {
     const configuredLayout = design.timelineItems[index];
 
@@ -120,26 +95,8 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
     };
   };
   const timelineStageHeight = Math.max(
-    120,
-    ...timelineEntries.map((item, index) => {
-      const itemLayout = getTimelineItemLayout(index);
-      const imageLayout = design.timelineImages?.[index] || {
-        top: Number(itemLayout.top || 0),
-        width: 64,
-      };
-      const arrowLayout = design.timelineArrows?.[index] || {
-        top: Number(itemLayout.top || 0) + 56,
-        width: 48,
-      };
-
-      return Math.max(
-        Number(itemLayout.top || 0) + 112,
-        Number(imageLayout.top || 0) + Number(item.imageWidth || imageLayout.width || 64),
-        index < timelineEntries.length - 1
-          ? Number(arrowLayout.top || 0) + Number(arrowLayout.width || 48)
-          : 0
-      );
-    })
+    design.sections.timeline.stageHeight,
+    timelineEntries.length ? getTimelineItemLayout(timelineEntries.length - 1).top + timelineSegmentHeight + 36 : 0
   );
 
   return (
@@ -152,80 +109,86 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
         style={{ maxWidth: toCssSize(design.card.maxWidth), backgroundColor: colors.cardBackground }}
       >
         <section
-          className="relative text-center"
-          style={{
-            minHeight: toCssSize(design.hero.minHeight),
-            paddingLeft: toCssSize(design.hero.paddingX),
-            paddingRight: toCssSize(design.hero.paddingX),
-            paddingTop: toCssSize(design.hero.paddingTop),
-          }}
+          className="relative overflow-hidden text-center"
+          style={{ minHeight: toCssSize(design.hero.minHeight), color: colors.heroText }}
         >
-          <img src={columns} alt="" className="absolute" style={boxStyle(design.hero.assets.columns)} />
-          <img src={flourishLeft} alt="" className="absolute" style={boxStyle(design.hero.assets.flourishLeft)} />
-          <img src={flourishRight} alt="" className="absolute" style={boxStyle(design.hero.assets.flourishRight)} />
-          <img src={divider} alt="" className="absolute" style={boxStyle(design.hero.assets.divider)} />
-
-          <p className="relative z-10" style={textStyle(design.hero.intro)}>
-            {fixedText.introLabel}
-          </p>
-          <h1
-            className="relative z-10"
-            style={{
-              ...textStyle(design.hero.title),
-              marginTop: toCssSize(design.hero.title.marginTop),
-            }}
-          >
-            {invite.title}
-          </h1>
-          <p
-            className="relative z-10"
-            style={{
-              ...textStyle(design.hero.coupleNames),
-              marginTop: toCssSize(design.hero.coupleNames.marginTop),
-            }}
-          >
-            {invite.coupleNames}
-          </p>
-          <img
-            src={topArrow}
-            alt=""
-            className="relative z-10 mx-auto"
-            style={{
-              width: toCssSize(design.hero.arrow.width),
-              height: toCssSize(design.hero.arrow.height),
-              marginTop: toCssSize(design.hero.arrow.marginTop),
-            }}
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            src={openingVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
           />
+          <div className="absolute inset-0" style={{ background: colors.heroOverlay }} />
+
+          <div
+            className="relative z-10 flex flex-col items-center justify-between"
+            style={{
+              minHeight: toCssSize(design.hero.minHeight),
+              paddingLeft: toCssSize(design.hero.paddingX),
+              paddingRight: toCssSize(design.hero.paddingX),
+              paddingTop: toCssSize(design.hero.paddingY),
+              paddingBottom: toCssSize(design.hero.paddingY),
+            }}
+          >
+            <p style={textStyle(design.hero.intro)}>{fixedText.introLabel}</p>
+
+            <div>
+              <h1 className="drop-shadow-md" style={textStyle(design.hero.title)}>
+                {invite.title}
+              </h1>
+              <p
+                className="drop-shadow"
+                style={{
+                  ...textStyle(design.hero.coupleNames),
+                  marginTop: toCssSize(design.hero.coupleNames.marginTop),
+                }}
+              >
+                {invite.coupleNames}
+              </p>
+              <p
+                className="mx-auto"
+                style={{
+                  ...textStyle(design.hero.introText),
+                  marginTop: toCssSize(design.hero.introText.marginTop),
+                  maxWidth: toCssSize(design.hero.introText.maxWidth),
+                }}
+              >
+                {fixedText.introText}
+              </p>
+            </div>
+
+            <img
+              src={topArrow}
+              alt=""
+              className="brightness-0 invert"
+              style={{ width: toCssSize(design.hero.arrow.width), height: toCssSize(design.hero.arrow.height) }}
+            />
+          </div>
         </section>
 
         <section
           className="relative px-10 text-center"
-          style={{ paddingBottom: toCssSize(design.sections.countdown.paddingBottom) }}
+          style={{
+            paddingTop: toCssSize(design.sections.countdown.paddingTop),
+            paddingBottom: toCssSize(design.sections.countdown.paddingBottom),
+          }}
         >
           <img src={sun} alt="" className="mx-auto" style={{ width: toCssSize(design.sections.countdown.sunWidth) }} />
           <h2
             style={{
               ...textStyle(design.sections.heading),
+              color: colors.heading,
               marginTop: toCssSize(design.sections.countdown.headingMarginTop),
             }}
           >
             Countdown
           </h2>
-          <p
-            className="mx-auto"
-            style={{
-              ...textStyle(design.sections.smallText),
-              marginTop: toCssSize(design.sections.countdown.textMarginTop),
-              maxWidth: toCssSize(design.sections.countdown.textMaxWidth),
-            }}
-          >
-            {fixedText.introText}
-          </p>
-
           {countdown.length ? (
             <div className="grid grid-cols-3 gap-4" style={{ marginTop: toCssSize(design.sections.countdown.gridMarginTop) }}>
               {countdown.map(([value, label]) => (
-                <div key={label}>
+                <div key={label} className="border-y py-4" style={{ borderColor: `${colors.heading}33` }}>
                   <div style={textStyle(design.sections.countdownValue)}>{value}</div>
                   <div className="mt-2" style={textStyle(design.sections.countdownLabel)}>{label}</div>
                 </div>
@@ -235,7 +198,9 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
         </section>
 
         <section className="relative px-10 text-center" style={{ paddingBottom: toCssSize(design.sections.location.paddingBottom) }}>
-          <h2 style={textStyle(design.sections.heading)}>Location</h2>
+          <h2 style={{ ...textStyle(design.sections.heading), color: colors.heading }}>
+            Location
+          </h2>
           <p style={{ ...textStyle(design.sections.smallText), marginTop: toCssSize(design.sections.location.copyMarginTop) }}>
             {fixedText.locationIntro}
           </p>
@@ -271,7 +236,9 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
         </section>
 
         <section className="relative px-8 text-center" style={{ paddingBottom: toCssSize(design.sections.timeline.paddingBottom) }}>
-          <h2 style={textStyle(design.sections.heading)}>Timeline</h2>
+          <h2 style={{ ...textStyle(design.sections.heading), color: colors.heading }}>
+            Timeline
+          </h2>
           <div
             className="relative mx-auto"
             style={{
@@ -282,45 +249,30 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
           >
             {timelineEntries.map((item, index) => {
               const itemLayout = getTimelineItemLayout(index);
-              const imageLayout = design.timelineImages?.[index] || {
-                top: Number(itemLayout.top || 0),
-                left: "50%",
-                width: 64,
-                transform: "translateX(-50%)",
-              };
-              const arrowLayout = design.timelineArrows?.[index] || {
-                top: Number(itemLayout.top || 0) + 56,
-                left: "50%",
-                width: 48,
-                transform: "translateX(-50%)",
-              };
-              const stepImage = timelineImages[item.image];
-              const arrowImage = timelineArrows[index % timelineArrows.length];
 
               return (
                 <React.Fragment key={`${item.time}-${item.title}-${index}`}>
-                  {stepImage ? (
+                  <div
+                    className="absolute left-1/2 overflow-hidden"
+                    style={{
+                      top: toCssSize(Number(itemLayout.top || 0) - 18),
+                      width: toCssSize(timelineImageWidth),
+                      height: toCssSize(timelineSegmentHeight + 24),
+                      transform: "translateX(-50%)",
+                      pointerEvents: "none",
+                    }}
+                  >
                     <img
-                      src={stepImage}
+                      src={timelineDoodle}
                       alt=""
-                      className="absolute"
+                      className="absolute left-0"
                       style={{
-                        ...boxStyle({
-                          ...imageLayout,
-                          width: item.imageWidth || imageLayout.width,
-                        }),
-                        pointerEvents: "none",
+                        top: toCssSize(-index * timelineSegmentHeight),
+                        width: toCssSize(timelineImageWidth),
+                        height: toCssSize(timelineImageHeight),
                       }}
                     />
-                  ) : null}
-                  {index < timelineEntries.length - 1 && arrowImage ? (
-                    <img
-                      src={arrowImage}
-                      alt=""
-                      className="absolute"
-                      style={{ ...boxStyle(arrowLayout), pointerEvents: "none" }}
-                    />
-                  ) : null}
+                  </div>
                   <div className="absolute" style={boxStyle(itemLayout)}>
                     <p style={textStyle(design.sections.timelineTitle)}>{item.title}</p>
                     <div
@@ -346,14 +298,14 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
               target="_blank"
               rel="noreferrer"
               className="flex items-center justify-center gap-2 border px-4 py-3 text-xs uppercase tracking-[0.1em]"
-              style={{ borderColor: colors.primaryText }}
+              style={{ borderColor: colors.heading }}
             >
               <FiMapPin /> Voir le lieu
             </a>
             {invite.rsvpEnabled && (
               <button
                 className="flex items-center justify-center gap-2 border px-4 py-3 text-xs uppercase tracking-[0.1em] text-white"
-                style={{ borderColor: colors.primaryText, backgroundColor: colors.primaryText }}
+                style={{ borderColor: colors.heading, backgroundColor: colors.heading }}
               >
                 <FiSend /> Confirmer ma presence
               </button>
@@ -394,4 +346,4 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
   );
 }
 
-export default DolceVitaInvitePage;
+export default SidiBouSaidInvitePage;

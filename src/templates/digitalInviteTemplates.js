@@ -1,39 +1,29 @@
 import DolceVitaInvitePage from "../pages/DolceVitaInvitePage";
+import SidiBouSaidInvitePage from "../pages/SidiBouSaidInvitePage";
+import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
+import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 
 export const DIGITAL_TEMPLATE_IDS = {
-  DOLCE_VITA: "dolce-vita",
+  DOLCE_VITA: dolceVitaTemplate.id,
+  SIDI_BOUSAID: sidiBouSaidTemplate.id,
 };
-
-export const defaultDolceVitaTimeline = [
-  { time: "20h", title: "Accueil", subtitle: "des invites" },
-  { time: "20h30", title: "Arrivee", subtitle: "des maries" },
-  { time: "21h", title: "Contrat", subtitle: "de mariage" },
-];
 
 export const digitalInviteTemplates = [
   {
-    id: DIGITAL_TEMPLATE_IDS.DOLCE_VITA,
-    label: "Dolce Vita",
-    description: "Landing page mobile avec compte a rebours, lieu, timeline et RSVP.",
+    id: dolceVitaTemplate.id,
+    label: dolceVitaTemplate.label,
+    description: dolceVitaTemplate.description,
     Component: DolceVitaInvitePage,
-    defaults: {
-      template: DIGITAL_TEMPLATE_IDS.DOLCE_VITA,
-      status: "draft",
-      title: "La Dolce Vita",
-      coupleNames: "",
-      introLabel: "We are getting married",
-      introText: "",
-      eventDate: "",
-      dateLabel: "",
-      venueName: "",
-      city: "",
-      locationLabel: "",
-      time: "",
-      mapUrl: "",
-      rsvpEnabled: true,
-      closingText: "",
-      timeline: defaultDolceVitaTimeline,
-    },
+    defaults: dolceVitaTemplate.defaults,
+    fixedTimelineSteps: dolceVitaTemplate.fixedTimelineSteps,
+  },
+  {
+    id: sidiBouSaidTemplate.id,
+    label: sidiBouSaidTemplate.label,
+    description: sidiBouSaidTemplate.description,
+    Component: SidiBouSaidInvitePage,
+    defaults: sidiBouSaidTemplate.defaults,
+    fixedTimelineSteps: sidiBouSaidTemplate.fixedTimelineSteps,
   },
 ];
 

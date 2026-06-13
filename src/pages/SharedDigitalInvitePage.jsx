@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import invites from "../data/digitalInviteInstances.json";
+import invites from "../data/digital/instances.json";
 import { isFirebaseConfigured } from "../lib/firebase";
 import { getDigitalInviteBySlug } from "../services/digitalInvites";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";

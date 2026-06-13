@@ -23,6 +23,7 @@ module.exports = {
         amiri: ['"Amiri Quran"', 'serif'],
         playfair: ['"Playfair Display"', 'serif'],
         pinyon: ['"Pinyon Script"', 'cursive'],
+        taprom: ['"Taprom"', 'cursive'],
         josefin: ['"Josefin Sans"', 'sans-serif'],
         urbanist: ['"Urbanist"', 'sans-serif'],
         antic: ['"Antic Didone"', 'serif'],
@@ -31,6 +32,7 @@ module.exports = {
         lora: ['"Lora"', 'serif'],
         raleway: ['"Raleway"', 'sans-serif'],
         opensans: ['"Open Sans"', 'sans-serif'],
+        crimson: ['"Crimson Text"', 'serif'],
         abhaya: ['"Abhaya Libre"', 'serif'], // ✅ Added
       },      
     },
@@ -40,3 +42,4 @@ module.exports = {
   },
   plugins: [],
 };
+

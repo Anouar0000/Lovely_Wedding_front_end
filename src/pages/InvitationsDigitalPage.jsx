@@ -3,10 +3,20 @@ import { FiExternalLink, FiFilter, FiLink, FiRefreshCw } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
-import data from "../data/digitalInvitations.json";
+import groupsData from "../data/digital/groups.json";
+import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
+import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import heroImage from "../assets/images/onlydigital1.png";
 
-const getAllTemplates = () => Object.values(data.templates).flat();
+const digitalTemplatesById = {
+  [dolceVitaTemplate.id]: dolceVitaTemplate,
+  [sidiBouSaidTemplate.id]: sidiBouSaidTemplate,
+};
+
+const getGroupTemplates = (group) =>
+  group.templateIds.map((templateId) => digitalTemplatesById[templateId]).filter(Boolean);
+
+const getAllTemplates = () => groupsData.groups.flatMap((group) => getGroupTemplates(group));
 
 const getImage = (path) => {
   try {
@@ -22,8 +32,12 @@ function InvitationsDigitalPage() {
   const [sortType, setSortType] = useState("default");
 
   const templates = useMemo(() => {
+    const selectedGroup = selectedCategory
+      ? groupsData.groups.find((group) => group.id === selectedCategory)
+      : null;
+
     const selectedTemplates = selectedCategory
-      ? data.templates[selectedCategory] || []
+      ? getGroupTemplates(selectedGroup || { templateIds: [] })
       : getAllTemplates();
 
     if (sortType === "price-asc") {
@@ -93,15 +107,15 @@ function InvitationsDigitalPage() {
               Tous
             </button>
 
-            {data.categories.map((category) => (
+            {groupsData.groups.map((category) => (
               <button
-                key={category}
+                key={category.id}
                 className={`flex-shrink-0 border-b-2 px-1 pb-2 font-urbanist text-sm ${
-                  selectedCategory === category ? "border-black font-bold text-black" : "border-transparent text-gray-600"
+                  selectedCategory === category.id ? "border-black font-bold text-black" : "border-transparent text-gray-600"
                 }`}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategory(category.id)}
               >
-                {category}
+                {category.label}
               </button>
             ))}
           </div>

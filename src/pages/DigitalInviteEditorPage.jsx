@@ -73,15 +73,6 @@ function TextInput(props) {
   );
 }
 
-function TextArea(props) {
-  return (
-    <textarea
-      {...props}
-      className="min-h-28 w-full resize-y border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-    />
-  );
-}
-
 function SectionHeader({ icon: Icon, title, action }) {
   return (
     <div className="flex flex-col gap-3 border-b border-[#E4E8EA] bg-[#F9FAF8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -186,6 +177,18 @@ function DigitalInviteEditorPage() {
   }, [publicPath]);
 
   const selectedTemplate = getDigitalInviteTemplate(invite.template) || defaultTemplate;
+  const fixedTimelineSteps = selectedTemplate.fixedTimelineSteps || [];
+  const maxTimelineItems = fixedTimelineSteps.length || Infinity;
+  const getTimelineStepKey = (item, index) =>
+    item.step || item.image || fixedTimelineSteps[index]?.image || fixedTimelineSteps[0]?.image || "";
+  const getNextTimelineStepKey = (timeline) => {
+    const usedKeys = new Set(timeline.map((item, index) => getTimelineStepKey(item, index)));
+    return (
+      fixedTimelineSteps.find((step) => !usedKeys.has(step.image))?.image ||
+      fixedTimelineSteps[0]?.image ||
+      ""
+    );
+  };
 
   const updateInvite = (key, value) => {
     setInvite((currentInvite) => ({
@@ -206,7 +209,10 @@ function DigitalInviteEditorPage() {
   const addTimelineItem = () => {
     setInvite((currentInvite) => ({
       ...currentInvite,
-      timeline: [...currentInvite.timeline, { time: "", title: "", subtitle: "" }],
+      timeline:
+        currentInvite.timeline.length >= maxTimelineItems
+          ? currentInvite.timeline
+          : [...currentInvite.timeline, { step: getNextTimelineStepKey(currentInvite.timeline), time: "" }],
     }));
   };
 
@@ -244,7 +250,6 @@ function DigitalInviteEditorPage() {
     setInvite((currentInvite) => ({
       ...currentInvite,
       eventDate: dateValue,
-      dateLabel: currentInvite.dateLabel || formatDateLabel(dateValue),
     }));
   };
 
@@ -266,13 +271,20 @@ function DigitalInviteEditorPage() {
       delete inviteFields.id;
       delete inviteFields.createdAt;
       delete inviteFields.updatedAt;
+      delete inviteFields.introLabel;
+      delete inviteFields.introText;
+      delete inviteFields.closingText;
+      delete inviteFields.dateLabel;
       const cleanedInvite = {
         ...inviteFields,
         slug: normalizedSlug,
         template: selectedTemplate.id,
-        timeline: invite.timeline.filter(
-          (item) => item.time || item.title || item.subtitle
-        ),
+        timeline: invite.timeline
+          .slice(0, maxTimelineItems)
+          .map((item, index) => ({
+            step: getTimelineStepKey(item, index),
+            time: item.time || "",
+          })),
       };
       const docId = normalizedSlug;
 
@@ -441,26 +453,6 @@ function DigitalInviteEditorPage() {
                   required
                 />
               </Field>
-              <Field label="Petit titre">
-                <TextInput
-                  value={invite.introLabel}
-                  onChange={(event) => updateInvite("introLabel", event.target.value)}
-                />
-              </Field>
-              <div className="md:col-span-2">
-                <Field label="Texte d'introduction">
-                  <TextArea
-                    value={invite.introText}
-                    onChange={(event) => updateInvite("introText", event.target.value)}
-                  />
-                </Field>
-              </div>
-              <Field label="Texte final">
-                <TextInput
-                  value={invite.closingText}
-                  onChange={(event) => updateInvite("closingText", event.target.value)}
-                />
-              </Field>
               <Field label="RSVP">
                 <select
                   value={invite.rsvpEnabled ? "yes" : "no"}
@@ -482,13 +474,6 @@ function DigitalInviteEditorPage() {
                   value={invite.eventDate}
                   onChange={(event) => handleDateChange(event.target.value)}
                   required
-                />
-              </Field>
-              <Field label="Date affichee">
-                <TextInput
-                  value={invite.dateLabel}
-                  onChange={(event) => updateInvite("dateLabel", event.target.value)}
-                  placeholder="12.08.2026"
                 />
               </Field>
               <Field label="Heure">
@@ -536,7 +521,8 @@ function DigitalInviteEditorPage() {
               <button
                 type="button"
                 onClick={addTimelineItem}
-                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
+                disabled={invite.timeline.length >= maxTimelineItems}
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
               >
                 <FiPlus aria-hidden="true" /> Ajouter une etape
               </button>
@@ -544,25 +530,24 @@ function DigitalInviteEditorPage() {
           >
             <div className="space-y-4">
               {invite.timeline.map((item, index) => (
-                <div key={index} className="grid gap-3 border border-[#E4E8EA] bg-[#FCFCFB] p-4 md:grid-cols-[0.5fr_1fr_1fr_auto] md:items-end">
+                <div key={index} className="grid gap-3 border border-[#E4E8EA] bg-[#FCFCFB] p-4 md:grid-cols-[1fr_0.7fr_auto] md:items-end">
+                  <Field label={`Etape ${index + 1}`}>
+                    <select
+                      value={getTimelineStepKey(item, index)}
+                      onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
+                      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                    >
+                      {fixedTimelineSteps.map((step) => (
+                        <option key={step.image} value={step.image}>
+                          {step.title}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
                   <Field label={`Heure ${index + 1}`}>
                     <TextInput
                       value={item.time}
                       onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
-                    />
-                  </Field>
-                  <Field label="Titre">
-                    <TextInput
-                      value={item.title}
-                      onChange={(event) => updateTimelineItem(index, "title", event.target.value)}
-                    />
-                  </Field>
-                  <Field label="Sous-titre">
-                    <TextInput
-                      value={item.subtitle}
-                      onChange={(event) =>
-                        updateTimelineItem(index, "subtitle", event.target.value)
-                      }
                     />
                   </Field>
                   <button
@@ -624,7 +609,7 @@ function DigitalInviteEditorPage() {
                 <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
                   <FiCalendar aria-hidden="true" /> Date
                 </div>
-                {invite.dateLabel || "Non definie"}
+                {formatDateLabel(invite.eventDate) || "Non definie"}
               </div>
               <div className="border border-[#E4E8EA] p-3">
                 <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">

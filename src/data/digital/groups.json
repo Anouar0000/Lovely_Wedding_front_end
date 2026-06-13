@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "id": "marriage",
+      "label": "Mariage",
+      "templateIds": ["dolce-vita", "sidi-bousaid"]
+    },
+    {
+      "id": "birthday",
+      "label": "Anniversaire",
+      "templateIds": []
+    },
+    {
+      "id": "corporate",
+      "label": "Corporate",
+      "templateIds": []
+    }
+  ]
+}

@@ -1,0 +1,438 @@
+﻿{
+    "id":  "dolce-vita",
+    "label":  "Dolce Vita",
+    "name":  "Dolce Vita E-invite",
+    "price":  "80",
+    "thumbnail":  "assets/digital/dolce-vita/figma-layer-01.png",
+    "description":  "Une page partageable pour annoncer le mariage, regrouper les informations et recevoir les confirmations.",
+    "features":  [
+                     "Lien personnalise",
+                     "RSVP",
+                     "Programme",
+                     "Plan d\u0027acces"
+                 ],
+    "format":  "Landing page",
+    "previewPath":  "/e/bilel-dorra",
+    "sample":  {
+                   "template":  "dolce-vita",
+                   "status":  "published",
+                   "title":  "La Dolce Vita",
+                   "coupleNames":  "Bilel \u0026 Dorra",
+                   "eventDate":  "2026-08-12",
+                   "venueName":  "Dar Bouraoui Carthage",
+                   "city":  "Carthage",
+                   "locationLabel":  "MALAGA",
+                   "time":  "19H00",
+                   "mapUrl":  "https://maps.google.com",
+                   "rsvpEnabled":  true,
+                   "timeline":  [
+                                    {
+                                        "time":  "20h",
+                                        "step":  "accueil"
+                                    },
+                                    {
+                                        "time":  "20h30",
+                                        "step":  "arrivee"
+                                    },
+                                    {
+                                        "time":  "21h",
+                                        "step":  "contrat"
+                                    },
+                                    {
+                                        "time":  "21h30",
+                                        "step":  "soiree"
+                                    },
+                                    {
+                                        "time":  "00h00",
+                                        "step":  "fin"
+                                    }
+                                ]
+               },
+    "fixedText":  {
+                      "introLabel":  "We are getting married",
+                      "introText":  "We would like to invite you to celebrate with us the most special day of our lives",
+                      "locationIntro":  "The ceremony will take place at",
+                      "closingText":  "We hope you can make it"
+                  },
+    "fixedTimelineSteps":  [
+                               {
+                                   "title":  "accueil des invites",
+                                   "image":  "accueil",
+                                   "imageWidth":  42
+                               },
+                               {
+                                   "title":  "arrivee des maries",
+                                   "image":  "arrivee",
+                                   "imageWidth":  60
+                               },
+                               {
+                                   "title":  "contrat de mariage",
+                                   "image":  "contrat",
+                                   "imageWidth":  60
+                               },
+                               {
+                                   "title":  "soirée dansante",
+                                   "image":  "soiree",
+                                   "imageWidth":  60
+                               },
+                               {
+                                   "title":  "la fin",
+                                   "image":  "fin",
+                                   "imageWidth":  60
+                               }
+                           ],
+    "design":  {
+                   "colors":  {
+                                  "pageBackground":  "#ebe7dd",
+                                  "cardBackground":  "#f9faf3",
+                                  "primaryText":  "#130554",
+                                  "accent":  "#e8cc33"
+                              },
+                   "fonts":  {
+                                 "body":  "Urbanist, sans-serif",
+                                 "script":  "\"Pinyon Script\", cursive",
+                                 "serif":  "Crimson Text, sans-serif"
+                             },
+                   "card":  {
+                                "maxWidth":  430
+                            },
+                   "hero":  {
+                                "minHeight":  382,
+                                "paddingTop":  110,
+                                "paddingX":  40,
+                                "intro":  {
+                                              "fontFamily":  "Crimson Text, sans-serif",
+                                              "fontSize":  8,
+                                              "fontWeight":  400,
+                                              "fontStyle":  "normal",
+                                              "letterSpacing":  "0.1em",
+                                              "textTransform":  "uppercase"
+                                          },
+                                "title":  {
+                                              "fontFamily":  "Taprom, cursive",
+                                              "fontSize":  32,
+                                              "fontWeight":  400,
+                                              "fontStyle":  "normal",
+                                              "lineHeight":  1,
+                                              "marginTop":  24
+                                          },
+                                "coupleNames":  {
+                                                    "fontFamily":  "Crimson Text, sans-serif",
+                                                    "fontSize":  14,
+                                                    "fontWeight":  400,
+                                                    "fontStyle":  "normal",
+                                                    "letterSpacing":  "0.1em",
+                                                    "marginTop":  20
+                                                },
+                                "arrow":  {
+                                              "width":  "auto",
+                                              "height":  18,
+                                              "marginTop":  64
+                                          },
+                                "assets":  {
+                                               "columns":  {
+                                                               "top":  0,
+                                                               "left":  0,
+                                                               "right":  0,
+                                                               "width":  "100%"
+                                                           },
+                                               "flourishLeft":  {
+                                                                    "top":  0,
+                                                                    "left":  24,
+                                                                    "width":  160
+                                                                },
+                                               "flourishRight":  {
+                                                                     "top":  0,
+                                                                     "right":  24,
+                                                                     "width":  160
+                                                                 },
+                                               "divider":  {
+                                                               "top":  0,
+                                                               "left":  "50%",
+                                                               "width":  128,
+                                                               "transform":  "translateX(-50%)"
+                                                           }
+                                           }
+                            },
+                   "sections":  {
+                                    "heading":  {
+                                                    "fontFamily":  "Taprom, cursive",
+                                                    "fontSize":  32,
+                                                    "fontWeight":  400,
+                                                    "fontStyle":  "normal",
+                                                    "lineHeight":  1
+                                                },
+                                    "smallText":  {
+                                                      "fontFamily":  "Crimson Text, sans-serif",
+                                                      "fontSize":  8,
+                                                      "fontWeight":  400,
+                                                      "fontStyle":  "normal",
+                                                      "lineHeight":  1.5,
+                                                      "letterSpacing":  "0.1em",
+                                                      "textTransform":  "uppercase"
+                                                  },
+                                    "countdownValue":  {
+                                                           "fontFamily":  "Crimson Text, sans-serif",
+                                                           "fontSize":  14,
+                                                           "fontWeight":  400,
+                                                           "fontStyle":  "normal",
+                                                           "letterSpacing":  "0.1em"
+                                                       },
+                                    "countdownLabel":  {
+                                                           "fontFamily":  "Crimson Text, serif",
+                                                           "fontSize":  8,
+                                                           "fontWeight":  400,
+                                                           "fontStyle":  "normal",
+                                                           "letterSpacing":  "0.1em"
+                                                       },
+                                    "locationName":  {
+                                                         "fontFamily":  "Crimson Text, sans-serif",
+                                                         "fontSize":  14,
+                                                         "fontWeight":  400,
+                                                         "fontStyle":  "normal",
+                                                         "letterSpacing":  "0.1em"
+                                                     },
+                                    "timelineTime":  {
+                                                         "fontFamily":  "Crimson Text, sans-serif",
+                                                         "fontSize":  10,
+                                                         "fontWeight":  400,
+                                                         "fontStyle":  "normal"
+                                                     },
+                                    "timelineTitle":  {
+                                                          "fontFamily":  "\"Pinyon Script\", cursive",
+                                                          "fontSize":  14,
+                                                          "fontWeight":  400,
+                                                          "fontStyle":  "normal",
+                                                          "lineHeight":  1
+                                                      },
+                                    "timelineSubtitle":  {
+                                                             "fontFamily":  "Crimson Text, sans-serif",
+                                                             "fontSize":  12,
+                                                             "fontWeight":  400,
+                                                             "fontStyle":  "normal"
+                                                         },
+                                    "closingText":  {
+                                                        "fontFamily":  "Crimson Text, sans-serif",
+                                                        "fontSize":  14,
+                                                        "fontWeight":  400,
+                                                        "fontStyle":  "normal",
+                                                        "letterSpacing":  "0.1em"
+                                                    },
+                                    "closingNames":  {
+                                                         "fontFamily":  "Taprom, cursive",
+                                                         "fontSize":  22,
+                                                         "fontWeight":  400,
+                                                         "fontStyle":  "normal",
+                                                         "lineHeight":  1
+                                                     },
+                                    "countdown":  {
+                                                      "paddingBottom":  48,
+                                                      "sunWidth":  50,
+                                                      "headingMarginTop":  10,
+                                                      "dateMarginTop":  12,
+                                                      "textMarginTop":  10,
+                                                      "textMaxWidth":  348,
+                                                      "gridMarginTop":  10
+                                                  },
+                                    "location":  {
+                                                     "paddingBottom":  54,
+                                                     "copyMarginTop":  5,
+                                                     "stageMarginTop":  15,
+                                                     "stageHeight":  220,
+                                                     "stageMaxWidth":  348,
+                                                     "venueNameMarginTop":  -20
+                                                 },
+                                    "timeline":  {
+                                                     "paddingBottom":  64,
+                                                     "stageMarginTop":  32,
+                                                     "stageHeight":  350,
+                                                     "stageMaxWidth":  285,
+                                                     "imageHeight":  350,
+                                                     "itemGap":  110
+                                                 },
+                                    "actions":  {
+                                                    "paddingBottom":  64
+                                                },
+                                    "closing":  {
+                                                    "paddingBottom":  96,
+                                                    "paddingTop":  16,
+                                                    "textTop":  100
+                                                }
+                                },
+                   "locationAssets":  {
+                                          "lineLeft":  {
+                                                           "top":  4,
+                                                           "left":  -40,
+                                                           "width":  146
+                                                       },
+                                          "lineRight":  {
+                                                            "top":  -12,
+                                                            "right":  -40,
+                                                            "width":  143
+                                                        },
+                                          "lineLowerLeft":  {
+                                                                "top":  100,
+                                                                "left":  -40,
+                                                                "width":  149
+                                                            },
+                                          "lineLowerRight":  {
+                                                                 "top":  90,
+                                                                 "right":  -40,
+                                                                 "width":  152
+                                                             },
+                                          "venueSoft":  {
+                                                            "top":  0,
+                                                            "left":  "50%",
+                                                            "width":  143,
+                                                            "transform":  "translateX(-50%)",
+                                                            "filter":  "blur(4px)"
+                                                        },
+                                          "venue":  {
+                                                        "top":  8,
+                                                        "left":  "50%",
+                                                        "width":  126,
+                                                        "transform":  "translateX(-50%)"
+                                                    },
+                                          "portrait":  {
+                                                           "top":  110,
+                                                           "left":  13,
+                                                           "width":  96
+                                                       },
+                                          "lemons":  {
+                                                         "top":  66,
+                                                         "right":  -12,
+                                                         "width":  96
+                                                     }
+                                      },
+                   "timelineItems":  [
+                                         {
+                                             "top":  -10,
+                                             "left":  50,
+                                             "width":  50,
+                                             "textAlign":  "right",
+                                             "timeTextAlign":  "center"
+                                         },
+                                         {
+                                             "top":  45,
+                                             "right":  60,
+                                             "width":  65,
+                                             "textAlign":  "right",
+                                             "timeTextAlign":  "right"
+                                         },
+                                         {
+                                             "top":  118,
+                                             "left":  55,
+                                             "width":  56,
+                                             "textAlign":  "left",
+                                             "timeTextAlign":  "center"
+                                         },
+                                         {
+                                             "top":  170,
+                                             "right":  75,
+                                             "width":  60,
+                                             "textAlign":  "center",
+                                             "timeTextAlign":  "center"
+                                         },
+                                         {
+                                             "top":  258,
+                                             "left":  68,
+                                             "width":  112,
+                                             "textAlign":  "left",
+                                             "timeTextAlign":  "left"
+                                         }
+                                     ],
+                   "timelineImages":  [
+                                          {
+                                              "top":  0,
+                                              "left":  "45%",
+                                              "width":  40,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  88,
+                                              "left":  "70%",
+                                              "width":  50,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  152,
+                                              "left":  "40%",
+                                              "width":  50,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  208,
+                                              "left":  "70%",
+                                              "width":  50,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  278,
+                                              "left":  "30%",
+                                              "width":  66,
+                                              "transform":  "translateX(-50%)"
+                                          }
+                                      ],
+                   "timelineArrows":  [
+                                          {
+                                              "top":  50,
+                                              "left":  "52%",
+                                              "width":  46,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  126,
+                                              "left":  "54%",
+                                              "width":  51,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  180,
+                                              "left":  "50%",
+                                              "width":  56,
+                                              "transform":  "translateX(-50%)"
+                                          },
+                                          {
+                                              "top":  252,
+                                              "left":  "54%",
+                                              "width":  57,
+                                              "transform":  "translateX(-50%)"
+                                          }
+                                      ]
+               },
+    "defaults":  {
+                     "template":  "dolce-vita",
+                     "status":  "draft",
+                     "title":  "La Dolce Vita",
+                     "coupleNames":  "",
+                     "eventDate":  "",
+                     "venueName":  "",
+                     "city":  "",
+                     "locationLabel":  "",
+                     "time":  "",
+                     "mapUrl":  "",
+                     "rsvpEnabled":  true,
+                     "timeline":  [
+                                      {
+                                          "time":  "20h",
+                                          "step":  "accueil"
+                                      },
+                                      {
+                                          "time":  "20h30",
+                                          "step":  "arrivee"
+                                      },
+                                      {
+                                          "time":  "21h",
+                                          "step":  "contrat"
+                                      },
+                                      {
+                                          "time":  "21h30",
+                                          "step":  "soiree"
+                                      },
+                                      {
+                                          "time":  "00h00",
+                                          "step":  "fin"
+                                      }
+                                  ]
+                 }
+}
