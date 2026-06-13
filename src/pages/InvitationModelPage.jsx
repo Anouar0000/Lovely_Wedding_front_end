@@ -4,7 +4,7 @@ import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import { FiChevronDown, FiX } from "react-icons/fi";
 import ExpandableSections from "../components/webcontent/ExpandableSections";
-import data from "../data/categories.json";
+import data from "../data/physical/categories.json";
 
 function InvitationModelPage() {
     const location = useLocation();

@@ -9,14 +9,14 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { FiCornerDownLeft, FiCornerUpRight } from 'react-icons/fi';
 import useHistory from '../hooks/useHistory';
-import { templateData } from '../data/templateData.js';
+import { templateData } from '../data/physical/templateData.js';
 import { useCanvasLayout } from '../hooks/useCanvasLayout';
 import { usePanAndZoom } from '../hooks/usePanAndZoom';
 import CardSwitcher from '../components/canvas/CardSwitcher';
 import { fontOptions } from '../config/fontConfig';
 import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
 import ApparenceMenu from '../components/canvas/ApparenceMenu';
-import data from '../data/categories.json';
+import data from '../data/physical/categories.json';
 
 const DEFAULT_CARD_SIZE_MM = { width: 100, height: 141.4 };
 
@@ -540,8 +540,8 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
         {model?.modelImagep2 && renderExportCard('back', model?.modelImagep2, exportBackRef)}
       </div>
 
-      <div ref={headerRef} className="fixed top-0 left-0 w-full bg-white z-50 py-6">
-        <div className="flex items-center justify-between px-4">
+      <div ref={headerRef} className="fixed top-0 left-0 w-full bg-white z-50 py-6 shadow-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4">
             <div className="flex space-x-2">
                 <button onClick={() => navigate('/invitations-physique')} className="border border-black p-1 rounded">✕</button>
                 <button onClick={undo} disabled={!canUndo} className="border border-black p-1 rounded disabled:opacity-50 disabled:cursor-not-allowed"><FiCornerDownLeft /></button>
@@ -625,7 +625,10 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
         </div>
       )}
       
-      <main style={{ paddingTop: `${mainPadding.top}px`, paddingBottom: `${mainPadding.bottom}px` }}>
+      <main
+        className="mx-auto flex w-full max-w-6xl flex-col items-center"
+        style={{ paddingTop: `${mainPadding.top}px`, paddingBottom: `${mainPadding.bottom}px` }}
+      >
         <div className="relative mx-auto" style={{ width: canvasStyle.width, height: canvasStyle.height }}>
           <div ref={wrapperRef} className="absolute top-0 left-0 w-full h-full bg-transparent touch-none overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full" style={{ transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`, transition: isInteracting ? 'none' : 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)'}}>
@@ -660,7 +663,7 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
         <CardSwitcher model={model} currentCard={currentCard} setCurrentCard={setCurrentCard} />
       </main>
 
-      <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40">
+      <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40 px-0 sm:px-4 sm:pb-4">
         {selectedTextId && textBoxes.find(b => b.id === selectedTextId) ? (
           <BottomMenu
             onDelete={handleDeleteText}

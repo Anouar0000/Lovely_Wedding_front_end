@@ -1,4 +1,4 @@
-// src/data/templateData.js
+// src/data/physical/templateData.js
 
 // NOTE: All position and width values are now percentages.
 // They are based on a reference canvas of 390px (width) by 844px (height).

@@ -40,7 +40,7 @@ function BottomMenu({
   const lineHeightOptions = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
   return (
-    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50 bg-white">
+    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50 bg-white sm:left-1/2 sm:w-[min(92vw,560px)] sm:-translate-x-1/2 sm:rounded-t-lg sm:border sm:border-gray-200">
       <div className="flex justify-between items-center ">
         <button onClick={onDelete} className="bg-white px-4 py-1">
           <FiTrash2 className="text-xl" />

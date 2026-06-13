@@ -3,7 +3,7 @@ import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import InvitationCategoryPage from "../components/webcontent/InvitationCategoryPage";
 import BaseSection from "../components/webcontent/BaseSection";
-import data from "../data/categories.json";
+import data from "../data/physical/categories.json";
 import { useLocation } from "react-router-dom";
 import img from "../assets/icons/Asset2.png";
 import calimg from '../assets/images/caligraphy.png';

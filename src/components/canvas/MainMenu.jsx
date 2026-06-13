@@ -9,7 +9,7 @@ function MainMenu({ onAddText, onShowApparenceMenu }) {
     // 1. We make THIS div the flex container.
     // 2. We add `flex`, `justify-center`, and `items-center`.
     // 3. We remove the `pt-2` because `items-center` will handle all vertical alignment.
-    <div className="bg-white shadow-md border-t z-50 min-h-[100px] animate-fade-in-up flex justify-center items-center space-x-10">
+    <div className="bg-white shadow-md border-t z-50 min-h-[100px] animate-fade-in-up flex justify-center items-center space-x-10 sm:mx-auto sm:max-w-md sm:rounded-t-lg sm:border sm:border-gray-200">
       
       {/* The inner div has been removed, the buttons are now direct children */}
 

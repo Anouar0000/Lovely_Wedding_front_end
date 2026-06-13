@@ -12,7 +12,7 @@ function CardSwitcher({ model, currentCard, setCurrentCard }) {
     // REMOVED: "absolute", "bottom-...", "left-1/2", "-translate-x-1/2", "z-20"
     // ADDED: "py-2" to create vertical space (8px top and bottom).
     // This provides the gap between the cards and the buttons.
-    <div className="w-full flex justify-center py-2">
+    <div className="w-full flex justify-center py-2 px-4">
       <div className="flex rounded-md shadow-lg overflow-hidden border border-gray-300">
         <button
           onClick={() => setCurrentCard('front')}

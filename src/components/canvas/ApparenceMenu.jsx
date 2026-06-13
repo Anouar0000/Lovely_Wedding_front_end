@@ -1,7 +1,7 @@
 // src/components/canvas/ApparenceMenu.js (Final Fix)
 
 import React, { useState, useEffect } from 'react';
-import data from '../../data/categories.json';
+import data from '../../data/physical/categories.json';
 
 function ApparenceMenu({
   model,
@@ -61,7 +61,7 @@ function ApparenceMenu({
 
   // The JSX for rendering the menu remains the same.
   return (
-    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50 bg-white animate-fade-in-up">
+    <div className="fixed bottom-0 left-0 w-full h-[195px] shadow-md z-50 bg-white animate-fade-in-up sm:left-1/2 sm:w-[min(92vw,640px)] sm:-translate-x-1/2 sm:rounded-t-lg sm:border sm:border-gray-200">
       <div className="flex justify-end items-center ">
         <button onClick={onClose} className="bg-white px-4 ">
           <span className="text-xl">✕</span>
