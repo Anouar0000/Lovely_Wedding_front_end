@@ -11,6 +11,7 @@ import {
   FiPlus,
   FiRefreshCw,
   FiSearch,
+  FiUploadCloud,
   FiTrash2,
 } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
@@ -19,6 +20,7 @@ import {
   deleteDigitalInvite,
   listDigitalInvites,
   saveDigitalInvite,
+  updateDigitalInvite,
 } from "../services/digitalInvites";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
@@ -81,7 +83,7 @@ function DashboardPage() {
     setError("");
 
     try {
-      await saveDigitalInvite(sampleInvite.slug, sampleInvite);
+      await saveDigitalInvite(sampleInvite.slug, { ...sampleInvite, status: "draft" });
       await loadInvites();
     } catch (saveError) {
       setError("Impossible d'ajouter l'exemple dans Firestore.");
@@ -112,12 +114,35 @@ function DashboardPage() {
     }
   };
 
+  const handlePublish = async (invite) => {
+    setBusyId(invite.id);
+    setError("");
+
+    try {
+      await updateDigitalInvite(invite.id, { status: "published" });
+      setInvites((currentInvites) =>
+        currentInvites.map((item) =>
+          item.id === invite.id ? { ...item, status: "published" } : item
+        )
+      );
+    } catch (publishError) {
+      setError("Impossible de publier cette invitation.");
+    } finally {
+      setBusyId("");
+    }
+  };
+
   const getPublicInviteUrl = (slug) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/e/${slug}`;
   };
 
   const handleCopyLink = async (invite) => {
+    if (invite.status !== "published") {
+      setError("Publie l'invitation avant de copier le lien public.");
+      return;
+    }
+
     const url = getPublicInviteUrl(invite.slug);
     setError("");
 
@@ -313,7 +338,7 @@ function DashboardPage() {
                       <FiEdit2 aria-hidden="true" />
                     </Link>
                     <Link
-                      to={`/e/${invite.slug}`}
+                      to={`/dashboard/invitations/${invite.id}/preview`}
                       target="_blank"
                       rel="noreferrer"
                       title="Apercu"
@@ -322,12 +347,25 @@ function DashboardPage() {
                     >
                       <FiEye aria-hidden="true" />
                     </Link>
+                    {!isPublished ? (
+                      <button
+                        type="button"
+                        onClick={() => handlePublish(invite)}
+                        disabled={busyId === invite.id}
+                        title="Publier"
+                        aria-label={`Publier ${invite.coupleNames || invite.slug}`}
+                        className="inline-flex h-10 w-10 items-center justify-center border border-emerald-200 text-emerald-700 hover:border-emerald-500 disabled:cursor-not-allowed disabled:text-gray-400"
+                      >
+                        {busyId === invite.id ? "..." : <FiUploadCloud aria-hidden="true" />}
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => handleCopyLink(invite)}
-                      title="Copier le lien"
+                      disabled={!isPublished}
+                      title={isPublished ? "Copier le lien public" : "Publier avant de copier le lien public"}
                       aria-label={`Copier le lien ${invite.coupleNames || invite.slug}`}
-                      className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
+                      className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black disabled:cursor-not-allowed disabled:text-gray-300"
                     >
                       {copiedId === invite.id ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
                     </button>

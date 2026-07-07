@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import invites from "../data/digital/instances.json";
 import { isFirebaseConfigured } from "../lib/firebase";
-import { getDigitalInviteBySlug } from "../services/digitalInvites";
+import { getDigitalInviteById, getDigitalInviteBySlug } from "../services/digitalInvites";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
 function InviteMessage({ title, children }) {
@@ -16,8 +16,9 @@ function InviteMessage({ title, children }) {
   );
 }
 
-function SharedDigitalInvitePage() {
-  const { slug } = useParams();
+function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, lookupById = false }) {
+  const { id, slug } = useParams();
+  const inviteKey = lookupById ? id : slug;
   const [invite, setInvite] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,11 +32,16 @@ function SharedDigitalInvitePage() {
 
       try {
         const loadedInvite = isFirebaseConfigured
-          ? await getDigitalInviteBySlug(slug, { publishedOnly: true })
-          : invites.find((item) => item.slug === slug && item.status === "published");
+          ? lookupById
+            ? (await getDigitalInviteById(inviteKey)) ||
+              (await getDigitalInviteBySlug(inviteKey, { publishedOnly: !allowDraft }))
+            : await getDigitalInviteBySlug(inviteKey, { publishedOnly: !allowDraft })
+          : invites.find((item) => item.slug === inviteKey && (allowDraft || item.status === "published"));
+        const visibleInvite =
+          loadedInvite && (allowDraft || loadedInvite.status === "published") ? loadedInvite : null;
 
         if (isMounted) {
-          setInvite(loadedInvite || null);
+          setInvite(visibleInvite);
         }
       } catch (loadError) {
         if (isMounted) {
@@ -53,7 +59,7 @@ function SharedDigitalInvitePage() {
     return () => {
       isMounted = false;
     };
-  }, [slug]);
+  }, [allowDraft, inviteKey, lookupById]);
 
   if (loading) {
     return (
@@ -88,7 +94,16 @@ function SharedDigitalInvitePage() {
 
   if (template) {
     const TemplateComponent = template.Component;
-    return <TemplateComponent invite={invite} />;
+    return (
+      <>
+        {previewMode ? (
+          <div className="fixed left-0 right-0 top-0 z-[9999] bg-black px-4 py-2 text-center font-urbanist text-xs font-semibold uppercase tracking-[0.16em] text-white">
+            Apercu dashboard / {invite.status === "published" ? "publiee" : "brouillon"}
+          </div>
+        ) : null}
+        <TemplateComponent invite={invite} />
+      </>
+    );
   }
 
   return (

@@ -16,12 +16,14 @@ import {
   FiSave,
   FiSettings,
   FiTrash2,
+  FiUploadCloud,
 } from "react-icons/fi";
 import {
   createDigitalInviteDraft,
   deleteDigitalInvite,
   getDigitalInviteById,
   saveDigitalInvite,
+  updateDigitalInvite,
 } from "../services/digitalInvites";
 import {
   digitalInviteTemplates,
@@ -168,6 +170,16 @@ function DigitalInviteEditorPage() {
     return `/e/${invite.slug}`;
   }, [invite.slug]);
 
+  const dashboardPreviewPath = useMemo(() => {
+    const previewId = initialDocId || invite.slug;
+
+    if (!previewId) {
+      return "";
+    }
+
+    return `/dashboard/invitations/${previewId}/preview`;
+  }, [initialDocId, invite.slug]);
+
   const publicUrl = useMemo(() => {
     if (!publicPath) {
       return "";
@@ -304,6 +316,28 @@ function DigitalInviteEditorPage() {
     }
   };
 
+  const handlePublish = async () => {
+    setError("");
+
+    const docId = initialDocId || invite.slug;
+
+    if (!docId) {
+      setError("Enregistre d'abord l'invitation avant de la publier.");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      await updateDigitalInvite(docId, { status: "published" });
+      setInvite((currentInvite) => ({ ...currentInvite, status: "published" }));
+    } catch (publishError) {
+      setError("Impossible de publier cette invitation.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleCopyLink = async () => {
     if (!publicUrl) {
       return;
@@ -365,15 +399,25 @@ function DigitalInviteEditorPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {publicPath ? (
+            {dashboardPreviewPath ? (
               <Link
-                to={publicPath}
+                to={dashboardPreviewPath}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
               >
                 <FiExternalLink aria-hidden="true" /> Apercu
               </Link>
+            ) : null}
+            {isEditing && invite.status !== "published" ? (
+              <button
+                type="button"
+                onClick={handlePublish}
+                disabled={saving}
+                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+              >
+                <FiUploadCloud aria-hidden="true" /> Publier
+              </button>
             ) : null}
             <button
               type="submit"
@@ -431,16 +475,15 @@ function DigitalInviteEditorPage() {
                   ))}
                 </select>
               </Field>
-              <Field label="Status">
-                <select
-                  value={invite.status}
-                  onChange={(event) => updateInvite("status", event.target.value)}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                >
-                  <option value="draft">Brouillon</option>
-                  <option value="published">Publiee</option>
-                </select>
-              </Field>
+              <div className="flex items-end">
+                <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
+                  invite.status === "published"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : "border-amber-200 bg-amber-50 text-amber-800"
+                }`}>
+                  {invite.status === "published" ? "Publiee" : "Brouillon"}
+                </div>
+              </div>
             </div>
           </EditorSection>
 
@@ -587,13 +630,23 @@ function DigitalInviteEditorPage() {
             {publicPath ? (
               <>
                 <Link
-                  to={publicPath}
+                  to={dashboardPreviewPath}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
                 >
                   <FiExternalLink aria-hidden="true" /> Ouvrir l'apercu
                 </Link>
+                {invite.status !== "published" ? (
+                  <button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={saving}
+                    className="inline-flex items-center justify-center gap-2 border border-emerald-600 px-5 py-3 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                  >
+                    <FiUploadCloud aria-hidden="true" /> Publier
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={handleCopyLink}

@@ -56,6 +56,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/dashboard/invitations/:id/preview"
+            element={
+              <ProtectedRoute>
+                <SharedDigitalInvitePage allowDraft previewMode lookupById />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/invitation-model/:modelName" element={<InvitationModelPage />} />
           <Route path="/personalize" element={<PersonalizeInvitationPage />} />
           <Route path="/pdf-test" element={<TestPDFDownload />} />

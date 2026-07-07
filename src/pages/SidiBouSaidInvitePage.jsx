@@ -1,347 +1,293 @@
-import React from "react";
-import { FiCalendar, FiClock, FiMapPin, FiSend } from "react-icons/fi";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import openingVideo from "../assets/digital/sidi-bousaid/can_you_create_a_video_,_of_a_tunisian_double_opening_door_door_(_of_sidi_bousaid_)_opening_to_revea_seed458836054.mp4";
-import sun from "../assets/digital/dolce-vita/figma-layer-05.png";
-import venueSoft from "../assets/digital/dolce-vita/figma-layer-06.png";
-import venue from "../assets/digital/dolce-vita/figma-layer-07.png";
-import portrait from "../assets/digital/dolce-vita/figma-layer-08.png";
-import lemons from "../assets/digital/dolce-vita/figma-layer-09.png";
-import noteCard from "../assets/digital/dolce-vita/figma-layer-10.png";
-import timelineDoodle from "../assets/digital/dolce-vita/timeline-doodle.png";
-import locationLineLeft from "../assets/digital/dolce-vita/figma-vector-38.svg";
-import locationLineLowerLeft from "../assets/digital/dolce-vita/figma-vector-02.svg";
-import locationLineRight from "../assets/digital/dolce-vita/figma-vector-37.svg";
-import locationLineLowerRight from "../assets/digital/dolce-vita/figma-vector-39.svg";
-import topArrow from "../assets/digital/dolce-vita/figma-vector-01.svg";
+import image01 from "../assets/digital/sidi-bousaid/export/figma-image-01.png";
+import image02 from "../assets/digital/sidi-bousaid/export/figma-image-02.png";
+import image05 from "../assets/digital/sidi-bousaid/export/figma-image-05.png";
+import image06 from "../assets/digital/sidi-bousaid/export/figma-image-06.png";
+import image07 from "../assets/digital/sidi-bousaid/export/figma-image-07.png";
+import image08 from "../assets/digital/sidi-bousaid/export/figma-image-08.png";
+import image09 from "../assets/digital/sidi-bousaid/export/figma-image-09.png";
+import image10 from "../assets/digital/sidi-bousaid/export/figma-image-10.png";
+import image11 from "../assets/digital/sidi-bousaid/export/figma-image-11.png";
+import image12 from "../assets/digital/sidi-bousaid/export/figma-image-12.png";
+import image13 from "../assets/digital/sidi-bousaid/export/figma-image-13.png";
+import image14 from "../assets/digital/sidi-bousaid/export/figma-image-14.png";
+import image16 from "../assets/digital/sidi-bousaid/export/figma-image-16.png";
+import image17 from "../assets/digital/sidi-bousaid/export/figma-image-17.png";
+import image18 from "../assets/digital/sidi-bousaid/export/figma-image-18.png";
 import templateConfig from "../data/digital/templates/sidi-bousaid.json";
-import { boxStyle, textStyle, toCssSize } from "../utils/digitalTemplateDesign";
+
+const doorFrameContext = require.context("../assets/digital/sidi-bousaid/renders-webp", false, /\.webp$/);
+const doorFrameSources = doorFrameContext
+  .keys()
+  .sort()
+  .map((key) => doorFrameContext(key));
 
 const defaultInvite = templateConfig.sample;
-const design = templateConfig.design;
-const fixedText = templateConfig.fixedText;
-const fixedTimelineSteps = templateConfig.fixedTimelineSteps || [];
-const fonts = design.fonts;
-const colors = design.colors;
+const blue = "#054cb6";
+const pageWidth = 430;
+const pageHeight = 1743;
+const revealStart = 596;
+const revealHeight = pageHeight - revealStart;
 
-const getCountdown = (dateString) => {
+const exportImages = [
+  { src: image01, left: 53, top: 755, width: 56 },
+  { src: image02, left: 299, top: 648, width: 77.8635 },
+  { src: image05, left: 0, top: 310, width: 34 },
+  { src: image06, left: 398, top: 310, width: 32 },
+  { src: image07, left: 4, top: 358, width: 41 },
+  { src: image08, left: 385, top: 358, width: 41 },
+  { src: image09, left: 0, top: 406, width: 34 },
+  { src: image10, left: 398, top: 406, width: 32 },
+  { src: image11, left: 4, top: 454, width: 41 },
+  { src: image12, left: 385, top: 454, width: 41 },
+  { src: image13, left: 0, top: 502, width: 34 },
+  { src: image14, left: 398, top: 502, width: 32 },
+  { src: image16, left: 61, top: 346, width: 139, dropShadow: true },
+  { src: image17, left: 232, top: 346, width: 139, dropShadow: true },
+  { src: image18, left: 0, top: 866, width: 430 },
+];
+
+const pct = (value, total) => `${(value / total) * 100}%`;
+
+const absoluteBox = ({ left, top, width }, sectionHeight = pageHeight, topOffset = 0) => ({
+  position: "absolute",
+  left: pct(left, pageWidth),
+  top: pct(top - topOffset, sectionHeight),
+  width: pct(width, pageWidth),
+});
+
+const textBox = ({
+  left,
+  top,
+  width,
+  fontSize,
+  lineHeight,
+  letterSpacing = 0,
+  children,
+  family = "Taviraj, serif",
+  sectionHeight = pageHeight,
+  topOffset = 0,
+}) => (
+  <div
+    style={{
+      ...absoluteBox({ left, top, width }, sectionHeight, topOffset),
+      color: blue,
+      fontFamily: family,
+      fontSize: `clamp(${fontSize * 0.75}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+      lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
+      letterSpacing,
+      textAlign: "center",
+      whiteSpace: "pre-wrap",
+    }}
+  >
+    {children}
+  </div>
+);
+
+const formatDateParts = (dateString) => {
   if (!dateString) {
-    return [];
-  }
-
-  const target = new Date(`${dateString}T00:00:00`);
-  const diff = Math.max(target.getTime() - Date.now(), 0);
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-  return [
-    [String(days), "Days"],
-    [String(hours), "Hours"],
-    [String(minutes), "Minutes"],
-  ];
-};
-
-const formatDisplayDate = (dateString) => {
-  if (!dateString) {
-    return "";
+    return { day: "12", month: "08", year: "2026", display: "12 . 08 . 2026" };
   }
 
   const [year, month, day] = dateString.split("-");
 
-  if (!year || !month || !day) {
-    return "";
-  }
+  return {
+    day: day || "12",
+    month: month || "08",
+    year: year || "2026",
+    display: day && month && year ? `${day} . ${month} . ${year}` : "12 . 08 . 2026",
+  };
+};
 
-  return `${day}.${month}.${year}`;
+const getNames = (coupleNames) => {
+  const [firstName = "Sarah", secondName = ""] = (coupleNames || "").split(/\s*&\s*|\s+et\s+/i);
+
+  return {
+    firstName: firstName.trim() || "Sarah",
+    secondName: secondName.trim(),
+  };
 };
 
 function SidiBouSaidInvitePage({ invite = defaultInvite }) {
-  const countdown = getCountdown(invite.eventDate);
-  const displayDate = formatDisplayDate(invite.eventDate);
-  const timelineEntries = (invite.timeline || [])
-    .map((item, index) => ({
-      ...item,
-      title: fixedTimelineSteps[index]?.title || item.title || "",
-    }))
-    .filter((item) => item.time || item.title);
-  const timelineGap = design.sections.timeline.itemGap || 110;
-  const timelineStepCount = Math.max(fixedTimelineSteps.length, timelineEntries.length, 1);
-  const timelineImageHeight = design.sections.timeline.imageHeight || design.sections.timeline.stageHeight;
-  const timelineImageWidth = design.sections.timeline.imageWidth || 112;
-  const timelineSegmentHeight = timelineImageHeight / timelineStepCount;
-  const getTimelineItemLayout = (index) => {
-    const configuredLayout = design.timelineItems[index];
+  const [isIntroFading, setIsIntroFading] = useState(false);
+  const [isIntroDone, setIsIntroDone] = useState(false);
+  const [doorFrame, setDoorFrame] = useState(0);
+  const doorTimerRef = useRef(null);
+  const dateParts = useMemo(() => formatDateParts(invite.eventDate), [invite.eventDate]);
+  const names = useMemo(() => getNames(invite.coupleNames), [invite.coupleNames]);
 
-    if (configuredLayout) {
-      return configuredLayout;
+  useEffect(() => {
+    if (isIntroDone) {
+      return undefined;
     }
 
-    const lastConfiguredLayout = design.timelineItems[design.timelineItems.length - 1] || {
-      top: 0,
-      left: 0,
-      width: 112,
-      textAlign: "left",
-    };
-    const extraIndex = index - design.timelineItems.length + 1;
-    const isRight = index % 2 === 1;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-    return {
-      top: Number(lastConfiguredLayout.top || 0) + timelineGap * extraIndex,
-      left: isRight ? undefined : 0,
-      right: isRight ? 0 : undefined,
-      width: lastConfiguredLayout.width || 112,
-      textAlign: isRight ? "right" : "left",
-      timeTextAlign: isRight ? "right" : "left",
+    return () => {
+      document.body.style.overflow = previousOverflow;
     };
+  }, [isIntroDone]);
+
+  useEffect(() => {
+    doorFrameSources.forEach((frame) => {
+      const image = new Image();
+      image.src = frame;
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (doorTimerRef.current) {
+        window.clearInterval(doorTimerRef.current);
+      }
+    };
+  }, []);
+
+  const completeIntro = () => {
+    setIsIntroFading(true);
+    window.setTimeout(() => setIsIntroDone(true), 900);
   };
-  const timelineStageHeight = Math.max(
-    design.sections.timeline.stageHeight,
-    timelineEntries.length ? getTimelineItemLayout(timelineEntries.length - 1).top + timelineSegmentHeight + 36 : 0
-  );
+
+  const handleVideoTimeUpdate = (event) => {
+    const video = event.currentTarget;
+
+    if (video.duration && video.duration - video.currentTime < 1.1) {
+      setIsIntroFading(true);
+    }
+  };
+
+  const handleDoorClick = () => {
+    if (!doorFrameSources.length || doorTimerRef.current || doorFrame === doorFrameSources.length - 1) {
+      return;
+    }
+
+    setDoorFrame(0);
+
+    doorTimerRef.current = window.setInterval(() => {
+      setDoorFrame((currentFrame) => {
+        const nextFrame = currentFrame + 1;
+        if (nextFrame >= doorFrameSources.length - 1) {
+          window.clearInterval(doorTimerRef.current);
+          doorTimerRef.current = null;
+          return doorFrameSources.length - 1;
+        }
+
+        return nextFrame;
+      });
+    }, 34);
+  };
 
   return (
-    <main
-      className="min-h-screen py-6"
-      style={{ backgroundColor: colors.pageBackground, color: colors.primaryText, fontFamily: fonts.body }}
-    >
+    <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#054cb6]">
       <div
-        className="mx-auto w-full overflow-hidden shadow-2xl"
-        style={{ maxWidth: toCssSize(design.card.maxWidth), backgroundColor: colors.cardBackground }}
+        className="mx-auto w-full bg-white shadow-2xl"
+        style={{ maxWidth: pageWidth }}
       >
         <section
-          className="relative overflow-hidden text-center"
-          style={{ minHeight: toCssSize(design.hero.minHeight), color: colors.heroText }}
+          className="relative w-full overflow-hidden max-[430px]:min-h-[100svh]"
+          style={{ aspectRatio: `${pageWidth} / ${revealStart}` }}
+        >
+          {exportImages
+            .filter((image) => image.top < revealStart)
+            .map((image) => (
+              <img
+                key={image.src}
+                src={image.src}
+                alt=""
+                style={{
+                  ...absoluteBox(image, revealStart),
+                  filter: image.dropShadow ? "drop-shadow(0 10px 18px rgba(0, 0, 0, 0.15))" : undefined,
+                }}
+              />
+            ))}
+
+          {textBox({ left: 121, top: 56, width: 188, fontSize: 10, lineHeight: 14, letterSpacing: "0.1em", sectionHeight: revealStart, children: "Welcome to our" })}
+          {textBox({ left: 115, top: 91, width: 199, fontSize: 28, lineHeight: 32, sectionHeight: revealStart, children: names.secondName ? `${names.firstName}\n& ${names.secondName}` : names.firstName })}
+          {textBox({ left: 142, top: 198, width: 146, fontSize: 13, lineHeight: 18, letterSpacing: "0.1em", sectionHeight: revealStart, children: dateParts.display })}
+          {textBox({ left: 131, top: 280, width: 168, fontSize: 22, sectionHeight: revealStart, children: "Our Story" })}
+          {textBox({ left: 107, top: 539, width: 44, fontSize: 12, sectionHeight: revealStart, children: "Us" })}
+        </section>
+
+        <div className="relative w-full overflow-hidden" style={{ aspectRatio: `${pageWidth} / ${revealHeight}` }}>
+          <div style={{ ...absoluteBox({ left: 0, top: 596, width: 430 }, revealHeight, revealStart), height: pct(270, revealHeight), background: "rgba(5, 76, 182, 0.12)" }} />
+
+          {exportImages
+            .filter((image) => image.top >= revealStart)
+            .map((image) => (
+              <img
+                key={image.src}
+                src={image.src}
+                alt=""
+                style={{
+                  ...absoluteBox(image, revealHeight, revealStart),
+                  filter: image.dropShadow ? "drop-shadow(0 10px 18px rgba(0, 0, 0, 0.15))" : undefined,
+                }}
+              />
+            ))}
+
+          {textBox({ left: 131, top: 622, width: 168, fontSize: 22, sectionHeight: revealHeight, topOffset: revealStart, children: "Reveal" })}
+          {textBox({ left: 97, top: 791, width: 44, fontSize: 12, sectionHeight: revealHeight, topOffset: revealStart, children: "Day" })}
+          {textBox({ left: 193, top: 791, width: 44, fontSize: 12, sectionHeight: revealHeight, topOffset: revealStart, children: "Month" })}
+          {textBox({ left: 289, top: 791, width: 44, fontSize: 12, sectionHeight: revealHeight, topOffset: revealStart, children: "Year" })}
+          {textBox({ left: 91, top: 732, width: 64, fontSize: 18, sectionHeight: revealHeight, topOffset: revealStart, children: dateParts.day })}
+          {textBox({ left: 181, top: 732, width: 68, fontSize: 18, sectionHeight: revealHeight, topOffset: revealStart, children: dateParts.month })}
+          {textBox({ left: 273, top: 732, width: 72, fontSize: 18, sectionHeight: revealHeight, topOffset: revealStart, children: dateParts.year })}
+          {doorFrameSources.length ? (
+            <button
+              type="button"
+              onClick={handleDoorClick}
+              aria-label="Open reveal doors"
+              className="absolute cursor-pointer bg-transparent p-0 focus:outline-none"
+              style={{
+                left: pct(82, pageWidth),
+                top: pct(678 - revealStart, revealHeight),
+                width: pct(267, pageWidth),
+                height: pct(126, revealHeight),
+                zIndex: 2,
+              }}
+            >
+              {[
+                { left: 0, width: 77 },
+                { left: 95, width: 77 },
+                { left: 190, width: 77 },
+              ].map((door) => (
+                <img
+                  key={door.left}
+                  src={doorFrameSources[doorFrame]}
+                  alt=""
+                  className="absolute top-0"
+                  style={{
+                    left: pct(door.left, 267),
+                    width: pct(door.width, 267),
+                  }}
+                  draggable="false"
+                />
+              ))}
+            </button>
+          ) : null}
+          {textBox({ left: 131, top: 916, width: 168, fontSize: 22, sectionHeight: revealHeight, topOffset: revealStart, children: "Countdown" })}
+        </div>
+      </div>
+
+      {!isIntroDone ? (
+        <div
+          className={`fixed inset-0 z-50 bg-black transition-opacity duration-1000 ${isIntroFading ? "opacity-0" : "opacity-100"}`}
+          aria-hidden="true"
         >
           <video
-            className="absolute inset-0 h-full w-full object-cover"
+            className="h-full w-full object-cover"
             src={openingVideo}
             autoPlay
             muted
-            loop
             playsInline
+            onTimeUpdate={handleVideoTimeUpdate}
+            onEnded={completeIntro}
+            onError={completeIntro}
           />
-          <div className="absolute inset-0" style={{ background: colors.heroOverlay }} />
-
-          <div
-            className="relative z-10 flex flex-col items-center justify-between"
-            style={{
-              minHeight: toCssSize(design.hero.minHeight),
-              paddingLeft: toCssSize(design.hero.paddingX),
-              paddingRight: toCssSize(design.hero.paddingX),
-              paddingTop: toCssSize(design.hero.paddingY),
-              paddingBottom: toCssSize(design.hero.paddingY),
-            }}
-          >
-            <p style={textStyle(design.hero.intro)}>{fixedText.introLabel}</p>
-
-            <div>
-              <h1 className="drop-shadow-md" style={textStyle(design.hero.title)}>
-                {invite.title}
-              </h1>
-              <p
-                className="drop-shadow"
-                style={{
-                  ...textStyle(design.hero.coupleNames),
-                  marginTop: toCssSize(design.hero.coupleNames.marginTop),
-                }}
-              >
-                {invite.coupleNames}
-              </p>
-              <p
-                className="mx-auto"
-                style={{
-                  ...textStyle(design.hero.introText),
-                  marginTop: toCssSize(design.hero.introText.marginTop),
-                  maxWidth: toCssSize(design.hero.introText.maxWidth),
-                }}
-              >
-                {fixedText.introText}
-              </p>
-            </div>
-
-            <img
-              src={topArrow}
-              alt=""
-              className="brightness-0 invert"
-              style={{ width: toCssSize(design.hero.arrow.width), height: toCssSize(design.hero.arrow.height) }}
-            />
-          </div>
-        </section>
-
-        <section
-          className="relative px-10 text-center"
-          style={{
-            paddingTop: toCssSize(design.sections.countdown.paddingTop),
-            paddingBottom: toCssSize(design.sections.countdown.paddingBottom),
-          }}
-        >
-          <img src={sun} alt="" className="mx-auto" style={{ width: toCssSize(design.sections.countdown.sunWidth) }} />
-          <h2
-            style={{
-              ...textStyle(design.sections.heading),
-              color: colors.heading,
-              marginTop: toCssSize(design.sections.countdown.headingMarginTop),
-            }}
-          >
-            Countdown
-          </h2>
-          {countdown.length ? (
-            <div className="grid grid-cols-3 gap-4" style={{ marginTop: toCssSize(design.sections.countdown.gridMarginTop) }}>
-              {countdown.map(([value, label]) => (
-                <div key={label} className="border-y py-4" style={{ borderColor: `${colors.heading}33` }}>
-                  <div style={textStyle(design.sections.countdownValue)}>{value}</div>
-                  <div className="mt-2" style={textStyle(design.sections.countdownLabel)}>{label}</div>
-                </div>
-              ))}
-            </div>
-          ) : null}
-        </section>
-
-        <section className="relative px-10 text-center" style={{ paddingBottom: toCssSize(design.sections.location.paddingBottom) }}>
-          <h2 style={{ ...textStyle(design.sections.heading), color: colors.heading }}>
-            Location
-          </h2>
-          <p style={{ ...textStyle(design.sections.smallText), marginTop: toCssSize(design.sections.location.copyMarginTop) }}>
-            {fixedText.locationIntro}
-          </p>
-
-          <div
-            className="relative mx-auto w-full"
-            style={{
-              marginTop: toCssSize(design.sections.location.stageMarginTop),
-              height: toCssSize(design.sections.location.stageHeight),
-              maxWidth: toCssSize(design.sections.location.stageMaxWidth),
-            }}
-          >
-            <img src={locationLineLeft} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLeft)} />
-            <img src={locationLineRight} alt="" className="absolute" style={boxStyle(design.locationAssets.lineRight)} />
-            <img src={locationLineLowerLeft} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLowerLeft)} />
-            <img src={locationLineLowerRight} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLowerRight)} />
-            <img src={venueSoft} alt="" className="absolute" style={boxStyle(design.locationAssets.venueSoft)} />
-            <img src={venue} alt="Wedding venue" className="absolute" style={boxStyle(design.locationAssets.venue)} />
-            <img src={portrait} alt="" className="absolute" style={boxStyle(design.locationAssets.portrait)} />
-            <img src={lemons} alt="" className="absolute" style={boxStyle(design.locationAssets.lemons)} />
-          </div>
-
-          <h3
-            style={{
-              ...textStyle(design.sections.locationName),
-              marginTop: toCssSize(design.sections.location.venueNameMarginTop),
-            }}
-          >
-            {invite.venueName}
-          </h3>
-          <p className="mt-2 text-[8px] tracking-[0.1em]">{invite.locationLabel}</p>
-          <p className="mt-1 text-[8px] tracking-[0.1em]">{invite.time}</p>
-        </section>
-
-        <section className="relative px-8 text-center" style={{ paddingBottom: toCssSize(design.sections.timeline.paddingBottom) }}>
-          <h2 style={{ ...textStyle(design.sections.heading), color: colors.heading }}>
-            Timeline
-          </h2>
-          <div
-            className="relative mx-auto"
-            style={{
-              marginTop: toCssSize(design.sections.timeline.stageMarginTop),
-              height: toCssSize(timelineStageHeight),
-              maxWidth: toCssSize(design.sections.timeline.stageMaxWidth),
-            }}
-          >
-            {timelineEntries.map((item, index) => {
-              const itemLayout = getTimelineItemLayout(index);
-
-              return (
-                <React.Fragment key={`${item.time}-${item.title}-${index}`}>
-                  <div
-                    className="absolute left-1/2 overflow-hidden"
-                    style={{
-                      top: toCssSize(Number(itemLayout.top || 0) - 18),
-                      width: toCssSize(timelineImageWidth),
-                      height: toCssSize(timelineSegmentHeight + 24),
-                      transform: "translateX(-50%)",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    <img
-                      src={timelineDoodle}
-                      alt=""
-                      className="absolute left-0"
-                      style={{
-                        top: toCssSize(-index * timelineSegmentHeight),
-                        width: toCssSize(timelineImageWidth),
-                        height: toCssSize(timelineImageHeight),
-                      }}
-                    />
-                  </div>
-                  <div className="absolute" style={boxStyle(itemLayout)}>
-                    <p style={textStyle(design.sections.timelineTitle)}>{item.title}</p>
-                    <div
-                      style={{
-                        ...textStyle(design.sections.timelineTime),
-                        color: colors.accent,
-                        textAlign: itemLayout.timeTextAlign || itemLayout.textAlign,
-                      }}
-                    >
-                      {item.time}
-                    </div>
-                  </div>
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="px-10 text-center" style={{ paddingBottom: toCssSize(design.sections.actions.paddingBottom) }}>
-          <div className="grid gap-3">
-            <a
-              href={invite.mapUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 border px-4 py-3 text-xs uppercase tracking-[0.1em]"
-              style={{ borderColor: colors.heading }}
-            >
-              <FiMapPin /> Voir le lieu
-            </a>
-            {invite.rsvpEnabled && (
-              <button
-                className="flex items-center justify-center gap-2 border px-4 py-3 text-xs uppercase tracking-[0.1em] text-white"
-                style={{ borderColor: colors.heading, backgroundColor: colors.heading }}
-              >
-                <FiSend /> Confirmer ma presence
-              </button>
-            )}
-          </div>
-
-          <div className="mt-8 grid grid-cols-3 gap-3 text-[10px]">
-            <div className="flex flex-col items-center gap-2">
-              <FiCalendar />
-              {displayDate}
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <FiClock />
-              {invite.time}
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <FiMapPin />
-              {invite.city}
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="relative px-10 text-center"
-          style={{
-            paddingTop: toCssSize(design.sections.closing.paddingTop),
-            paddingBottom: toCssSize(design.sections.closing.paddingBottom),
-          }}
-        >
-          <img src={noteCard} alt="" className="mx-auto w-full" />
-          <div className="absolute inset-x-10" style={{ top: toCssSize(design.sections.closing.textTop) }}>
-            <p style={textStyle(design.sections.closingText)}>{fixedText.closingText}</p>
-            <p className="mt-2" style={textStyle(design.sections.closingNames)}>{invite.coupleNames}</p>
-          </div>
-        </section>
-      </div>
+        </div>
+      ) : null}
     </main>
   );
 }
