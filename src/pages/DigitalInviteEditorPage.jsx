@@ -189,8 +189,19 @@ function DigitalInviteEditorPage() {
   }, [publicPath]);
 
   const selectedTemplate = getDigitalInviteTemplate(invite.template) || defaultTemplate;
+  const isSidiBouSaid = invite.template === "sidi-bousaid";
+  const getNames = (coupleNames) => {
+    if (!coupleNames) return { wife: "", husband: "" };
+    const parts = coupleNames.split("&");
+    return {
+      wife: parts[0]?.trim() || "",
+      husband: parts[1]?.trim() || "",
+    };
+  };
+  const { wife, husband } = getNames(invite.coupleNames || "");
+
   const fixedTimelineSteps = selectedTemplate.fixedTimelineSteps || [];
-  const maxTimelineItems = fixedTimelineSteps.length || Infinity;
+  const maxTimelineItems = isSidiBouSaid ? 3 : (fixedTimelineSteps.length || Infinity);
   const getTimelineStepKey = (item, index) =>
     item.step || item.image || fixedTimelineSteps[index]?.image || fixedTimelineSteps[0]?.image || "";
   const getNextTimelineStepKey = (timeline) => {
@@ -219,13 +230,21 @@ function DigitalInviteEditorPage() {
   };
 
   const addTimelineItem = () => {
-    setInvite((currentInvite) => ({
-      ...currentInvite,
-      timeline:
-        currentInvite.timeline.length >= maxTimelineItems
-          ? currentInvite.timeline
-          : [...currentInvite.timeline, { step: getNextTimelineStepKey(currentInvite.timeline), time: "" }],
-    }));
+    setInvite((currentInvite) => {
+      const isSidi = currentInvite.template === "sidi-bousaid";
+      const newItem = isSidi
+        ? { title: "New Event", titleAr: "حدث جديد", date: currentInvite.eventDate || "", time: "19:00", venue: currentInvite.venueName || "", city: currentInvite.city || "", mapUrl: currentInvite.mapUrl || "" }
+        : { step: getNextTimelineStepKey(currentInvite.timeline), time: "" };
+
+      const maxLimit = isSidi ? 3 : maxTimelineItems;
+      return {
+        ...currentInvite,
+        timeline:
+          currentInvite.timeline.length >= maxLimit
+            ? currentInvite.timeline
+            : [...currentInvite.timeline, newItem],
+      };
+    });
   };
 
   const removeTimelineItem = (index) => {
@@ -238,17 +257,10 @@ function DigitalInviteEditorPage() {
   const handleTemplateChange = (templateId) => {
     const nextTemplate = getDigitalInviteTemplate(templateId);
 
-    if (!nextTemplate) {
-      return;
-    }
-
     setInvite((currentInvite) => ({
-      ...nextTemplate.defaults,
       ...currentInvite,
-      template: nextTemplate.id,
-      timeline: currentInvite.timeline?.length
-        ? currentInvite.timeline
-        : nextTemplate.defaults.timeline,
+      template: templateId,
+      timeline: nextTemplate.defaults.timeline,
     }));
   };
 
@@ -445,12 +457,27 @@ function DigitalInviteEditorPage() {
 
           <EditorSection icon={FiSettings} title="Informations">
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Noms du couple">
+              <Field label="Prénom de la mariée (Épouse)">
                 <TextInput
-                  value={invite.coupleNames}
-                  onChange={(event) => updateInvite("coupleNames", event.target.value)}
+                  value={wife}
+                  onChange={(event) => {
+                    const newWife = event.target.value;
+                    updateInvite("coupleNames", newWife || husband ? `${newWife} & ${husband}` : "");
+                  }}
                   onBlur={handleCoupleBlur}
-                  placeholder="Bilel & Dorra"
+                  placeholder="Sarah"
+                  required
+                />
+              </Field>
+              <Field label="Prénom du marié (Époux)">
+                <TextInput
+                  value={husband}
+                  onChange={(event) => {
+                    const newHusband = event.target.value;
+                    updateInvite("coupleNames", wife || newHusband ? `${wife} & ${newHusband}` : "");
+                  }}
+                  onBlur={handleCoupleBlur}
+                  placeholder="Hedi"
                   required
                 />
               </Field>
@@ -559,7 +586,7 @@ function DigitalInviteEditorPage() {
 
           <EditorSection
             icon={FiClock}
-            title="Timeline"
+            title={isSidiBouSaid ? "Celebrations" : "Timeline"}
             action={
               <button
                 type="button"
@@ -567,42 +594,101 @@ function DigitalInviteEditorPage() {
                 disabled={invite.timeline.length >= maxTimelineItems}
                 className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
               >
-                <FiPlus aria-hidden="true" /> Ajouter une etape
+                <FiPlus aria-hidden="true" /> {isSidiBouSaid ? "Add Event" : "Ajouter une etape"}
               </button>
             }
           >
-            <div className="space-y-4">
+            <div className="space-y-6">
               {invite.timeline.map((item, index) => (
-                <div key={index} className="grid gap-3 border border-[#E4E8EA] bg-[#FCFCFB] p-4 md:grid-cols-[1fr_0.7fr_auto] md:items-end">
-                  <Field label={`Etape ${index + 1}`}>
-                    <select
-                      value={getTimelineStepKey(item, index)}
-                      onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
-                      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                <div key={index} className="border border-[#E4E8EA] bg-[#FCFCFB] p-6 space-y-4 relative">
+                  <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <h3 className="font-semibold text-lg">
+                      {isSidiBouSaid ? `Event ${index + 1} : ${item.title || "New Event"}` : `Etape ${index + 1}`}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => removeTimelineItem(index)}
+                      disabled={invite.timeline.length <= 1}
+                      title="Supprimer"
+                      aria-label={`Supprimer l'etape ${index + 1}`}
+                      className="inline-flex h-8 w-8 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
                     >
-                      {fixedTimelineSteps.map((step) => (
-                        <option key={step.image} value={step.image}>
-                          {step.title}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label={`Heure ${index + 1}`}>
-                    <TextInput
-                      value={item.time}
-                      onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
-                    />
-                  </Field>
-                  <button
-                    type="button"
-                    onClick={() => removeTimelineItem(index)}
-                    disabled={invite.timeline.length <= 1}
-                    title="Supprimer"
-                    aria-label={`Supprimer l'etape ${index + 1}`}
-                    className="inline-flex h-12 w-12 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
-                  >
-                    <FiTrash2 aria-hidden="true" />
-                  </button>
+                      <FiTrash2 aria-hidden="true" className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {isSidiBouSaid ? (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label="Title (English)">
+                        <TextInput
+                          value={item.title || ""}
+                          onChange={(event) => updateTimelineItem(index, "title", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="Title (Arabic)">
+                        <TextInput
+                          value={item.titleAr || ""}
+                          onChange={(event) => updateTimelineItem(index, "titleAr", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="Date (YYYY-MM-DD)">
+                        <TextInput
+                          type="date"
+                          value={item.date || ""}
+                          onChange={(event) => updateTimelineItem(index, "date", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="Time">
+                        <TextInput
+                          value={item.time || ""}
+                          onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="Venue Name">
+                        <TextInput
+                          value={item.venue || ""}
+                          onChange={(event) => updateTimelineItem(index, "venue", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="City">
+                        <TextInput
+                          value={item.city || ""}
+                          onChange={(event) => updateTimelineItem(index, "city", event.target.value)}
+                        />
+                      </Field>
+                      <div className="md:col-span-2">
+                        <Field label="Google Maps URL">
+                          <TextInput
+                            value={item.mapUrl || ""}
+                            onChange={(event) => updateTimelineItem(index, "mapUrl", event.target.value)}
+                            placeholder="https://maps.google.com"
+                          />
+                        </Field>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3 md:grid-cols-[1fr_0.7fr] md:items-end">
+                      <Field label="Etape">
+                        <select
+                          value={getTimelineStepKey(item, index)}
+                          onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
+                          className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                        >
+                          {fixedTimelineSteps.map((step) => (
+                            <option key={step.image} value={step.image}>
+                              {step.title}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field label="Heure">
+                        <TextInput
+                          value={item.time}
+                          onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
+                        />
+                      </Field>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

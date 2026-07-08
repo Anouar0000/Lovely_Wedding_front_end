@@ -20,56 +20,28 @@ const blue = "#0093d8";
 const pageWidth = 430;
 const pageHeight = 4000;
 const doorSlots = [
-  { left: 92, top: 631, width: 59, height: 99 },
-  { left: 189, top: 631, width: 59, height: 99 },
-  { left: 286, top: 631, width: 59, height: 99 },
+  { left: 92, top: 631, width: 51, height: 99 },
+  { left: 189, top: 631, width: 51, height: 99 },
+  { left: 286, top: 631, width: 51, height: 99 },
 ];
+
+const formatEventDate = (dateString) => {
+  if (!dateString) return { weekday: "", day: "", month: "", year: "" };
+  const parts = dateString.split("-");
+  if (parts.length < 3) return { weekday: "", day: "", month: "", year: "" };
+  const d = new Date(parts[0], parts[1] - 1, parts[2]);
+  return {
+    weekday: d.toLocaleDateString("en-US", { weekday: "long" }),
+    day: d.getDate(),
+    month: d.toLocaleDateString("en-US", { month: "short" }),
+    year: d.getFullYear(),
+  };
+};
 
 const pct = (value, total) => `${(value / total) * 100}%`;
 
-const absoluteBox = ({ left, top, width, height }, sectionHeight = pageHeight) => ({
-  position: "absolute",
-  left: pct(left, pageWidth),
-  top: pct(top, sectionHeight),
-  width: pct(width, pageWidth),
-  height: height ? pct(height, sectionHeight) : undefined,
-});
 
-const textLayer = ({
-  left,
-  top,
-  width,
-  children,
-  color = blue,
-  fontSize = 16,
-  lineHeight,
-  family = "Cormorant Infant, serif",
-  weight = 400,
-  style = "normal",
-  align = "center",
-  letterSpacing = 0,
-  transform,
-  zIndex = 3,
-}) => (
-  <div
-    style={{
-      ...absoluteBox({ left, top, width }, pageHeight),
-      color,
-      fontFamily: family,
-      fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
-      fontStyle: style,
-      fontWeight: weight,
-      lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
-      letterSpacing,
-      textAlign: align,
-      textTransform: transform,
-      whiteSpace: "pre-wrap",
-      zIndex,
-    }}
-  >
-    {children}
-  </div>
-);
+
 
 const formatDateParts = (dateString) => {
   if (!dateString) {
@@ -127,9 +99,60 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   const dateParts = useMemo(() => formatDateParts(invite.eventDate), [invite.eventDate]);
   const names = useMemo(() => getNames(invite.coupleNames), [invite.coupleNames]);
   const countdown = useMemo(() => getCountdownParts(invite.eventDate), [invite.eventDate]);
-  const venueName = invite.venueName || "Haifa Palace";
-  const city = invite.city || "Mornag";
+
   const time = invite.time || "7PM";
+
+  const eventsCount = (invite.timeline || []).length;
+  const eventsOffset = (eventsCount - 2) * 460;
+  const currentPageHeight = pageHeight + eventsOffset;
+
+  const absoluteBox = useMemo(() => {
+    return ({ left, top, width, height }) => ({
+      position: "absolute",
+      left: pct(left, pageWidth),
+      top: pct(top, currentPageHeight),
+      width: pct(width, pageWidth),
+      height: height ? pct(height, currentPageHeight) : undefined,
+    });
+  }, [currentPageHeight]);
+
+  const textLayer = useMemo(() => {
+    return ({
+      left,
+      top,
+      width,
+      children,
+      color = blue,
+      fontSize = 16,
+      lineHeight,
+      family = "Cormorant Infant, serif",
+      weight = 400,
+      style = "normal",
+      align = "center",
+      letterSpacing = 0,
+      transform,
+      zIndex = 3,
+    }) => (
+      <div
+        style={{
+          ...absoluteBox({ left, top, width }),
+          color,
+          fontFamily: family,
+          fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+          fontStyle: style,
+          fontWeight: weight,
+          lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
+          textAlign: align,
+          letterSpacing,
+          textTransform: transform,
+          whiteSpace: "pre-wrap",
+          zIndex,
+        }}
+      >
+        {children}
+      </div>
+    );
+  }, [absoluteBox]);
 
   const adjustedLayers = useMemo(() => {
     return exportLayers.map(layer => {
@@ -153,9 +176,13 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
       } else if (layer.name === 'closing-small-ornament.png') {
         top = 3810;
       }
+
+      if (top >= 2000) {
+        top += eventsOffset;
+      }
       return { ...layer, top };
     });
-  }, []);
+  }, [eventsOffset]);
 
   useEffect(() => {
     if (isIntroDone) {
@@ -233,10 +260,10 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   return (
     <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#0093d8]">
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl" style={{ maxWidth: pageWidth }}>
-        <section className="relative w-full overflow-hidden" style={{ aspectRatio: `${pageWidth} / ${pageHeight}` }}>
+        <section className="relative w-full overflow-hidden" style={{ aspectRatio: `${pageWidth} / ${currentPageHeight}` }}>
           <video
             className="absolute left-0 top-0 h-auto w-full"
-            style={{ height: pct(501, pageHeight), objectFit: "cover", zIndex: 1 }}
+            style={{ height: pct(501, currentPageHeight), objectFit: "cover", zIndex: 1 }}
             src={openingVideo}
             autoPlay
             muted
@@ -334,77 +361,47 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           {textLayer({ left: 85, top: 1050, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", children: "The Celebrations" })}
           {textLayer({ left: 85, top: 1085, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, children: "الليالي" })}
 
-          {/* Outeya Box */}
-          <div style={{ ...absoluteBox({ left: 55, top: 1140, width: 320, height: 420 }), border: `1.5px solid ${blue}`, borderRadius: "10px", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "35px", backgroundColor: "transparent" }}>
-            {/* Title */}
-            <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>Outeya</span>
-            <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>الوطية</span>
-            
-            {/* Date Layout */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
-              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.weekday}</span>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{dateParts.day}</span>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{dateParts.year}</span>
-              </div>
-              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.month}</span>
-              </div>
-            </div>
+          {/* Celebrations Event Boxes */}
+          {(invite.timeline || []).map((event, index) => {
+            const top = 1140 + index * 460;
+            const eventDateParts = formatEventDate(event.date || invite.eventDate);
+            return (
+              <div key={index} style={{ ...absoluteBox({ left: 55, top, width: 320, height: 420 }), border: `1.5px solid ${blue}`, borderRadius: "10px", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "35px", backgroundColor: "transparent" }}>
+                {/* Title */}
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>{event.title}</span>
+                <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>{event.titleAr}</span>
+                
+                {/* Date Layout */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
+                  <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{eventDateParts.weekday}</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{eventDateParts.day}</span>
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{eventDateParts.year}</span>
+                  </div>
+                  <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{eventDateParts.month}</span>
+                  </div>
+                </div>
 
-            {/* Venue Layout */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
-              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${venueName}\n${city}`}</span>
-              <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(venueName, city)}</span>
-            </div>
+                {/* Venue Layout */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
+                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${event.venue || ""}\n${event.city || ""}`}</span>
+                  <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(event.venue, event.city)}</span>
+                </div>
 
-            {/* Maps Button */}
-            <button
-              type="button"
-              onClick={() => window.open(invite.mapUrl || "https://maps.google.com", "_blank")}
-              style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
-            >
-              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
-            </button>
-          </div>
-
-          {/* Mariage Box */}
-          <div style={{ ...absoluteBox({ left: 55, top: 1600, width: 320, height: 420 }), border: `1.5px solid ${blue}`, borderRadius: "10px", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "35px", backgroundColor: "transparent" }}>
-            {/* Title */}
-            <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>Mariage</span>
-            <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>العرس</span>
-            
-            {/* Date Layout */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
-              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.weekday}</span>
+                {/* Maps Button */}
+                <button
+                  type="button"
+                  onClick={() => window.open(event.mapUrl || invite.mapUrl || "https://maps.google.com", "_blank")}
+                  style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
+                >
+                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
+                </button>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{dateParts.day}</span>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{dateParts.year}</span>
-              </div>
-              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.month}</span>
-              </div>
-            </div>
-
-            {/* Venue Layout */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
-              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${venueName}\n${city}`}</span>
-              <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(venueName, city)}</span>
-            </div>
-
-            {/* Maps Button */}
-            <button
-              type="button"
-              onClick={() => window.open(invite.mapUrl || "https://maps.google.com", "_blank")}
-              style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
-            >
-              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
-            </button>
-          </div>
+            );
+          })}
 
           {/* Our Story Background (Left Half) */}
           <div style={{ ...absoluteBox({ left: 0, top: 2140, width: 215, height: 267 }), backgroundImage: "linear-gradient(to bottom, #0093D8, #251380)", zIndex: 1 }}></div>
@@ -465,7 +462,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               onClick={handleDoorClick}
               aria-label="Open reveal doors"
               className="absolute cursor-pointer bg-transparent p-0 focus:outline-none"
-              style={{ left: pct(82, pageWidth), top: pct(610, pageHeight), width: pct(267, pageWidth), height: pct(170, pageHeight), zIndex: 6 }}
+              style={{ left: pct(82, pageWidth), top: pct(610, currentPageHeight), width: pct(267, pageWidth), height: pct(170, currentPageHeight), zIndex: 6 }}
             >
               {doorSlots.map((door) => (
                 <img
