@@ -1,0 +1,174 @@
+[
+  {
+    "name": "reveal-corner-top-left.png",
+    "srcName": "reveal-corner.png",
+    "left": 0,
+    "top": 501,
+    "width": 71,
+    "height": 62,
+    "transform": "scaleX(-1)"
+  },
+  {
+    "name": "reveal-corner-top-right.png",
+    "left": 359,
+    "top": 501,
+    "width": 71,
+    "height": 62,
+    "srcName": "reveal-corner.png"
+  },
+  {
+    "name": "reveal-hand.svg",
+    "left": 154,
+    "top": 611,
+    "width": 122,
+    "height": 146,
+    "zIndex": 4
+  },
+  {
+    "name": "reveal-corner-bottom-left.png",
+    "srcName": "reveal-corner.png",
+    "left": 0,
+    "top": 743,
+    "width": 71,
+    "height": 62,
+    "transform": "scale(-1, -1)"
+  },
+  {
+    "name": "reveal-corner-bottom-right.png",
+    "srcName": "reveal-corner.png",
+    "left": 359,
+    "top": 743,
+    "width": 71,
+    "height": 62,
+    "transform": "scaleY(-1)"
+  },
+  {
+    "name": "countdown-panel.png",
+    "left": 0,
+    "top": 804,
+    "width": 430,
+    "height": 212
+  },
+  {
+    "name": "outeya-right-floral.png",
+    "srcName": "celebration-right-floral.png",
+    "left": 328,
+    "top": 1157,
+    "width": 102,
+    "height": 95
+  },
+  {
+    "name": "outeya-left-floral.png",
+    "left": 0,
+    "top": 1301,
+    "width": 103,
+    "height": 95,
+    "srcName": "celebration-left-floral.png"
+  },
+  {
+    "name": "outeya-small-floral.png",
+    "left": 343,
+    "top": 1463,
+    "width": 57,
+    "height": 61,
+    "srcName": "celebration-small-floral.png"
+  },
+  {
+    "name": "mariage-right-floral.png",
+    "left": 328,
+    "top": 1587,
+    "width": 102,
+    "height": 95,
+    "srcName": "celebration-right-floral.png"
+  },
+  {
+    "name": "mariage-left-floral.png",
+    "srcName": "celebration-left-floral.png",
+    "left": 0,
+    "top": 1731,
+    "width": 103,
+    "height": 95
+  },
+  {
+    "name": "mariage-small-floral.png",
+    "srcName": "celebration-small-floral.png",
+    "left": 343,
+    "top": 1893,
+    "width": 57,
+    "height": 61
+  },
+  {
+    "name": "our-story-hand-small.svg",
+    "srcName": "reveal-hand.svg",
+    "left": 197,
+    "top": 1982,
+    "width": 36,
+    "height": 42
+  },
+  {
+    "name": "our-story-photo.png",
+    "left": 215,
+    "top": 2057,
+    "width": 215,
+    "height": 267
+  },
+  {
+    "name": "our-story-ornament.svg",
+    "left": 8,
+    "top": 2068,
+    "width": 38,
+    "height": 38,
+    "zIndex": 3
+  },
+  {
+    "name": "our-story-ornament-bottom.svg",
+    "srcName": "our-story-ornament.svg",
+    "left": 382,
+    "top": 2276,
+    "width": 38,
+    "height": 38,
+    "zIndex": 3
+  },
+  {
+    "name": "dress-code-illustration.png",
+    "left": 139,
+    "top": 2392,
+    "width": 153,
+    "height": 230
+  },
+  {
+    "name": "programme-flourish-right.svg",
+    "left": 230.787,
+    "top": 2743.03,
+    "width": 63.9725,
+    "height": 213
+  },
+  {
+    "name": "programme-flourish-left.svg",
+    "left": 124.143,
+    "top": 2761.15,
+    "width": 48.5796,
+    "height": 203
+  },
+  {
+    "name": "programme-line-top.svg",
+    "left": 83,
+    "top": 2816.94,
+    "width": 289.447,
+    "height": 11
+  },
+  {
+    "name": "programme-line-bottom.svg",
+    "left": 107.581,
+    "top": 2897.6,
+    "width": 267.419,
+    "height": 10
+  },
+  {
+    "name": "closing-small-ornament.png",
+    "left": 192,
+    "top": 3607,
+    "width": 29,
+    "height": 12
+  }
+]

@@ -10,8 +10,8 @@ import heroImage from "../assets/images/onlydigital1.png";
 import dolceColumns from "../assets/digital/dolce-vita/figma-layer-01.png";
 import dolceSun from "../assets/digital/dolce-vita/figma-layer-05.png";
 import dolceVenue from "../assets/digital/dolce-vita/figma-layer-07.png";
-import sidiView from "../assets/digital/sidi-bousaid/export/figma-image-17.png";
-import sidiLines from "../assets/digital/sidi-bousaid/export/figma-image-18.png";
+import sidiView from "../assets/digital/sidi-bousaid/export-v2/dress-code-illustration.png";
+import sidiLines from "../assets/digital/sidi-bousaid/export-v2/countdown-panel.png";
 
 const digitalTemplatesById = {
   [dolceVitaTemplate.id]: dolceVitaTemplate,
@@ -228,7 +228,7 @@ function InvitationsDigitalPage() {
                       className={`inline-flex items-center gap-2 px-3 py-2 font-urbanist text-sm transition hover:opacity-90 ${theme.button}`}
                       onClick={() => template.previewPath && navigate(template.previewPath)}
                     >
-                      Voir plus <FiArrowRight />
+                      Apercu <FiArrowRight />
                     </button>
                   </div>
                 </div>
@@ -245,3 +245,4 @@ function InvitationsDigitalPage() {
 }
 
 export default InvitationsDigitalPage;
+

@@ -1,5 +1,4 @@
 import React from "react";
-import { FiCalendar, FiClock, FiMapPin, FiSend } from "react-icons/fi";
 import columns from "../assets/digital/dolce-vita/figma-layer-01.png";
 import flourishLeft from "../assets/digital/dolce-vita/figma-layer-02.png";
 import flourishRight from "../assets/digital/dolce-vita/figma-layer-03.png";
@@ -13,7 +12,7 @@ import noteCard from "../assets/digital/dolce-vita/figma-layer-10.png";
 import accueilTimeline from "../assets/digital/dolce-vita/accueil-des-invites.png";
 import arriveeTimeline from "../assets/digital/dolce-vita/arrivee-des-maries.png";
 import contratTimeline from "../assets/digital/dolce-vita/contrat-de-mariage.png";
-import soireeTimeline from "../assets/digital/dolce-vita/soirée-dansante.png";
+import soireeTimeline from "../assets/digital/dolce-vita/soiree-dansante.png";
 import finTimeline from "../assets/digital/dolce-vita/la-fin.png";
 import timelineArrow1 from "../assets/digital/dolce-vita/arrow1.png";
 import timelineArrow2 from "../assets/digital/dolce-vita/arrow2.png";
@@ -24,6 +23,9 @@ import locationLineLowerLeft from "../assets/digital/dolce-vita/figma-vector-02.
 import locationLineRight from "../assets/digital/dolce-vita/figma-vector-37.svg";
 import locationLineLowerRight from "../assets/digital/dolce-vita/figma-vector-39.svg";
 import topArrow from "../assets/digital/dolce-vita/figma-vector-01.svg";
+import menuPlate from "../assets/digital/dolce-vita/export-update/figma-image-49.png";
+import menuLemons from "../assets/digital/dolce-vita/export-update/figma-image-50.png";
+import menuPortrait from "../assets/digital/dolce-vita/export-update/figma-image-51.png";
 import templateConfig from "../data/digital/templates/dolce-vita.json";
 import { boxStyle, textStyle, toCssSize } from "../utils/digitalTemplateDesign";
 
@@ -41,6 +43,24 @@ const timelineImages = {
   fin: finTimeline,
 };
 const timelineArrows = [timelineArrow1, timelineArrow2, timelineArrow3, timelineArrow4];
+const menuItems = [
+  {
+    course: "Starter",
+    title: "Insalata Caprese",
+    description:
+      "Layers of creamy buffalo mozzarella, ripe slices of tomato, and fragrant basil leaves are elegantly arranged on a plate.",
+  },
+  {
+    course: "Main Course",
+    title: "Spaghetti alla Carbonara",
+    description: "Al dente spaghetti, lovingly coated in a velvety sauce, awaits your palate.",
+  },
+  {
+    course: "Dessert",
+    title: "Tiramisu",
+    description: "Savor the finale of your Italian journey with the epitome of dolce perfection - Tiramisu.",
+  },
+];
 const getTimelineStep = (item, index) => {
   const stepKey = item.step || item.image || fixedTimelineSteps[index]?.image;
   return fixedTimelineSteps.find((step) => step.image === stepKey) || fixedTimelineSteps[index] || {};
@@ -64,23 +84,8 @@ const getCountdown = (dateString) => {
   ];
 };
 
-const formatDisplayDate = (dateString) => {
-  if (!dateString) {
-    return "";
-  }
-
-  const [year, month, day] = dateString.split("-");
-
-  if (!year || !month || !day) {
-    return "";
-  }
-
-  return `${day}.${month}.${year}`;
-};
-
 function DolceVitaInvitePage({ invite = defaultInvite }) {
   const countdown = getCountdown(invite.eventDate);
-  const displayDate = formatDisplayDate(invite.eventDate);
   const timelineEntries = (invite.timeline || [])
     .map((item, index) => {
       const timelineStep = getTimelineStep(item, index);
@@ -339,42 +344,83 @@ function DolceVitaInvitePage({ invite = defaultInvite }) {
           </div>
         </section>
 
-        <section className="px-10 text-center" style={{ paddingBottom: toCssSize(design.sections.actions.paddingBottom) }}>
-          <div className="grid gap-3">
-            <a
-              href={invite.mapUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 border px-4 py-3 text-xs uppercase tracking-[0.1em]"
-              style={{ borderColor: colors.primaryText }}
-            >
-              <FiMapPin /> Voir le lieu
-            </a>
-            {invite.rsvpEnabled && (
-              <button
-                className="flex items-center justify-center gap-2 border px-4 py-3 text-xs uppercase tracking-[0.1em] text-white"
-                style={{ borderColor: colors.primaryText, backgroundColor: colors.primaryText }}
-              >
-                <FiSend /> Confirmer ma presence
-              </button>
-            )}
-          </div>
-
-          <div className="mt-8 grid grid-cols-3 gap-3 text-[10px]">
-            <div className="flex flex-col items-center gap-2">
-              <FiCalendar />
-              {displayDate}
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <FiClock />
-              {invite.time}
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <FiMapPin />
-              {invite.city}
+        <section className="relative px-5 text-center" style={{ paddingBottom: 86 }}>
+          <h2 style={textStyle(design.sections.heading)}>Menu</h2>
+          <p className="mt-4" style={{ ...textStyle(design.sections.smallText), fontSize: 10 }}>
+            Culinary Travel
+          </p>
+          <div className="relative mx-auto mt-10 min-h-[520px] max-w-[392px]">
+            <img src={menuPortrait} alt="" className="absolute left-[-20px] top-[-24px] w-[181px]" />
+            <img src={menuPlate} alt="" className="absolute left-1/2 top-0 w-[377px] -translate-x-1/2" />
+            <img src={menuLemons} alt="" className="absolute right-[-20px] top-[352px] w-[149px]" />
+            <div className="relative z-10 mx-auto pt-14">
+              {menuItems.map((item) => (
+                <div key={item.course} className="mx-auto mb-10 max-w-[392px] px-1">
+                  <p style={{ ...textStyle(design.sections.heading), fontSize: 24 }}>{item.course}</p>
+                  <p className="mt-4" style={{ ...textStyle(design.sections.locationName), fontSize: 12 }}>
+                    {item.title}
+                  </p>
+                  <p className="mx-auto mt-3 max-w-[392px]" style={{ ...textStyle(design.sections.smallText), lineHeight: 1.45 }}>
+                    {item.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
+
+        {invite.rsvpEnabled ? (
+          <section className="px-7 text-center" style={{ paddingBottom: 64 }}>
+            <h2 style={textStyle(design.sections.heading)}>RSVP</h2>
+            <form
+              className="mt-16 space-y-5 text-left"
+              onSubmit={(event) => event.preventDefault()}
+              style={{ color: colors.primaryText }}
+            >
+              <fieldset>
+                <legend className="mb-4 text-[14px]" style={textStyle(design.sections.locationName)}>
+                  Will you attend
+                </legend>
+                <div className="grid grid-cols-2 gap-5 text-[12px]" style={textStyle(design.sections.smallText)}>
+                  <label className="flex items-center gap-3">
+                    <input type="radio" name="dolce-rsvp-attending" defaultChecked />
+                    Yes, I will be there
+                  </label>
+                  <label className="flex items-center gap-3">
+                    <input type="radio" name="dolce-rsvp-attending" />
+                    Sorry, I can't make it
+                  </label>
+                </div>
+              </fieldset>
+              {[
+                ["Full Name", "text", "Full Name"],
+                ["Email", "email", "abc.xyz@contact.com"],
+                ["Phone Number", "tel", "+216000111"],
+                ["Number of guests", "number", "3"],
+              ].map(([label, type, placeholder]) => (
+                <label key={label} className="block">
+                  <span className="mb-3 block" style={{ ...textStyle(design.sections.locationName), fontSize: 14 }}>
+                    {label}
+                  </span>
+                  <input
+                    type={type}
+                    min={type === "number" ? "1" : undefined}
+                    placeholder={placeholder}
+                    className="w-full rounded-[7px] border bg-transparent px-4 py-3 text-sm outline-none"
+                    style={{ borderColor: colors.primaryText }}
+                  />
+                </label>
+              ))}
+              <button
+                type="submit"
+                className="mt-5 w-full rounded-[7px] px-5 py-3 text-center text-sm text-white"
+                style={{ backgroundColor: colors.primaryText }}
+              >
+                Send Confirmation
+              </button>
+            </form>
+          </section>
+        ) : null}
 
         <section
           className="relative px-10 text-center"

@@ -1,4 +1,4 @@
-﻿{
+{
     "id":  "dolce-vita",
     "label":  "Dolce Vita",
     "name":  "Dolce Vita E-invite",
@@ -12,7 +12,7 @@
                      "Plan d\u0027acces"
                  ],
     "format":  "Landing page",
-    "previewPath":  "/e/bilel-dorra",
+    "previewPath":  "/digital-invitation/dolce-vita",
     "sample":  {
                    "template":  "dolce-vita",
                    "status":  "published",
@@ -71,7 +71,7 @@
                                    "imageWidth":  60
                                },
                                {
-                                   "title":  "soirée dansante",
+                                   "title":  "soir\u00e9e dansante",
                                    "image":  "soiree",
                                    "imageWidth":  60
                                },
@@ -436,3 +436,4 @@
                                   ]
                  }
 }
+

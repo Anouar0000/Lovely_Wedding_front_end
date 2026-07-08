@@ -1,21 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import openingVideo from "../assets/digital/sidi-bousaid/can_you_create_a_video_,_of_a_tunisian_double_opening_door_door_(_of_sidi_bousaid_)_opening_to_revea_seed458836054.mp4";
-import image01 from "../assets/digital/sidi-bousaid/export/figma-image-01.png";
-import image02 from "../assets/digital/sidi-bousaid/export/figma-image-02.png";
-import image05 from "../assets/digital/sidi-bousaid/export/figma-image-05.png";
-import image06 from "../assets/digital/sidi-bousaid/export/figma-image-06.png";
-import image07 from "../assets/digital/sidi-bousaid/export/figma-image-07.png";
-import image08 from "../assets/digital/sidi-bousaid/export/figma-image-08.png";
-import image09 from "../assets/digital/sidi-bousaid/export/figma-image-09.png";
-import image10 from "../assets/digital/sidi-bousaid/export/figma-image-10.png";
-import image11 from "../assets/digital/sidi-bousaid/export/figma-image-11.png";
-import image12 from "../assets/digital/sidi-bousaid/export/figma-image-12.png";
-import image13 from "../assets/digital/sidi-bousaid/export/figma-image-13.png";
-import image14 from "../assets/digital/sidi-bousaid/export/figma-image-14.png";
-import image16 from "../assets/digital/sidi-bousaid/export/figma-image-16.png";
-import image17 from "../assets/digital/sidi-bousaid/export/figma-image-17.png";
-import image18 from "../assets/digital/sidi-bousaid/export/figma-image-18.png";
+import openingVideo from "../assets/videos/Mediterranean_Sea_harbor_bougain.mp4";
+import exportLayers from "../assets/digital/sidi-bousaid/export-v2/layers.json";
 import templateConfig from "../data/digital/templates/sidi-bousaid.json";
+
+const exportImageContext = require.context("../assets/digital/sidi-bousaid/export-v2", false, /\.(png|svg)$/);
+const exportImageSources = exportImageContext.keys().reduce((images, key) => {
+  images[key.replace("./", "")] = exportImageContext(key);
+  return images;
+}, {});
 
 const doorFrameContext = require.context("../assets/digital/sidi-bousaid/renders-webp", false, /\.webp$/);
 const doorFrameSources = doorFrameContext
@@ -24,61 +16,55 @@ const doorFrameSources = doorFrameContext
   .map((key) => doorFrameContext(key));
 
 const defaultInvite = templateConfig.sample;
-const blue = "#054cb6";
+const blue = "#0093d8";
 const pageWidth = 430;
-const pageHeight = 1743;
-const revealStart = 596;
-const revealHeight = pageHeight - revealStart;
-
-const exportImages = [
-  { src: image01, left: 53, top: 755, width: 56 },
-  { src: image02, left: 299, top: 648, width: 77.8635 },
-  { src: image05, left: 0, top: 310, width: 34 },
-  { src: image06, left: 398, top: 310, width: 32 },
-  { src: image07, left: 4, top: 358, width: 41 },
-  { src: image08, left: 385, top: 358, width: 41 },
-  { src: image09, left: 0, top: 406, width: 34 },
-  { src: image10, left: 398, top: 406, width: 32 },
-  { src: image11, left: 4, top: 454, width: 41 },
-  { src: image12, left: 385, top: 454, width: 41 },
-  { src: image13, left: 0, top: 502, width: 34 },
-  { src: image14, left: 398, top: 502, width: 32 },
-  { src: image16, left: 61, top: 346, width: 139, dropShadow: true },
-  { src: image17, left: 232, top: 346, width: 139, dropShadow: true },
-  { src: image18, left: 0, top: 866, width: 430 },
+const pageHeight = 3800;
+const doorSlots = [
+  { left: 92, top: 631, width: 51 },
+  { left: 189, top: 631, width: 51 },
+  { left: 286, top: 631, width: 51 },
 ];
 
 const pct = (value, total) => `${(value / total) * 100}%`;
 
-const absoluteBox = ({ left, top, width }, sectionHeight = pageHeight, topOffset = 0) => ({
+const absoluteBox = ({ left, top, width, height }, sectionHeight = pageHeight) => ({
   position: "absolute",
   left: pct(left, pageWidth),
-  top: pct(top - topOffset, sectionHeight),
+  top: pct(top, sectionHeight),
   width: pct(width, pageWidth),
+  height: height ? pct(height, sectionHeight) : undefined,
 });
 
-const textBox = ({
+const textLayer = ({
   left,
   top,
   width,
-  fontSize,
-  lineHeight,
-  letterSpacing = 0,
   children,
-  family = "Taviraj, serif",
-  sectionHeight = pageHeight,
-  topOffset = 0,
+  color = blue,
+  fontSize = 16,
+  lineHeight,
+  family = "Cormorant Infant, serif",
+  weight = 400,
+  style = "normal",
+  align = "center",
+  letterSpacing = 0,
+  transform,
+  zIndex = 3,
 }) => (
   <div
     style={{
-      ...absoluteBox({ left, top, width }, sectionHeight, topOffset),
-      color: blue,
+      ...absoluteBox({ left, top, width }, pageHeight),
+      color,
       fontFamily: family,
-      fontSize: `clamp(${fontSize * 0.75}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+      fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+      fontStyle: style,
+      fontWeight: weight,
       lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
       letterSpacing,
-      textAlign: "center",
+      textAlign: align,
+      textTransform: transform,
       whiteSpace: "pre-wrap",
+      zIndex,
     }}
   >
     {children}
@@ -87,25 +73,49 @@ const textBox = ({
 
 const formatDateParts = (dateString) => {
   if (!dateString) {
-    return { day: "12", month: "08", year: "2026", display: "12 . 08 . 2026" };
+    return { day: "20", month: "July", weekday: "Monday", year: "2026", display: "20 July 2026" };
   }
 
-  const [year, month, day] = dateString.split("-");
+  const date = new Date(`${dateString}T00:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return { day: "20", month: "July", weekday: "Monday", year: "2026", display: "20 July 2026" };
+  }
 
   return {
-    day: day || "12",
-    month: month || "08",
-    year: year || "2026",
-    display: day && month && year ? `${day} . ${month} . ${year}` : "12 . 08 . 2026",
+    day: String(date.getDate()).padStart(2, "0"),
+    month: date.toLocaleString("en", { month: "long" }),
+    weekday: date.toLocaleString("en", { weekday: "long" }),
+    year: String(date.getFullYear()),
+    display: date.toLocaleDateString("en", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
   };
 };
 
+const getArabicVenueAndCity = (venue, city) => {
+  const venueLower = (venue || "").toLowerCase();
+  const cityLower = (city || "").toLowerCase();
+  if (venueLower.includes("dar sidi") || cityLower.includes("sidi bou said")) {
+    return "دار سيدي بوسعيد";
+  }
+  return "هيفاء بالاصمرناق";
+};
+
 const getNames = (coupleNames) => {
-  const [firstName = "Sarah", secondName = ""] = (coupleNames || "").split(/\s*&\s*|\s+et\s+/i);
+  const [firstName = "Sarah", secondName = "Hedi"] = (coupleNames || "Sarah & Hedi").split(/\s*&\s*|\s+et\s+/i);
 
   return {
     firstName: firstName.trim() || "Sarah",
-    secondName: secondName.trim(),
+    secondName: secondName.trim() || "Hedi",
+  };
+};
+
+const getCountdownParts = (dateString) => {
+  const eventDate = dateString ? new Date(`${dateString}T00:00:00`) : new Date("2026-07-20T00:00:00");
+  const diff = Math.max(0, eventDate.getTime() - Date.now());
+  const totalHours = Math.floor(diff / (1000 * 60 * 60));
+  return {
+    days: Math.floor(totalHours / 24),
+    hours: totalHours % 24,
+    minutes: Math.floor((diff / (1000 * 60)) % 60),
   };
 };
 
@@ -116,6 +126,10 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   const doorTimerRef = useRef(null);
   const dateParts = useMemo(() => formatDateParts(invite.eventDate), [invite.eventDate]);
   const names = useMemo(() => getNames(invite.coupleNames), [invite.coupleNames]);
+  const countdown = useMemo(() => getCountdownParts(invite.eventDate), [invite.eventDate]);
+  const venueName = invite.venueName || "Haifa Palace";
+  const city = invite.city || "Mornag";
+  const time = invite.time || "7PM";
 
   useEffect(() => {
     if (isIntroDone) {
@@ -180,95 +194,233 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   };
 
   return (
-    <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#054cb6]">
-      <div
-        className="mx-auto w-full bg-white shadow-2xl"
-        style={{ maxWidth: pageWidth }}
-      >
-        <section
-          className="relative w-full overflow-hidden max-[430px]:min-h-[100svh]"
-          style={{ aspectRatio: `${pageWidth} / ${revealStart}` }}
-        >
-          {exportImages
-            .filter((image) => image.top < revealStart)
-            .map((image) => (
+    <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#0093d8]">
+      <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl" style={{ maxWidth: pageWidth }}>
+        <section className="relative w-full overflow-hidden" style={{ aspectRatio: `${pageWidth} / ${pageHeight}` }}>
+          <video
+            className="absolute left-0 top-0 h-auto w-full"
+            style={{ height: pct(501, pageHeight), objectFit: "cover", zIndex: 1 }}
+            src={openingVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+
+          {exportLayers
+            .map((layer) => (
               <img
-                key={image.src}
-                src={image.src}
+                key={layer.name}
+                src={exportImageSources[layer.srcName || layer.name]}
                 alt=""
-                style={{
-                  ...absoluteBox(image, revealStart),
-                  filter: image.dropShadow ? "drop-shadow(0 10px 18px rgba(0, 0, 0, 0.15))" : undefined,
-                }}
+                style={{ ...absoluteBox(layer), transform: layer.transform, zIndex: layer.zIndex || 2 }}
+                draggable="false"
               />
             ))}
 
-          {textBox({ left: 121, top: 56, width: 188, fontSize: 10, lineHeight: 14, letterSpacing: "0.1em", sectionHeight: revealStart, children: "Welcome to our" })}
-          {textBox({ left: 115, top: 91, width: 199, fontSize: 28, lineHeight: 32, sectionHeight: revealStart, children: names.secondName ? `${names.firstName}\n& ${names.secondName}` : names.firstName })}
-          {textBox({ left: 142, top: 198, width: 146, fontSize: 13, lineHeight: 18, letterSpacing: "0.1em", sectionHeight: revealStart, children: dateParts.display })}
-          {textBox({ left: 131, top: 280, width: 168, fontSize: 22, sectionHeight: revealStart, children: "Our Story" })}
-          {textBox({ left: 107, top: 539, width: 44, fontSize: 12, sectionHeight: revealStart, children: "Us" })}
-        </section>
+          {/* Initials Oval */}
+          <div style={{ ...absoluteBox({ left: 194, top: 97, width: 42, height: 64 }), border: "1px solid #fff", borderRadius: "100px", zIndex: 3 }}>
+            <div style={{ position: "absolute", width: "100%", top: "12%", textAlign: "center", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, lineHeight: "1" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+            <div style={{ position: "absolute", width: "100%", bottom: "12%", textAlign: "center", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, lineHeight: "1" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+          </div>
 
-        <div className="relative w-full overflow-hidden" style={{ aspectRatio: `${pageWidth} / ${revealHeight}` }}>
-          <div style={{ ...absoluteBox({ left: 0, top: 596, width: 430 }, revealHeight, revealStart), height: pct(270, revealHeight), background: "rgba(5, 76, 182, 0.12)" }} />
+          {/* Names */}
+          {textLayer({ left: 85, top: 162, width: 260, fontSize: 46, lineHeight: 46, family: "Cormorant Infant, serif", color: "#fff", children: `${names.firstName}\n${names.secondName}` })}
 
-          {exportImages
-            .filter((image) => image.top >= revealStart)
-            .map((image) => (
-              <img
-                key={image.src}
-                src={image.src}
-                alt=""
-                style={{
-                  ...absoluteBox(image, revealHeight, revealStart),
-                  filter: image.dropShadow ? "drop-shadow(0 10px 18px rgba(0, 0, 0, 0.15))" : undefined,
-                }}
-              />
-            ))}
+          {/* Subtitle */}
+          {textLayer({ left: 85, top: 253, width: 260, fontSize: 16, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Welcome To Our\nMediterranean Abode" })}
 
-          {textBox({ left: 131, top: 622, width: 168, fontSize: 22, sectionHeight: revealHeight, topOffset: revealStart, children: "Reveal" })}
-          {textBox({ left: 97, top: 791, width: 44, fontSize: 12, sectionHeight: revealHeight, topOffset: revealStart, children: "Day" })}
-          {textBox({ left: 193, top: 791, width: 44, fontSize: 12, sectionHeight: revealHeight, topOffset: revealStart, children: "Month" })}
-          {textBox({ left: 289, top: 791, width: 44, fontSize: 12, sectionHeight: revealHeight, topOffset: revealStart, children: "Year" })}
-          {textBox({ left: 91, top: 732, width: 64, fontSize: 18, sectionHeight: revealHeight, topOffset: revealStart, children: dateParts.day })}
-          {textBox({ left: 181, top: 732, width: 68, fontSize: 18, sectionHeight: revealHeight, topOffset: revealStart, children: dateParts.month })}
-          {textBox({ left: 273, top: 732, width: 72, fontSize: 18, sectionHeight: revealHeight, topOffset: revealStart, children: dateParts.year })}
+          {/* Dates Left and Right */}
+          {textLayer({ left: 85, top: 190, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "right", children: dateParts.month })}
+          {textLayer({ left: 270, top: 190, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", children: dateParts.year })}
+
+          {/* Scroll down button */}
+          <div style={{ ...absoluteBox({ left: 155, top: 320, width: 120, height: 38 }), backgroundColor: "#fff", borderRadius: "100px", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
+          </div>
+
+          {/* Reveal Titles */}
+          {textLayer({ left: 85, top: 495, width: 260, fontSize: 36, family: "Cormorant Infant, serif", color: blue, children: "Reveal" })}
+          {textLayer({ left: 85, top: 545, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, children: "النهار جاء" })}
+
+          {textLayer({ left: 96, top: 767, width: 44, fontSize: 12, family: "Cormorant Infant, serif", color: "#fff", children: "Day" })}
+          {textLayer({ left: 192, top: 767, width: 48, fontSize: 12, family: "Cormorant Infant, serif", color: "#fff", children: "Month" })}
+          {textLayer({ left: 288, top: 767, width: 48, fontSize: 12, family: "Cormorant Infant, serif", color: "#fff", children: "Year" })}
+          {textLayer({ left: 96, top: 713, width: 44, fontSize: 20, family: "Antic Didone, serif", color: "#fff", children: dateParts.day })}
+          {textLayer({ left: 182, top: 713, width: 68, fontSize: 20, family: "Antic Didone, serif", color: "#fff", children: dateParts.month })}
+          {textLayer({ left: 276, top: 713, width: 68, fontSize: 20, family: "Antic Didone, serif", color: "#fff", children: dateParts.year })}
+
+          {/* Countdown Titles */}
+          {textLayer({ left: 85, top: 825, width: 260, fontSize: 34, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Countdown" })}
+          {textLayer({ left: 85, top: 875, width: 260, fontSize: 26, family: "Gulzar, serif", color: "#fff", children: "العد التنازلي" })}
+
+          {/* Countdown Boxes */}
+          {[
+            { left: 65, value: countdown.days, label: "Days" },
+            { left: 180, value: countdown.hours, label: "Hours" },
+            { left: 295, value: countdown.minutes, label: "Minutes" },
+          ].map((box) => (
+            <div
+              key={box.label}
+              style={{
+                ...absoluteBox({ left: box.left, top: 935, width: 70, height: 70 }),
+                backgroundColor: "rgba(240, 248, 255, 0.9)",
+                border: `1px solid ${blue}`,
+                borderRadius: "16px",
+                zIndex: 3,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: blue, lineHeight: "1.2" }}>{String(box.value).padStart(2, '0')}</div>
+              <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: blue, letterSpacing: "0.05em", marginTop: "4px" }}>{box.label}</div>
+            </div>
+          ))}
+
+          {/* Celebrations Title */}
+          {textLayer({ left: 85, top: 1030, width: 260, fontSize: 24, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", children: "The Celebrations" })}
+          {textLayer({ left: 85, top: 1060, width: 260, fontSize: 24, family: "Gulzar, serif", color: blue, children: "الليالي" })}
+
+          {/* Outeya Box */}
+          <div style={{ ...absoluteBox({ left: 55, top: 1110, width: 320, height: 420 }), border: `1.5px solid ${blue}`, borderRadius: "10px", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "35px", backgroundColor: "transparent" }}>
+            {/* Title */}
+            <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>Outeya</span>
+            <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>الوطية</span>
+            
+            {/* Date Layout */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
+              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.weekday}</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{dateParts.day}</span>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{dateParts.year}</span>
+              </div>
+              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.month}</span>
+              </div>
+            </div>
+
+            {/* Venue Layout */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
+              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${venueName}\n${city}`}</span>
+              <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(venueName, city)}</span>
+            </div>
+
+            {/* Maps Button */}
+            <div style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff" }}>
+              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
+            </div>
+          </div>
+
+          {/* Mariage Box */}
+          <div style={{ ...absoluteBox({ left: 55, top: 1570, width: 320, height: 420 }), border: `1.5px solid ${blue}`, borderRadius: "10px", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "35px", backgroundColor: "transparent" }}>
+            {/* Title */}
+            <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>Mariage</span>
+            <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>العرس</span>
+            
+            {/* Date Layout */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
+              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.weekday}</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{dateParts.day}</span>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{dateParts.year}</span>
+              </div>
+              <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
+                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{dateParts.month}</span>
+              </div>
+            </div>
+
+            {/* Venue Layout */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
+              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${venueName}\n${city}`}</span>
+              <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(venueName, city)}</span>
+            </div>
+
+            {/* Maps Button */}
+            <div style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff" }}>
+              <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
+            </div>
+          </div>
+
+          {/* Our Story Background (Left Half) */}
+          <div style={{ ...absoluteBox({ left: 0, top: 2057, width: 215, height: 267 }), backgroundColor: "#113A70", zIndex: 1 }}></div>
+          
+          {/* Our Story */}
+          {textLayer({ left: 20, top: 2075, width: 185, fontSize: 28, family: "Cormorant Infant, serif", color: "#fff", align: "right", letterSpacing: "0.05em", children: "Our Story" })}
+          {textLayer({ left: 20, top: 2110, width: 185, fontSize: 24, family: "Gulzar, serif", color: "#fff", align: "right", children: "حكايتنا" })}
+          {textLayer({ left: 10, top: 2160, width: 195, fontSize: 11, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", align: "right", children: "The Favour Of A Reply Is\nKindly Requested By The\nFifteenth Of June, 2026" })}
+          {textLayer({ left: 10, top: 2215, width: 195, fontSize: 13, lineHeight: 22, family: "Amiri, serif", color: "#fff", align: "right", children: "اللهم ألّف بين قلوبنا، واجعل بيننا\nمودّة ورحمة، وبارك لنا\nفي زواجنا واجعله سكينةً لنا في الدنيا\nوالآخرة" })}
+
+          {/* Dress Code */}
+          {textLayer({ left: 85, top: 2300, width: 260, fontSize: 32, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Dress Code" })}
+          {textLayer({ left: 85, top: 2340, width: 260, fontSize: 28, family: "Gulzar, serif", color: blue, align: "center", children: "التبديلة" })}
+          
+          {/* Programme */}
+          {textLayer({ left: 85, top: 2650, width: 260, fontSize: 32, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Programme" })}
+          {textLayer({ left: 85, top: 2690, width: 260, fontSize: 28, family: "Gulzar, serif", color: blue, align: "center", children: "البرنامج" })}
+
+          {textLayer({ left: 58, top: 2750, width: 241, fontSize: 14, lineHeight: 18, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", children: time })}
+          
+          {/* RSVP Title */}
+          {textLayer({ left: 131, top: 2980, width: 168, fontSize: 32, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "RSVP" })}
+          {textLayer({ left: 45, top: 3030, width: 340, fontSize: 13, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", children: "The Favour Of A Reply Is Kindly\nRequested By The Fifteenth Of June, 2026" })}
+
+          {/* RSVP Form */}
+          <div style={{ ...absoluteBox({ left: 40, top: 3100, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+              <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Name</label>
+              <input type="text" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+              <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Sir Name</label>
+              <input type="text" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+              <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Email</label>
+              <input type="email" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+              <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Number of guests</label>
+              <input type="number" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
+            </div>
+            <button style={{ backgroundColor: "#008CDE", color: "#fff", padding: "16px", borderRadius: "8px", border: "none", marginTop: "15px", fontFamily: "Cormorant Infant, serif", fontSize: "18px", cursor: "pointer", width: "100%" }}>
+              Send Confirmation
+            </button>
+          </div>
+
+          {/* Bottom Logo */}
+          <div style={{ ...absoluteBox({ left: 185, top: 3570, width: 60, height: 90 }), border: `1.5px solid ${blue}`, borderRadius: "40px", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ fontFamily: "Antic Didone, serif", fontSize: "28px", color: blue, lineHeight: "1" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+            <div style={{ fontFamily: "Antic Didone, serif", fontSize: "28px", color: blue, lineHeight: "1" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+          </div>
+          {textLayer({ left: 85, top: 3680, width: 260, fontSize: 36, family: "Gulzar, serif", color: blue, align: "center", children: "ان شاء الله ليلتكم زينة" })}
+
           {doorFrameSources.length ? (
             <button
               type="button"
               onClick={handleDoorClick}
               aria-label="Open reveal doors"
               className="absolute cursor-pointer bg-transparent p-0 focus:outline-none"
-              style={{
-                left: pct(82, pageWidth),
-                top: pct(678 - revealStart, revealHeight),
-                width: pct(267, pageWidth),
-                height: pct(126, revealHeight),
-                zIndex: 2,
-              }}
+              style={{ left: pct(82, pageWidth), top: pct(610, pageHeight), width: pct(267, pageWidth), height: pct(170, pageHeight), zIndex: 6 }}
             >
-              {[
-                { left: 0, width: 77 },
-                { left: 95, width: 77 },
-                { left: 190, width: 77 },
-              ].map((door) => (
+              {doorSlots.map((door) => (
                 <img
                   key={door.left}
                   src={doorFrameSources[doorFrame]}
                   alt=""
-                  className="absolute top-0"
-                  style={{
-                    left: pct(door.left, 267),
-                    width: pct(door.width, 267),
-                  }}
+                  className="absolute"
+                  style={{ left: pct(door.left - 82, 267), top: pct(door.top - 610, 170), width: pct(door.width, 267) }}
                   draggable="false"
                 />
               ))}
             </button>
           ) : null}
-          {textBox({ left: 131, top: 916, width: 168, fontSize: 22, sectionHeight: revealHeight, topOffset: revealStart, children: "Countdown" })}
-        </div>
+        </section>
       </div>
 
       {!isIntroDone ? (
