@@ -232,7 +232,6 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   const rsvpDeadline = useMemo(() => getRsvpDeadline(effectiveEventDate), [effectiveEventDate]);
   const names = useMemo(() => getNames(invite.coupleNames), [invite.coupleNames]);
   const countdown = useMemo(() => getCountdownParts(effectiveEventDate), [effectiveEventDate]);
-  const time = invite.time || "7PM";
 
   useEffect(() => {
     if (isIntroDone) {
@@ -453,7 +452,6 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         {/* Canvas 4: Dynamic Flex Celebrations Container */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent" }}>
           {(invite.timeline || []).map((event, index) => {
-            const startY = 1140 + index * 460;
             return (
               <section 
                 key={index} 
