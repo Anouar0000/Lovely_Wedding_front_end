@@ -43,6 +43,7 @@ export function createDigitalInviteDraft(overrides = {}) {
     time: "",
     mapUrl: "",
     rsvpEnabled: true,
+    videoIntroEnabled: true,
     timeline: [],
     ...overrides,
   };
