@@ -219,6 +219,17 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
     }, 34);
   };
 
+  const handleScrollDown = () => {
+    const container = document.querySelector('main');
+    if (container) {
+      const scale = container.clientWidth / pageWidth;
+      window.scrollTo({
+        top: 500 * scale,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#0093d8]">
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl" style={{ maxWidth: pageWidth }}>
@@ -261,9 +272,23 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           {textLayer({ left: 275, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", children: dateParts.year })}
 
           {/* Scroll down button */}
-          <div style={{ ...absoluteBox({ left: 155, top: 355, width: 120, height: 38 }), backgroundColor: "#fff", borderRadius: "100px", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <button
+            type="button"
+            onClick={handleScrollDown}
+            style={{ 
+              ...absoluteBox({ left: 155, top: 355, width: 120, height: 38 }), 
+              backgroundColor: "#fff", 
+              borderRadius: "100px", 
+              zIndex: 3, 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              border: "none", 
+              cursor: "pointer" 
+            }}
+          >
             <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
-          </div>
+          </button>
 
           {/* Reveal Titles */}
           {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, children: "Reveal" })}
@@ -336,9 +361,13 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
             </div>
 
             {/* Maps Button */}
-            <div style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff" }}>
+            <button
+              type="button"
+              onClick={() => window.open(invite.mapUrl || "https://maps.google.com", "_blank")}
+              style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
+            >
               <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
-            </div>
+            </button>
           </div>
 
           {/* Mariage Box */}
@@ -368,9 +397,13 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
             </div>
 
             {/* Maps Button */}
-            <div style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff" }}>
+            <button
+              type="button"
+              onClick={() => window.open(invite.mapUrl || "https://maps.google.com", "_blank")}
+              style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
+            >
               <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
-            </div>
+            </button>
           </div>
 
           {/* Our Story Background (Left Half) */}
