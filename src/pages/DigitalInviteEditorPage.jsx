@@ -838,6 +838,65 @@ function DigitalInviteEditorPage() {
               ))}
             </div>
           </EditorSection>
+
+          {isSidiBouSaid && (
+            <>
+              <EditorSection icon={FiFileText} title="Dress Code">
+                <Field label="Description Dress Code">
+                  <TextInput
+                    value={invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
+                    onChange={(event) => updateInvite("dressCodeText", event.target.value)}
+                    placeholder="We Request Attending The Outeya\nWith A Traditional Attire"
+                  />
+                </Field>
+              </EditorSection>
+
+              <EditorSection icon={FiClock} title="Programme">
+                <div className="grid gap-4">
+                  {(invite.programmeSteps || [
+                    { time: "17:00", name: "Sdek" },
+                    { time: "18:00", name: "Reception" },
+                    { time: "20:00", name: "Dinner" },
+                    { time: "00:00", name: "Dance" },
+                  ]).map((step, index) => (
+                    <div key={index} className="border p-4 rounded-md grid gap-3 md:grid-cols-2 bg-gray-50/50">
+                      <span className="font-semibold text-sm md:col-span-2 text-gray-700">Etape {index + 1}</span>
+                      <Field label="Heure">
+                        <TextInput
+                          value={step.time}
+                          onChange={(event) => {
+                            const steps = [...(invite.programmeSteps || [
+                              { time: "17:00", name: "Sdek" },
+                              { time: "18:00", name: "Reception" },
+                              { time: "20:00", name: "Dinner" },
+                              { time: "00:00", name: "Dance" },
+                            ])];
+                            steps[index] = { ...steps[index], time: event.target.value };
+                            updateInvite("programmeSteps", steps);
+                          }}
+                        />
+                      </Field>
+                      <Field label="Nom">
+                        <TextInput
+                          value={step.name}
+                          onChange={(event) => {
+                            const steps = [...(invite.programmeSteps || [
+                              { time: "17:00", name: "Sdek" },
+                              { time: "18:00", name: "Reception" },
+                              { time: "20:00", name: "Dinner" },
+                              { time: "00:00", name: "Dance" },
+                            ])];
+                            steps[index] = { ...steps[index], name: event.target.value };
+                            updateInvite("programmeSteps", steps);
+                          }}
+                        />
+                      </Field>
+                    </div>
+                  ))}
+                </div>
+              </EditorSection>
+            </>
+          )}
         </section>
 
         <aside className="h-fit border border-[#D8DDE2] bg-white p-5 shadow-sm lg:sticky lg:top-6">

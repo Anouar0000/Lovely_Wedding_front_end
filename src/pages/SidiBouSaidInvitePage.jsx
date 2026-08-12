@@ -3,6 +3,20 @@ import openingVideo from "../assets/videos/Mediterranean_Sea_harbor_bougain.mp4"
 import exportLayers from "../assets/digital/sidi-bousaid/export-v2/layers.json";
 import templateConfig from "../data/digital/templates/sidi-bousaid.json";
 
+// Import figma assets for Our Story
+import watercolorBougainvillea from "../assets/digital/sidi-bousaid/exported/watercolor-bougainvillea-figma.png";
+import tape from "../assets/digital/sidi-bousaid/exported/tape-8.png";
+import tornPaper from "../assets/digital/sidi-bousaid/exported/torn-paper-3.png";
+import stamp2 from "../assets/digital/sidi-bousaid/exported/stamp-2.png";
+import stamp3 from "../assets/digital/sidi-bousaid/exported/stamp-3.png";
+import vectorBg from "../assets/digital/sidi-bousaid/exported/vector-bg.png";
+
+// Import figma assets for Programme
+import rect118 from "../assets/digital/sidi-bousaid/exported/rect-118.png";
+import rect119 from "../assets/digital/sidi-bousaid/exported/rect-119.png";
+import rect120 from "../assets/digital/sidi-bousaid/exported/rect-120.png";
+import rect121 from "../assets/digital/sidi-bousaid/exported/rect-121.png";
+
 const exportImageContext = require.context("../assets/digital/sidi-bousaid/export-v2", false, /\.(png|svg)$/);
 const exportImageSources = exportImageContext.keys().reduce((images, key) => {
   images[key.replace("./", "")] = exportImageContext(key);
@@ -131,17 +145,30 @@ const customTops = {
   'our-story-hand-small.svg': 2070,
   'our-story-photo.png': 2140,
   'our-story-ornament.svg': 2151,
-  'dress-code-illustration.png': 2490,
-  'programme-flourish-right.svg': 2880,
-  'programme-flourish-left.svg': 2900,
-  'programme-line-top.svg': 2955,
-  'programme-line-bottom.svg': 3035,
-  'closing-small-ornament.png': 3810,
+  'countdown-panel.png': 1174,
+  'dress-code-illustration.png': 2850,
+  'programme-flourish-right.svg': 3410,
+  'programme-flourish-left.svg': 3430,
+  'programme-line-top.svg': 3485,
+  'programme-line-bottom.svg': 3565,
+  'closing-small-ornament.png': 4385,
 };
 
 const baseLayers = exportLayers.map(layer => {
   const name = layer.srcName || layer.name;
-  return { ...layer, top: customTops[name] !== undefined ? customTops[name] : layer.top };
+  let top = customTops[name] !== undefined ? customTops[name] : layer.top;
+  let left = layer.left;
+  let width = layer.width;
+  let height = layer.height;
+
+  if (layer.name === "reveal-hand.svg") {
+    width = 36;
+    height = 43;
+    left = 197;
+    top = 753;
+  }
+
+  return { ...layer, top, left, width, height };
 });
 
 // Event decorations source of truth (from Outeya / first event)
@@ -161,7 +188,7 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], children
     height: h ? pct(h, height) : undefined,
   });
 
-  const textLayer = ({ left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, transform, zIndex = 3 }) => (
+  const textLayer = ({ left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, pointerEvents }) => (
     <div style={{
       ...absoluteBox({ left, top, width: w }),
       color,
@@ -172,9 +199,11 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], children
       lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
       textAlign: align,
       letterSpacing,
+      wordSpacing,
       textTransform: transform,
       whiteSpace: "pre-wrap",
       zIndex,
+      pointerEvents,
     }}>
       {textChildren}
     </div>
@@ -195,6 +224,63 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], children
        ))}
        {children({ absoluteBox, textLayer })}
     </section>
+  );
+};
+
+const WavyCircle = ({ percent }) => {
+  if (percent === 0) {
+    return (
+      <div 
+        style={{ 
+          width: "100%", 
+          height: "100%", 
+          borderRadius: "50%", 
+          border: "1.2px solid #2e88e2", 
+          backgroundColor: "#fff" 
+        }} 
+      />
+    );
+  }
+
+  const y = 13 - (13 * percent);
+  const wavePath = percent === 1
+    ? "M 0 0 L 26 0 L 26 13 L 0 13 Z"
+    : `M 0 ${y} Q 3.25 ${y - 1.2}, 6.5 ${y} T 13 ${y} Q 16.25 ${y - 1.2}, 19.5 ${y} T 26 ${y} L 26 13 L 0 13 Z`;
+
+  return (
+    <div 
+      style={{ 
+        position: "relative", 
+        width: "100%", 
+        height: "100%", 
+        borderRadius: "50%", 
+        border: "1.2px solid #2e88e2", 
+        backgroundColor: "#fff", 
+        overflow: "hidden" 
+      }}
+    >
+      <style>{`
+        @keyframes waveMove {
+          from { transform: translate3d(0, 0, 0); }
+          to { transform: translate3d(-50%, 0, 0); }
+        }
+        .animate-wave {
+          animation: waveMove 1.5s linear infinite;
+        }
+      `}</style>
+      <svg 
+        width="200%" 
+        height="100%" 
+        viewBox="0 0 26 13" 
+        style={{ position: "absolute", top: 0, left: 0, display: "block" }}
+      >
+        <path 
+          className={percent === 1 ? "" : "animate-wave"}
+          d={wavePath} 
+          fill="#2e88e2" 
+        />
+      </svg>
+    </div>
   );
 };
 
@@ -224,11 +310,15 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
     return lastEvent?.date || invite.eventDate;
   }, [lastEvent, invite.eventDate]);
 
-  const effectiveTime = useMemo(() => {
-    return lastEvent?.time || invite.time || "7PM";
-  }, [lastEvent, invite.time]);
-
   const dateParts = useMemo(() => formatDateParts(effectiveEventDate), [effectiveEventDate]);
+  const revealDateParts = useMemo(() => {
+    const dateObj = effectiveEventDate ? new Date(`${effectiveEventDate}T00:00:00`) : new Date("2026-07-20T00:00:00");
+    return {
+      day: String(dateObj.getDate()).padStart(2, "0"),
+      monthNum: String(dateObj.getMonth() + 1).padStart(2, "0"),
+      year2D: String(dateObj.getFullYear()).slice(-2),
+    };
+  }, [effectiveEventDate]);
   const rsvpDeadline = useMemo(() => getRsvpDeadline(effectiveEventDate), [effectiveEventDate]);
   const names = useMemo(() => getNames(invite.coupleNames), [invite.coupleNames]);
   const countdown = useMemo(() => getCountdownParts(effectiveEventDate), [effectiveEventDate]);
@@ -311,106 +401,192 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           startY={0} 
           height={804}
           layerNames={[
-            "reveal-corner-top-left.png", 
             "reveal-corner-top-right.png", 
             "reveal-hand.svg", 
-            "reveal-corner-bottom-left.png", 
-            "reveal-corner-bottom-right.png"
+            "reveal-corner-bottom-left.png"
           ]}
+        >
+          {({ absoluteBox, textLayer }) => {
+            const revealOpacity = doorFrameSources.length ? doorFrame / (doorFrameSources.length - 1) : 0;
+            return (
+              <>
+                <video
+                  className="absolute left-0 top-0 h-auto w-full"
+                  style={{ height: pct(501, 804), objectFit: "cover", zIndex: 1 }}
+                  src={openingVideo}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+
+                {/* Initials Oval */}
+                <div style={{ ...absoluteBox({ left: 194, top: 75, width: 42, height: 64 }), border: "1.5px solid #fff", borderRadius: "100px", zIndex: 3 }}>
+                  <div style={{ position: "absolute", top: "15%", left: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                  <div style={{ position: "absolute", bottom: "15%", right: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+                </div>
+
+                {/* Names */}
+                {textLayer({ left: 85, top: 168, width: 260, fontSize: 46, lineHeight: 46, family: "Cormorant Infant, serif", color: "#fff", children: `${names.firstName}\n${names.secondName}` })}
+
+                {/* Subtitle */}
+                {textLayer({ left: 85, top: 285, width: 260, fontSize: 16, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Welcome To Our\nMediterranean Abode" })}
+
+                {/* Dates Left and Right */}
+                {textLayer({ left: 80, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "right", children: dateParts.month })}
+                {textLayer({ left: 275, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", children: dateParts.year })}
+
+                {/* Scroll down button */}
+                <button
+                  type="button"
+                  onClick={handleScrollDown}
+                  style={{ 
+                    ...absoluteBox({ left: 155, top: 355, width: 120, height: 38 }), 
+                    backgroundColor: "#fff", 
+                    borderRadius: "100px", 
+                    zIndex: 3, 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    border: "none", 
+                    cursor: "pointer" 
+                  }}
+                >
+                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
+                </button>
+
+                {/* Reveal Titles */}
+                {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, children: "Reveal" })}
+                {textLayer({ left: 85, top: 565, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, children: "النهار جاء" })}
+
+                {/* Reveal Box Content */}
+                {textLayer({ left: 86, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.day}</div> })}
+                {textLayer({ left: 183, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.monthNum}</div> })}
+                {textLayer({ left: 280, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.year2D}</div> })}
+
+                {doorFrameSources.length ? (
+                  <button
+                    type="button"
+                    onClick={handleDoorClick}
+                    aria-label="Open reveal doors"
+                    className="absolute cursor-pointer bg-transparent p-0 focus:outline-none"
+                    style={{ ...absoluteBox({ left: 82, top: 610, width: 267, height: 170 }), zIndex: 6 }}
+                  >
+                    {doorSlots.map((door) => (
+                      <img
+                        key={door.left}
+                        src={doorFrameSources[doorFrame]}
+                        alt=""
+                        className="absolute"
+                        style={{ left: pct(door.left - 82, 267), top: pct(door.top - 610, 170), width: pct(door.width, 267), height: pct(door.height, 170) }}
+                        draggable="false"
+                      />
+                    ))}
+                  </button>
+                ) : null}
+              </>
+            );
+          }}
+        </Section>
+
+        {/* Canvas 5: Our Story (moved here, startY=804, height=340) */}
+        <Section 
+          startY={804} 
+          height={340}
+          layerNames={[]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              <video
-                className="absolute left-0 top-0 h-auto w-full"
-                style={{ height: pct(501, 804), objectFit: "cover", zIndex: 1 }}
-                src={openingVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
+              {/* Watercolor bougainvillea */}
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2 }}
+                alt="Watercolor bougainvillea"
+                src={watercolorBougainvillea}
+                draggable="false"
               />
 
-              {/* Initials Oval */}
-              <div style={{ ...absoluteBox({ left: 194, top: 75, width: 42, height: 64 }), border: "1.5px solid #fff", borderRadius: "100px", zIndex: 3 }}>
-                <div style={{ position: "absolute", top: "15%", left: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                <div style={{ position: "absolute", bottom: "15%", right: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
-              </div>
+              {/* Decorative tape */}
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3 }}
+                alt="Decorative tape"
+                src={tape}
+                draggable="false"
+              />
 
-              {/* Names */}
-              {textLayer({ left: 85, top: 168, width: 260, fontSize: 46, lineHeight: 46, family: "Cormorant Infant, serif", color: "#fff", children: `${names.firstName}\n${names.secondName}` })}
+              {/* Couple Photo */}
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2 }}
+                alt="Couple"
+                src={vectorBg}
+                draggable="false"
+              />
 
-              {/* Subtitle */}
-              {textLayer({ left: 85, top: 285, width: 260, fontSize: 16, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Welcome To Our\nMediterranean Abode" })}
+              {/* Torn paper */}
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2 }}
+                alt="Torn paper"
+                src={tornPaper}
+                draggable="false"
+              />
 
-              {/* Dates Left and Right */}
-              {textLayer({ left: 80, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "right", children: dateParts.month })}
-              {textLayer({ left: 275, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", children: dateParts.year })}
+              {/* Decorative stamp (layered for depth) */}
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), opacity: 0.9, zIndex: 3 }}
+                alt="Decorative stamp"
+                src={stamp2}
+                draggable="false"
+              />
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4 }}
+                alt="Decorative stamp"
+                src={stamp3}
+                draggable="false"
+              />
 
-              {/* Scroll down button */}
-              <button
-                type="button"
-                onClick={handleScrollDown}
+              {/* Our Story titles */}
+              {textLayer({ left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", children: "Our Story" })}
+              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, children: "حكايتنا" })}
+
+              {/* Rotated text on torn paper */}
+              <div 
                 style={{ 
-                  ...absoluteBox({ left: 155, top: 355, width: 120, height: 38 }), 
-                  backgroundColor: "#fff", 
-                  borderRadius: "100px", 
-                  zIndex: 3, 
-                  display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "center", 
-                  border: "none", 
-                  cursor: "pointer" 
+                  ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }), 
+                  transform: "rotate(-10deg)", 
+                  fontFamily: "Cormorant Infant, serif", 
+                  fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                  color: "#49606b", 
+                  textAlign: "center",
+                  letterSpacing: "1.2px",
+                  lineHeight: "18px",
+                  zIndex: 3
                 }}
               >
-                <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
-              </button>
-
-              {/* Reveal Titles */}
-              {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, children: "Reveal" })}
-              {textLayer({ left: 85, top: 565, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, children: "النهار جاء" })}
-
-              {/* Reveal Box Content */}
-              {textLayer({ left: 96, top: 767, width: 44, fontSize: 12, family: "Cormorant Infant, serif", color: "#fff", children: "Day" })}
-              {textLayer({ left: 192, top: 767, width: 48, fontSize: 12, family: "Cormorant Infant, serif", color: "#fff", children: "Month" })}
-              {textLayer({ left: 288, top: 767, width: 48, fontSize: 12, family: "Cormorant Infant, serif", color: "#fff", children: "Year" })}
-              {textLayer({ left: 96, top: 713, width: 44, fontSize: 20, family: "Antic Didone, serif", color: "#fff", children: dateParts.day })}
-              {textLayer({ left: 182, top: 713, width: 68, fontSize: 20, family: "Antic Didone, serif", color: "#fff", children: dateParts.month })}
-              {textLayer({ left: 276, top: 713, width: 68, fontSize: 20, family: "Antic Didone, serif", color: "#fff", children: dateParts.year })}
-
-              {doorFrameSources.length ? (
-                <button
-                  type="button"
-                  onClick={handleDoorClick}
-                  aria-label="Open reveal doors"
-                  className="absolute cursor-pointer bg-transparent p-0 focus:outline-none"
-                  style={{ ...absoluteBox({ left: 82, top: 610, width: 267, height: 170 }), zIndex: 6 }}
-                >
-                  {doorSlots.map((door) => (
-                    <img
-                      key={door.left}
-                      src={doorFrameSources[doorFrame]}
-                      alt=""
-                      className="absolute"
-                      style={{ left: pct(door.left - 82, 267), top: pct(door.top - 610, 170), width: pct(door.width, 267), height: pct(door.height, 170) }}
-                      draggable="false"
-                    />
-                  ))}
-                </button>
-              ) : null}
+                Our Happy Ever After
+                <br />
+                starts
+                <br />
+                now
+              </div>
             </>
           )}
         </Section>
 
-        {/* Canvas 2: Countdown */}
+        {/* Canvas 2: Countdown (shifted, startY=1144, height=296) */}
         <Section 
-          startY={804} 
-          height={246}
+          startY={1144} 
+          height={296}
           layerNames={["countdown-panel.png"]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 835, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Countdown" })}
-              {textLayer({ left: 85, top: 865, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", children: "العد التنازلي" })}
+              {textLayer({ left: 85, top: 1201, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Countdown" })}
+              {textLayer({ left: 85, top: 1236, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", children: "العد التنازلي" })}
 
               {[
                 { left: 75, value: countdown.days, label: "Days" },
@@ -420,7 +596,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                 <div
                   key={box.label}
                   style={{
-                    ...absoluteBox({ left: box.left, top: 920, width: 60, height: 60 }),
+                    ...absoluteBox({ left: box.left, top: 1300, width: 60, height: 60 }),
                     backgroundColor: "rgba(240, 248, 255, 0.9)",
                     border: `1px solid ${blue}`,
                     borderRadius: "12px",
@@ -439,12 +615,12 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           )}
         </Section>
 
-        {/* Canvas 3: Celebrations Title */}
-        <Section startY={1050} height={90}>
+        {/* Canvas 3: Celebrations Title (shifted, startY=1440, height=100) */}
+        <Section startY={1440} height={100}>
           {({ textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 1050, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", children: "The Celebrations" })}
-              {textLayer({ left: 85, top: 1085, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, children: "الليالي" })}
+              {textLayer({ left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", children: "The Celebrations" })}
+              {textLayer({ left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, children: "الليالي" })}
             </>
           )}
         </Section>
@@ -532,71 +708,118 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           })}
         </div>
 
-        {/* Canvas 5: Our Story */}
+        {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
         <Section 
-          startY={2060} 
-          height={370}
-          layerNames={[
-            "our-story-hand-small.svg", 
-            "our-story-photo.png", 
-            "our-story-ornament.svg"
-          ]}
-        >
-          {({ absoluteBox, textLayer }) => (
-            <>
-              <div style={{ ...absoluteBox({ left: 0, top: 2140, width: 215, height: 267 }), backgroundImage: "linear-gradient(to bottom, #0093D8, #251380)", zIndex: 1 }}></div>
-              
-              {textLayer({ left: 20, top: 2160, width: 185, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", align: "right", letterSpacing: "0.05em", children: "Our Story" })}
-              {textLayer({ left: 20, top: 2190, width: 185, fontSize: 22, family: "Gulzar, serif", color: "#fff", align: "right", children: "حكايتنا" })}
-              {textLayer({ left: 10, top: 2235, width: 195, fontSize: 11, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", align: "right", children: rsvpDeadline.stacked })}
-              {textLayer({ left: 10, top: 2290, width: 195, fontSize: 13, lineHeight: 22, family: "Amiri, serif", color: "#fff", align: "right", children: "اللهم ألّف بين قلوبنا، واجعل بيننا\nمودّة ورحمة، وبارك لنا\nفي زواجنا واجعله سكينةً لنا في الدنيا\nوالآخرة" })}
-            </>
-          )}
-        </Section>
-
-        {/* Canvas 6: Dress Code */}
-        <Section 
-          startY={2430} 
-          height={350}
+          startY={2790} 
+          height={430}
           layerNames={["dress-code-illustration.png"]}
         >
           {({ textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 2430, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Dress Code" })}
-              {textLayer({ left: 85, top: 2460, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "التبديلة" })}
+              {textLayer({ left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Dress Code" })}
+              {textLayer({ left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "التبديلة" })}
+              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
             </>
           )}
         </Section>
 
-        {/* Canvas 7: Programme */}
+        {/* Canvas 7: Programme (shifted, startY=3220, height=430) */}
         <Section 
-          startY={2780} 
-          height={340}
-          layerNames={[
-            "programme-flourish-right.svg", 
-            "programme-flourish-left.svg", 
-            "programme-line-top.svg", 
-            "programme-line-bottom.svg"
-          ]}
+          startY={3220} 
+          height={430}
+          layerNames={[]}
         >
-          {({ textLayer }) => (
+          {({ absoluteBox, textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 2780, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Programme" })}
-              {textLayer({ left: 85, top: 2810, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "البرنامج" })}
-              {textLayer({ left: 58, top: 2975, width: 241, fontSize: 12, lineHeight: 18, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", children: effectiveTime })}
+              {textLayer({ left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Programme" })}
+              {textLayer({ left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "البرنامج" })}
+
+              {/* Vertical line indicator */}
+              <div 
+                style={{ 
+                  ...absoluteBox({ left: 215, top: 3345, width: 1, height: 212 }), 
+                  backgroundColor: "#2e88e2", 
+                  zIndex: 2 
+                }} 
+              />
+
+              {/* Programme Steps mapping */}
+              {(invite.programmeSteps || [
+                { time: "17:00", name: "Sdek" },
+                { time: "18:00", name: "Reception" },
+                { time: "20:00", name: "Dinner" },
+                { time: "00:00", name: "Dance" },
+              ]).map((item, index) => {
+                const isFinal = index === 3;
+                const top = 3330 + index * 75;
+                const image = [rect121, rect120, rect119, rect118][index];
+                const percent = [0, 0.25, 0.50, 1.00][index];
+                return (
+                  <div key={index}>
+                    {/* Time */}
+                    <div 
+                      style={{ 
+                        ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }), 
+                        fontFamily: "Cormorant Infant, serif", 
+                        fontWeight: "600", 
+                        fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                        color: "#2e88e2", 
+                        letterSpacing: "1.2px", 
+                        textAlign: "left",
+                        zIndex: 3
+                      }}
+                    >
+                      {item.time}
+                    </div>
+
+                    {/* Dot */}
+                    <div
+                      style={{
+                        ...absoluteBox({ left: 209, top: top + 2, width: 13, height: 13 }),
+                        zIndex: 3
+                      }}
+                    >
+                      <WavyCircle percent={percent} />
+                    </div>
+
+                    {/* Step Icon Flourish */}
+                    <img
+                      className="absolute"
+                      style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
+                      alt=""
+                      src={image}
+                    />
+
+                    {/* Label */}
+                    <div 
+                      style={{ 
+                        ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }), 
+                        fontFamily: "Cormorant Infant, serif", 
+                        fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                        color: "#49606b", 
+                        letterSpacing: "1.2px", 
+                        textAlign: "center",
+                        zIndex: 3
+                      }}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                );
+              })}
             </>
           )}
         </Section>
 
-        {/* Canvas 8: RSVP */}
+        {/* Canvas 8: RSVP (shifted, startY=3650, height=560) */}
         {invite.rsvpEnabled !== false ? (
-          <Section startY={3120} height={560}>
+          <Section startY={3650} height={560}>
             {({ absoluteBox, textLayer }) => (
               <>
-                {textLayer({ left: 131, top: 3120, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "RSVP" })}
-                {textLayer({ left: 45, top: 3155, width: 340, fontSize: 12, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", children: rsvpDeadline.inline })}
+                {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "RSVP" })}
+                {textLayer({ left: 45, top: 3685, width: 340, fontSize: 12, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", children: rsvpDeadline.inline })}
 
-                <div style={{ ...absoluteBox({ left: 40, top: 3220, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px" }}>
+                <div style={{ ...absoluteBox({ left: 40, top: 3750, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                     <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Name</label>
                     <input type="text" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
@@ -622,19 +845,19 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           </Section>
         ) : null}
 
-        {/* Canvas 9: Footer */}
+        {/* Canvas 9: Footer (shifted, startY=4210, height=240) */}
         <Section 
-          startY={3680} 
-          height={320}
+          startY={4210} 
+          height={240}
           layerNames={["closing-small-ornament.png"]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              <div style={{ ...absoluteBox({ left: 194, top: 3680, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3 }}>
+              <div style={{ ...absoluteBox({ left: 194, top: 4250, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3 }}>
                 <div style={{ position: "absolute", top: "15%", left: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
                 <div style={{ position: "absolute", bottom: "15%", right: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
               </div>
-              {textLayer({ left: 85, top: 3766, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", children: "ان شاء الله ليلتكم زينة" })}
+              {textLayer({ left: 85, top: 4336, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", children: "ان شاء الله ليلتكم زينة" })}
             </>
           )}
         </Section>
