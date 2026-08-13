@@ -10,6 +10,8 @@ import tornPaper from "../assets/digital/sidi-bousaid/exported/torn-paper-3.png"
 import stamp2 from "../assets/digital/sidi-bousaid/exported/stamp-2.png";
 import stamp3 from "../assets/digital/sidi-bousaid/exported/stamp-3.png";
 import vectorBg from "../assets/digital/sidi-bousaid/exported/vector-bg.png";
+import layer1 from "../assets/digital/sidi-bousaid/exported/layer-1.png";
+import layer2 from "../assets/digital/sidi-bousaid/exported/layer-2.png";
 
 // Import figma assets for Programme
 import rect118 from "../assets/digital/sidi-bousaid/exported/rect-118.png";
@@ -497,6 +499,22 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         >
           {({ absoluteBox, textLayer }) => (
             <>
+              {/* Tile Ornaments */}
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 0, top: 804 + 98, width: 32, height: 40 }), zIndex: 2 }}
+                alt=""
+                src={layer1}
+                draggable="false"
+              />
+              <img
+                className="absolute"
+                style={{ ...absoluteBox({ left: 398, top: 804 + 250, width: 32, height: 40 }), zIndex: 2 }}
+                alt=""
+                src={layer2}
+                draggable="false"
+              />
+
               {/* Watercolor bougainvillea */}
               <img
                 className="absolute"
