@@ -67,6 +67,7 @@ function App() {
           <Route path="/invitation-model/:modelName" element={<InvitationModelPage />} />
           <Route path="/personalize" element={<PersonalizeInvitationPage />} />
           <Route path="/pdf-test" element={<TestPDFDownload />} />
+          <Route path="/:slug" element={<SharedDigitalInvitePage />} />
         </Routes>
       </AuthProvider>
     </Router>

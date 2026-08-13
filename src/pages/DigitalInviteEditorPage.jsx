@@ -219,7 +219,7 @@ function DigitalInviteEditorPage() {
       return "";
     }
 
-    return `/e/${invite.slug}`;
+    return `/${invite.slug}`;
   }, [invite.slug]);
 
   const dashboardPreviewPath = useMemo(() => {

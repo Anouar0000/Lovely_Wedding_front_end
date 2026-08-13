@@ -134,7 +134,7 @@ function DashboardPage() {
 
   const getPublicInviteUrl = (slug) => {
     const baseUrl = window.location.origin;
-    return `${baseUrl}/e/${slug}`;
+    return `${baseUrl}/${slug}`;
   };
 
   const handleCopyLink = async (invite) => {
