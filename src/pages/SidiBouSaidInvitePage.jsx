@@ -220,7 +220,7 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOff
   const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
 
   const sectionStyle = isFullScreenHeight 
-    ? { position: "relative", width: "100%", height: "100dvh", backgroundColor: bg, overflow: "hidden" }
+    ? { position: "relative", width: "100%", height: "100vh", backgroundColor: bg, overflow: "hidden" }
     : { position: "relative", width: "100%", aspectRatio: `${pageWidth} / ${height}`, backgroundColor: bg, overflow: "hidden" };
 
   return (
@@ -1010,9 +1010,9 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           )}
         </Section>
 
-        {/* Canvas 8: RSVP (shifted, startY=3650, height=560) */}
+        {/* Canvas 8: RSVP (shifted, startY=3650, height=700) */}
         {invite.rsvpEnabled !== false ? (
-          <Section startY={3650} height={560} delayOffset={animDelayMs} data-section-index={7}>
+          <Section startY={3650} height={700} delayOffset={animDelayMs} data-section-index={7}>
             {({ absoluteBox, textLayer }) => (
               <>
                 {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "RSVP" })}
@@ -1044,9 +1044,9 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           </Section>
         ) : null}
 
-        {/* Canvas 9: Footer (shifted, startY=4210, height=240) */}
+        {/* Canvas 9: Footer (shifted, startY=4350, height=240) */}
         <Section 
-          startY={4210} 
+          startY={4350} 
           height={240}
           delayOffset={animDelayMs}
           data-section-index={8}
@@ -1054,11 +1054,11 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4250, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
+              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4390, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
                 <div style={{ position: "absolute", top: "15%", left: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
                 <div style={{ position: "absolute", bottom: "15%", right: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
               </div>
-              {textLayer({ left: 85, top: 4336, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "ان شاء الله ليلتكم زينة" })}
+              {textLayer({ left: 85, top: 4476, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "ان شاء الله ليلتكم زينة" })}
             </>
           )}
         </Section>
