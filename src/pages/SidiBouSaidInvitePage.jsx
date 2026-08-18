@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import openingVideo from "../assets/videos/Mediterranean_Sea_harbor_bougain.mp4";
 import exportLayers from "../assets/digital/sidi-bousaid/export-v2/layers.json";
 import templateConfig from "../data/digital/templates/sidi-bousaid.json";
+import ParticleEmitter from "../components/animations/ParticleEmitter";
+import AudioPlayer from "../components/audio/AudioPlayer";
 
 // Import figma assets for Our Story
 import watercolorBougainvillea from "../assets/digital/sidi-bousaid/exported/watercolor-bougainvillea-figma.png";
@@ -181,7 +183,7 @@ const eventDecorations = [
 ];
 
 // A localized section wrapper that provides scoped absolute coordinates for child graphics
-const Section = ({ startY, height, bg = "transparent", layerNames = [], children }) => {
+const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, children, ...rest }) => {
   const absoluteBox = ({ left, top, width: w, height: h }) => ({
     position: "absolute",
     left: pct(left, pageWidth),
@@ -190,36 +192,53 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], children
     height: h ? pct(h, height) : undefined,
   });
 
-  const textLayer = ({ left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, pointerEvents }) => (
-    <div style={{
-      ...absoluteBox({ left, top, width: w }),
-      color,
-      fontFamily: family,
-      fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
-      fontStyle: style,
-      fontWeight: weight,
-      lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
-      textAlign: align,
-      letterSpacing,
-      wordSpacing,
-      textTransform: transform,
-      whiteSpace: "pre-wrap",
-      zIndex,
-      pointerEvents,
-    }}>
+  const textLayer = ({ left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, pointerEvents, reveal = false, delay = 0 }) => (
+    <div 
+      className={reveal ? "reveal" : ""}
+      style={{
+        ...absoluteBox({ left, top, width: w }),
+        color,
+        fontFamily: family,
+        fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+        fontStyle: style,
+        fontWeight: weight,
+        lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
+        textAlign: align,
+        letterSpacing,
+        wordSpacing,
+        textTransform: transform,
+        whiteSpace: "pre-wrap",
+        zIndex,
+        pointerEvents,
+        transitionDelay: reveal ? `${delay + delayOffset}ms` : undefined,
+      }}
+    >
       {textChildren}
     </div>
   );
 
   const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
 
+  const sectionStyle = isFullScreenHeight 
+    ? { position: "relative", width: "100%", height: "100dvh", backgroundColor: bg, overflow: "hidden" }
+    : { position: "relative", width: "100%", aspectRatio: `${pageWidth} / ${height}`, backgroundColor: bg, overflow: "hidden" };
+
   return (
-    <section style={{ position: "relative", width: "100%", aspectRatio: `${pageWidth} / ${height}`, backgroundColor: bg, overflow: "hidden" }}>
-       {sectionLayers.map(layer => (
+    <section 
+      style={sectionStyle}
+      {...rest}
+    >
+       {sectionLayers.map((layer, idx) => (
           <img 
             key={layer.name} 
             src={exportImageSources[layer.srcName || layer.name]} 
-            style={{ ...absoluteBox(layer), transform: layer.transform, zIndex: layer.zIndex || 2 }} 
+            className="reveal"
+            style={{ 
+              ...absoluteBox(layer), 
+              transform: layer.transform, 
+              zIndex: layer.zIndex || 2,
+              transitionDelay: `${idx * 100 + delayOffset}ms`
+            }} 
             alt="" 
             draggable="false" 
           />
@@ -291,6 +310,20 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   const [isIntroDone, setIsIntroDone] = useState(invite.videoIntroEnabled === false);
   const [doorFrame, setDoorFrame] = useState(0);
   const doorTimerRef = useRef(null);
+  const [isProgrammeFinished, setIsProgrammeFinished] = useState(false);
+  const programmeTimerRef = useRef(null);
+
+  const animType = invite.animationType || "fade-up";
+  const animSpeed = invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2;
+  const animDelay = invite.animationDelay !== undefined ? invite.animationDelay : 0.2;
+  const animDelayMs = Math.round(animDelay * 1000);
+
+  let initialTransform = "translateY(24px)";
+  if (animType === "fade") {
+    initialTransform = "none";
+  } else if (animType === "zoom") {
+    initialTransform = "scale(0.96)";
+  }
 
   useEffect(() => {
     if (invite.videoIntroEnabled === false) {
@@ -344,9 +377,50 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   }, []);
 
   useEffect(() => {
+    if (!isIntroDone) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionEl = entry.target.closest("[data-section-index]");
+            const secIdx = sectionEl ? parseInt(sectionEl.getAttribute("data-section-index"), 10) : null;
+
+            // RSVP (index 7) remains locked until Programme has finished its sequence
+            if (secIdx === 7 && !isProgrammeFinished) {
+              return;
+            }
+
+            entry.target.classList.add("revealed");
+
+            // When Programme (index 6) starts animating, start countdown to unlock RSVP
+            if (secIdx === 6 && !programmeTimerRef.current) {
+              const totalDuration = 2900 + animDelayMs + Math.round(animSpeed * 1000);
+              programmeTimerRef.current = window.setTimeout(() => {
+                setIsProgrammeFinished(true);
+              }, totalDuration);
+            }
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    const elements = document.querySelectorAll(".reveal");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, [invite, isIntroDone, isProgrammeFinished, animSpeed, animDelayMs]);
+
+  useEffect(() => {
     return () => {
       if (doorTimerRef.current) {
         window.clearInterval(doorTimerRef.current);
+      }
+      if (programmeTimerRef.current) {
+        window.clearTimeout(programmeTimerRef.current);
       }
     };
   }, []);
@@ -396,12 +470,35 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
   return (
     <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#0093d8]">
-      <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col" style={{ maxWidth: pageWidth }}>
+      <style>{`
+        .reveal {
+          opacity: 0;
+          transform: ${initialTransform};
+          transition: opacity ${animSpeed}s cubic-bezier(0.16, 1, 0.3, 1), transform ${animSpeed}s cubic-bezier(0.16, 1, 0.3, 1);
+          transition-delay: ${animDelayMs}ms;
+        }
+        .reveal.revealed {
+          opacity: 1;
+          transform: ${animType === "zoom" ? "scale(1)" : "translateY(0)"};
+        }
+        .line-segment {
+          transform: scaleY(0);
+          transform-origin: top;
+          transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .line-segment.revealed {
+          transform: scaleY(1);
+        }
+      `}</style>
+      <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col">
         
         {/* Canvas 1: Hero & Reveal */}
         <Section 
           startY={0} 
           height={804}
+          delayOffset={animDelayMs}
+          data-section-index={0}
+          isFullScreenHeight={true}
           layerNames={[
             "reveal-corner-top-right.png", 
             "reveal-hand.svg", 
@@ -415,33 +512,81 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                 <video
                   className="absolute left-0 top-0 h-auto w-full"
                   style={{ height: pct(501, 804), objectFit: "cover", zIndex: 1 }}
-                  src={openingVideo}
+                  src={invite.videoUrl || openingVideo}
                   autoPlay
                   muted
                   loop
                   playsInline
                 />
 
+                {/* Flying Birds stylesheet & elements */}
+                {invite.enableBirds !== false && (
+                  <>
+                    <style>{`
+                      @keyframes fly-left-to-right {
+                        0% { left: -10%; top: 120px; transform: scale(0.6); opacity: 0; }
+                        10% { opacity: 0.7; }
+                        90% { opacity: 0.7; }
+                        100% { left: 110%; top: 50px; transform: scale(0.8); opacity: 0; }
+                      }
+                      @keyframes fly-left-to-right-2 {
+                        0% { left: -10%; top: 200px; transform: scale(0.4); opacity: 0; }
+                        15% { opacity: 0.5; }
+                        85% { opacity: 0.5; }
+                        100% { left: 110%; top: 130px; transform: scale(0.5); opacity: 0; }
+                      }
+                    `}</style>
+                    <div
+                      className="absolute pointer-events-none"
+                      style={{
+                        animation: "fly-left-to-right 18s linear infinite",
+                        width: "28px",
+                        height: "20px",
+                        zIndex: 10,
+                      }}
+                    >
+                      <svg viewBox="0 0 24 14" style={{ width: "100%", height: "100%", fill: "#7A9EB2", opacity: 0.4 }}>
+                        <path d="M 0 0 C 4 6, 8 10, 12 3 C 16 10, 20 6, 24 0 C 19 4, 15 2, 12 1 C 9 2, 5 4, 0 0 Z" fill="currentColor" />
+                      </svg>
+                    </div>
+                    <div
+                      className="absolute pointer-events-none"
+                      style={{
+                        animation: "fly-left-to-right-2 24s linear infinite",
+                        animationDelay: "6s",
+                        width: "20px",
+                        height: "14px",
+                        zIndex: 10,
+                      }}
+                    >
+                      <svg viewBox="0 0 24 14" style={{ width: "100%", height: "100%", fill: "#7A9EB2", opacity: 0.3 }}>
+                        <path d="M 0 0 C 4 6, 8 10, 12 3 C 16 10, 20 6, 24 0 C 19 4, 15 2, 12 1 C 9 2, 5 4, 0 0 Z" fill="currentColor" />
+                      </svg>
+                    </div>
+                  </>
+                )}
+
                 {/* Initials Oval */}
-                <div style={{ ...absoluteBox({ left: 194, top: 75, width: 42, height: 64 }), border: "1.5px solid #fff", borderRadius: "100px", zIndex: 3 }}>
+                <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 75, width: 42, height: 64 }), border: "1.5px solid #fff", borderRadius: "100px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
                   <div style={{ position: "absolute", top: "15%", left: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
                   <div style={{ position: "absolute", bottom: "15%", right: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
                 </div>
 
                 {/* Names */}
-                {textLayer({ left: 85, top: 168, width: 260, fontSize: 46, lineHeight: 46, family: "Cormorant Infant, serif", color: "#fff", children: `${names.firstName}\n${names.secondName}` })}
+                {textLayer({ left: 85, top: 168, width: 260, fontSize: 46, lineHeight: 46, family: "Cormorant Infant, serif", color: "#fff", reveal: true, children: `${names.firstName}\n${names.secondName}` })}
 
                 {/* Subtitle */}
-                {textLayer({ left: 85, top: 285, width: 260, fontSize: 16, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Welcome To Our\nMediterranean Abode" })}
+                {textLayer({ left: 85, top: 285, width: 260, fontSize: 16, lineHeight: 18, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", reveal: true, delay: 200, children: "Welcome To Our\nMediterranean Abode" })}
 
                 {/* Dates Left and Right */}
-                {textLayer({ left: 80, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "right", children: dateParts.month })}
-                {textLayer({ left: 275, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", children: dateParts.year })}
+                {textLayer({ left: 80, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "right", reveal: true, delay: 400, children: dateParts.month })}
+                {textLayer({ left: 275, top: 216, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", reveal: true, delay: 400, children: dateParts.year })}
 
                 {/* Scroll down button */}
                 <button
                   type="button"
                   onClick={handleScrollDown}
+                  className="reveal"
                   style={{ 
                     ...absoluteBox({ left: 155, top: 355, width: 120, height: 38 }), 
                     backgroundColor: "#fff", 
@@ -451,15 +596,16 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                     alignItems: "center", 
                     justifyContent: "center", 
                     border: "none", 
-                    cursor: "pointer" 
+                    cursor: "pointer",
+                    transitionDelay: `${500 + animDelayMs}ms`
                   }}
                 >
                   <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
                 </button>
 
                 {/* Reveal Titles */}
-                {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, children: "Reveal" })}
-                {textLayer({ left: 85, top: 565, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, children: "النهار جاء" })}
+                {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, reveal: true, children: "Reveal" })}
+                {textLayer({ left: 85, top: 565, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "النهار جاء" })}
 
                 {/* Reveal Box Content */}
                 {textLayer({ left: 86, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.day}</div> })}
@@ -495,21 +641,23 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         <Section 
           startY={804} 
           height={340}
+          delayOffset={animDelayMs}
+          data-section-index={1}
           layerNames={[]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
               {/* Tile Ornaments */}
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${animDelayMs}ms` }}
                 alt=""
                 src={layer1}
                 draggable="false"
               />
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${animDelayMs}ms` }}
                 alt=""
                 src={layer2}
                 draggable="false"
@@ -517,8 +665,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
               {/* Watercolor bougainvillea */}
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2, transitionDelay: `${50 + animDelayMs}ms` }}
                 alt="Watercolor bougainvillea"
                 src={watercolorBougainvillea}
                 draggable="false"
@@ -526,8 +674,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
               {/* Decorative tape */}
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3, transitionDelay: `${100 + animDelayMs}ms` }}
                 alt="Decorative tape"
                 src={tape}
                 draggable="false"
@@ -535,8 +683,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
               {/* Couple Photo */}
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2, transitionDelay: `${200 + animDelayMs}ms` }}
                 alt="Couple"
                 src={vectorBg}
                 draggable="false"
@@ -544,8 +692,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
               {/* Torn paper */}
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2, transitionDelay: `${100 + animDelayMs}ms` }}
                 alt="Torn paper"
                 src={tornPaper}
                 draggable="false"
@@ -553,26 +701,27 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
               {/* Decorative stamp (layered for depth) */}
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), opacity: 0.9, zIndex: 3 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), opacity: 0.9, zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}
                 alt="Decorative stamp"
                 src={stamp2}
                 draggable="false"
               />
               <img
-                className="absolute"
-                style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4 }}
+                className="reveal absolute"
+                style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4, transitionDelay: `${450 + animDelayMs}ms` }}
                 alt="Decorative stamp"
                 src={stamp3}
                 draggable="false"
               />
 
               {/* Our Story titles */}
-              {textLayer({ left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", children: "Our Story" })}
-              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, children: "حكايتنا" })}
+              {textLayer({ left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", reveal: true, children: "Our Story" })}
+              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "حكايتنا" })}
 
               {/* Rotated text on torn paper */}
               <div 
+                className="reveal"
                 style={{ 
                   ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }), 
                   transform: "rotate(-10deg)", 
@@ -582,7 +731,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                   textAlign: "center",
                   letterSpacing: "1.2px",
                   lineHeight: "18px",
-                  zIndex: 3
+                  zIndex: 3,
+                  transitionDelay: `${300 + animDelayMs}ms`
                 }}
               >
                 Our Happy Ever After
@@ -599,20 +749,23 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         <Section 
           startY={1144} 
           height={296}
+          delayOffset={animDelayMs}
+          data-section-index={2}
           layerNames={["countdown-panel.png"]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 1201, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", children: "Countdown" })}
-              {textLayer({ left: 85, top: 1236, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", children: "العد التنازلي" })}
+              {textLayer({ left: 85, top: 1201, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", reveal: true, children: "Countdown" })}
+              {textLayer({ left: 85, top: 1236, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", reveal: true, delay: 150, children: "العد التنازلي" })}
 
               {[
                 { left: 75, value: countdown.days, label: "Days" },
                 { left: 185, value: countdown.hours, label: "Hours" },
                 { left: 295, value: countdown.minutes, label: "Minutes" },
-              ].map((box) => (
+              ].map((box, index) => (
                 <div
                   key={box.label}
+                  className="reveal"
                   style={{
                     ...absoluteBox({ left: box.left, top: 1300, width: 60, height: 60 }),
                     backgroundColor: "rgba(240, 248, 255, 0.9)",
@@ -623,6 +776,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
+                    transitionDelay: `${index * 150 + 300 + animDelayMs}ms`
                   }}
                 >
                   <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(16 / pageWidth) * 100}vw, 16px)`, color: blue, lineHeight: "1.2", fontWeight: "600" }}>{String(box.value).padStart(2, '0')}</div>
@@ -634,26 +788,28 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 3: Celebrations Title (shifted, startY=1440, height=100) */}
-        <Section startY={1440} height={100}>
+        <Section startY={1440} height={100} delayOffset={animDelayMs} data-section-index={3}>
           {({ textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", children: "The Celebrations" })}
-              {textLayer({ left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, children: "الليالي" })}
+              {textLayer({ left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", reveal: true, children: "The Celebrations" })}
+              {textLayer({ left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "الليالي" })}
             </>
           )}
         </Section>
-
+ 
         {/* Canvas 4: Dynamic Flex Celebrations Container */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent" }}>
+        <div data-section-index={4} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent" }}>
           {(invite.timeline || []).map((event, index) => {
             return (
               <section 
                 key={index} 
+                className="reveal"
                 style={{ 
                   position: "relative", 
                   width: "100%", 
                   aspectRatio: `${pageWidth} / 460`, 
-                  overflow: "hidden" 
+                  overflow: "hidden",
+                  transitionDelay: `${animDelayMs}ms`
                 }}
               >
                 {/* Render the identical source-of-truth decorations for each card */}
@@ -726,41 +882,36 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           })}
         </div>
 
-        {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
+               {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
         <Section 
           startY={2790} 
           height={430}
+          delayOffset={animDelayMs}
+          data-section-index={5}
           layerNames={["dress-code-illustration.png"]}
         >
           {({ textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Dress Code" })}
-              {textLayer({ left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "التبديلة" })}
-              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
+              {textLayer({ left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Dress Code" })}
+              {textLayer({ left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "التبديلة" })}
+              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", reveal: true, delay: 300, children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
             </>
           )}
         </Section>
-
+ 
         {/* Canvas 7: Programme (shifted, startY=3220, height=430) */}
         <Section 
           startY={3220} 
           height={430}
+          delayOffset={animDelayMs}
+          data-section-index={6}
           layerNames={[]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Programme" })}
-              {textLayer({ left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "البرنامج" })}
-
-              {/* Vertical line indicator */}
-              <div 
-                style={{ 
-                  ...absoluteBox({ left: 215, top: 3345, width: 1, height: 212 }), 
-                  backgroundColor: "#2e88e2", 
-                  zIndex: 2 
-                }} 
-              />
-
+              {textLayer({ left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Programme" })}
+              {textLayer({ left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "البرنامج" })}
+ 
               {/* Programme Steps mapping */}
               {(invite.programmeSteps || [
                 { time: "17:00", name: "Sdek" },
@@ -773,55 +924,85 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                 const image = [rect121, rect120, rect119, rect118][index];
                 const percent = [0, 0.25, 0.50, 1.00][index];
                 return (
-                  <div key={index}>
-                    {/* Time */}
-                    <div 
-                      style={{ 
-                        ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }), 
-                        fontFamily: "Cormorant Infant, serif", 
-                        fontWeight: "600", 
-                        fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
-                        color: "#2e88e2", 
-                        letterSpacing: "1.2px", 
-                        textAlign: "left",
-                        zIndex: 3
-                      }}
-                    >
-                      {item.time}
-                    </div>
-
+                  <div key={index} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+                    
                     {/* Dot */}
                     <div
+                      className="reveal"
                       style={{
                         ...absoluteBox({ left: 209, top: top + 2, width: 13, height: 13 }),
-                        zIndex: 3
+                        zIndex: 3,
+                        transitionDelay: `${index * 900 + animDelayMs}ms`
                       }}
                     >
                       <WavyCircle percent={percent} />
                     </div>
 
-                    {/* Step Icon Flourish */}
-                    <img
-                      className="absolute"
-                      style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
-                      alt=""
-                      src={image}
-                    />
-
-                    {/* Label */}
-                    <div 
-                      style={{ 
-                        ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }), 
-                        fontFamily: "Cormorant Infant, serif", 
-                        fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
-                        color: "#49606b", 
-                        letterSpacing: "1.2px", 
-                        textAlign: "center",
-                        zIndex: 3
+                    {/* Step Content Wrapper (Time, Icon, and Label) */}
+                    <div
+                      className="reveal"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        transitionDelay: `${index * 900 + 200 + animDelayMs}ms`
                       }}
                     >
-                      {item.name}
+                      {/* Time */}
+                      <div 
+                        style={{ 
+                          ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }), 
+                          fontFamily: "Cormorant Infant, serif", 
+                          fontWeight: "600", 
+                          fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                          color: "#2e88e2", 
+                          letterSpacing: "1.2px", 
+                          textAlign: "left",
+                          zIndex: 3
+                        }}
+                      >
+                        {item.time}
+                      </div>
+
+                      {/* Step Icon Flourish */}
+                      <img
+                        className="absolute"
+                        style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
+                        alt=""
+                        src={image}
+                      />
+
+                      {/* Label */}
+                      <div 
+                        style={{ 
+                          ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }), 
+                          fontFamily: "Cormorant Infant, serif", 
+                          fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                          color: "#49606b", 
+                          letterSpacing: "1.2px", 
+                          textAlign: "center",
+                          zIndex: 3
+                        }}
+                      >
+                        {item.name}
+                      </div>
                     </div>
+
+                    {/* Connecting Line Segment to next step */}
+                    {!isFinal && (
+                      <div 
+                        className="reveal line-segment"
+                        style={{ 
+                          ...absoluteBox({ left: 215, top: top + 15, width: 1, height: 62 }), 
+                          backgroundColor: "#2e88e2", 
+                          zIndex: 2,
+                          transitionDelay: `${index * 900 + 400 + animDelayMs}ms`
+                        }} 
+                      />
+                    )}
+
                   </div>
                 );
               })}
@@ -831,13 +1012,13 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
         {/* Canvas 8: RSVP (shifted, startY=3650, height=560) */}
         {invite.rsvpEnabled !== false ? (
-          <Section startY={3650} height={560}>
+          <Section startY={3650} height={560} delayOffset={animDelayMs} data-section-index={7}>
             {({ absoluteBox, textLayer }) => (
               <>
-                {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "RSVP" })}
-                {textLayer({ left: 45, top: 3685, width: 340, fontSize: 12, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", children: rsvpDeadline.inline })}
+                {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "RSVP" })}
+                {textLayer({ left: 45, top: 3685, width: 340, fontSize: 12, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", reveal: true, delay: 150, children: rsvpDeadline.inline })}
 
-                <div style={{ ...absoluteBox({ left: 40, top: 3750, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px" }}>
+                <div className="reveal" style={{ ...absoluteBox({ left: 40, top: 3750, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px", transitionDelay: `${300 + animDelayMs}ms` }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                     <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Name</label>
                     <input type="text" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
@@ -867,18 +1048,26 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         <Section 
           startY={4210} 
           height={240}
+          delayOffset={animDelayMs}
+          data-section-index={8}
           layerNames={["closing-small-ornament.png"]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              <div style={{ ...absoluteBox({ left: 194, top: 4250, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3 }}>
+              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4250, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
                 <div style={{ position: "absolute", top: "15%", left: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
                 <div style={{ position: "absolute", bottom: "15%", right: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
               </div>
-              {textLayer({ left: 85, top: 4336, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", children: "ان شاء الله ليلتكم زينة" })}
+              {textLayer({ left: 85, top: 4336, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "ان شاء الله ليلتكم زينة" })}
             </>
           )}
         </Section>
+
+        {/* Particle Emitter */}
+        <ParticleEmitter type="petals" active={invite.enablePetals !== false} />
+
+        {/* Audio Player */}
+        <AudioPlayer src={invite.musicUrl} active={Boolean(invite.musicUrl) && isIntroDone} />
 
       </div>
 
@@ -889,7 +1078,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         >
           <video
             className="h-full w-full object-cover"
-            src={openingVideo}
+            src={invite.videoUrl || openingVideo}
             autoPlay
             muted
             playsInline

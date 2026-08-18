@@ -27,6 +27,7 @@ import {
   getDigitalInviteById,
   saveDigitalInvite,
   updateDigitalInvite,
+  uploadInviteAsset,
 } from "../services/digitalInvites";
 import {
   digitalInviteTemplates,
@@ -115,6 +116,8 @@ function DigitalInviteEditorPage() {
   const [error, setError] = useState("");
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [openEvents, setOpenEvents] = useState({});
+  const [uploadingMusic, setUploadingMusic] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   const toggleEvent = (index) => {
     setOpenEvents((prev) => ({
@@ -270,6 +273,54 @@ function DigitalInviteEditorPage() {
       ...currentInvite,
       [key]: value,
     }));
+  };
+
+  const handleMusicUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const inviteId = id || invite.slug;
+    if (!inviteId) {
+      setError("Veuillez d'abord spécifier un Slug pour l'invitation.");
+      return;
+    }
+
+    setUploadingMusic(true);
+    setError("");
+
+    try {
+      const downloadUrl = await uploadInviteAsset(inviteId, file, "music");
+      updateInvite("musicUrl", downloadUrl);
+    } catch (uploadError) {
+      console.error(uploadError);
+      setError("Impossible d'importer le fichier audio. Vérifiez que Firebase Storage est configuré.");
+    } finally {
+      setUploadingMusic(false);
+    }
+  };
+
+  const handleVideoUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const inviteId = id || invite.slug;
+    if (!inviteId) {
+      setError("Veuillez d'abord spécifier un Slug pour l'invitation.");
+      return;
+    }
+
+    setUploadingVideo(true);
+    setError("");
+
+    try {
+      const downloadUrl = await uploadInviteAsset(inviteId, file, "video");
+      updateInvite("videoUrl", downloadUrl);
+    } catch (uploadError) {
+      console.error(uploadError);
+      setError("Impossible d'importer le fichier vidéo. Vérifiez que Firebase Storage est configuré.");
+    } finally {
+      setUploadingVideo(false);
+    }
   };
 
   const updateTimelineItem = (index, key, value) => {
@@ -893,6 +944,125 @@ function DigitalInviteEditorPage() {
                       </Field>
                     </div>
                   ))}
+                </div>
+              </EditorSection>
+
+              <EditorSection icon={FiSettings} title="Animations & Musique">
+                <div className="grid gap-4">
+                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
+                    <span className="font-semibold text-sm text-gray-700">Musique de fond (MP3)</span>
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="file"
+                        accept="audio/mp3,audio/*"
+                        onChange={handleMusicUpload}
+                        disabled={uploadingMusic}
+                        className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
+                      />
+                      {uploadingMusic && <span className="text-sm text-amber-600 animate-pulse">Importation de la musique en cours...</span>}
+                      {invite.musicUrl && (
+                        <div className="flex items-center gap-4 mt-1">
+                          <audio src={invite.musicUrl} controls className="h-8 max-w-full" />
+                          <button
+                            type="button"
+                            onClick={() => updateInvite("musicUrl", "")}
+                            className="text-sm font-semibold text-red-600 hover:underline"
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
+                    <span className="font-semibold text-sm text-gray-700">Vidéo d'ouverture (MP4)</span>
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="file"
+                        accept="video/mp4,video/*"
+                        onChange={handleVideoUpload}
+                        disabled={uploadingVideo}
+                        className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
+                      />
+                      {uploadingVideo && <span className="text-sm text-amber-600 animate-pulse">Importation de la vidéo en cours...</span>}
+                      {invite.videoUrl && (
+                        <div className="flex items-center gap-4 mt-1">
+                          <video src={invite.videoUrl} controls className="h-20 rounded-md border" />
+                          <button
+                            type="button"
+                            onClick={() => updateInvite("videoUrl", "")}
+                            className="text-sm font-semibold text-red-600 hover:underline"
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
+                    <span className="font-semibold text-sm md:col-span-2 text-gray-700">Effets Visuels</span>
+                    <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={invite.enablePetals !== false}
+                        onChange={(e) => updateInvite("enablePetals", e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                      />
+                      Activer la chute de pétales
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={invite.enableBirds !== false}
+                        onChange={(e) => updateInvite("enableBirds", e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                      />
+                      Activer le vol des oiseaux
+                    </label>
+                  </div>
+
+                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
+                    <span className="font-semibold text-sm md:col-span-2 text-gray-700">Apparition du texte</span>
+                    <Field label="Type d'apparition">
+                      <select
+                        value={invite.animationType || "fade-up"}
+                        onChange={(e) => updateInvite("animationType", e.target.value)}
+                        className="w-full rounded-md border border-[#D8DDE2] p-2 text-sm outline-none focus:border-black bg-white"
+                      >
+                        <option value="fade-up">Glissement vers le haut (Fade Up)</option>
+                        <option value="fade">Fondu simple (Fade)</option>
+                        <option value="zoom">Zoom (Zoom In)</option>
+                      </select>
+                    </Field>
+                    <Field label={`Durée (vitesse) : ${(invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2)}s`}>
+                      <div className="flex items-center gap-3 mt-2">
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="4.0"
+                          step="0.1"
+                          value={invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2}
+                          onChange={(e) => updateInvite("animationSpeed", parseFloat(e.target.value))}
+                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                        />
+                      </div>
+                    </Field>
+                    <Field label={`Délai initial (lag) : ${(invite.animationDelay !== undefined ? invite.animationDelay : 0.2)}s`}>
+                      <div className="flex items-center gap-3 mt-2">
+                        <input
+                          type="range"
+                          min="0.0"
+                          max="3.0"
+                          step="0.1"
+                          value={invite.animationDelay !== undefined ? invite.animationDelay : 0.2}
+                          onChange={(e) => updateInvite("animationDelay", parseFloat(e.target.value))}
+                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                        />
+                      </div>
+                    </Field>
+                  </div>
                 </div>
               </EditorSection>
             </>

@@ -10,7 +10,8 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../lib/firebase";
 
 export const DIGITAL_INVITES_COLLECTION = "digitalInvites";
 
@@ -134,4 +135,19 @@ export async function deleteDigitalInvite(id) {
   assertFirestoreReady();
 
   await deleteDoc(doc(db, DIGITAL_INVITES_COLLECTION, id));
+}
+
+export async function uploadInviteAsset(inviteId, file, type) {
+  if (!storage) {
+    throw new Error("Firebase Storage is not configured.");
+  }
+
+  const timestamp = Date.now();
+  const fileExtension = file.name.split(".").pop();
+  const fileName = `${type}_${timestamp}.${fileExtension}`;
+  const storagePath = `${DIGITAL_INVITES_COLLECTION}/${inviteId}/${fileName}`;
+
+  const storageRef = ref(storage, storagePath);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
 }
