@@ -502,14 +502,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Tile Ornaments */}
               <img
                 className="absolute"
-                style={{ ...absoluteBox({ left: 0, top: 804 + 98, width: 32, height: 40 }), zIndex: 2 }}
+                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2 }}
                 alt=""
                 src={layer1}
                 draggable="false"
               />
               <img
                 className="absolute"
-                style={{ ...absoluteBox({ left: 398, top: 804 + 250, width: 32, height: 40 }), zIndex: 2 }}
+                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2 }}
                 alt=""
                 src={layer2}
                 draggable="false"
