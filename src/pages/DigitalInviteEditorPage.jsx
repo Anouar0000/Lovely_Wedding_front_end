@@ -108,7 +108,7 @@ function EditorSection({ icon, title, children, action }) {
 
 const SECTION_LIST = [
   { id: 'hero', label: 'Ouverture (Hero)' },
-  { id: 'reveal', label: 'Reveal (النهار جاء)' },
+  { id: 'reveal', label: 'Dévoilement (النهار جاء)' },
   { id: 'our-story', label: 'Notre Histoire (حكايتنا)' },
   { id: 'countdown', label: 'Compte à rebours' },
   { id: 'celebrations', label: 'Célébrations' },
@@ -122,49 +122,66 @@ const SECTION_LIST = [
 const getElementsForSection = (sectionId) => {
   switch (sectionId) {
     case 'hero': return [
-      { id: 'hero-bg', label: 'Arrière-plan', controls: ['padding', 'upload'] },
-      { id: 'hero-initials', label: 'Initiales (Cercle)', controls: ['margin', 'radius', 'color', 'font', 'fontSize'] },
-      { id: 'hero-names', label: 'Noms du couple', controls: ['margin', 'font', 'fontSize', 'color'] },
-      { id: 'hero-date', label: 'Date', controls: ['margin', 'font', 'fontSize', 'color'] },
-      { id: 'hero-subtitle', label: 'Sous-titre', controls: ['margin', 'font', 'fontSize', 'color'] },
-      { id: 'hero-btn', label: 'Bouton Scroll', controls: ['padding', 'margin', 'radius', 'color', 'font', 'fontSize'] }
+      { id: 'sec-hero', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'hero-bg', label: 'Arrière-plan', controls: ['upload'] },
+      { id: 'hero-initials', label: 'Cercle Initiales (Groupe)', controls: ['position', 'radius', 'color', 'font', 'fontSize'], subElements: [ { id: 'hero-initial-1', label: 'Initiale 1' }, { id: 'hero-initial-2', label: 'Initiale 2' } ] },
+      { id: 'hero-names', label: 'Noms du Couple (Groupe)', controls: ['position', 'font', 'fontSize', 'color'], subElements: [ { id: 'hero-name-1', label: 'Nom 1' }, { id: 'hero-name-2', label: 'Nom 2' } ] },
+      { id: 'hero-date', label: 'Date (Groupe)', controls: ['position', 'font', 'fontSize', 'color'], subElements: [ { id: 'hero-date-month', label: 'Mois' }, { id: 'hero-date-year', label: 'Année' } ] },
+      { id: 'hero-subtitle', label: 'Sous-titre', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'hero-btn', label: 'Bouton Scroll', controls: ['position', 'position', 'radius', 'color', 'font', 'fontSize'] }
     ];
     case 'reveal': return [
-      { id: 'reveal-title', label: 'Titre (النهار جاء)', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
-      { id: 'reveal-doors', label: 'Portes (Images)', controls: ['padding', 'upload'] },
-      { id: 'reveal-date', label: 'Date cachée', controls: ['padding', 'margin', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'reveal-hands', label: 'Mains (Image bas)', controls: ['padding', 'upload'] }
+      { id: 'sec-reveal', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'reveal-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'reveal-title-ar', label: 'Titre AR (النهار جاء)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'reveal-doors', label: 'Portes (Images)', controls: ['position', 'upload'] },
+      { id: 'reveal-date', label: 'Date cachée', controls: ['position', 'position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'reveal-hands', label: 'Mains (Image bas)', controls: ['position', 'upload'] }
     ];
     case 'our-story': return [
-      { id: 'story-title', label: 'Titre (حكايتنا)', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
-      { id: 'story-quote', label: 'Texte Rotatif', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'story-photo', label: 'Photo de Couple', controls: ['padding', 'upload'] },
-      { id: 'story-ornaments', label: 'Ornements (Fleurs, Timbres)', controls: ['padding', 'upload'] }
+      { id: 'sec-story', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'story-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'story-title-ar', label: 'Titre AR (حكايتنا)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'story-quote', label: 'Texte Rotatif', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'story-photo', label: 'Photo de Couple', controls: ['position', 'upload'] },
+      { id: 'story-ornaments', label: 'Ornements (Fleurs, Timbres)', controls: ['position', 'upload'] }
     ];
     case 'countdown': return [
-      { id: 'countdown-title', label: 'Titre Section', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
-      { id: 'countdown-date', label: 'Date et Chiffres', controls: ['margin', 'font', 'fontSize', 'color'] }
+      { id: 'sec-countdown', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'countdown-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'countdown-title-ar', label: 'Titre AR (العد التنازلي)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'countdown-date', label: 'Date et Chiffres', controls: ['position', 'font', 'fontSize', 'color'] }
     ];
     case 'celebrations': return [
-      { id: 'celeb-venue', label: 'Nom du Lieu', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'sec-celeb', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'celeb-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'celeb-title-ar', label: 'Titre AR (الليالي)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'celeb-venue', label: 'Nom du Lieu', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'celeb-list', label: 'Liste des Événements (Timeline)', controls: ['eventList'] }
     ];
     case 'dress-code': return [
-      { id: 'dress-title', label: 'Titre Dress Code', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
-      { id: 'dress-text', label: 'Texte Instructions', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'dress-illustration', label: 'Illustration', controls: ['padding', 'upload'] }
+      { id: 'sec-dress', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'dress-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'dress-title-ar', label: 'Titre AR (التبديلة)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'dress-text', label: 'Texte Instructions', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'dress-illustration', label: 'Illustration', controls: ['position', 'upload'] }
     ];
     case 'programme': return [
-      { id: 'prog-title', label: 'Titre Programme', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
-      { id: 'prog-steps', label: 'Étapes du Programme', controls: ['margin', 'font', 'fontSize', 'color'] }
+      { id: 'sec-prog', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'prog-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'prog-title-ar', label: 'Titre AR (البرنامج)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'prog-steps', label: 'Étapes du Programme', controls: ['position', 'font', 'fontSize', 'color'] }
     ];
     case 'rsvp': return [
-      { id: 'rsvp-title', label: 'Titre RSVP', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
-      { id: 'rsvp-form', label: 'Formulaire', controls: ['margin', 'font', 'fontSize', 'color'] }
+      { id: 'sec-rsvp', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'rsvp-title', label: 'Titre RSVP', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'rsvp-form', label: 'Formulaire', controls: ['position', 'font', 'fontSize', 'color'] }
     ];
     case 'footer': return [
-      { id: 'footer-arabic', label: 'Texte de clôture', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'footer-names', label: 'Noms', controls: ['margin', 'font', 'fontSize', 'color', 'text'] }
+      { id: 'sec-footer', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'footer-initials', label: 'Cercle Final', controls: ['position', 'radius', 'color', 'font', 'fontSize'], subElements: [ { id: 'footer-initial-1', label: 'Initiale 1' }, { id: 'footer-initial-2', label: 'Initiale 2' } ] },
+      { id: 'footer-arabic', label: 'Texte de clôture', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'footer-names', label: 'Noms', controls: ['position', 'font', 'fontSize', 'color', 'text'] }
     ];
     case 'settings': return [
       { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
@@ -198,46 +215,110 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
             {expandedElement === el.id && (
                <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-4">
                  
-                 {/* Padding Controls */}
-                 {el.controls.includes('padding') && (
-                   <div className="grid grid-cols-4 gap-2">
+                 
+                 {/* Position Controls */}
+                 {el.controls.includes('position') && invite && updateInvite && (
+                   <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad T</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Top" />
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos X (Gauche)</label>
+                        <input 
+                          type="number" 
+                          value={invite.styleOverrides?.[el.id]?.posX || 0}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            const current = invite.styleOverrides?.[el.id] || {};
+                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, posX: val } });
+                          }}
+                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
+                          placeholder="0"
+                        />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad R</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Right" />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad B</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Bottom" />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad L</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Left" />
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos Y (Haut)</label>
+                        <input 
+                          type="number" 
+                          value={invite.styleOverrides?.[el.id]?.posY || 0}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            const current = invite.styleOverrides?.[el.id] || {};
+                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, posY: val } });
+                          }}
+                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
+                          placeholder="0"
+                        />
                       </div>
                    </div>
                  )}
+                 {/* Sub Elements Position Controls */}
+                 {el.subElements && invite && updateInvite && (
+                   <div className="space-y-3 mt-4 pt-3 border-t border-gray-200">
+                     {el.subElements.map(subEl => (
+                       <div key={subEl.id}>
+                         <div className="text-[10px] font-bold text-gray-700 uppercase mb-2 flex items-center gap-1.5"><FiMove size={12} className="text-gray-400"/> {subEl.label}</div>
+                         <div className="grid grid-cols-2 gap-2">
+                           <div>
+                             <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos X (Gauche)</label>
+                             <input 
+                               type="number" 
+                               value={invite.styleOverrides?.[subEl.id]?.posX || 0}
+                               onChange={(e) => {
+                                 const val = parseInt(e.target.value) || 0;
+                                 const current = invite.styleOverrides?.[subEl.id] || {};
+                                 updateInvite('styleOverrides', { ...invite.styleOverrides, [subEl.id]: { ...current, posX: val } });
+                               }}
+                               className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white" 
+                             />
+                           </div>
+                           <div>
+                             <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos Y (Haut)</label>
+                             <input 
+                               type="number" 
+                               value={invite.styleOverrides?.[subEl.id]?.posY || 0}
+                               onChange={(e) => {
+                                 const val = parseInt(e.target.value) || 0;
+                                 const current = invite.styleOverrides?.[subEl.id] || {};
+                                 updateInvite('styleOverrides', { ...invite.styleOverrides, [subEl.id]: { ...current, posY: val } });
+                               }}
+                               className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white" 
+                             />
+                           </div>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 )}
 
-                 {/* Margin Controls */}
-                 {el.controls.includes('margin') && (
-                   <div className="grid grid-cols-4 gap-2">
+                 
+                 {/* Position Y Only Controls */}
+                 {el.controls.includes('positionYOnly') && invite && updateInvite && (
+                   <div className="grid grid-cols-1 gap-2">
                       <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar T</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Top" />
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Offset Global Section Y (Haut/Bas)</label>
+                        <input 
+                          type="number" 
+                          value={invite.styleOverrides?.[el.id]?.posY || 0}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            const current = invite.styleOverrides?.[el.id] || {};
+                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, posY: val } });
+                          }}
+                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
+                          placeholder="0"
+                        />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar R</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Right" />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar B</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Bottom" />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar L</label>
-                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Left" />
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1 mt-2">Hauteur Supplémentaire (px)</label>
+                        <input 
+                          type="number" 
+                          value={invite.styleOverrides?.[el.id]?.height || 0}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            const current = invite.styleOverrides?.[el.id] || {};
+                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, height: val } });
+                          }}
+                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
+                          placeholder="0"
+                        />
                       </div>
                    </div>
                  )}
@@ -264,20 +345,46 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                       {el.controls.includes('font') && (
                         <div className="col-span-2">
                           <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Police (Font)</label>
-                          <select className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black">
+                          <select 
+                            className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black"
+                            value={invite.styleOverrides?.[el.id]?.fontFamily || "Défaut du Template"}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const current = invite.styleOverrides?.[el.id] || {};
+                              updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, fontFamily: val } });
+                            }}
+                          >
                             <option>Défaut du Template</option>
                             <option>Urbanist</option>
                             <option>Pinyon Script</option>
                             <option>Crimson Text</option>
                             <option>Antic Didone</option>
                             <option>Gulzar</option>
+                            <option>Cormorant</option>
+                            <option>Cormorant Infant</option>
+                            <option>Beau Rivage</option>
+                            <option>B Fantezy</option>
+                            <option>Bodoni Moda</option>
+                            <option>Sue Ellen Francisco</option>
+                            <option>Rosario</option>
+                            <option>Onirom</option>
                           </select>
                         </div>
                       )}
                       {el.controls.includes('fontSize') && (
                         <div>
                           <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Taille (px)</label>
-                          <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="24" />
+                          <input 
+                            type="number" 
+                            className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
+                            placeholder="24"
+                            value={invite.styleOverrides?.[el.id]?.fontSize || ""}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value);
+                              const current = invite.styleOverrides?.[el.id] || {};
+                              updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, fontSize: val || undefined } });
+                            }}
+                          />
                         </div>
                       )}
                    </div>
@@ -287,8 +394,17 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                    <div>
                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Couleur</label>
                      <div className="flex items-center gap-2">
-                       <input type="color" className="h-7 w-7 border-0 p-0 cursor-pointer" defaultValue="#08306b" />
-                       <span className="text-xs text-gray-600 font-mono">#08306B</span>
+                       <input 
+                         type="color" 
+                         className="h-7 w-7 border-0 p-0 cursor-pointer" 
+                         value={invite.styleOverrides?.[el.id]?.color || "#08306b"}
+                         onChange={(e) => {
+                           const val = e.target.value;
+                           const current = invite.styleOverrides?.[el.id] || {};
+                           updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, color: val } });
+                         }}
+                       />
+                       <span className="text-xs text-gray-600 font-mono uppercase">{invite.styleOverrides?.[el.id]?.color || "#08306b"}</span>
                      </div>
                    </div>
                  )}
@@ -384,12 +500,22 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                        className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
                      />
                      {uploadingVideo && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
+                     
+                     <label className="flex items-center gap-2 mt-3 cursor-pointer">
+                       <input 
+                         type="checkbox" 
+                         checked={invite.videoIntroEnabled !== false} 
+                         onChange={(e) => updateInvite('videoIntroEnabled', e.target.checked)}
+                         className="w-4 h-4 accent-black"
+                       />
+                       <span className="text-xs font-semibold text-gray-700">Activer la vidéo d'ouverture</span>
+                     </label>
                    </div>
                  )}
 
                  {/* Petals Toggle */}
                  {el.controls.includes('petalsToggle') && invite && updateInvite && (
-                   <div>
+                   <div className="space-y-4">
                      <label className="flex items-center gap-2 cursor-pointer">
                        <input 
                          type="checkbox" 
@@ -399,6 +525,23 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                        />
                        <span className="text-xs font-semibold text-gray-700">Activer la chute de pétales</span>
                      </label>
+                     {invite.enablePetals !== false && (
+                       <div>
+                         <label className="flex items-center justify-between text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                           Intensité (Nombre)
+                           <span className="text-black font-bold">{invite.petalsIntensity || 30}</span>
+                         </label>
+                         <input
+                           type="range"
+                           min="5"
+                           max="150"
+                           step="1"
+                           value={invite.petalsIntensity || 30}
+                           onChange={(e) => updateInvite('petalsIntensity', parseInt(e.target.value))}
+                           className="w-full accent-black cursor-pointer"
+                         />
+                       </div>
+                     )}
                    </div>
                  )}
 
@@ -774,10 +917,26 @@ function DigitalInviteEditorPage() {
   };
 
   const handleDateChange = (dateValue) => {
-    setInvite((currentInvite) => ({
-      ...currentInvite,
-      eventDate: dateValue,
-    }));
+    setInvite((currentInvite) => {
+      const isSidi = currentInvite.template === 'sidi-bousaid';
+      if (isSidi && currentInvite.timeline && currentInvite.timeline.length > 0) {
+        const lastIndex = currentInvite.timeline.length - 1;
+        const updatedTimeline = [...currentInvite.timeline];
+        updatedTimeline[lastIndex] = {
+          ...updatedTimeline[lastIndex],
+          date: dateValue
+        };
+        return {
+          ...currentInvite,
+          eventDate: dateValue,
+          timeline: updatedTimeline
+        };
+      }
+      return {
+        ...currentInvite,
+        eventDate: dateValue,
+      };
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -1055,6 +1214,16 @@ function DigitalInviteEditorPage() {
               </button>
             ) : null}
             <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(JSON.stringify(invite, null, 2));
+                alert("JSON copié !");
+              }}
+              className="inline-flex items-center gap-2 bg-gray-200 px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gray-800 hover:bg-gray-300"
+            >
+              Dev JSON
+            </button>
+            <button
               type="submit"
               form="digital-invite-form"
               disabled={saving}
@@ -1087,6 +1256,15 @@ function DigitalInviteEditorPage() {
 
               <EditorSection icon={FiSettings} title="Informations">
                 <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="flex flex-col gap-2">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Date de l'événement</label>
+                    <input
+                      type="date"
+                      value={invite.eventDate || ""}
+                      onChange={(event) => handleDateChange(event.target.value)}
+                      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                    />
+                  </div>
                   <Field label="Noms du Couple">
                     <TextInput
                       value={invite.coupleNames || ""}

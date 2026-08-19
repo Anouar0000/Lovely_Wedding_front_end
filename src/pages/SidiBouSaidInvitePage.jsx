@@ -183,7 +183,7 @@ const eventDecorations = [
 ];
 
 // A localized section wrapper that provides scoped absolute coordinates for child graphics
-const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, children, ...rest }) => {
+const Section = ({ invite, startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, children, ...rest }) => {
   const [secHeight, setSecHeight] = React.useState(window.innerHeight);
 
   React.useEffect(() => {
@@ -193,25 +193,43 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOff
     return () => window.removeEventListener("resize", handleResize);
   }, [isFullScreenHeight]);
 
-  const absoluteBox = ({ left, top, width: w, height: h }) => ({
-    position: "absolute",
-    left: pct(left, pageWidth),
-    top: pct(top - startY, height),
-    width: pct(w, pageWidth),
-    height: h ? pct(h, height) : undefined,
-  });
+  const sectionOffsetY = invite?.styleOverrides?.[rest['data-section-id']]?.posY || 0;
+  const sectionExtraHeight = invite?.styleOverrides?.[rest['data-section-id']]?.height || 0;
+  const effectiveHeight = height + sectionExtraHeight;
 
-  const textLayer = ({ left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, pointerEvents, reveal = false, delay = 0 }) => (
+  const absoluteBox = ({ id, left, top, width: w, height: h }) => {
+    const overrideX = invite?.styleOverrides?.[id]?.posX || 0;
+    const overrideY = invite?.styleOverrides?.[id]?.posY || 0;
+    return {
+      position: "absolute",
+      left: pct(left + overrideX, pageWidth),
+      top: pct(top - startY + overrideY + sectionOffsetY, effectiveHeight),
+      width: pct(w, pageWidth),
+      height: h ? pct(h, effectiveHeight) : undefined,
+    };
+  };
+
+  const textLayer = ({ id, left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, pointerEvents, reveal = false, delay = 0 }) => {
+    const overrideText = invite?.styleOverrides?.[id]?.text;
+    const overrideColor = invite?.styleOverrides?.[id]?.color;
+    const overrideFontSize = invite?.styleOverrides?.[id]?.fontSize;
+    const overrideFontFamily = invite?.styleOverrides?.[id]?.fontFamily;
+
+    const finalColor = overrideColor || color;
+    const finalFontSize = overrideFontSize || fontSize;
+    const finalFontFamily = (overrideFontFamily && overrideFontFamily !== "Défaut du Template") ? overrideFontFamily : family;
+
+    return (
     <div
       className={reveal ? "reveal" : ""}
       style={{
-        ...absoluteBox({ left, top, width: w }),
-        color,
-        fontFamily: family,
-        fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+        ...absoluteBox({ id, left, top, width: w }),
+        color: finalColor,
+        fontFamily: finalFontFamily,
+        fontSize: `clamp(${finalFontSize * 0.78}px, ${(finalFontSize / pageWidth) * 100}vw, ${finalFontSize}px)`,
         fontStyle: style,
         fontWeight: weight,
-        lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
+        lineHeight: lineHeight ? `${lineHeight / finalFontSize}` : 1.2,
         textAlign: align,
         letterSpacing,
         wordSpacing,
@@ -222,15 +240,16 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOff
         transitionDelay: reveal ? `${delay + delayOffset}ms` : undefined,
       }}
     >
-      {textChildren}
+      {overrideText || textChildren}
     </div>
-  );
+    );
+  };
 
   const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
 
   const sectionStyle = isFullScreenHeight
-    ? { position: "relative", width: "100%", height: `${secHeight}px`, backgroundColor: bg, overflow: "hidden" }
-    : { position: "relative", width: "100%", aspectRatio: `${pageWidth} / ${height}`, backgroundColor: bg, overflow: "hidden" };
+    ? { position: "relative", width: "100%", height: `calc(${secHeight}px + ${sectionExtraHeight}px)`, backgroundColor: bg, overflow: "hidden" }
+    : { position: "relative", width: "100%", aspectRatio: `${pageWidth} / ${effectiveHeight}`, backgroundColor: bg, overflow: "hidden" };
 
   return (
     <section
@@ -243,7 +262,7 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOff
             src={exportImageSources[layer.srcName || layer.name]}
             className="reveal"
             style={{
-              ...absoluteBox(layer),
+              ...absoluteBox({ id: { 'hero-arch.png': 'hero-bg', 'our-story-photo.png': 'story-photo', 'watercolor-bougainvillea-figma.png': 'story-ornaments', 'dress-code-illustration.png': 'dress-illustration' }[layer.name] || layer.name, ...layer }),
               transform: layer.transform,
               zIndex: layer.zIndex || 2,
               transitionDelay: `${idx * 100 + delayOffset}ms`
@@ -521,11 +540,11 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col">
 
         {/* Canvas 1: Hero */}
-        <Section
+        <Section invite={invite}
           startY={0}
           height={804}
           delayOffset={animDelayMs}
-          data-section-index={0}
+          data-section-index={0} data-section-id="sec-hero"
           isFullScreenHeight={true}
           layerNames={[]}
         >
@@ -591,23 +610,24 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
                 <div
                   className="absolute left-0 top-1/2 w-full -translate-y-1/2"
-                  style={{ height: pct(340, 804), zIndex: 3 }}
+                  style={{ height: pct(340, 804), zIndex: 3, marginTop: invite?.styleOverrides?.['sec-hero']?.posY || 0 }}
                 >
                   {/* Initials Mark */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(194, pageWidth), top: pct(0, 340), width: pct(35, pageWidth), height: pct(72, 340), border: "1.5px solid #fff", borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                    <div style={{ position: "absolute", top: "12%", left: "31%", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                    <div style={{ position: "absolute", bottom: "12%", left: "49%", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(194 + (invite?.styleOverrides?.['hero-initials']?.posX || 0), pageWidth), top: pct(0 + (invite?.styleOverrides?.['hero-initials']?.posY || 0), 340), width: pct(35, pageWidth), height: pct(72, 340), border: `1.5px solid ${invite?.styleOverrides?.['hero-initials']?.color || '#fff'}`, borderRadius: `${invite?.styleOverrides?.['hero-initials']?.radius ?? 16}px`, zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
+                    <div style={{ position: "absolute", top: `calc(12% + ${invite?.styleOverrides?.['hero-initial-1']?.posY || 0}px)`, left: `calc(31% + ${invite?.styleOverrides?.['hero-initial-1']?.posX || 0}px)`, color: invite?.styleOverrides?.['hero-initials']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-initials']?.fontFamily && invite?.styleOverrides?.['hero-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-initials']?.fontFamily : "Antic Didone, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-initials']?.fontSize || 21) * 0.78}px, ${((invite?.styleOverrides?.['hero-initials']?.fontSize || 21) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-initials']?.fontSize || 21}px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                    <div style={{ position: "absolute", bottom: `calc(12% - ${invite?.styleOverrides?.['hero-initial-2']?.posY || 0}px)`, left: `calc(49% + ${invite?.styleOverrides?.['hero-initial-2']?.posX || 0}px)`, color: invite?.styleOverrides?.['hero-initials']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-initials']?.fontFamily && invite?.styleOverrides?.['hero-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-initials']?.fontFamily : "Antic Didone, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-initials']?.fontSize || 21) * 0.78}px, ${((invite?.styleOverrides?.['hero-initials']?.fontSize || 21) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-initials']?.fontSize || 21}px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
                   </div>
 
                   {/* Names */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(85, pageWidth), top: pct(75, 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(35.88px, ${(46 / pageWidth) * 100}vw, 46px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{`${names.firstName}\n${names.secondName}`}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(85 + (invite?.styleOverrides?.['hero-names']?.posX || 0) + (invite?.styleOverrides?.['hero-name-1']?.posX || 0), pageWidth), top: pct(75 + (invite?.styleOverrides?.['hero-names']?.posY || 0) + (invite?.styleOverrides?.['hero-name-1']?.posY || 0), 340), width: pct(260, pageWidth), color: invite?.styleOverrides?.['hero-names']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-names']?.fontFamily && invite?.styleOverrides?.['hero-names']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-names']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-names']?.fontSize || 46) * 0.78}px, ${( (invite?.styleOverrides?.['hero-names']?.fontSize || 46) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-names']?.fontSize || 46}px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{names.firstName}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(85 + (invite?.styleOverrides?.['hero-names']?.posX || 0) + (invite?.styleOverrides?.['hero-name-2']?.posX || 0), pageWidth), top: pct(75 + (invite?.styleOverrides?.['hero-names']?.fontSize || 46) + (invite?.styleOverrides?.['hero-names']?.posY || 0) + (invite?.styleOverrides?.['hero-name-2']?.posY || 0), 340), width: pct(260, pageWidth), color: invite?.styleOverrides?.['hero-names']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-names']?.fontFamily && invite?.styleOverrides?.['hero-names']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-names']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-names']?.fontSize || 46) * 0.78}px, ${( (invite?.styleOverrides?.['hero-names']?.fontSize || 46) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-names']?.fontSize || 46}px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{names.secondName}</div>
 
                   {/* Subtitle */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(85, pageWidth), top: pct(204, 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant, serif", fontSize: `clamp(12.48px, ${(16 / pageWidth) * 100}vw, 16px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", letterSpacing: "0.1em", textTransform: "capitalize", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${200 + animDelayMs}ms` }}>{"Welcome To Our\nMediterranean Abode"}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(85 + (invite?.styleOverrides?.['hero-subtitle']?.posX || 0), pageWidth), top: pct(204 + (invite?.styleOverrides?.['hero-subtitle']?.posY || 0), 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant, serif", fontSize: `clamp(12.48px, ${(16 / pageWidth) * 100}vw, 16px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", letterSpacing: "0.1em", textTransform: "capitalize", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${200 + animDelayMs}ms` }}>{"Welcome To Our\nMediterranean Abode"}</div>
 
                   {/* Dates Left and Right */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(80, pageWidth), top: pct(127, 340), width: pct(75, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(13.26px, ${(17 / pageWidth) * 100}vw, 17px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "right", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.month}</div>
-                  <div className="reveal" style={{ position: "absolute", left: pct(275, pageWidth), top: pct(127, 340), width: pct(75, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(13.26px, ${(17 / pageWidth) * 100}vw, 17px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "left", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.year}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(80 + (invite?.styleOverrides?.['hero-date']?.posX || 0) + (invite?.styleOverrides?.['hero-date-month']?.posX || 0), pageWidth), top: pct(127 + (invite?.styleOverrides?.['hero-date']?.posY || 0) + (invite?.styleOverrides?.['hero-date-month']?.posY || 0), 340), width: pct(75, pageWidth), color: invite?.styleOverrides?.['hero-date']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-date']?.fontFamily && invite?.styleOverrides?.['hero-date']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-date']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-date']?.fontSize || 17) * 0.78}px, ${((invite?.styleOverrides?.['hero-date']?.fontSize || 17) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-date']?.fontSize || 17}px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "right", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.month}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(275 + (invite?.styleOverrides?.['hero-date']?.posX || 0) + (invite?.styleOverrides?.['hero-date-year']?.posX || 0), pageWidth), top: pct(127 + (invite?.styleOverrides?.['hero-date']?.posY || 0) + (invite?.styleOverrides?.['hero-date-year']?.posY || 0), 340), width: pct(75, pageWidth), color: invite?.styleOverrides?.['hero-date']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-date']?.fontFamily && invite?.styleOverrides?.['hero-date']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-date']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-date']?.fontSize || 17) * 0.78}px, ${((invite?.styleOverrides?.['hero-date']?.fontSize || 17) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-date']?.fontSize || 17}px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "left", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.year}</div>
 
                   {/* Scroll down button */}
                   <button
@@ -641,11 +661,11 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 2: Reveal */}
-        <Section
+        <Section invite={invite}
           startY={501}
           height={303}
           delayOffset={animDelayMs}
-          data-section-index={1}
+          data-section-index={1} data-section-id="sec-reveal"
           layerNames={[
             "reveal-corner-top-right.png",
             "reveal-hand.svg",
@@ -696,7 +716,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 5: Our Story (moved here, startY=804, height=340) */}
-        <Section
+        <Section invite={invite}
           startY={804}
           height={340}
           delayOffset={animDelayMs}
@@ -774,14 +794,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               />
 
               {/* Our Story titles */}
-              {textLayer({ left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", reveal: true, children: "Our Story" })}
-              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, reveal: true, delay: 250, children: "\u062d\u0643\u0627\u064a\u062a\u0646\u0627" })}
+              {textLayer({ id: "story-title", left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", reveal: true, children: "Our Story" })}
+              {textLayer({ id: "story-title-ar", left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, reveal: true, delay: 250, children: "\u062d\u0643\u0627\u064a\u062a\u0646\u0627" })}
 
               {/* Rotated text on torn paper */}
               <div
                 className="reveal"
                 style={{
-                  ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }),
+                  ...absoluteBox({ id: "story-quote", left: 8, top: 804 + 195, width: 241 }),
                   transform: "rotate(-10deg)",
                   fontFamily: "Cormorant Infant, serif",
                   fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
@@ -804,17 +824,17 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 2: Countdown (shifted, startY=1144, height=296) */}
-        <Section
+        <Section invite={invite}
           startY={1144}
           height={296}
           delayOffset={animDelayMs}
-          data-section-index={2}
+          data-section-index={2} data-section-id="sec-story"
           layerNames={["countdown-panel.png"]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 1201, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", reveal: true, children: "Countdown" })}
-              {textLayer({ left: 85, top: 1236, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", reveal: true, delay: 150, children: "\u0627\u0644\u0639\u062f \u0627\u0644\u062a\u0646\u0627\u0632\u0644\u064a" })}
+              {textLayer({ id: "countdown-title", left: 85, top: 1201, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", reveal: true, children: "Countdown" })}
+              {textLayer({ id: "countdown-title-ar", left: 85, top: 1236, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", reveal: true, delay: 150, children: "\u0627\u0644\u0639\u062f \u0627\u0644\u062a\u0646\u0627\u0632\u0644\u064a" })}
 
               {[
                 { left: 75, value: countdown.days, label: "Days" },
@@ -846,17 +866,17 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 3: Celebrations Title (shifted, startY=1440, height=100) */}
-        <Section startY={1440} height={100} delayOffset={animDelayMs} data-section-index={3}>
+        <Section invite={invite} startY={1440} height={100} delayOffset={animDelayMs} data-section-index={3} data-section-id="sec-countdown">
           {({ textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", reveal: true, children: "The Celebrations" })}
-              {textLayer({ left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0644\u064a\u0627\u0644\u064a" })}
+              {textLayer({ id: "celeb-title", left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", reveal: true, children: "The Celebrations" })}
+              {textLayer({ id: "celeb-title-ar", left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0644\u064a\u0627\u0644\u064a" })}
             </>
           )}
         </Section>
 
         {/* Canvas 4: Dynamic Flex Celebrations Container */}
-        <div data-section-index={4} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent" }}>
+        <div data-section-index={4} data-section-id="sec-celeb" style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent", marginTop: invite?.styleOverrides?.['sec-celeb']?.posY || 0 }}>
           {(invite.timeline || []).map((event, index) => {
             return (
               <section
@@ -932,7 +952,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                   <button
                     type="button"
                     onClick={() => window.open(event.mapUrl || invite.mapUrl || "https://maps.google.com", "_blank")}
-                    style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
                   >
                     <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
                   </button>
@@ -942,35 +962,35 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           })}
         </div>
 
-               {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
-        <Section
+                {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
+        <Section invite={invite}
           startY={2790}
           height={430}
           delayOffset={animDelayMs}
-          data-section-index={5}
+          data-section-index={5} data-section-id="sec-dress"
           layerNames={["dress-code-illustration.png"]}
         >
           {({ textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Dress Code" })}
-              {textLayer({ left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u062a\u0628\u062f\u064a\u0644\u0629" })}
-              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", reveal: true, delay: 300, children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
+              {textLayer({ id: "dress-title", left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Dress Code" })}
+              {textLayer({ id: "dress-title-ar", left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u062a\u0628\u062f\u064a\u0644\u0629" })}
+              {textLayer({ id: "dress-text", left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", reveal: true, delay: 300, children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
             </>
           )}
         </Section>
 
         {/* Canvas 7: Programme (shifted, startY=3220, height=430) */}
-        <Section
+        <Section invite={invite}
           startY={3220}
           height={430}
           delayOffset={animDelayMs}
-          data-section-index={6}
+          data-section-index={6} data-section-id="sec-prog"
           layerNames={[]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              {textLayer({ left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Programme" })}
-              {textLayer({ left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c" })}
+              {textLayer({ id: "prog-title", left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Programme" })}
+              {textLayer({ id: "prog-title-ar", left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c" })}
 
               {/* Programme Steps mapping */}
               {(invite.programmeSteps || [
@@ -1072,10 +1092,10 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
         {/* Canvas 8: RSVP (shifted, startY=3650, height=700) */}
         {invite.rsvpEnabled !== false ? (
-          <Section startY={3650} height={535} delayOffset={animDelayMs} data-section-index={7}>
+          <Section invite={invite} startY={3650} height={535} delayOffset={animDelayMs} data-section-index={7} data-section-id="sec-rsvp">
             {({ absoluteBox, textLayer }) => (
               <>
-                {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "RSVP" })}
+                {textLayer({ id: "rsvp-title", left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "RSVP" })}
                 {textLayer({ left: 45, top: 3685, width: 340, fontSize: 12, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", reveal: true, delay: 150, children: rsvpDeadline.inline })}
 
                 <div className="reveal" style={{ ...absoluteBox({ left: 40, top: 3750, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px", transitionDelay: `${300 + animDelayMs}ms` }}>
@@ -1095,7 +1115,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                     <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Number of guests</label>
                     <input type="number" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
                   </div>
-                  <button style={{ backgroundColor: "#008CDE", color: "#fff", padding: "16px", borderRadius: "8px", border: "none", marginTop: "15px", fontFamily: "Cormorant Infant, serif", fontSize: "18px", cursor: "pointer", width: "100%" }}>
+                  <button style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#008CDE", color: "#fff", padding: "16px", borderRadius: "8px", border: "none", marginTop: "15px", fontFamily: "Cormorant Infant, serif", fontSize: "18px", cursor: "pointer", width: "100%" }}>
                     Send Confirmation
                   </button>
                 </div>
@@ -1105,19 +1125,19 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         ) : null}
 
         {/* Canvas 9: Footer */}
-        <Section
+        <Section invite={invite}
           startY={4200}
           height={240}
           delayOffset={animDelayMs}
-          data-section-index={8}
+          data-section-index={8} data-section-id="sec-footer"
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4200, width: 35, height: 52 }), border: `1.5px solid ${blue}`, borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                <div style={{ position: "absolute", top: "12%", left: "31%", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                <div style={{ position: "absolute", bottom: "12%", left: "49%", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+              <div className="reveal" style={{ ...absoluteBox({ id: 'footer-initials', left: 194, top: 4200, width: 35, height: 52 }), border: `1.5px solid ${invite?.styleOverrides?.['footer-initials']?.color || blue}`, borderRadius: `${invite?.styleOverrides?.['footer-initials']?.radius ?? 16}px`, zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
+                <div style={{ position: "absolute", top: `calc(12% + ${invite?.styleOverrides?.['footer-initial-1']?.posY || 0}px)`, left: `calc(31% + ${invite?.styleOverrides?.['footer-initial-1']?.posX || 0}px)`, color: invite?.styleOverrides?.['footer-initials']?.color || blue, fontFamily: (invite?.styleOverrides?.['footer-initials']?.fontFamily && invite?.styleOverrides?.['footer-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['footer-initials']?.fontFamily : "Antic Didone, serif", fontSize: `clamp(${(invite?.styleOverrides?.['footer-initials']?.fontSize || 21) * 0.78}px, ${((invite?.styleOverrides?.['footer-initials']?.fontSize || 21) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['footer-initials']?.fontSize || 21}px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                <div style={{ position: "absolute", bottom: `calc(12% - ${invite?.styleOverrides?.['footer-initial-2']?.posY || 0}px)`, left: `calc(49% + ${invite?.styleOverrides?.['footer-initial-2']?.posX || 0}px)`, color: invite?.styleOverrides?.['footer-initials']?.color || blue, fontFamily: (invite?.styleOverrides?.['footer-initials']?.fontFamily && invite?.styleOverrides?.['footer-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['footer-initials']?.fontFamily : "Antic Didone, serif", fontSize: `clamp(${(invite?.styleOverrides?.['footer-initials']?.fontSize || 21) * 0.78}px, ${((invite?.styleOverrides?.['footer-initials']?.fontSize || 21) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['footer-initials']?.fontSize || 21}px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
               </div>
-              {textLayer({ left: 85, top: 4285, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "\u0627\u0646 \u0634\u0627\u0621 \u0627\u0644\u0644\u0647 \u0644\u064a\u0644\u062a\u0643\u0645 \u0632\u064a\u0646\u0629" })}
+              {textLayer({ id: "footer-arabic", left: 85, top: 4285, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "\u0627\u0646 \u0634\u0627\u0621 \u0627\u0644\u0644\u0647 \u0644\u064a\u0644\u062a\u0643\u0645 \u0632\u064a\u0646\u0629" })}
               <img
                 className="celebration-decoration"
                 src={exportImageSources["closing-small-ornament.png"]}
@@ -1134,7 +1154,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Particle Emitter */}
-        <ParticleEmitter type="petals" active={invite.enablePetals !== false} />
+        <ParticleEmitter type="petals" active={invite.enablePetals !== false} count={invite.petalsIntensity || 30} />
 
         {/* Audio Player */}
         <AudioPlayer src={invite.musicUrl} active={Boolean(invite.musicUrl) && isIntroDone} />
