@@ -199,7 +199,7 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
    return (
      <div className="space-y-2">
        {elements.map(el => (
-         <div key={el.id} className="border border-gray-200 bg-white shadow-sm overflow-hidden">
+         <div key={el.id} id={`editor-el-${el.id}`} className="border border-gray-200 bg-white shadow-sm overflow-hidden">
             <button 
               type="button" 
               onClick={(e) => {
@@ -1079,6 +1079,16 @@ function DigitalInviteEditorPage() {
                payload: { invite } 
              }, "*");
           }
+       }
+       if (e.data && e.data.type === 'ELEMENT_CLICKED') {
+          console.log("RECEIVED ELEMENT CLICK:", e.data.payload);
+          const { sectionId, elementId } = e.data.payload;
+          setExpandedSection(sectionId);
+          setExpandedElement(elementId);
+          setTimeout(() => {
+             const el = document.getElementById(`editor-el-${elementId}`);
+             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
        }
     };
     window.addEventListener("message", handleMessage);
