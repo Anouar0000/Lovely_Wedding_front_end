@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
-  FiCalendar,
   FiCheck,
   FiClock,
   FiCopy,
@@ -34,6 +33,7 @@ import {
   getDefaultDigitalInviteTemplate,
   getDigitalInviteTemplate,
 } from "../templates/digitalInviteTemplates";
+import SidiBouSaidInvitePage from "./SidiBouSaidInvitePage";
 
 const defaultTemplate = getDefaultDigitalInviteTemplate();
 
@@ -45,20 +45,6 @@ function slugify(value) {
     .replace(/&/g, " et ")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-}
-
-function formatDateLabel(dateValue) {
-  if (!dateValue) {
-    return "";
-  }
-
-  const [year, month, day] = dateValue.split("-");
-
-  if (!year || !month || !day) {
-    return "";
-  }
-
-  return `${day}.${month}.${year}`;
 }
 
 function Field({ label, children }) {
@@ -102,6 +88,209 @@ function EditorSection({ icon, title, children, action }) {
   );
 }
 
+function ElementStyleControls({ elementId, invite, onChange }) {
+  const overrides = invite.styleOverrides || {};
+  const elStyle = overrides[elementId] || {};
+
+  const updateProp = (prop, value) => {
+    const updated = {
+      ...overrides,
+      [elementId]: {
+        ...elStyle,
+        [prop]: value,
+      },
+    };
+    onChange(updated);
+  };
+
+  const handleReset = () => {
+    const updated = { ...overrides };
+    delete updated[elementId];
+    onChange(updated);
+  };
+
+  const isSection = elementId.startsWith("section-");
+  const isImage = elementId.includes("photo") || elementId.includes("initials");
+
+  const getElementLabel = (id) => {
+    if (id.startsWith("section-")) return `Section ${id.replace("section-", "")}`;
+    return id
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  };
+
+  const fontFamilies = [
+    { value: "Cormorant Infant, serif", label: "Cormorant Infant (Default Serif)" },
+    { value: "Gulzar, serif", label: "Gulzar (Elegant Arabic)" },
+    { value: "Antic Didone, serif", label: "Antic Didone" },
+    { value: "Urbanist, sans-serif", label: "Urbanist (Modern Sans)" },
+    { value: "Playfair Display, serif", label: "Playfair Display" },
+    { value: "Lora, serif", label: "Lora" },
+    { value: "Amiri Quran, serif", label: "Amiri Quran" },
+  ];
+
+  return (
+    <div className="space-y-6 bg-white p-4 border rounded-md shadow-sm">
+      <div className="flex items-center justify-between border-b pb-4">
+        <div>
+          <h3 className="font-semibold text-base text-gray-800">{getElementLabel(elementId)}</h3>
+          <span className="text-xs text-gray-400 font-mono">ID: {elementId}</span>
+        </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="text-xs text-red-600 hover:underline font-semibold"
+        >
+          Reset
+        </button>
+      </div>
+
+      {isSection ? (
+        <div className="space-y-4">
+          <Field label="Section Background Color">
+            <input
+              type="color"
+              value={elStyle.color || "#fffcf9"}
+              onChange={(e) => updateProp("color", e.target.value)}
+              className="w-full h-12 cursor-pointer border rounded-md"
+            />
+          </Field>
+
+          <Field label={`Padding Top: ${elStyle.paddingTop ?? 48}px`}>
+            <input
+              type="range"
+              min="0"
+              max="150"
+              value={elStyle.paddingTop ?? 48}
+              onChange={(e) => updateProp("paddingTop", parseInt(e.target.value))}
+              className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+            />
+          </Field>
+
+          <Field label={`Padding Bottom: ${elStyle.paddingBottom ?? 48}px`}>
+            <input
+              type="range"
+              min="0"
+              max="150"
+              value={elStyle.paddingBottom ?? 48}
+              onChange={(e) => updateProp("paddingBottom", parseInt(e.target.value))}
+              className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+            />
+          </Field>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {!isImage && (
+            <>
+              <Field label="Text Color">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={elStyle.color || "#0093d8"}
+                    onChange={(e) => updateProp("color", e.target.value)}
+                    className="h-10 w-10 cursor-pointer border rounded-md"
+                  />
+                  <input
+                    type="text"
+                    value={elStyle.color || "#0093d8"}
+                    onChange={(e) => updateProp("color", e.target.value)}
+                    className="border rounded-md px-3 py-2 text-sm w-32 outline-none font-mono"
+                  />
+                </div>
+              </Field>
+
+              <Field label={`Font Size: ${elStyle.fontSize ?? 16}px`}>
+                <input
+                  type="range"
+                  min="10"
+                  max="72"
+                  value={elStyle.fontSize ?? 16}
+                  onChange={(e) => updateProp("fontSize", parseInt(e.target.value))}
+                  className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                />
+              </Field>
+
+              <Field label="Font Style / Family">
+                <select
+                  value={elStyle.fontFamily || "Cormorant Infant, serif"}
+                  onChange={(e) => updateProp("fontFamily", e.target.value)}
+                  className="w-full rounded-md border border-[#D8DDE2] p-2 text-sm outline-none bg-white"
+                >
+                  {fontFamilies.map((font) => (
+                    <option key={font.value} value={font.value}>
+                      {font.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </>
+          )}
+
+          {isImage && (
+            <>
+              <Field label={`Width: ${elStyle.width ?? 225}px`}>
+                <input
+                  type="range"
+                  min="20"
+                  max="430"
+                  value={elStyle.width ?? 225}
+                  onChange={(e) => updateProp("width", parseInt(e.target.value))}
+                  className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                />
+              </Field>
+
+              <Field label={`Height: ${elStyle.height ?? 172}px`}>
+                <input
+                  type="range"
+                  min="20"
+                  max="430"
+                  value={elStyle.height ?? 172}
+                  onChange={(e) => updateProp("height", parseInt(e.target.value))}
+                  className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                />
+              </Field>
+            </>
+          )}
+
+          <Field label={`Rotation: ${elStyle.rotation ?? 0}°`}>
+            <input
+              type="range"
+              min="-180"
+              max="180"
+              value={elStyle.rotation ?? 0}
+              onChange={(e) => updateProp("rotation", parseInt(e.target.value))}
+              className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+            />
+          </Field>
+
+          <Field label={`Margin Top: ${elStyle.marginTop ?? 0}px`}>
+            <input
+              type="range"
+              min="-100"
+              max="150"
+              value={elStyle.marginTop ?? 0}
+              onChange={(e) => updateProp("marginTop", parseInt(e.target.value))}
+              className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+            />
+          </Field>
+
+          <Field label={`Margin Bottom: ${elStyle.marginBottom ?? 0}px`}>
+            <input
+              type="range"
+              min="-100"
+              max="150"
+              value={elStyle.marginBottom ?? 0}
+              onChange={(e) => updateProp("marginBottom", parseInt(e.target.value))}
+              className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+            />
+          </Field>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DigitalInviteEditorPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -118,6 +307,9 @@ function DigitalInviteEditorPage() {
   const [openEvents, setOpenEvents] = useState({});
   const [uploadingMusic, setUploadingMusic] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  
+  const [activeTab, setActiveTab] = useState("content");
+  const [selectedElementId, setSelectedElementId] = useState(null);
 
   const toggleEvent = (index) => {
     setOpenEvents((prev) => ({
@@ -539,26 +731,26 @@ function DigitalInviteEditorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414]">
-      <header className="border-b border-[#D8DDE2] bg-white px-5 py-4">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414] overflow-hidden flex flex-col h-screen">
+      <header className="border-b border-[#D8DDE2] bg-white px-6 py-4 shrink-0">
+        <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex flex-wrap gap-2 text-sm font-semibold">
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600"
+                className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-1.5 text-gray-600 hover:bg-gray-50"
               >
                 <FiArrowLeft aria-hidden="true" /> Retour
               </button>
-              <Link to="/dashboard" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
+              <Link to="/dashboard" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-1.5 text-gray-600 hover:bg-gray-50">
                 <FiFileText aria-hidden="true" /> Dashboard
               </Link>
-              <Link to="/" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
+              <Link to="/" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-1.5 text-gray-600 hover:bg-gray-50">
                 <FiHome aria-hidden="true" /> Site
               </Link>
             </div>
-            <h1 className="mt-2 font-abhaya text-4xl leading-none">
+            <h1 className="mt-2 font-abhaya text-3xl leading-none">
               {isEditing ? "Modifier l'invitation" : "Nouvelle invitation"}
             </h1>
           </div>
@@ -569,7 +761,7 @@ function DigitalInviteEditorPage() {
                 to={dashboardPreviewPath}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold hover:bg-gray-50"
               >
                 <FiExternalLink aria-hidden="true" /> Apercu
               </Link>
@@ -579,7 +771,7 @@ function DigitalInviteEditorPage() {
                 type="button"
                 onClick={handlePublish}
                 disabled={saving}
-                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:text-gray-400"
               >
                 <FiUploadCloud aria-hidden="true" /> Publier
               </button>
@@ -588,7 +780,7 @@ function DigitalInviteEditorPage() {
               type="submit"
               form="digital-invite-form"
               disabled={saving}
-              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
             </button>
@@ -599,540 +791,569 @@ function DigitalInviteEditorPage() {
       <form
         id="digital-invite-form"
         onSubmit={handleSubmit}
-        className="mx-auto grid w-full max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[1fr_360px]"
+        className="flex flex-col lg:flex-row h-[calc(100vh-73px)] w-full overflow-hidden"
       >
-        <section className="space-y-6">
-          {error ? (
-            <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
-              {error}
-            </div>
-          ) : null}
+        {/* Left Column: Form Settings and Tabs */}
+        <div className="w-full lg:w-[42%] h-full overflow-y-auto border-r border-[#D8DDE2] bg-[#F6F7F5] flex flex-col">
+          {/* Tabs header */}
+          <div className="flex border-b border-[#D8DDE2] bg-white sticky top-0 z-20 shrink-0">
+            <button
+              type="button"
+              onClick={() => setActiveTab("content")}
+              className={`flex-1 py-4 text-xs font-semibold tracking-wider uppercase border-b-2 text-center focus:outline-none transition-all ${
+                activeTab === "content"
+                  ? "border-black text-black bg-gray-50/50"
+                  : "border-transparent text-gray-500 hover:text-black"
+              }`}
+            >
+              Content
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("style")}
+              className={`flex-1 py-4 text-xs font-semibold tracking-wider uppercase border-b-2 text-center focus:outline-none transition-all ${
+                activeTab === "style"
+                  ? "border-black text-black bg-gray-50/50"
+                  : "border-transparent text-gray-500 hover:text-black"
+              }`}
+            >
+              Style Editor {selectedElementId ? `(${selectedElementId.replace("section-", "Section ")})` : ""}
+            </button>
+          </div>
 
-          <EditorSection icon={FiSettings} title="Informations">
-            <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Prénom de la mariée (Épouse)">
-                <TextInput
-                  value={wife}
-                  onChange={(event) => {
-                    const newWife = event.target.value;
-                    updateInvite("coupleNames", newWife || husband ? `${newWife} & ${husband}` : "");
-                  }}
-                  onBlur={handleCoupleBlur}
-                  placeholder="Sarah"
-                  required
-                />
-              </Field>
-              <Field label="Prénom du marié (Époux)">
-                <TextInput
-                  value={husband}
-                  onChange={(event) => {
-                    const newHusband = event.target.value;
-                    updateInvite("coupleNames", wife || newHusband ? `${wife} & ${newHusband}` : "");
-                  }}
-                  onBlur={handleCoupleBlur}
-                  placeholder="Hedi"
-                  required
-                />
-              </Field>
-              <Field label="Slug du lien">
-                <TextInput
-                  value={invite.slug}
-                  onChange={(event) => updateInvite("slug", slugify(event.target.value))}
-                  placeholder="bilel-dorra"
-                  required
-                />
-              </Field>
-              <Field label="Template">
-                <select
-                  value={invite.template}
-                  onChange={(event) => handleTemplateChange(event.target.value)}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                >
-                  {digitalInviteTemplates.map((template) => (
-                    <option key={template.id} value={template.id}>
-                      {template.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <div className="flex items-end">
-                <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
-                  invite.status === "published"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                    : "border-amber-200 bg-amber-50 text-amber-800"
-                }`}>
-                  {invite.status === "published" ? "Publiee" : "Brouillon"}
-                </div>
+          <div className="p-6 space-y-6 flex-1 overflow-y-auto">
+            {error ? (
+              <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
+                {error}
               </div>
-            </div>
-          </EditorSection>
+            ) : null}
 
-          <EditorSection icon={FiEdit2} title="Contenu">
-            <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Titre">
-                <TextInput
-                  value={invite.title}
-                  onChange={(event) => updateInvite("title", event.target.value)}
-                  required
-                />
-              </Field>
-              <Field label="RSVP">
-                <select
-                  value={invite.rsvpEnabled ? "yes" : "no"}
-                  onChange={(event) => updateInvite("rsvpEnabled", event.target.value === "yes")}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                >
-                  <option value="yes">Actif</option>
-                  <option value="no">Masque</option>
-                </select>
-              </Field>
-              {isSidiBouSaid && (
-                <Field label="Ouverture Vidéo">
-                  <select
-                    value={invite.videoIntroEnabled !== false ? "yes" : "no"}
-                    onChange={(event) => updateInvite("videoIntroEnabled", event.target.value === "yes")}
-                    className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                  >
-                    <option value="yes">Actif</option>
-                    <option value="no">Masque</option>
-                  </select>
-                </Field>
-              )}
-            </div>
-          </EditorSection>
-
-          {!isSidiBouSaid && (
-            <EditorSection icon={FiMapPin} title="Date et lieu">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Date">
-                  <TextInput
-                    type="date"
-                    value={invite.eventDate}
-                    onChange={(event) => handleDateChange(event.target.value)}
-                    required
-                  />
-                </Field>
-                <Field label="Heure">
-                  <TextInput
-                    value={invite.time}
-                    onChange={(event) => updateInvite("time", event.target.value)}
-                    placeholder="19H00"
-                  />
-                </Field>
-                <Field label="Ville">
-                  <TextInput
-                    value={invite.city}
-                    onChange={(event) => updateInvite("city", event.target.value)}
-                  />
-                </Field>
-                <Field label="Nom du lieu">
-                  <TextInput
-                    value={invite.venueName}
-                    onChange={(event) => updateInvite("venueName", event.target.value)}
-                  />
-                </Field>
-                <Field label="Label lieu">
-                  <TextInput
-                    value={invite.locationLabel}
-                    onChange={(event) => updateInvite("locationLabel", event.target.value)}
-                    placeholder="MALAGA"
-                  />
-                </Field>
-                <div className="md:col-span-2">
-                  <Field label="Lien Google Maps">
-                    <TextInput
-                      value={invite.mapUrl}
-                      onChange={(event) => updateInvite("mapUrl", event.target.value)}
-                      placeholder="https://maps.google.com"
-                    />
-                  </Field>
-                </div>
-              </div>
-            </EditorSection>
-          )}
-
-          <EditorSection
-            icon={FiClock}
-            title={isSidiBouSaid ? "Celebrations" : "Timeline"}
-            action={
-              <button
-                type="button"
-                onClick={addTimelineItem}
-                disabled={invite.timeline.length >= maxTimelineItems}
-                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
-              >
-                <FiPlus aria-hidden="true" /> {isSidiBouSaid ? "Add Event" : "Ajouter une etape"}
-              </button>
-            }
-          >
-            <div className="space-y-6">
-              {invite.timeline.map((item, index) => (
-                <div 
-                  key={index} 
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, index)}
-                  onDragEnd={handleDragEnd}
-                  className={`border border-[#E4E8EA] bg-[#FCFCFB] p-6 space-y-4 relative transition-all ${
-                    draggedIndex === index ? "opacity-40 border-dashed border-blue-500 scale-[0.98]" : ""
-                  }`}
-                >
-                  <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                    <div 
-                      className="flex items-center gap-2 cursor-pointer select-none grow"
-                      onClick={() => toggleEvent(index)}
-                    >
-                      <FiMove className="text-gray-400 cursor-move shrink-0 hover:text-black animate-pulse" title="Faites glisser pour réorganiser" />
-                      {openEvents[index] ? (
-                        <FiChevronDown className="text-gray-500 shrink-0" />
-                      ) : (
-                        <FiChevronRight className="text-gray-500 shrink-0" />
-                      )}
-                      <h3 className="font-semibold text-lg">
-                        {isSidiBouSaid
-                          ? `Event ${index + 1} : ${item.title || "New Event"}`
-                          : `Etape ${index + 1} : ${
-                              fixedTimelineSteps.find(
-                                (s) => s.image === getTimelineStepKey(item, index)
-                              )?.title || "Nouvelle étape"
-                            }`}
-                      </h3>
+            {activeTab === "content" ? (
+              <div className="space-y-6">
+                {/* Public Link Info Card */}
+                <div className="border border-[#D8DDE2] bg-white p-5 shadow-sm">
+                  <h3 className="inline-flex items-center gap-2 font-abhaya text-2xl">
+                    <FiLink aria-hidden="true" /> Lien public
+                  </h3>
+                  <p className="mt-2 break-all text-sm text-gray-600">
+                    {publicUrl || "Le lien apparaitra apres avoir ajoute un slug."}
+                  </p>
+                  {publicPath && (
+                    <div className="mt-4 flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-4 py-2.5 text-sm font-semibold rounded bg-white hover:bg-gray-50"
+                      >
+                        {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+                        {copied ? "Lien copie" : "Copier le lien"}
+                      </button>
                     </div>
+                  )}
+                </div>
+
+                <EditorSection icon={FiSettings} title="Informations">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="Prénom de la mariée (Épouse)">
+                      <TextInput
+                        value={wife}
+                        onChange={(event) => {
+                          const newWife = event.target.value;
+                          updateInvite("coupleNames", newWife || husband ? `${newWife} & ${husband}` : "");
+                        }}
+                        onBlur={handleCoupleBlur}
+                        placeholder="Sarah"
+                        required
+                      />
+                    </Field>
+                    <Field label="Prénom du marié (Époux)">
+                      <TextInput
+                        value={husband}
+                        onChange={(event) => {
+                          const newHusband = event.target.value;
+                          updateInvite("coupleNames", wife || newHusband ? `${wife} & ${newHusband}` : "");
+                        }}
+                        onBlur={handleCoupleBlur}
+                        placeholder="Hedi"
+                        required
+                      />
+                    </Field>
+                    <Field label="Slug du lien">
+                      <TextInput
+                        value={invite.slug}
+                        onChange={(event) => updateInvite("slug", slugify(event.target.value))}
+                        placeholder="bilel-dorra"
+                        required
+                      />
+                    </Field>
+                    <Field label="Template">
+                      <select
+                        value={invite.template}
+                        onChange={(event) => handleTemplateChange(event.target.value)}
+                        className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                      >
+                        {digitalInviteTemplates.map((template) => (
+                          <option key={template.id} value={template.id}>
+                            {template.label}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                    <div className="flex items-end">
+                      <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
+                        invite.status === "published"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                          : "border-amber-200 bg-amber-50 text-amber-800"
+                      }`}>
+                        {invite.status === "published" ? "Publiee" : "Brouillon"}
+                      </div>
+                    </div>
+                  </div>
+                </EditorSection>
+
+                <EditorSection icon={FiEdit2} title="Contenu">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="Titre">
+                      <TextInput
+                        value={invite.title}
+                        onChange={(event) => updateInvite("title", event.target.value)}
+                        required
+                      />
+                    </Field>
+                    <Field label="RSVP">
+                      <select
+                        value={invite.rsvpEnabled ? "yes" : "no"}
+                        onChange={(event) => updateInvite("rsvpEnabled", event.target.value === "yes")}
+                        className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                      >
+                        <option value="yes">Actif</option>
+                        <option value="no">Masque</option>
+                      </select>
+                    </Field>
+                    {isSidiBouSaid && (
+                      <Field label="Ouverture Vidéo">
+                        <select
+                          value={invite.videoIntroEnabled !== false ? "yes" : "no"}
+                          onChange={(event) => updateInvite("videoIntroEnabled", event.target.value === "yes")}
+                          className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                        >
+                          <option value="yes">Actif</option>
+                          <option value="no">Masque</option>
+                        </select>
+                      </Field>
+                    )}
+                  </div>
+                </EditorSection>
+
+                {!isSidiBouSaid && (
+                  <EditorSection icon={FiMapPin} title="Date et lieu">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label="Date">
+                        <TextInput
+                          type="date"
+                          value={invite.eventDate}
+                          onChange={(event) => handleDateChange(event.target.value)}
+                          required
+                        />
+                      </Field>
+                      <Field label="Heure">
+                        <TextInput
+                          value={invite.time}
+                          onChange={(event) => updateInvite("time", event.target.value)}
+                          placeholder="19H00"
+                        />
+                      </Field>
+                      <Field label="Ville">
+                        <TextInput
+                          value={invite.city}
+                          onChange={(event) => updateInvite("city", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="Nom du lieu">
+                        <TextInput
+                          value={invite.venueName}
+                          onChange={(event) => updateInvite("venueName", event.target.value)}
+                        />
+                      </Field>
+                      <Field label="Label lieu">
+                        <TextInput
+                          value={invite.locationLabel}
+                          onChange={(event) => updateInvite("locationLabel", event.target.value)}
+                          placeholder="MALAGA"
+                        />
+                      </Field>
+                      <div className="md:col-span-2">
+                        <Field label="Lien Google Maps">
+                          <TextInput
+                            value={invite.mapUrl}
+                            onChange={(event) => updateInvite("mapUrl", event.target.value)}
+                            placeholder="https://maps.google.com"
+                          />
+                        </Field>
+                      </div>
+                    </div>
+                  </EditorSection>
+                )}
+
+                <EditorSection
+                  icon={FiClock}
+                  title={isSidiBouSaid ? "Celebrations" : "Timeline"}
+                  action={
                     <button
                       type="button"
-                      onClick={() => removeTimelineItem(index)}
-                      disabled={invite.timeline.length <= 1}
-                      title="Supprimer"
-                      aria-label={`Supprimer l'etape ${index + 1}`}
-                      className="inline-flex h-8 w-8 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
+                      onClick={addTimelineItem}
+                      disabled={invite.timeline.length >= maxTimelineItems}
+                      className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
                     >
-                      <FiTrash2 aria-hidden="true" className="w-4 h-4" />
+                      <FiPlus aria-hidden="true" /> {isSidiBouSaid ? "Add Event" : "Ajouter une etape"}
                     </button>
-                  </div>
+                  }
+                >
+                  <div className="space-y-6">
+                    {invite.timeline.map((item, index) => (
+                      <div 
+                        key={index} 
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={handleDragEnd}
+                        className={`border border-[#E4E8EA] bg-[#FCFCFB] p-6 space-y-4 relative transition-all ${
+                          draggedIndex === index ? "opacity-40 border-dashed border-blue-500 scale-[0.98]" : ""
+                        }`}
+                      >
+                        <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                          <div 
+                            className="flex items-center gap-2 cursor-pointer select-none grow"
+                            onClick={() => toggleEvent(index)}
+                          >
+                            <FiMove className="text-gray-400 cursor-move shrink-0 hover:text-black animate-pulse" title="Faites glisser pour réorganiser" />
+                            {openEvents[index] ? (
+                              <FiChevronDown className="text-gray-500 shrink-0" />
+                            ) : (
+                              <FiChevronRight className="text-gray-500 shrink-0" />
+                            )}
+                            <h3 className="font-semibold text-lg">
+                              {isSidiBouSaid
+                                ? `Event ${index + 1} : ${item.title || "New Event"}`
+                                : `Etape ${index + 1} : ${
+                                    fixedTimelineSteps.find(
+                                      (s) => s.image === getTimelineStepKey(item, index)
+                                    )?.title || "Nouvelle étape"
+                                  }`}
+                            </h3>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeTimelineItem(index)}
+                            disabled={invite.timeline.length <= 1}
+                            title="Supprimer"
+                            aria-label={`Supprimer l'etape ${index + 1}`}
+                            className="inline-flex h-8 w-8 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
+                          >
+                            <FiTrash2 aria-hidden="true" className="w-4 h-4" />
+                          </button>
+                        </div>
 
-                  {openEvents[index] && (
-                    isSidiBouSaid ? (
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <Field label="Title (English)">
-                          <TextInput
-                            value={item.title || ""}
-                            onChange={(event) => updateTimelineItem(index, "title", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Title (Arabic)">
-                          <TextInput
-                            value={item.titleAr || ""}
-                            onChange={(event) => updateTimelineItem(index, "titleAr", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Date (YYYY-MM-DD)">
-                          <TextInput
-                            type="date"
-                            value={item.date || ""}
-                            onChange={(event) => updateTimelineItem(index, "date", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Time">
-                          <TextInput
-                            value={item.time || ""}
-                            onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Venue Name">
-                          <TextInput
-                            value={item.venue || ""}
-                            onChange={(event) => updateTimelineItem(index, "venue", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="City">
-                          <TextInput
-                            value={item.city || ""}
-                            onChange={(event) => updateTimelineItem(index, "city", event.target.value)}
-                          />
-                        </Field>
-                        <div className="md:col-span-2">
-                          <Field label="Google Maps URL">
-                            <TextInput
-                              value={item.mapUrl || ""}
-                              onChange={(event) => updateTimelineItem(index, "mapUrl", event.target.value)}
-                              placeholder="https://maps.google.com"
+                        {openEvents[index] && (
+                          isSidiBouSaid ? (
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <Field label="Title (English)">
+                                <TextInput
+                                  value={item.title || ""}
+                                  onChange={(event) => updateTimelineItem(index, "title", event.target.value)}
+                                />
+                              </Field>
+                              <Field label="Title (Arabic)">
+                                <TextInput
+                                  value={item.titleAr || ""}
+                                  onChange={(event) => updateTimelineItem(index, "titleAr", event.target.value)}
+                                />
+                              </Field>
+                              <Field label="Date (YYYY-MM-DD)">
+                                <TextInput
+                                  type="date"
+                                  value={item.date || ""}
+                                  onChange={(event) => updateTimelineItem(index, "date", event.target.value)}
+                                />
+                              </Field>
+                              <Field label="Time">
+                                <TextInput
+                                  value={item.time || ""}
+                                  onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
+                                />
+                              </Field>
+                              <Field label="Venue Name">
+                                <TextInput
+                                  value={item.venue || ""}
+                                  onChange={(event) => updateTimelineItem(index, "venue", event.target.value)}
+                                />
+                              </Field>
+                              <Field label="City">
+                                <TextInput
+                                  value={item.city || ""}
+                                  onChange={(event) => updateTimelineItem(index, "city", event.target.value)}
+                                />
+                              </Field>
+                              <div className="md:col-span-2">
+                                <Field label="Google Maps URL">
+                                  <TextInput
+                                    value={item.mapUrl || ""}
+                                    onChange={(event) => updateTimelineItem(index, "mapUrl", event.target.value)}
+                                    placeholder="https://maps.google.com"
+                                  />
+                                </Field>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="grid gap-3 md:grid-cols-[1fr_0.7fr] md:items-end">
+                              <Field label="Etape">
+                                <select
+                                  value={getTimelineStepKey(item, index)}
+                                  onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
+                                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                                >
+                                  {fixedTimelineSteps.map((step) => (
+                                    <option key={step.image} value={step.image}>
+                                      {step.title}
+                                    </option>
+                                  ))}
+                                </select>
+                              </Field>
+                              <Field label="Heure">
+                                <TextInput
+                                  value={item.time}
+                                  onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
+                                />
+                              </Field>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </EditorSection>
+
+                {isSidiBouSaid && (
+                  <>
+                    <EditorSection icon={FiFileText} title="Dress Code">
+                      <Field label="Description Dress Code">
+                        <TextInput
+                          value={invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
+                          onChange={(event) => updateInvite("dressCodeText", event.target.value)}
+                          placeholder="We Request Attending The Outeya\nWith A Traditional Attire"
+                        />
+                      </Field>
+                    </EditorSection>
+
+                    <EditorSection icon={FiClock} title="Programme">
+                      <div className="grid gap-4">
+                        {(invite.programmeSteps || [
+                          { time: "17:00", name: "Sdek" },
+                          { time: "18:00", name: "Reception" },
+                          { time: "20:00", name: "Dinner" },
+                          { time: "00:00", name: "Dance" },
+                        ]).map((step, index) => (
+                          <div key={index} className="border p-4 rounded-md grid gap-3 md:grid-cols-2 bg-gray-50/50">
+                            <span className="font-semibold text-sm md:col-span-2 text-gray-700">Etape {index + 1}</span>
+                            <Field label="Heure">
+                              <TextInput
+                                  value={step.time}
+                                  onChange={(event) => {
+                                    const steps = [...(invite.programmeSteps || [
+                                      { time: "17:00", name: "Sdek" },
+                                      { time: "18:00", name: "Reception" },
+                                      { time: "20:00", name: "Dinner" },
+                                      { time: "00:00", name: "Dance" },
+                                    ])];
+                                    steps[index] = { ...steps[index], time: event.target.value };
+                                    updateInvite("programmeSteps", steps);
+                                  }}
+                              />
+                            </Field>
+                            <Field label="Nom">
+                              <TextInput
+                                  value={step.name}
+                                  onChange={(event) => {
+                                    const steps = [...(invite.programmeSteps || [
+                                      { time: "17:00", name: "Sdek" },
+                                      { time: "18:00", name: "Reception" },
+                                      { time: "20:00", name: "Dinner" },
+                                      { time: "00:00", name: "Dance" },
+                                    ])];
+                                    steps[index] = { ...steps[index], name: event.target.value };
+                                    updateInvite("programmeSteps", steps);
+                                  }}
+                              />
+                            </Field>
+                          </div>
+                        ))}
+                      </div>
+                    </EditorSection>
+
+                    <EditorSection icon={FiSettings} title="Animations & Musique">
+                      <div className="grid gap-4">
+                        <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
+                          <span className="font-semibold text-sm text-gray-700">Musique de fond (MP3)</span>
+                          <div className="flex flex-col gap-2">
+                            <input
+                              type="file"
+                              accept="audio/mp3,audio/*"
+                              onChange={handleMusicUpload}
+                              disabled={uploadingMusic}
+                              className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
                             />
+                            {uploadingMusic && <span className="text-sm text-amber-600 animate-pulse">Importation de la musique en cours...</span>}
+                            {invite.musicUrl && (
+                              <div className="flex items-center gap-4 mt-1">
+                                <audio src={invite.musicUrl} controls className="h-8 max-w-full" />
+                                <button
+                                  type="button"
+                                  onClick={() => updateInvite("musicUrl", "")}
+                                  className="text-sm font-semibold text-red-600 hover:underline"
+                                >
+                                  Supprimer
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
+                          <span className="font-semibold text-sm text-gray-700">Vidéo d'ouverture (MP4)</span>
+                          <div className="flex flex-col gap-2">
+                            <input
+                              type="file"
+                              accept="video/mp4,video/*"
+                              onChange={handleVideoUpload}
+                              disabled={uploadingVideo}
+                              className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
+                            />
+                            {uploadingVideo && <span className="text-sm text-amber-600 animate-pulse">Importation de la vidéo en cours...</span>}
+                            {invite.videoUrl && (
+                              <div className="flex items-center gap-4 mt-1">
+                                <video src={invite.videoUrl} controls className="h-20 rounded-md border" />
+                                <button
+                                  type="button"
+                                  onClick={() => updateInvite("videoUrl", "")}
+                                  className="text-sm font-semibold text-red-600 hover:underline"
+                                >
+                                  Supprimer
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
+                          <span className="font-semibold text-sm md:col-span-2 text-gray-700">Effets Visuels</span>
+                          <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
+                            <input
+                              type="checkbox"
+                              checked={invite.enablePetals !== false}
+                              onChange={(e) => updateInvite("enablePetals", e.target.checked)}
+                              className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                            />
+                            Activer la chute de pétales
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
+                            <input
+                              type="checkbox"
+                              checked={invite.enableBirds !== false}
+                              onChange={(e) => updateInvite("enableBirds", e.target.checked)}
+                              className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                            />
+                            Activer le vol des oiseaux
+                          </label>
+                        </div>
+
+                        <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
+                          <span className="font-semibold text-sm md:col-span-2 text-gray-700">Apparition du texte</span>
+                          <Field label="Type d'apparition">
+                            <select
+                              value={invite.animationType || "fade-up"}
+                              onChange={(e) => updateInvite("animationType", e.target.value)}
+                              className="w-full rounded-md border border-[#D8DDE2] p-2 text-sm outline-none focus:border-black bg-white"
+                            >
+                              <option value="fade-up">Glissement vers le haut (Fade Up)</option>
+                              <option value="fade">Fondu simple (Fade)</option>
+                              <option value="zoom">Zoom (Zoom In)</option>
+                            </select>
+                          </Field>
+                          <Field label={`Durée (vitesse) : ${(invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2)}s`}>
+                            <div className="flex items-center gap-3 mt-2">
+                              <input
+                                type="range"
+                                min="0.5"
+                                max="4.0"
+                                step="0.1"
+                                value={invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2}
+                                onChange={(e) => updateInvite("animationSpeed", parseFloat(e.target.value))}
+                                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                              />
+                            </div>
+                          </Field>
+                          <Field label={`Délai initial (lag) : ${(invite.animationDelay !== undefined ? invite.animationDelay : 0.2)}s`}>
+                            <div className="flex items-center gap-3 mt-2">
+                              <input
+                                type="range"
+                                min="0.0"
+                                max="3.0"
+                                step="0.1"
+                                value={invite.animationDelay !== undefined ? invite.animationDelay : 0.2}
+                                onChange={(e) => updateInvite("animationDelay", parseFloat(e.target.value))}
+                                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                              />
+                            </div>
                           </Field>
                         </div>
                       </div>
-                    ) : (
-                      <div className="grid gap-3 md:grid-cols-[1fr_0.7fr] md:items-end">
-                        <Field label="Etape">
-                          <select
-                            value={getTimelineStepKey(item, index)}
-                            onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
-                            className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                          >
-                            {fixedTimelineSteps.map((step) => (
-                              <option key={step.image} value={step.image}>
-                                {step.title}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                        <Field label="Heure">
-                          <TextInput
-                            value={item.time}
-                            onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
-                          />
-                        </Field>
-                      </div>
-                    )
-                  )}
-                </div>
-              ))}
-            </div>
-          </EditorSection>
-
-          {isSidiBouSaid && (
-            <>
-              <EditorSection icon={FiFileText} title="Dress Code">
-                <Field label="Description Dress Code">
-                  <TextInput
-                    value={invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
-                    onChange={(event) => updateInvite("dressCodeText", event.target.value)}
-                    placeholder="We Request Attending The Outeya\nWith A Traditional Attire"
+                    </EditorSection>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {selectedElementId ? (
+                  <ElementStyleControls
+                    elementId={selectedElementId}
+                    invite={invite}
+                    onChange={(updatedOverrides) => updateInvite("styleOverrides", updatedOverrides)}
                   />
-                </Field>
-              </EditorSection>
-
-              <EditorSection icon={FiClock} title="Programme">
-                <div className="grid gap-4">
-                  {(invite.programmeSteps || [
-                    { time: "17:00", name: "Sdek" },
-                    { time: "18:00", name: "Reception" },
-                    { time: "20:00", name: "Dinner" },
-                    { time: "00:00", name: "Dance" },
-                  ]).map((step, index) => (
-                    <div key={index} className="border p-4 rounded-md grid gap-3 md:grid-cols-2 bg-gray-50/50">
-                      <span className="font-semibold text-sm md:col-span-2 text-gray-700">Etape {index + 1}</span>
-                      <Field label="Heure">
-                        <TextInput
-                          value={step.time}
-                          onChange={(event) => {
-                            const steps = [...(invite.programmeSteps || [
-                              { time: "17:00", name: "Sdek" },
-                              { time: "18:00", name: "Reception" },
-                              { time: "20:00", name: "Dinner" },
-                              { time: "00:00", name: "Dance" },
-                            ])];
-                            steps[index] = { ...steps[index], time: event.target.value };
-                            updateInvite("programmeSteps", steps);
-                          }}
-                        />
-                      </Field>
-                      <Field label="Nom">
-                        <TextInput
-                          value={step.name}
-                          onChange={(event) => {
-                            const steps = [...(invite.programmeSteps || [
-                              { time: "17:00", name: "Sdek" },
-                              { time: "18:00", name: "Reception" },
-                              { time: "20:00", name: "Dinner" },
-                              { time: "00:00", name: "Dance" },
-                            ])];
-                            steps[index] = { ...steps[index], name: event.target.value };
-                            updateInvite("programmeSteps", steps);
-                          }}
-                        />
-                      </Field>
-                    </div>
-                  ))}
-                </div>
-              </EditorSection>
-
-              <EditorSection icon={FiSettings} title="Animations & Musique">
-                <div className="grid gap-4">
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
-                    <span className="font-semibold text-sm text-gray-700">Musique de fond (MP3)</span>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="file"
-                        accept="audio/mp3,audio/*"
-                        onChange={handleMusicUpload}
-                        disabled={uploadingMusic}
-                        className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
-                      />
-                      {uploadingMusic && <span className="text-sm text-amber-600 animate-pulse">Importation de la musique en cours...</span>}
-                      {invite.musicUrl && (
-                        <div className="flex items-center gap-4 mt-1">
-                          <audio src={invite.musicUrl} controls className="h-8 max-w-full" />
-                          <button
-                            type="button"
-                            onClick={() => updateInvite("musicUrl", "")}
-                            className="text-sm font-semibold text-red-600 hover:underline"
-                          >
-                            Supprimer
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[350px] text-center text-gray-500 px-6 border border-dashed border-gray-300 rounded-lg bg-white">
+                    <p className="font-semibold text-base text-gray-700">No element selected</p>
+                    <p className="text-xs text-gray-400 mt-2 max-w-[280px]">
+                      Click directly on any text block, card, or section inside the live preview on the right to edit its colors, size, rotation, or paddings.
+                    </p>
                   </div>
-
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
-                    <span className="font-semibold text-sm text-gray-700">Vidéo d'ouverture (MP4)</span>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="file"
-                        accept="video/mp4,video/*"
-                        onChange={handleVideoUpload}
-                        disabled={uploadingVideo}
-                        className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
-                      />
-                      {uploadingVideo && <span className="text-sm text-amber-600 animate-pulse">Importation de la vidéo en cours...</span>}
-                      {invite.videoUrl && (
-                        <div className="flex items-center gap-4 mt-1">
-                          <video src={invite.videoUrl} controls className="h-20 rounded-md border" />
-                          <button
-                            type="button"
-                            onClick={() => updateInvite("videoUrl", "")}
-                            className="text-sm font-semibold text-red-600 hover:underline"
-                          >
-                            Supprimer
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
-                    <span className="font-semibold text-sm md:col-span-2 text-gray-700">Effets Visuels</span>
-                    <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
-                      <input
-                        type="checkbox"
-                        checked={invite.enablePetals !== false}
-                        onChange={(e) => updateInvite("enablePetals", e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                      />
-                      Activer la chute de pétales
-                    </label>
-                    <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
-                      <input
-                        type="checkbox"
-                        checked={invite.enableBirds !== false}
-                        onChange={(e) => updateInvite("enableBirds", e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                      />
-                      Activer le vol des oiseaux
-                    </label>
-                  </div>
-
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
-                    <span className="font-semibold text-sm md:col-span-2 text-gray-700">Apparition du texte</span>
-                    <Field label="Type d'apparition">
-                      <select
-                        value={invite.animationType || "fade-up"}
-                        onChange={(e) => updateInvite("animationType", e.target.value)}
-                        className="w-full rounded-md border border-[#D8DDE2] p-2 text-sm outline-none focus:border-black bg-white"
-                      >
-                        <option value="fade-up">Glissement vers le haut (Fade Up)</option>
-                        <option value="fade">Fondu simple (Fade)</option>
-                        <option value="zoom">Zoom (Zoom In)</option>
-                      </select>
-                    </Field>
-                    <Field label={`Durée (vitesse) : ${(invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2)}s`}>
-                      <div className="flex items-center gap-3 mt-2">
-                        <input
-                          type="range"
-                          min="0.5"
-                          max="4.0"
-                          step="0.1"
-                          value={invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2}
-                          onChange={(e) => updateInvite("animationSpeed", parseFloat(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
-                        />
-                      </div>
-                    </Field>
-                    <Field label={`Délai initial (lag) : ${(invite.animationDelay !== undefined ? invite.animationDelay : 0.2)}s`}>
-                      <div className="flex items-center gap-3 mt-2">
-                        <input
-                          type="range"
-                          min="0.0"
-                          max="3.0"
-                          step="0.1"
-                          value={invite.animationDelay !== undefined ? invite.animationDelay : 0.2}
-                          onChange={(e) => updateInvite("animationDelay", parseFloat(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
-                        />
-                      </div>
-                    </Field>
-                  </div>
-                </div>
-              </EditorSection>
-            </>
-          )}
-        </section>
-
-        <aside className="h-fit border border-[#D8DDE2] bg-white p-5 shadow-sm lg:sticky lg:top-6">
-          <h2 className="font-abhaya text-3xl">{selectedTemplate.label}</h2>
-          <p className="mt-2 text-sm leading-6 text-gray-600">{selectedTemplate.description}</p>
-          <div className="my-5 h-px bg-[#E4E8EA]" />
-          <h3 className="inline-flex items-center gap-2 font-abhaya text-2xl">
-            <FiLink aria-hidden="true" /> Lien public
-          </h3>
-          <p className="mt-3 break-all text-sm text-gray-600">
-            {publicUrl || "Le lien apparaitra apres avoir ajoute un slug."}
-          </p>
-          <div className="mt-5 grid gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
-            >
-              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
-            </button>
-            {publicPath ? (
-              <>
-                <Link
-                  to={dashboardPreviewPath}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
-                >
-                  <FiExternalLink aria-hidden="true" /> Ouvrir l'apercu
-                </Link>
-                {invite.status !== "published" ? (
-                  <button
-                    type="button"
-                    onClick={handlePublish}
-                    disabled={saving}
-                    className="inline-flex items-center justify-center gap-2 border border-emerald-600 px-5 py-3 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
-                  >
-                    <FiUploadCloud aria-hidden="true" /> Publier
-                  </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-5 py-3 text-sm font-semibold"
-                >
-                  {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
-                  {copied ? "Lien copie" : "Copier le lien"}
-                </button>
-              </>
-            ) : null}
-            <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-gray-600">
-              <div className="border border-[#E4E8EA] p-3">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
-                  <FiCalendar aria-hidden="true" /> Date
-                </div>
-                {formatDateLabel(invite.eventDate) || "Non definie"}
+                )}
               </div>
-              <div className="border border-[#E4E8EA] p-3">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
-                  <FiMapPin aria-hidden="true" /> Lieu
-                </div>
-                {invite.city || "Non defini"}
-              </div>
-            </div>
+            )}
           </div>
-        </aside>
+        </div>
+
+        {/* Right Column: Live Mobile Preview */}
+        <div className="hidden lg:flex lg:w-[58%] h-full bg-[#E5ECEE] items-center justify-center p-8 relative overflow-hidden select-none">
+          <div className="w-[390px] h-[780px] bg-white shadow-2xl rounded-[40px] border-[12px] border-gray-900 overflow-x-hidden overflow-y-auto relative scrollbar-none">
+            {/* Live Render */}
+            {isSidiBouSaid ? (
+              <SidiBouSaidInvitePage
+                invite={invite}
+                editable={true}
+                selectedElementId={selectedElementId}
+                onSelectElement={(elId) => {
+                  setSelectedElementId(elId);
+                  setActiveTab("style");
+                }}
+              />
+            ) : (
+              <div className="p-8 text-center text-gray-500 font-semibold h-full flex items-center justify-center bg-white">
+                Visual editor only supported for Sidi Bou Said template.
+              </div>
+            )}
+          </div>
+        </div>
       </form>
     </main>
   );

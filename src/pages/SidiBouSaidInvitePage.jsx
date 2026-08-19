@@ -182,83 +182,6 @@ const eventDecorations = [
   { name: "celebration-small-floral.png", left: 343, top: 323, width: 57, height: 61 }
 ];
 
-// A localized section wrapper that provides scoped absolute coordinates for child graphics
-const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, className = "", children, ...rest }) => {
-  const [secHeight, setSecHeight] = useState(window.innerHeight);
-
-  useEffect(() => {
-    if (!isFullScreenHeight) return;
-    const handleResize = () => setSecHeight(window.innerHeight);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isFullScreenHeight]);
-
-  const absoluteBox = ({ left, top, width: w, height: h }) => ({
-    position: "absolute",
-    left: pct(left, pageWidth),
-    top: pct(top - startY, height),
-    width: pct(w, pageWidth),
-    height: h ? pct(h, height) : undefined,
-  });
-
-  const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
-
-  const sectionStyle = isFullScreenHeight 
-    ? { position: "relative", width: "100%", minHeight: `${secHeight}px`, backgroundColor: bg }
-    : { position: "relative", width: "100%", backgroundColor: bg };
-
-  return (
-    <section 
-      style={sectionStyle}
-      className={`flex flex-col items-center w-full ${className}`}
-      {...rest}
-    >
-       {sectionLayers.map((layer, idx) => (
-          <img 
-            key={layer.name} 
-            src={exportImageSources[layer.srcName || layer.name]} 
-            className="reveal absolute pointer-events-none"
-            style={{ 
-              ...absoluteBox(layer), 
-              transform: layer.transform, 
-              zIndex: layer.zIndex || 1,
-              transitionDelay: `${idx * 100 + delayOffset}ms`
-            }} 
-            alt="" 
-            draggable="false" 
-          />
-       ))}
-       {typeof children === "function" ? children({ absoluteBox }) : children}
-    </section>
-  );
-};
-
-const Text = ({ children, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, fontStyle = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, reveal = false, delay = 0, delayOffset = 200, className = "", ...rest }) => {
-  return (
-    <div 
-      className={`${reveal ? "reveal" : ""} ${className}`}
-      style={{
-        color,
-        fontFamily: family,
-        fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
-        fontStyle,
-        fontWeight: weight,
-        lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
-        textAlign: align,
-        letterSpacing,
-        wordSpacing,
-        textTransform: transform,
-        whiteSpace: "pre-wrap",
-        zIndex,
-        transitionDelay: reveal ? `${delay + delayOffset}ms` : undefined,
-        ...rest.style
-      }}
-      {...rest}
-    >
-      {children}
-    </div>
-  );
-};
 
 const WavyCircle = ({ percent }) => {
   if (percent === 0) {
@@ -308,13 +231,132 @@ const WavyCircle = ({ percent }) => {
   );
 };
 
-function SidiBouSaidInvitePage({ invite = defaultInvite }) {
+function SidiBouSaidInvitePage({ invite = defaultInvite, editable = false, selectedElementId = null, onSelectElement = null }) {
   const [isIntroFading, setIsIntroFading] = useState(false);
   const [isIntroDone, setIsIntroDone] = useState(invite.videoIntroEnabled === false);
   const [doorFrame, setDoorFrame] = useState(0);
   const doorTimerRef = useRef(null);
   const [isProgrammeFinished, setIsProgrammeFinished] = useState(false);
   const programmeTimerRef = useRef(null);
+
+  const getOverrideStyle = (elementId) => {
+    if (!invite.styleOverrides || !invite.styleOverrides[elementId]) return {};
+    const o = invite.styleOverrides[elementId];
+    const s = {};
+    if (o.color) s.color = o.color;
+    if (o.fontSize) s.fontSize = `${o.fontSize}px`;
+    if (o.fontFamily) s.fontFamily = o.fontFamily;
+    if (o.rotation !== undefined) s.transform = `rotate(${o.rotation}deg)`;
+    if (o.marginTop !== undefined) s.marginTop = `${o.marginTop}px`;
+    if (o.marginBottom !== undefined) s.marginBottom = `${o.marginBottom}px`;
+    if (o.paddingTop !== undefined) s.paddingTop = `${o.paddingTop}px`;
+    if (o.paddingBottom !== undefined) s.paddingBottom = `${o.paddingBottom}px`;
+    if (o.width !== undefined) s.width = `${o.width}px`;
+    if (o.height !== undefined) s.height = `${o.height}px`;
+    return s;
+  };
+
+  const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, className = "", children, ...rest }) => {
+    const [secHeight, setSecHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+      if (!isFullScreenHeight) return;
+      const handleResize = () => setSecHeight(window.innerHeight);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, [isFullScreenHeight]);
+
+    const absoluteBox = ({ left, top, width: w, height: h }) => ({
+      position: "absolute",
+      left: pct(left, pageWidth),
+      top: pct(top - startY, height),
+      width: pct(w, pageWidth),
+      height: h ? pct(h, height) : undefined,
+    });
+
+    const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
+    
+    const sectionIndex = rest["data-section-index"];
+    const sectionId = `section-${sectionIndex}`;
+    const isSelected = selectedElementId === sectionId;
+    const sectionOverride = getOverrideStyle(sectionId);
+
+    const sectionStyle = isFullScreenHeight 
+      ? { position: "relative", width: "100%", minHeight: `${secHeight}px`, backgroundColor: bg, ...sectionOverride }
+      : { position: "relative", width: "100%", backgroundColor: bg, ...sectionOverride };
+
+    const handleSectionClick = (e) => {
+      if (editable && onSelectElement && sectionIndex !== undefined) {
+        e.stopPropagation();
+        onSelectElement(sectionId);
+      }
+    };
+
+    return (
+      <section 
+        style={sectionStyle}
+        onClick={handleSectionClick}
+        className={`flex flex-col items-center w-full ${className} ${editable ? "cursor-pointer hover:outline hover:outline-dashed hover:outline-blue-300 hover:outline-1" : ""} ${isSelected ? "outline outline-2 outline-blue-500 outline-offset-[-2px] z-20" : ""}`}
+        {...rest}
+      >
+         {sectionLayers.map((layer, idx) => (
+            <img 
+              key={layer.name} 
+              src={exportImageSources[layer.srcName || layer.name]} 
+              className="reveal absolute pointer-events-none"
+              style={{ 
+                ...absoluteBox(layer), 
+                transform: layer.transform, 
+                zIndex: layer.zIndex || 1,
+                transitionDelay: `${idx * 100 + delayOffset}ms`
+              }} 
+              alt="" 
+              draggable="false" 
+            />
+         ))}
+         {typeof children === "function" ? children({ absoluteBox }) : children}
+      </section>
+    );
+  };
+
+  const Text = ({ children, elementId, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, fontStyle = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, reveal = false, delay = 0, delayOffset = 200, className = "", ...rest }) => {
+    const isSelected = selectedElementId === elementId;
+    const override = getOverrideStyle(elementId);
+
+    const handleClick = (e) => {
+      if (editable && onSelectElement && elementId) {
+        e.stopPropagation();
+        onSelectElement(elementId);
+      }
+    };
+
+    return (
+      <div 
+        onClick={handleClick}
+        className={`${reveal ? "reveal" : ""} ${className} ${editable && elementId ? "cursor-pointer hover:outline hover:outline-dashed hover:outline-blue-400 hover:outline-2" : ""} ${isSelected ? "outline outline-2 outline-blue-600 outline-offset-2 z-[99]" : ""}`}
+        style={{
+          color,
+          fontFamily: family,
+          fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+          fontStyle,
+          fontWeight: weight,
+          lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
+          textAlign: align,
+          letterSpacing,
+          wordSpacing,
+          textTransform: transform,
+          whiteSpace: "pre-wrap",
+          zIndex,
+          transitionDelay: reveal ? `${delay + delayOffset}ms` : undefined,
+          ...override,
+          ...rest.style
+        }}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  };
 
   const animType = invite.animationType || "fade-up";
   const animSpeed = invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2;
@@ -549,20 +591,20 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
             {/* Names & Subtitle */}
             <div className="flex flex-col items-center w-full px-6">
-              <Text color="#fff" fontSize={38} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>
+              <Text elementId="hero-names" color="#fff" fontSize={38} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>
                 {`${names.firstName}\n${names.secondName}`}
               </Text>
-              <Text color="#fff" fontSize={16} family="Cormorant, serif" letterSpacing="0.15em" reveal={true} delay={200} delayOffset={animDelayMs} className="mt-4 lowercase first-letter:uppercase">
+              <Text elementId="hero-subtitle" color="#fff" fontSize={16} family="Cormorant, serif" letterSpacing="0.15em" reveal={true} delay={200} delayOffset={animDelayMs} className="mt-4 lowercase first-letter:uppercase">
                 {"Welcome To Our\nMediterranean Abode"}
               </Text>
 
               {/* Date Info */}
               <div className="flex items-center justify-center gap-6 mt-6 w-full">
-                <Text color="#fff" fontSize={17} fontStyle="italic" transform="uppercase" letterSpacing="0.15em" reveal={true} delay={400} delayOffset={animDelayMs}>
+                <Text elementId="hero-date-month" color="#fff" fontSize={17} fontStyle="italic" transform="uppercase" letterSpacing="0.15em" reveal={true} delay={400} delayOffset={animDelayMs}>
                   {dateParts.month}
                 </Text>
                 <div className="w-[1px] h-[20px] bg-white opacity-40"></div>
-                <Text color="#fff" fontSize={17} fontStyle="italic" transform="uppercase" letterSpacing="0.15em" reveal={true} delay={400} delayOffset={animDelayMs}>
+                <Text elementId="hero-date-year" color="#fff" fontSize={17} fontStyle="italic" transform="uppercase" letterSpacing="0.15em" reveal={true} delay={400} delayOffset={animDelayMs}>
                   {dateParts.year}
                 </Text>
               </div>
@@ -634,8 +676,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         >
           {({ absoluteBox }) => (
             <>
-              <Text fontSize={22} family="Antic Didone, serif" reveal={true} delayOffset={animDelayMs}>Our Story</Text>
-              <Text fontSize={20} family="Gulzar, serif" reveal={true} delay={250} delayOffset={animDelayMs} className="mt-2">حكايتنا</Text>
+              <Text elementId="our-story-title" fontSize={22} family="Antic Didone, serif" reveal={true} delayOffset={animDelayMs}>Our Story</Text>
+              <Text elementId="our-story-title-ar" fontSize={20} family="Gulzar, serif" reveal={true} delay={250} delayOffset={animDelayMs} className="mt-2">حكايتنا</Text>
 
               {/* Collage Container wrapper of fixed aspect ratio 430/340 */}
               <div className="relative w-full max-w-[430px] aspect-[430/340] mt-6 overflow-hidden">
@@ -675,8 +717,19 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
                 {/* Couple Photo */}
                 <img
-                  className="reveal absolute"
-                  style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225, height: 172 }), zIndex: 2, transitionDelay: `${550 + animDelayMs}ms` }}
+                  onClick={(e) => {
+                    if (editable && onSelectElement) {
+                      e.stopPropagation();
+                      onSelectElement("our-story-photo");
+                    }
+                  }}
+                  className={`reveal absolute ${editable ? "cursor-pointer hover:outline hover:outline-dashed hover:outline-blue-400 hover:outline-2" : ""} ${selectedElementId === "our-story-photo" ? "outline outline-2 outline-blue-600 outline-offset-2 z-10" : ""}`}
+                  style={{ 
+                    ...absoluteBox({ left: 185, top: 800 + 110, width: 225, height: 172 }), 
+                    zIndex: 2, 
+                    transitionDelay: `${550 + animDelayMs}ms`,
+                    ...getOverrideStyle("our-story-photo")
+                  }}
                   alt="Couple"
                   src={invite.couplePhoto || vectorBg}
                   draggable="false"
@@ -709,7 +762,13 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
                 {/* Rotated text on torn paper */}
                 <div
-                  className="reveal"
+                  onClick={(e) => {
+                    if (editable && onSelectElement) {
+                      e.stopPropagation();
+                      onSelectElement("our-story-quote");
+                    }
+                  }}
+                  className={`reveal ${editable ? "cursor-pointer hover:outline hover:outline-dashed hover:outline-blue-400 hover:outline-2" : ""} ${selectedElementId === "our-story-quote" ? "outline outline-2 outline-blue-600 outline-offset-2 z-10" : ""}`}
                   style={{
                     ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }),
                     transform: "rotate(-10deg)",
@@ -720,7 +779,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                     letterSpacing: "1.2px",
                     lineHeight: "18px",
                     zIndex: 3,
-                    transitionDelay: `${2200 + animDelayMs}ms`
+                    transitionDelay: `${2200 + animDelayMs}ms`,
+                    ...getOverrideStyle("our-story-quote")
                   }}
                 >
                   Our Happy Ever After
@@ -744,8 +804,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           className="py-12"
         >
           <div className="relative z-10 flex flex-col items-center w-full max-w-[390px]">
-            <Text color="#fff" fontSize={22} letterSpacing="0.15em" reveal={true} delayOffset={animDelayMs}>Countdown</Text>
-            <Text color="#fff" fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">العد التنازلي</Text>
+            <Text elementId="countdown-title" color="#fff" fontSize={22} letterSpacing="0.15em" reveal={true} delayOffset={animDelayMs}>Countdown</Text>
+            <Text elementId="countdown-title-ar" color="#fff" fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">العد التنازلي</Text>
 
             <div className="flex gap-6 justify-center items-center mt-8 w-full">
               {[
@@ -767,9 +827,9 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 3 & 4: Celebrations (Combined into stack of dynamic height cards) */}
-        <Section bg="transparent" className="py-12 px-6">
-          <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>The Celebrations</Text>
-          <Text fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">الليالي</Text>
+        <Section bg="transparent" className="py-12 px-6" data-section-index={3}>
+          <Text elementId="celebrations-title" fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>The Celebrations</Text>
+          <Text elementId="celebrations-title-ar" fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">الليالي</Text>
 
           <div className="flex flex-col gap-8 w-full max-w-[430px] mt-8">
             {(invite.timeline || []).map((event, index) => (
@@ -855,9 +915,9 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           className="py-12 min-h-[360px] justify-center"
         >
           <div className="relative z-10 flex flex-col items-center text-center px-6">
-            <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>Dress Code</Text>
-            <Text fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">التبديلة</Text>
-            <Text fontSize={14} family="Cormorant, serif" color="#49606B" reveal={true} delay={300} delayOffset={animDelayMs} className="mt-8 max-w-[280px] leading-relaxed">
+            <Text elementId="dress-code-title" fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>Dress Code</Text>
+            <Text elementId="dress-code-title-ar" fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">التبديلة</Text>
+            <Text elementId="dress-code-text" fontSize={14} family="Cormorant, serif" color="#49606B" reveal={true} delay={300} delayOffset={animDelayMs} className="mt-8 max-w-[280px] leading-relaxed">
               {invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
             </Text>
           </div>
@@ -874,8 +934,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         >
           {({ absoluteBox }) => (
             <>
-              <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>Programme</Text>
-              <Text fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">البرنامج</Text>
+              <Text elementId="programme-title" fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>Programme</Text>
+              <Text elementId="programme-title-ar" fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">البرنامج</Text>
 
               {/* Steps Area container */}
               <div className="relative w-full max-w-[430px] aspect-[430/260] mt-8 overflow-hidden">
@@ -979,9 +1039,9 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
         {/* Canvas 8: RSVP (grows dynamically) */}
         {invite.rsvpEnabled !== false ? (
-          <Section bg="transparent" className="py-12 px-6">
-            <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>RSVP</Text>
-            <Text fontSize={12} color="rgb(73, 96, 107)" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">{rsvpDeadline.inline}</Text>
+          <Section bg="transparent" className="py-12 px-6" data-section-index={7}>
+            <Text elementId="rsvp-title" fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>RSVP</Text>
+            <Text elementId="rsvp-deadline" fontSize={12} color="rgb(73, 96, 107)" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">{rsvpDeadline.inline}</Text>
 
             <div 
               className="reveal flex flex-col gap-4 w-full max-w-[360px] bg-white border border-gray-100 rounded-xl p-6 mt-8 shadow-sm"
@@ -1011,14 +1071,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         ) : null}
 
         {/* Canvas 9: Footer */}
-        <Section bg="transparent" className="py-12 pb-16">
+        <Section bg="transparent" className="py-12 pb-16" data-section-index={8}>
           {/* Initials Oval */}
           <div className="reveal border-[1.5px] border-blue rounded-[16px] w-[35px] h-[52px] relative flex flex-col items-center justify-center" style={{ transitionDelay: `${animDelayMs}ms` }}>
             <div className="text-blue font-antic text-[17px] leading-none mb-0.5">{names.firstName.charAt(0).toUpperCase()}</div>
             <div className="text-blue font-antic text-[17px] leading-none mt-0.5">{names.secondName.charAt(0).toUpperCase()}</div>
           </div>
 
-          <Text fontSize={26} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-6">
+          <Text elementId="footer-text" fontSize={26} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-6">
             ان شاء الله ليلتكم زينة
           </Text>
 
