@@ -95,7 +95,7 @@ const getNames = (coupleNames) => {
 };
 
 const getCountdownParts = (dateString) => {
-  const eventDate = dateString ? new Date(`${dateString}T00:00:00`) : new Date("2026-07-20T00:00:00");
+  const eventDate = dateString ? new Date(`${dateString}T00:00:00`) : new Date("2027-07-20T00:00:00");
   const diff = Math.max(0, eventDate.getTime() - Date.now());
   const totalHours = Math.floor(diff / (1000 * 60 * 60));
   return {
@@ -118,15 +118,15 @@ const numberToOrdinalWord = (num) => {
 const getRsvpDeadline = (eventDateString) => {
   if (!eventDateString) {
     return {
-      stacked: "The Favour Of A Reply Is\nKindly Requested By The\nFifteenth Of June, 2026",
-      inline: "The Favour Of A Reply Is Kindly\nRequested By The Fifteenth Of June, 2026"
+      stacked: "The Favour Of A Reply Is\nKindly Requested By The\nFifteenth Of June, 2027",
+      inline: "The Favour Of A Reply Is Kindly\nRequested By The Fifteenth Of June, 2027"
     };
   }
   const date = new Date(`${eventDateString}T00:00:00`);
   if (Number.isNaN(date.getTime())) {
     return {
-      stacked: "The Favour Of A Reply Is\nKindly Requested By The\nFifteenth Of June, 2026",
-      inline: "The Favour Of A Reply Is Kindly\nRequested By The Fifteenth Of June, 2026"
+      stacked: "The Favour Of A Reply Is\nKindly Requested By The\nFifteenth Of June, 2027",
+      inline: "The Favour Of A Reply Is Kindly\nRequested By The Fifteenth Of June, 2027"
     };
   }
 
@@ -356,7 +356,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
   const dateParts = useMemo(() => formatDateParts(effectiveEventDate), [effectiveEventDate]);
   const revealDateParts = useMemo(() => {
-    const dateObj = effectiveEventDate ? new Date(`${effectiveEventDate}T00:00:00`) : new Date("2026-07-20T00:00:00");
+    const dateObj = effectiveEventDate ? new Date(`${effectiveEventDate}T00:00:00`) : new Date("2027-07-20T00:00:00");
     return {
       day: String(dateObj.getDate()).padStart(2, "0"),
       monthNum: String(dateObj.getMonth() + 1).padStart(2, "0"),
@@ -365,7 +365,16 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
   }, [effectiveEventDate]);
   const rsvpDeadline = useMemo(() => getRsvpDeadline(effectiveEventDate), [effectiveEventDate]);
   const names = useMemo(() => getNames(invite.coupleNames), [invite.coupleNames]);
-  const countdown = useMemo(() => getCountdownParts(effectiveEventDate), [effectiveEventDate]);
+  const [countdown, setCountdown] = useState(() => getCountdownParts(effectiveEventDate));
+
+  useEffect(() => {
+    setCountdown(getCountdownParts(effectiveEventDate));
+    const countdownTimer = window.setInterval(() => {
+      setCountdown(getCountdownParts(effectiveEventDate));
+    }, 60000);
+
+    return () => window.clearInterval(countdownTimer);
+  }, [effectiveEventDate]);
 
   useEffect(() => {
     if (isIntroDone) {
@@ -494,6 +503,20 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         .line-segment.revealed {
           transform: scaleY(1);
         }
+        .celebration-decoration {
+          pointer-events: none;
+          will-change: transform;
+          animation-name: celebration-swim;
+          animation-duration: 3.4s;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+          animation-direction: alternate;
+        }
+        @keyframes celebration-swim {
+          0% { transform: translate3d(0, 0, 0) rotate(-1deg); }
+          50% { transform: translate3d(0, -7px, 0) rotate(1.5deg); }
+          100% { transform: translate3d(0, 5px, 0) rotate(-0.5deg); }
+        }
       `}</style>
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col">
 
@@ -566,42 +589,51 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                   </>
                 )}
 
-                {/* Initials Mark */}
-                <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 130, width: 35, height: 72 }), border: "1.5px solid #fff", borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                  <div style={{ position: "absolute", top: "8px", left: "11px", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                  <div style={{ position: "absolute", bottom: "8px", left: "17px", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
-                </div>
-
-                {/* Names */}
-                {textLayer({ left: 85, top: 205, width: 260, fontSize: 46, lineHeight: 46, family: "Cormorant Infant, serif", color: "#fff", reveal: true, children: `${names.firstName}\n${names.secondName}` })}
-
-                {/* Subtitle */}
-                {textLayer({ left: 85, top: 334, width: 260, fontSize: 16, lineHeight: 16, family: "Cormorant, serif", color: "#fff", letterSpacing: "0.1em", transform: "capitalize", reveal: true, delay: 200, children: "Welcome To Our\nMediterranean Abode" })}
-
-                {/* Dates Left and Right */}
-                {textLayer({ left: 80, top: 257, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "right", reveal: true, delay: 400, children: dateParts.month })}
-                {textLayer({ left: 275, top: 257, width: 75, fontSize: 17, lineHeight: 18, family: "Cormorant Infant, serif", style: "italic", color: "#fff", transform: "uppercase", letterSpacing: "0.15em", align: "left", reveal: true, delay: 400, children: dateParts.year })}
-
-                {/* Scroll down button */}
-                <button
-                  type="button"
-                  onClick={handleScrollDown}
-                  className="reveal"
-                  style={{
-                    ...absoluteBox({ left: 164, top: 432, width: 100, height: 38 }),
-                    backgroundColor: "#fff",
-                    borderRadius: "100px",
-                    zIndex: 3,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "none",
-                    cursor: "pointer",
-                    transitionDelay: `${500 + animDelayMs}ms`
-                  }}
+                <div
+                  className="absolute left-0 top-1/2 w-full -translate-y-1/2"
+                  style={{ height: pct(340, 804), zIndex: 3 }}
                 >
-                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
-                </button>
+                  {/* Initials Mark */}
+                  <div className="reveal" style={{ position: "absolute", left: pct(194, pageWidth), top: pct(0, 340), width: pct(35, pageWidth), height: pct(72, 340), border: "1.5px solid #fff", borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
+                    <div style={{ position: "absolute", top: "12%", left: "31%", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                    <div style={{ position: "absolute", bottom: "12%", left: "49%", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+                  </div>
+
+                  {/* Names */}
+                  <div className="reveal" style={{ position: "absolute", left: pct(85, pageWidth), top: pct(75, 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(35.88px, ${(46 / pageWidth) * 100}vw, 46px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{`${names.firstName}\n${names.secondName}`}</div>
+
+                  {/* Subtitle */}
+                  <div className="reveal" style={{ position: "absolute", left: pct(85, pageWidth), top: pct(204, 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant, serif", fontSize: `clamp(12.48px, ${(16 / pageWidth) * 100}vw, 16px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", letterSpacing: "0.1em", textTransform: "capitalize", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${200 + animDelayMs}ms` }}>{"Welcome To Our\nMediterranean Abode"}</div>
+
+                  {/* Dates Left and Right */}
+                  <div className="reveal" style={{ position: "absolute", left: pct(80, pageWidth), top: pct(127, 340), width: pct(75, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(13.26px, ${(17 / pageWidth) * 100}vw, 17px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "right", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.month}</div>
+                  <div className="reveal" style={{ position: "absolute", left: pct(275, pageWidth), top: pct(127, 340), width: pct(75, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(13.26px, ${(17 / pageWidth) * 100}vw, 17px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "left", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.year}</div>
+
+                  {/* Scroll down button */}
+                  <button
+                    type="button"
+                    onClick={handleScrollDown}
+                    className="reveal"
+                    style={{
+                      position: "absolute",
+                      left: pct(164, pageWidth),
+                      top: pct(302, 340),
+                      width: pct(100, pageWidth),
+                      height: pct(38, 340),
+                      backgroundColor: "#fff",
+                      borderRadius: "100px",
+                      zIndex: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "none",
+                      cursor: "pointer",
+                      transitionDelay: `${500 + animDelayMs}ms`
+                    }}
+                  >
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
+                  </button>
+                </div>
 
               </>
             );
@@ -638,8 +670,13 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                     type="button"
                     onClick={handleDoorClick}
                     aria-label="Open reveal doors"
-                    className="absolute cursor-pointer bg-transparent p-0 focus:outline-none"
-                    style={{ ...absoluteBox({ left: 82, top: 610, width: 267, height: 170 }), zIndex: 6 }}
+                    className="reveal absolute cursor-pointer bg-transparent p-0 focus:outline-none"
+                    onTransitionEnd={(event) => {
+                      if (event.propertyName === "opacity") {
+                        handleDoorClick();
+                      }
+                    }}
+                    style={{ ...absoluteBox({ left: 82, top: 610, width: 267, height: 170 }), zIndex: 6, transitionDelay: `${900 + animDelayMs}ms` }}
                   >
                     {doorSlots.map((door) => (
                       <img
@@ -671,14 +708,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Tile Ornaments */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
                 alt=""
                 src={layer1}
                 draggable="false"
               />
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
                 alt=""
                 src={layer2}
                 draggable="false"
@@ -687,7 +724,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Watercolor bougainvillea */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2, transitionDelay: `${50 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2, transitionDelay: `${2200 + animDelayMs}ms` }}
                 alt="Watercolor bougainvillea"
                 src={watercolorBougainvillea}
                 draggable="false"
@@ -696,7 +733,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Decorative tape */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3, transitionDelay: `${100 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3, transitionDelay: `${950 + animDelayMs}ms` }}
                 alt="Decorative tape"
                 src={tape}
                 draggable="false"
@@ -705,7 +742,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Couple Photo */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2, transitionDelay: `${200 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2, transitionDelay: `${550 + animDelayMs}ms` }}
                 alt="Couple"
                 src={vectorBg}
                 draggable="false"
@@ -714,7 +751,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Torn paper */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2, transitionDelay: `${100 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2, transitionDelay: `${1750 + animDelayMs}ms` }}
                 alt="Torn paper"
                 src={tornPaper}
                 draggable="false"
@@ -723,14 +760,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               {/* Decorative stamp (layered for depth) */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), opacity: 0.9, zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), zIndex: 3, transitionDelay: `${1750 + animDelayMs}ms` }}
                 alt="Decorative stamp"
                 src={stamp2}
                 draggable="false"
               />
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4, transitionDelay: `${450 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4, transitionDelay: `${1750 + animDelayMs}ms` }}
                 alt="Decorative stamp"
                 src={stamp3}
                 draggable="false"
@@ -738,7 +775,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
               {/* Our Story titles */}
               {textLayer({ left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", reveal: true, children: "Our Story" })}
-              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u062d\u0643\u0627\u064a\u062a\u0646\u0627" })}
+              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, reveal: true, delay: 250, children: "\u062d\u0643\u0627\u064a\u062a\u0646\u0627" })}
 
               {/* Rotated text on torn paper */}
               <div
@@ -753,7 +790,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                   letterSpacing: "1.2px",
                   lineHeight: "18px",
                   zIndex: 3,
-                  transitionDelay: `${300 + animDelayMs}ms`
+                  transitionDelay: `${2200 + animDelayMs}ms`
                 }}
               >
                 Our Happy Ever After
@@ -837,6 +874,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                 {eventDecorations.map(dec => (
                   <img
                     key={dec.name}
+                    className="celebration-decoration"
                     src={exportImageSources[dec.name]}
                     style={{
                       position: "absolute",
@@ -844,7 +882,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                       top: pct(dec.top, 460),
                       width: pct(dec.width, pageWidth),
                       height: pct(dec.height, 460),
-                      zIndex: 2
+                      zIndex: 5,
+                      animationDelay: `${index * 0.35 + dec.left / 900}s`
                     }}
                     alt=""
                     draggable="false"
@@ -1033,7 +1072,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
 
         {/* Canvas 8: RSVP (shifted, startY=3650, height=700) */}
         {invite.rsvpEnabled !== false ? (
-          <Section startY={3650} height={700} delayOffset={animDelayMs} data-section-index={7}>
+          <Section startY={3650} height={535} delayOffset={animDelayMs} data-section-index={7}>
             {({ absoluteBox, textLayer }) => (
               <>
                 {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "RSVP" })}
@@ -1065,21 +1104,31 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           </Section>
         ) : null}
 
-        {/* Canvas 9: Footer (shifted, startY=4350, height=240) */}
+        {/* Canvas 9: Footer */}
         <Section
-          startY={4350}
+          startY={4200}
           height={240}
           delayOffset={animDelayMs}
           data-section-index={8}
-          layerNames={["closing-small-ornament.png"]}
         >
           {({ absoluteBox, textLayer }) => (
             <>
-              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4386, width: 42, height: 72 }), border: `1.5px solid ${blue}`, borderRadius: "12px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                <div style={{ position: "absolute", top: "8px", left: "11px", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                <div style={{ position: "absolute", bottom: "8px", left: "17px", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4200, width: 35, height: 52 }), border: `1.5px solid ${blue}`, borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
+                <div style={{ position: "absolute", top: "12%", left: "31%", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                <div style={{ position: "absolute", bottom: "12%", left: "49%", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
               </div>
-              {textLayer({ left: 85, top: 4476, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "\u0627\u0646 \u0634\u0627\u0621 \u0627\u0644\u0644\u0647 \u0644\u064a\u0644\u062a\u0643\u0645 \u0632\u064a\u0646\u0629" })}
+              {textLayer({ left: 85, top: 4285, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "\u0627\u0646 \u0634\u0627\u0621 \u0627\u0644\u0644\u0647 \u0644\u064a\u0644\u062a\u0643\u0645 \u0632\u064a\u0646\u0629" })}
+              <img
+                className="celebration-decoration"
+                src={exportImageSources["closing-small-ornament.png"]}
+                style={{
+                  ...absoluteBox({ left: 198, top: 4320, width: 29, height: 12 }),
+                  zIndex: 5,
+                  animationDelay: "0.2s"
+                }}
+                alt=""
+                draggable="false"
+              />
             </>
           )}
         </Section>
