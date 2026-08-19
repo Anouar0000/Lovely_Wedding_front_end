@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
@@ -11,6 +11,7 @@ import {
   FiFileText,
   FiHome,
   FiLink,
+  FiLayers,
   FiMapPin,
   FiPlus,
   FiSave,
@@ -100,6 +101,374 @@ function EditorSection({ icon, title, children, action }) {
       <div className="p-5">{children}</div>
     </div>
   );
+}
+
+
+
+
+const SECTION_LIST = [
+  { id: 'hero', label: 'Ouverture (Hero)' },
+  { id: 'reveal', label: 'Reveal (النهار جاء)' },
+  { id: 'our-story', label: 'Notre Histoire (حكايتنا)' },
+  { id: 'countdown', label: 'Compte à rebours' },
+  { id: 'celebrations', label: 'Célébrations' },
+  { id: 'dress-code', label: 'Dress Code' },
+  { id: 'programme', label: 'Programme' },
+  { id: 'rsvp', label: 'RSVP' },
+  { id: 'footer', label: 'Pied de page' },
+  { id: 'settings', label: 'Animations & Musique' }
+];
+
+const getElementsForSection = (sectionId) => {
+  switch (sectionId) {
+    case 'hero': return [
+      { id: 'hero-bg', label: 'Arrière-plan', controls: ['padding', 'upload'] },
+      { id: 'hero-initials', label: 'Initiales (Cercle)', controls: ['margin', 'radius', 'color', 'font', 'fontSize'] },
+      { id: 'hero-names', label: 'Noms du couple', controls: ['margin', 'font', 'fontSize', 'color'] },
+      { id: 'hero-date', label: 'Date', controls: ['margin', 'font', 'fontSize', 'color'] },
+      { id: 'hero-subtitle', label: 'Sous-titre', controls: ['margin', 'font', 'fontSize', 'color'] },
+      { id: 'hero-btn', label: 'Bouton Scroll', controls: ['padding', 'margin', 'radius', 'color', 'font', 'fontSize'] }
+    ];
+    case 'reveal': return [
+      { id: 'reveal-title', label: 'Titre (النهار جاء)', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
+      { id: 'reveal-doors', label: 'Portes (Images)', controls: ['padding', 'upload'] },
+      { id: 'reveal-date', label: 'Date cachée', controls: ['padding', 'margin', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'reveal-hands', label: 'Mains (Image bas)', controls: ['padding', 'upload'] }
+    ];
+    case 'our-story': return [
+      { id: 'story-title', label: 'Titre (حكايتنا)', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
+      { id: 'story-quote', label: 'Texte Rotatif', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'story-photo', label: 'Photo de Couple', controls: ['padding', 'upload'] },
+      { id: 'story-ornaments', label: 'Ornements (Fleurs, Timbres)', controls: ['padding', 'upload'] }
+    ];
+    case 'countdown': return [
+      { id: 'countdown-title', label: 'Titre Section', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
+      { id: 'countdown-date', label: 'Date et Chiffres', controls: ['margin', 'font', 'fontSize', 'color'] }
+    ];
+    case 'celebrations': return [
+      { id: 'celeb-venue', label: 'Nom du Lieu', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'celeb-list', label: 'Liste des Événements (Timeline)', controls: ['eventList'] }
+    ];
+    case 'dress-code': return [
+      { id: 'dress-title', label: 'Titre Dress Code', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
+      { id: 'dress-text', label: 'Texte Instructions', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'dress-illustration', label: 'Illustration', controls: ['padding', 'upload'] }
+    ];
+    case 'programme': return [
+      { id: 'prog-title', label: 'Titre Programme', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
+      { id: 'prog-steps', label: 'Étapes du Programme', controls: ['margin', 'font', 'fontSize', 'color'] }
+    ];
+    case 'rsvp': return [
+      { id: 'rsvp-title', label: 'Titre RSVP', controls: ['margin', 'font', 'fontSize', 'color', 'text', 'textSpacing'] },
+      { id: 'rsvp-form', label: 'Formulaire', controls: ['margin', 'font', 'fontSize', 'color'] }
+    ];
+    case 'footer': return [
+      { id: 'footer-arabic', label: 'Texte de clôture', controls: ['margin', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'footer-names', label: 'Noms', controls: ['margin', 'font', 'fontSize', 'color', 'text'] }
+    ];
+    case 'settings': return [
+      { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
+      { id: 'global-video', label: 'Vidéo d\'ouverture (MP4)', controls: ['videoUpload'] },
+      { id: 'visual-effects', label: 'Effets Visuels', controls: ['petalsToggle'] },
+      { id: 'text-animation', label: 'Apparition du texte', controls: ['animationType', 'animationDuration', 'animationDelay'] }
+    ];
+    default: return [];
+  }
+};
+
+function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, updateInvite, handleMusicUpload, uploadingMusic, handleVideoUpload, uploadingVideo, addTimelineItem, updateTimelineItem, removeTimelineItem, FiPlus, FiTrash2 }) {
+   const elements = getElementsForSection(sectionId);
+   
+   return (
+     <div className="space-y-2">
+       {elements.map(el => (
+         <div key={el.id} className="border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <button 
+              type="button" 
+              onClick={(e) => {
+                e.preventDefault();
+                setExpandedElement(expandedElement === el.id ? null : el.id);
+              }} 
+              className="w-full flex items-center justify-between px-3 py-3 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            >
+              {el.label}
+              <FiChevronDown className={`transition-transform ${expandedElement === el.id ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {expandedElement === el.id && (
+               <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-4">
+                 
+                 {/* Padding Controls */}
+                 {el.controls.includes('padding') && (
+                   <div className="grid grid-cols-4 gap-2">
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad T</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Top" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad R</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Right" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad B</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Bottom" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pad L</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Left" />
+                      </div>
+                   </div>
+                 )}
+
+                 {/* Margin Controls */}
+                 {el.controls.includes('margin') && (
+                   <div className="grid grid-cols-4 gap-2">
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar T</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Top" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar R</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Right" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar B</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Bottom" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Mar L</label>
+                        <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Left" />
+                      </div>
+                   </div>
+                 )}
+
+                 {/* Text Spacing Control */}
+                 {el.controls.includes('textSpacing') && (
+                   <div>
+                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Espace (En / Ar)</label>
+                     <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="px" />
+                   </div>
+                 )}
+
+                 {/* Radius Controls */}
+                 {el.controls.includes('radius') && (
+                   <div>
+                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Border Radius</label>
+                     <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Radius (px ou %)" />
+                   </div>
+                 )}
+
+                 {/* Typography Controls */}
+                 {(el.controls.includes('font') || el.controls.includes('color') || el.controls.includes('fontSize')) && (
+                   <div className="grid grid-cols-3 gap-2">
+                      {el.controls.includes('font') && (
+                        <div className="col-span-2">
+                          <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Police (Font)</label>
+                          <select className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black">
+                            <option>Défaut du Template</option>
+                            <option>Urbanist</option>
+                            <option>Pinyon Script</option>
+                            <option>Crimson Text</option>
+                            <option>Antic Didone</option>
+                            <option>Gulzar</option>
+                          </select>
+                        </div>
+                      )}
+                      {el.controls.includes('fontSize') && (
+                        <div>
+                          <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Taille (px)</label>
+                          <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="24" />
+                        </div>
+                      )}
+                   </div>
+                 )}
+
+                 {el.controls.includes('color') && (
+                   <div>
+                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Couleur</label>
+                     <div className="flex items-center gap-2">
+                       <input type="color" className="h-7 w-7 border-0 p-0 cursor-pointer" defaultValue="#08306b" />
+                       <span className="text-xs text-gray-600 font-mono">#08306B</span>
+                     </div>
+                   </div>
+                 )}
+
+                 
+                 {/* Event List Array Editor */}
+                 {el.controls.includes('eventList') && invite && (
+                   <div className="space-y-4">
+                      {invite.timeline && invite.timeline.map((event, index) => (
+                        <div key={index} className="border border-gray-200 bg-white p-3 space-y-3 relative">
+                           <div className="flex items-center justify-between">
+                             <span className="text-xs font-bold text-gray-700">Événement {index + 1}</span>
+                             <button type="button" onClick={() => removeTimelineItem(index)} className="text-red-500 hover:text-red-700"><FiTrash2 size={14} /></button>
+                           </div>
+                           <div className="grid grid-cols-2 gap-2">
+                             <div>
+                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Titre (EN)</label>
+                               <input type="text" value={event.title || ''} onChange={(e) => updateTimelineItem(index, 'title', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                             </div>
+                             <div>
+                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Titre (AR)</label>
+                               <input type="text" value={event.titleAr || ''} onChange={(e) => updateTimelineItem(index, 'titleAr', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                             </div>
+                           </div>
+                           <div className="grid grid-cols-2 gap-2">
+                             <div>
+                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Date</label>
+                               <input type="date" value={event.date || ''} onChange={(e) => updateTimelineItem(index, 'date', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                             </div>
+                             <div>
+                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Heure</label>
+                               <input type="text" value={event.time || ''} onChange={(e) => updateTimelineItem(index, 'time', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                             </div>
+                           </div>
+                           <div className="grid grid-cols-2 gap-2">
+                             <div>
+                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Lieu</label>
+                               <input type="text" value={event.venue || ''} onChange={(e) => updateTimelineItem(index, 'venue', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                             </div>
+                             <div>
+                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Ville</label>
+                               <input type="text" value={event.city || ''} onChange={(e) => updateTimelineItem(index, 'city', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                             </div>
+                           </div>
+                           <div>
+                             <label className="block text-[9px] font-semibold text-gray-500 uppercase">Lien Maps</label>
+                             <input type="text" value={event.mapUrl || ''} onChange={(e) => updateTimelineItem(index, 'mapUrl', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
+                           </div>
+                        </div>
+                      ))}
+                      <button type="button" onClick={addTimelineItem} className="w-full py-2 border border-dashed border-gray-400 text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <FiPlus size={14} /> Ajouter un événement
+                      </button>
+                   </div>
+                 )}
+
+                 {/* Music Upload Control */}
+                 {el.controls.includes('musicUpload') && invite && (
+                   <div className="space-y-2">
+                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Audio (MP3)</label>
+                     {invite.musicUrl ? (
+                       <div className="flex items-center justify-between mb-2">
+                         <div className="text-xs text-emerald-600 font-semibold">♪ Musique active</div>
+                         <button type="button" onClick={() => updateInvite('musicUrl', '')} className="text-[10px] font-semibold text-red-500 hover:text-red-700">Supprimer</button>
+                       </div>
+                     ) : null}
+                     <input 
+                       type="file" 
+                       accept="audio/*" 
+                       onChange={handleMusicUpload} 
+                       disabled={uploadingMusic}
+                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
+                     />
+                     {uploadingMusic && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
+                   </div>
+                 )}
+                 
+                 {/* Video Upload Control */}
+                 {el.controls.includes('videoUpload') && invite && (
+                   <div className="space-y-2">
+                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Vidéo (MP4)</label>
+                     {invite.videoUrl ? (
+                       <div className="flex items-center justify-between mb-2">
+                         <div className="text-xs text-emerald-600 font-semibold">▶ Vidéo active</div>
+                         <button type="button" onClick={() => updateInvite('videoUrl', '')} className="text-[10px] font-semibold text-red-500 hover:text-red-700">Supprimer</button>
+                       </div>
+                     ) : null}
+                     <input 
+                       type="file" 
+                       accept="video/*" 
+                       onChange={handleVideoUpload} 
+                       disabled={uploadingVideo}
+                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
+                     />
+                     {uploadingVideo && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
+                   </div>
+                 )}
+
+                 {/* Petals Toggle */}
+                 {el.controls.includes('petalsToggle') && invite && updateInvite && (
+                   <div>
+                     <label className="flex items-center gap-2 cursor-pointer">
+                       <input 
+                         type="checkbox" 
+                         checked={invite.enablePetals !== false} 
+                         onChange={(e) => updateInvite('enablePetals', e.target.checked)}
+                         className="w-4 h-4 accent-black"
+                       />
+                       <span className="text-xs font-semibold text-gray-700">Activer la chute de pétales</span>
+                     </label>
+                   </div>
+                 )}
+
+                 {/* Text Animation Controls */}
+                 {el.controls.includes('animationType') && invite && updateInvite && (
+                   <div className="space-y-4">
+                     <div>
+                       <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Type d'apparition</label>
+                       <select 
+                         value={invite.animationType || 'fade-up'} 
+                         onChange={(e) => updateInvite('animationType', e.target.value)}
+                         className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black"
+                       >
+                         <option value="none">Aucune (Désactivé)</option>
+                         <option value="fade-up">Glissement vers le haut (Fade Up)</option>
+                         <option value="fade-in">Fondu simple (Fade In)</option>
+                         <option value="zoom-in">Zoom (Zoom In)</option>
+                       </select>
+                     </div>
+                     <div>
+                       <div className="flex justify-between items-center mb-1">
+                         <label className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Durée (vitesse)</label>
+                         <span className="text-[10px] font-mono text-gray-600">{invite.animationDuration || 1.2}s</span>
+                       </div>
+                       <input 
+                         type="range" min="0.3" max="3.0" step="0.1" 
+                         value={invite.animationDuration || 1.2} 
+                         onChange={(e) => updateInvite('animationDuration', parseFloat(e.target.value))}
+                         className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black" 
+                         disabled={invite.animationType === 'none'}
+                       />
+                     </div>
+                     <div>
+                       <div className="flex justify-between items-center mb-1">
+                         <label className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Délai initial (lag)</label>
+                         <span className="text-[10px] font-mono text-gray-600">{invite.animationDelay !== undefined ? invite.animationDelay : 0.2}s</span>
+                       </div>
+                       <input 
+                         type="range" min="0.0" max="3.0" step="0.1" 
+                         value={invite.animationDelay !== undefined ? invite.animationDelay : 0.2} 
+                         onChange={(e) => updateInvite('animationDelay', parseFloat(e.target.value))}
+                         className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black" 
+                         disabled={invite.animationType === 'none'}
+                       />
+                     </div>
+                   </div>
+                 )}
+
+                 {/* Content Control */}
+                 {el.controls.includes('text') && (
+                   <div>
+                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Texte / Contenu</label>
+                      <textarea className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black resize-y" rows={2} placeholder="Valeur par défaut..." />
+                   </div>
+                 )}
+
+                 {/* Image Control */}
+                 {el.controls.includes('upload') && (
+                   <div>
+                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Remplacer l'Image / Fond</label>
+                      <input type="file" accept="image/*,video/*" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer" />
+                   </div>
+                 )}
+
+               </div>
+            )}
+         </div>
+       ))}
+     </div>
+   )
 }
 
 function DigitalInviteEditorPage() {
@@ -530,6 +899,112 @@ function DigitalInviteEditorPage() {
     }
   };
 
+
+  const iframeRef = useRef(null);
+  
+  useEffect(() => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage({ 
+        type: "UPDATE_INVITE", 
+        payload: { invite } 
+      }, "*");
+    }
+  }, [invite]);
+
+  useEffect(() => {
+    const handleMessage = (e) => {
+       if (e.data && e.data.type === 'IFRAME_READY') {
+          if (iframeRef.current && iframeRef.current.contentWindow) {
+             iframeRef.current.contentWindow.postMessage({ 
+               type: "UPDATE_INVITE", 
+               payload: { invite } 
+             }, "*");
+          }
+       }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [invite]);
+
+  // Resizable Sidebar State
+  const [isResizing, setIsResizing] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(600);
+  const [expandedSection, setExpandedSection] = useState(null);
+  const [expandedElement, setExpandedElement] = useState(null);
+
+  const startResizing = (mouseDownEvent) => {
+    mouseDownEvent.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e) => {
+      const minWidth = 320;
+      const maxWidth = window.innerWidth * 0.7;
+      const newWidth = Math.max(minWidth, Math.min(maxWidth, e.clientX));
+      setSidebarWidth(newWidth);
+    };
+    const handleMouseUp = () => setIsResizing(false);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
+  
+  const handleFillDemoData = () => {
+    const demoData = {
+      template: "sidi-bousaid",
+      status: "draft",
+      title: "Sidi Bou Said",
+      coupleNames: "Bilel & Dorra",
+      eventDate: "2027-08-12",
+      venueName: "Dar Sidi Bou Said",
+      city: "Sidi Bou Said",
+      locationLabel: "TUNISIE",
+      time: "19H00",
+      mapUrl: "https://maps.google.com",
+      rsvpEnabled: true,
+      videoIntroEnabled: true,
+      welcomeSubtitle: "Welcome To Our\nMediterranean Abode",
+      ourStoryQuote: "Our Happy Ever After\nstarts\nnow",
+      closingTextAr: "ان شاء الله ليلتكم زينة",
+      dressCodeText: "We Request Attending The Outeya\nWith A Traditional Attire",
+      timeline: [
+        {
+          title: "Outeya",
+          titleAr: "الوطية",
+          date: "2027-08-11",
+          time: "19:00",
+          venue: "Dar Sidi Bou Said",
+          city: "Sidi Bou Said",
+          mapUrl: "https://maps.google.com"
+        },
+        {
+          title: "Mariage",
+          titleAr: "العرس",
+          date: "2027-08-12",
+          time: "20:00",
+          venue: "Dar Sidi Bou Said",
+          city: "Sidi Bou Said",
+          mapUrl: "https://maps.google.com"
+        }
+      ],
+      programmeSteps: [
+        { time: "17:00", name: "Sdek" },
+        { time: "18:00", name: "Reception" },
+        { time: "20:00", name: "Dinner" },
+        { time: "00:00", name: "Dance" }
+      ],
+      activeSections: ["hero", "our-story", "countdown", "celebrations", "dress-code", "programme", "rsvp", "footer"],
+      enablePetals: true,
+      enableBirds: true
+    };
+    setInvite((prev) => ({ ...prev, ...demoData }));
+  };
+
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F6F4EF] font-urbanist">
@@ -538,38 +1013,33 @@ function DigitalInviteEditorPage() {
     );
   }
 
+
   return (
-    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414]">
-      <header className="border-b border-[#D8DDE2] bg-white px-5 py-4">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414] overflow-hidden flex flex-col h-screen">
+      <header className="border-b border-[#D8DDE2] bg-white px-6 py-4 shrink-0">
+        <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="flex flex-wrap gap-2 text-sm font-semibold">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600"
-              >
-                <FiArrowLeft aria-hidden="true" /> Retour
-              </button>
-              <Link to="/dashboard" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
-                <FiFileText aria-hidden="true" /> Dashboard
-              </Link>
-              <Link to="/" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
-                <FiHome aria-hidden="true" /> Site
-              </Link>
-            </div>
-            <h1 className="mt-2 font-abhaya text-4xl leading-none">
+            <h1 className="font-abhaya text-2xl font-semibold sm:text-3xl">
               {isEditing ? "Modifier l'invitation" : "Nouvelle invitation"}
             </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Personnalisez votre invitation en temps reel.
+            </p>
           </div>
-
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleFillDemoData}
+              className="inline-flex items-center gap-2 border border-dashed border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            >
+              Remplir Démo
+            </button>
             {dashboardPreviewPath ? (
               <Link
                 to={dashboardPreviewPath}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold hover:bg-gray-50"
               >
                 <FiExternalLink aria-hidden="true" /> Apercu
               </Link>
@@ -579,7 +1049,7 @@ function DigitalInviteEditorPage() {
                 type="button"
                 onClick={handlePublish}
                 disabled={saving}
-                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:text-gray-400"
               >
                 <FiUploadCloud aria-hidden="true" /> Publier
               </button>
@@ -588,7 +1058,7 @@ function DigitalInviteEditorPage() {
               type="submit"
               form="digital-invite-form"
               disabled={saving}
-              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
             </button>
@@ -596,546 +1066,137 @@ function DigitalInviteEditorPage() {
         </div>
       </header>
 
-      <form
-        id="digital-invite-form"
-        onSubmit={handleSubmit}
-        className="mx-auto grid w-full max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[1fr_360px]"
-      >
-        <section className="space-y-6">
-          {error ? (
-            <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
-              {error}
-            </div>
-          ) : null}
-
-          <EditorSection icon={FiSettings} title="Informations">
-            <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Prénom de la mariée (Épouse)">
-                <TextInput
-                  value={wife}
-                  onChange={(event) => {
-                    const newWife = event.target.value;
-                    updateInvite("coupleNames", newWife || husband ? `${newWife} & ${husband}` : "");
-                  }}
-                  onBlur={handleCoupleBlur}
-                  placeholder="Sarah"
-                  required
-                />
-              </Field>
-              <Field label="Prénom du marié (Époux)">
-                <TextInput
-                  value={husband}
-                  onChange={(event) => {
-                    const newHusband = event.target.value;
-                    updateInvite("coupleNames", wife || newHusband ? `${wife} & ${newHusband}` : "");
-                  }}
-                  onBlur={handleCoupleBlur}
-                  placeholder="Hedi"
-                  required
-                />
-              </Field>
-              <Field label="Slug du lien">
-                <TextInput
-                  value={invite.slug}
-                  onChange={(event) => updateInvite("slug", slugify(event.target.value))}
-                  placeholder="bilel-dorra"
-                  required
-                />
-              </Field>
-              <Field label="Template">
-                <select
-                  value={invite.template}
-                  onChange={(event) => handleTemplateChange(event.target.value)}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                >
-                  {digitalInviteTemplates.map((template) => (
-                    <option key={template.id} value={template.id}>
-                      {template.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <div className="flex items-end">
-                <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
-                  invite.status === "published"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                    : "border-amber-200 bg-amber-50 text-amber-800"
-                }`}>
-                  {invite.status === "published" ? "Publiee" : "Brouillon"}
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-89px)] w-full overflow-hidden">
+        {/* Left Column: Form Settings */}
+        <div 
+          className="w-full h-full shrink-0 border-r border-[#D8DDE2] bg-white overflow-y-auto"
+          style={{ width: sidebarWidth }}
+        >
+          <form
+            id="digital-invite-form"
+            onSubmit={handleSubmit}
+            className="p-6 pb-24"
+          >
+                    
+            <div className="space-y-6">
+              {error ? (
+                <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
+                  {error}
                 </div>
-              </div>
-            </div>
-          </EditorSection>
+              ) : null}
 
-          <EditorSection icon={FiEdit2} title="Contenu">
-            <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Titre">
-                <TextInput
-                  value={invite.title}
-                  onChange={(event) => updateInvite("title", event.target.value)}
-                  required
-                />
-              </Field>
-              <Field label="RSVP">
-                <select
-                  value={invite.rsvpEnabled ? "yes" : "no"}
-                  onChange={(event) => updateInvite("rsvpEnabled", event.target.value === "yes")}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                >
-                  <option value="yes">Actif</option>
-                  <option value="no">Masque</option>
-                </select>
-              </Field>
-              {isSidiBouSaid && (
-                <Field label="Ouverture Vidéo">
-                  <select
-                    value={invite.videoIntroEnabled !== false ? "yes" : "no"}
-                    onChange={(event) => updateInvite("videoIntroEnabled", event.target.value === "yes")}
-                    className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                  >
-                    <option value="yes">Actif</option>
-                    <option value="no">Masque</option>
-                  </select>
-                </Field>
-              )}
-            </div>
-          </EditorSection>
-
-          {!isSidiBouSaid && (
-            <EditorSection icon={FiMapPin} title="Date et lieu">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Date">
-                  <TextInput
-                    type="date"
-                    value={invite.eventDate}
-                    onChange={(event) => handleDateChange(event.target.value)}
-                    required
-                  />
-                </Field>
-                <Field label="Heure">
-                  <TextInput
-                    value={invite.time}
-                    onChange={(event) => updateInvite("time", event.target.value)}
-                    placeholder="19H00"
-                  />
-                </Field>
-                <Field label="Ville">
-                  <TextInput
-                    value={invite.city}
-                    onChange={(event) => updateInvite("city", event.target.value)}
-                  />
-                </Field>
-                <Field label="Nom du lieu">
-                  <TextInput
-                    value={invite.venueName}
-                    onChange={(event) => updateInvite("venueName", event.target.value)}
-                  />
-                </Field>
-                <Field label="Label lieu">
-                  <TextInput
-                    value={invite.locationLabel}
-                    onChange={(event) => updateInvite("locationLabel", event.target.value)}
-                    placeholder="MALAGA"
-                  />
-                </Field>
-                <div className="md:col-span-2">
-                  <Field label="Lien Google Maps">
+              <EditorSection icon={FiSettings} title="Informations">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label="Noms du Couple">
                     <TextInput
-                      value={invite.mapUrl}
-                      onChange={(event) => updateInvite("mapUrl", event.target.value)}
-                      placeholder="https://maps.google.com"
+                      value={invite.coupleNames || ""}
+                      onChange={(event) => updateInvite("coupleNames", event.target.value)}
+                      placeholder="Sarah & Hedi"
+                      required
                     />
                   </Field>
-                </div>
-              </div>
-            </EditorSection>
-          )}
-
-          <EditorSection
-            icon={FiClock}
-            title={isSidiBouSaid ? "Celebrations" : "Timeline"}
-            action={
-              <button
-                type="button"
-                onClick={addTimelineItem}
-                disabled={invite.timeline.length >= maxTimelineItems}
-                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
-              >
-                <FiPlus aria-hidden="true" /> {isSidiBouSaid ? "Add Event" : "Ajouter une etape"}
-              </button>
-            }
-          >
-            <div className="space-y-6">
-              {invite.timeline.map((item, index) => (
-                <div 
-                  key={index} 
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, index)}
-                  onDragEnd={handleDragEnd}
-                  className={`border border-[#E4E8EA] bg-[#FCFCFB] p-6 space-y-4 relative transition-all ${
-                    draggedIndex === index ? "opacity-40 border-dashed border-blue-500 scale-[0.98]" : ""
-                  }`}
-                >
-                  <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                    <div 
-                      className="flex items-center gap-2 cursor-pointer select-none grow"
-                      onClick={() => toggleEvent(index)}
+                  <Field label="Slug du lien">
+                    <TextInput
+                      value={invite.slug || ""}
+                      onChange={(event) => updateInvite("slug", slugify(event.target.value))}
+                      placeholder="sarah-hedi"
+                      required
+                    />
+                  </Field>
+                  <Field label="Template">
+                    <select
+                      value={invite.template}
+                      onChange={(event) => handleTemplateChange(event.target.value)}
+                      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
                     >
-                      <FiMove className="text-gray-400 cursor-move shrink-0 hover:text-black animate-pulse" title="Faites glisser pour réorganiser" />
-                      {openEvents[index] ? (
-                        <FiChevronDown className="text-gray-500 shrink-0" />
-                      ) : (
-                        <FiChevronRight className="text-gray-500 shrink-0" />
-                      )}
-                      <h3 className="font-semibold text-lg">
-                        {isSidiBouSaid
-                          ? `Event ${index + 1} : ${item.title || "New Event"}`
-                          : `Etape ${index + 1} : ${
-                              fixedTimelineSteps.find(
-                                (s) => s.image === getTimelineStepKey(item, index)
-                              )?.title || "Nouvelle étape"
-                            }`}
-                      </h3>
+                      {digitalInviteTemplates.map((template) => (
+                        <option key={template.id} value={template.id}>
+                          {template.label}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <div className="flex items-end">
+                    <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
+                      invite.status === "published"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                        : "border-amber-200 bg-amber-50 text-amber-800"
+                    }`}>
+                      {invite.status === "published" ? "Publiee" : "Brouillon"}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeTimelineItem(index)}
-                      disabled={invite.timeline.length <= 1}
-                      title="Supprimer"
-                      aria-label={`Supprimer l'etape ${index + 1}`}
-                      className="inline-flex h-8 w-8 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
-                    >
-                      <FiTrash2 aria-hidden="true" className="w-4 h-4" />
-                    </button>
                   </div>
-
-                  {openEvents[index] && (
-                    isSidiBouSaid ? (
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <Field label="Title (English)">
-                          <TextInput
-                            value={item.title || ""}
-                            onChange={(event) => updateTimelineItem(index, "title", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Title (Arabic)">
-                          <TextInput
-                            value={item.titleAr || ""}
-                            onChange={(event) => updateTimelineItem(index, "titleAr", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Date (YYYY-MM-DD)">
-                          <TextInput
-                            type="date"
-                            value={item.date || ""}
-                            onChange={(event) => updateTimelineItem(index, "date", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Time">
-                          <TextInput
-                            value={item.time || ""}
-                            onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="Venue Name">
-                          <TextInput
-                            value={item.venue || ""}
-                            onChange={(event) => updateTimelineItem(index, "venue", event.target.value)}
-                          />
-                        </Field>
-                        <Field label="City">
-                          <TextInput
-                            value={item.city || ""}
-                            onChange={(event) => updateTimelineItem(index, "city", event.target.value)}
-                          />
-                        </Field>
-                        <div className="md:col-span-2">
-                          <Field label="Google Maps URL">
-                            <TextInput
-                              value={item.mapUrl || ""}
-                              onChange={(event) => updateTimelineItem(index, "mapUrl", event.target.value)}
-                              placeholder="https://maps.google.com"
-                            />
-                          </Field>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid gap-3 md:grid-cols-[1fr_0.7fr] md:items-end">
-                        <Field label="Etape">
-                          <select
-                            value={getTimelineStepKey(item, index)}
-                            onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
-                            className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                          >
-                            {fixedTimelineSteps.map((step) => (
-                              <option key={step.image} value={step.image}>
-                                {step.title}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                        <Field label="Heure">
-                          <TextInput
-                            value={item.time}
-                            onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
-                          />
-                        </Field>
-                      </div>
-                    )
-                  )}
                 </div>
-              ))}
-            </div>
-          </EditorSection>
-
-          {isSidiBouSaid && (
-            <>
-              <EditorSection icon={FiFileText} title="Dress Code">
-                <Field label="Description Dress Code">
-                  <TextInput
-                    value={invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
-                    onChange={(event) => updateInvite("dressCodeText", event.target.value)}
-                    placeholder="We Request Attending The Outeya\nWith A Traditional Attire"
-                  />
-                </Field>
               </EditorSection>
 
-              <EditorSection icon={FiClock} title="Programme">
-                <div className="grid gap-4">
-                  {(invite.programmeSteps || [
-                    { time: "17:00", name: "Sdek" },
-                    { time: "18:00", name: "Reception" },
-                    { time: "20:00", name: "Dinner" },
-                    { time: "00:00", name: "Dance" },
-                  ]).map((step, index) => (
-                    <div key={index} className="border p-4 rounded-md grid gap-3 md:grid-cols-2 bg-gray-50/50">
-                      <span className="font-semibold text-sm md:col-span-2 text-gray-700">Etape {index + 1}</span>
-                      <Field label="Heure">
-                        <TextInput
-                          value={step.time}
-                          onChange={(event) => {
-                            const steps = [...(invite.programmeSteps || [
-                              { time: "17:00", name: "Sdek" },
-                              { time: "18:00", name: "Reception" },
-                              { time: "20:00", name: "Dinner" },
-                              { time: "00:00", name: "Dance" },
-                            ])];
-                            steps[index] = { ...steps[index], time: event.target.value };
-                            updateInvite("programmeSteps", steps);
-                          }}
-                        />
-                      </Field>
-                      <Field label="Nom">
-                        <TextInput
-                          value={step.name}
-                          onChange={(event) => {
-                            const steps = [...(invite.programmeSteps || [
-                              { time: "17:00", name: "Sdek" },
-                              { time: "18:00", name: "Reception" },
-                              { time: "20:00", name: "Dinner" },
-                              { time: "00:00", name: "Dance" },
-                            ])];
-                            steps[index] = { ...steps[index], name: event.target.value };
-                            updateInvite("programmeSteps", steps);
-                          }}
-                        />
-                      </Field>
+              <EditorSection icon={FiLayers} title="Structure & Design">
+                <div className="space-y-2">
+                  {SECTION_LIST.map(sec => (
+                    <div key={sec.id} className="border border-[#D8DDE2] bg-white">
+                        <button 
+                          type="button" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setExpandedSection(expandedSection === sec.id ? null : sec.id);
+                          }} 
+                          className="w-full flex items-center justify-between p-4 font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            {sec.label}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-normal px-2 py-0.5 bg-gray-100 text-gray-600 rounded">Actif</span>
+                            <FiChevronDown className={`transition-transform ${expandedSection === sec.id ? 'rotate-180' : ''}`} />
+                          </div>
+                        </button>
+                        
+                        {expandedSection === sec.id && (
+                          <div className="p-4 border-t border-[#D8DDE2] bg-[#F9FAF8]">
+                              <ElementMenu 
+                                sectionId={sec.id} 
+                                expandedElement={expandedElement} 
+                                setExpandedElement={setExpandedElement}
+                                invite={invite}
+                                addTimelineItem={addTimelineItem}
+                                updateInvite={updateInvite}
+                                handleMusicUpload={handleMusicUpload}
+                                uploadingMusic={uploadingMusic}
+                                handleVideoUpload={handleVideoUpload}
+                                uploadingVideo={uploadingVideo}
+                                updateTimelineItem={updateTimelineItem}
+                                removeTimelineItem={removeTimelineItem}
+                                FiPlus={FiPlus}
+                                FiTrash2={FiTrash2}
+                              />
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
               </EditorSection>
-
-              <EditorSection icon={FiSettings} title="Animations & Musique">
-                <div className="grid gap-4">
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
-                    <span className="font-semibold text-sm text-gray-700">Musique de fond (MP3)</span>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="file"
-                        accept="audio/mp3,audio/*"
-                        onChange={handleMusicUpload}
-                        disabled={uploadingMusic}
-                        className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
-                      />
-                      {uploadingMusic && <span className="text-sm text-amber-600 animate-pulse">Importation de la musique en cours...</span>}
-                      {invite.musicUrl && (
-                        <div className="flex items-center gap-4 mt-1">
-                          <audio src={invite.musicUrl} controls className="h-8 max-w-full" />
-                          <button
-                            type="button"
-                            onClick={() => updateInvite("musicUrl", "")}
-                            className="text-sm font-semibold text-red-600 hover:underline"
-                          >
-                            Supprimer
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3">
-                    <span className="font-semibold text-sm text-gray-700">Vidéo d'ouverture (MP4)</span>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="file"
-                        accept="video/mp4,video/*"
-                        onChange={handleVideoUpload}
-                        disabled={uploadingVideo}
-                        className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
-                      />
-                      {uploadingVideo && <span className="text-sm text-amber-600 animate-pulse">Importation de la vidéo en cours...</span>}
-                      {invite.videoUrl && (
-                        <div className="flex items-center gap-4 mt-1">
-                          <video src={invite.videoUrl} controls className="h-20 rounded-md border" />
-                          <button
-                            type="button"
-                            onClick={() => updateInvite("videoUrl", "")}
-                            className="text-sm font-semibold text-red-600 hover:underline"
-                          >
-                            Supprimer
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
-                    <span className="font-semibold text-sm md:col-span-2 text-gray-700">Effets Visuels</span>
-                    <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
-                      <input
-                        type="checkbox"
-                        checked={invite.enablePetals !== false}
-                        onChange={(e) => updateInvite("enablePetals", e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                      />
-                      Activer la chute de pétales
-                    </label>
-                    <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-600">
-                      <input
-                        type="checkbox"
-                        checked={invite.enableBirds !== false}
-                        onChange={(e) => updateInvite("enableBirds", e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                      />
-                      Activer le vol des oiseaux
-                    </label>
-                  </div>
-
-                  <div className="border p-4 rounded-md bg-gray-50/50 grid gap-3 md:grid-cols-2">
-                    <span className="font-semibold text-sm md:col-span-2 text-gray-700">Apparition du texte</span>
-                    <Field label="Type d'apparition">
-                      <select
-                        value={invite.animationType || "fade-up"}
-                        onChange={(e) => updateInvite("animationType", e.target.value)}
-                        className="w-full rounded-md border border-[#D8DDE2] p-2 text-sm outline-none focus:border-black bg-white"
-                      >
-                        <option value="fade-up">Glissement vers le haut (Fade Up)</option>
-                        <option value="fade">Fondu simple (Fade)</option>
-                        <option value="zoom">Zoom (Zoom In)</option>
-                      </select>
-                    </Field>
-                    <Field label={`Durée (vitesse) : ${(invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2)}s`}>
-                      <div className="flex items-center gap-3 mt-2">
-                        <input
-                          type="range"
-                          min="0.5"
-                          max="4.0"
-                          step="0.1"
-                          value={invite.animationSpeed !== undefined ? invite.animationSpeed : 1.2}
-                          onChange={(e) => updateInvite("animationSpeed", parseFloat(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
-                        />
-                      </div>
-                    </Field>
-                    <Field label={`Délai initial (lag) : ${(invite.animationDelay !== undefined ? invite.animationDelay : 0.2)}s`}>
-                      <div className="flex items-center gap-3 mt-2">
-                        <input
-                          type="range"
-                          min="0.0"
-                          max="3.0"
-                          step="0.1"
-                          value={invite.animationDelay !== undefined ? invite.animationDelay : 0.2}
-                          onChange={(e) => updateInvite("animationDelay", parseFloat(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
-                        />
-                      </div>
-                    </Field>
-                  </div>
-                </div>
-              </EditorSection>
-            </>
-          )}
-        </section>
-
-        <aside className="h-fit border border-[#D8DDE2] bg-white p-5 shadow-sm lg:sticky lg:top-6">
-          <h2 className="font-abhaya text-3xl">{selectedTemplate.label}</h2>
-          <p className="mt-2 text-sm leading-6 text-gray-600">{selectedTemplate.description}</p>
-          <div className="my-5 h-px bg-[#E4E8EA]" />
-          <h3 className="inline-flex items-center gap-2 font-abhaya text-2xl">
-            <FiLink aria-hidden="true" /> Lien public
-          </h3>
-          <p className="mt-3 break-all text-sm text-gray-600">
-            {publicUrl || "Le lien apparaitra apres avoir ajoute un slug."}
-          </p>
-          <div className="mt-5 grid gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
-            >
-              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
-            </button>
-            {publicPath ? (
-              <>
-                <Link
-                  to={dashboardPreviewPath}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
-                >
-                  <FiExternalLink aria-hidden="true" /> Ouvrir l'apercu
-                </Link>
-                {invite.status !== "published" ? (
-                  <button
-                    type="button"
-                    onClick={handlePublish}
-                    disabled={saving}
-                    className="inline-flex items-center justify-center gap-2 border border-emerald-600 px-5 py-3 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
-                  >
-                    <FiUploadCloud aria-hidden="true" /> Publier
-                  </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-5 py-3 text-sm font-semibold"
-                >
-                  {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
-                  {copied ? "Lien copie" : "Copier le lien"}
-                </button>
-              </>
-            ) : null}
-            <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-gray-600">
-              <div className="border border-[#E4E8EA] p-3">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
-                  <FiCalendar aria-hidden="true" /> Date
-                </div>
-                {formatDateLabel(invite.eventDate) || "Non definie"}
-              </div>
-              <div className="border border-[#E4E8EA] p-3">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
-                  <FiMapPin aria-hidden="true" /> Lieu
-                </div>
-                {invite.city || "Non defini"}
-              </div>
             </div>
-          </div>
-        </aside>
-      </form>
+          </form>
+        </div>
+        
+        {/* Resizer Handle */}
+        <div
+          className="w-[1.5px] cursor-col-resize bg-gray-200 hover:bg-blue-400 active:bg-blue-600 transition-colors shrink-0 z-10"
+          onMouseDown={startResizing}
+        />
+
+        {/* Right Column: Isolated Iframe Preview */}
+        <div className="flex-1 overflow-y-auto relative bg-[#141414] h-full flex justify-center border-t border-gray-100">
+          <iframe
+            ref={iframeRef}
+            src="/iframe-preview"
+            title="Invitation Preview"
+            className="w-full h-full border-none shadow-2xl mx-auto bg-white"
+            style={{ maxWidth: 430 }}
+          />
+        </div>
+      </div>
     </main>
   );
+
 }
 
 export default DigitalInviteEditorPage;

@@ -15,6 +15,7 @@ import DigitalInviteEditorPage from './pages/DigitalInviteEditorPage';
 import InvitationModelPage from "./pages/InvitationModelPage";
 import PersonalizeInvitationPage from "./pages/PersonalizeInvitationPage";
 import TestPDFDownload from './pages/TestPDFDownload';
+import IframePreviewPage from './pages/IframePreviewPage';
 
 
 
@@ -63,6 +64,10 @@ function App() {
                 <SharedDigitalInvitePage allowDraft previewMode lookupById />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/iframe-preview"
+            element={<IframePreviewPage />}
           />
           <Route path="/invitation-model/:modelName" element={<InvitationModelPage />} />
           <Route path="/personalize" element={<PersonalizeInvitationPage />} />
