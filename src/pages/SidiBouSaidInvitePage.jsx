@@ -183,10 +183,10 @@ const eventDecorations = [
 ];
 
 // A localized section wrapper that provides scoped absolute coordinates for child graphics
-const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, children, ...rest }) => {
-  const [secHeight, setSecHeight] = React.useState(window.innerHeight);
+const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOffset = 200, isFullScreenHeight = false, className = "", children, ...rest }) => {
+  const [secHeight, setSecHeight] = useState(window.innerHeight);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isFullScreenHeight) return;
     const handleResize = () => setSecHeight(window.innerHeight);
     window.addEventListener("resize", handleResize);
@@ -201,15 +201,47 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOff
     height: h ? pct(h, height) : undefined,
   });
 
-  const textLayer = ({ left, top, width: w, children: textChildren, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, style = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, pointerEvents, reveal = false, delay = 0 }) => (
-    <div
-      className={reveal ? "reveal" : ""}
+  const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
+
+  const sectionStyle = isFullScreenHeight 
+    ? { position: "relative", width: "100%", minHeight: `${secHeight}px`, backgroundColor: bg }
+    : { position: "relative", width: "100%", backgroundColor: bg };
+
+  return (
+    <section 
+      style={sectionStyle}
+      className={`flex flex-col items-center w-full ${className}`}
+      {...rest}
+    >
+       {sectionLayers.map((layer, idx) => (
+          <img 
+            key={layer.name} 
+            src={exportImageSources[layer.srcName || layer.name]} 
+            className="reveal absolute pointer-events-none"
+            style={{ 
+              ...absoluteBox(layer), 
+              transform: layer.transform, 
+              zIndex: layer.zIndex || 1,
+              transitionDelay: `${idx * 100 + delayOffset}ms`
+            }} 
+            alt="" 
+            draggable="false" 
+          />
+       ))}
+       {typeof children === "function" ? children({ absoluteBox }) : children}
+    </section>
+  );
+};
+
+const Text = ({ children, color = blue, fontSize = 16, lineHeight, family = "Cormorant Infant, serif", weight = 400, fontStyle = "normal", align = "center", letterSpacing = 0, wordSpacing = "normal", transform, zIndex = 3, reveal = false, delay = 0, delayOffset = 200, className = "", ...rest }) => {
+  return (
+    <div 
+      className={`${reveal ? "reveal" : ""} ${className}`}
       style={{
-        ...absoluteBox({ left, top, width: w }),
         color,
         fontFamily: family,
         fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
-        fontStyle: style,
+        fontStyle,
         fontWeight: weight,
         lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
         textAlign: align,
@@ -218,42 +250,13 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], delayOff
         textTransform: transform,
         whiteSpace: "pre-wrap",
         zIndex,
-        pointerEvents,
         transitionDelay: reveal ? `${delay + delayOffset}ms` : undefined,
+        ...rest.style
       }}
-    >
-      {textChildren}
-    </div>
-  );
-
-  const sectionLayers = baseLayers.filter(l => layerNames.includes(l.name));
-
-  const sectionStyle = isFullScreenHeight
-    ? { position: "relative", width: "100%", height: `${secHeight}px`, backgroundColor: bg, overflow: "hidden" }
-    : { position: "relative", width: "100%", aspectRatio: `${pageWidth} / ${height}`, backgroundColor: bg, overflow: "hidden" };
-
-  return (
-    <section
-      style={sectionStyle}
       {...rest}
     >
-       {sectionLayers.map((layer, idx) => (
-          <img
-            key={layer.name}
-            src={exportImageSources[layer.srcName || layer.name]}
-            className="reveal"
-            style={{
-              ...absoluteBox(layer),
-              transform: layer.transform,
-              zIndex: layer.zIndex || 2,
-              transitionDelay: `${idx * 100 + delayOffset}ms`
-            }}
-            alt=""
-            draggable="false"
-          />
-       ))}
-       {children({ absoluteBox, textLayer })}
-    </section>
+      {children}
+    </div>
   );
 };
 
@@ -289,15 +292,6 @@ const WavyCircle = ({ percent }) => {
         overflow: "hidden"
       }}
     >
-      <style>{`
-        @keyframes waveMove {
-          from { transform: translate3d(0, 0, 0); }
-          to { transform: translate3d(-50%, 0, 0); }
-        }
-        .animate-wave {
-          animation: waveMove 1.5s linear infinite;
-        }
-      `}</style>
       <svg
         width="200%"
         height="100%"
@@ -404,14 +398,12 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
             const sectionEl = entry.target.closest("[data-section-index]");
             const secIdx = sectionEl ? parseInt(sectionEl.getAttribute("data-section-index"), 10) : null;
 
-            // RSVP (index 7) remains locked until Programme has finished its sequence
             if (secIdx === 7 && !isProgrammeFinished) {
               return;
             }
 
             entry.target.classList.add("revealed");
 
-            // When Programme (index 6) starts animating, start countdown to unlock RSVP
             if (secIdx === 6 && !programmeTimerRef.current) {
               const totalDuration = 2900 + animDelayMs + Math.round(animSpeed * 1000);
               programmeTimerRef.current = window.setTimeout(() => {
@@ -482,6 +474,8 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
     });
   };
 
+  const revealOpacity = doorFrameSources.length ? doorFrame / (doorFrameSources.length - 1) : 0;
+
   return (
     <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#0093d8]">
       <style>{`
@@ -517,367 +511,280 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           50% { transform: translate3d(0, -7px, 0) rotate(1.5deg); }
           100% { transform: translate3d(0, 5px, 0) rotate(-0.5deg); }
         }
+        @keyframes waveMove {
+          from { transform: translate3d(0, 0, 0); }
+          to { transform: translate3d(-50%, 0, 0); }
+        }
+        .animate-wave {
+          animation: waveMove 1.5s linear infinite;
+        }
       `}</style>
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col">
 
-        {/* Canvas 1: Hero */}
+        {/* Canvas 1: Hero & Reveal (Combined into dynamic fullscreen layout) */}
         <Section
           startY={0}
           height={804}
           delayOffset={animDelayMs}
           data-section-index={0}
           isFullScreenHeight={true}
-          layerNames={[]}
+          layerNames={["reveal-corner-top-right.png", "reveal-hand.svg", "reveal-corner-bottom-left.png"]}
         >
-          {({ absoluteBox, textLayer }) => {
-            return (
-              <>
-                <video
-                  className="absolute inset-0 h-full w-full"
-                  style={{ objectFit: "cover", zIndex: 1 }}
-                  src={invite.videoUrl || openingVideo}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ opacity: 1 - revealOpacity, pointerEvents: revealOpacity === 1 ? "none" : "auto", zIndex: 1 }}
+            src={invite.videoUrl || openingVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+
+          <div className="relative flex flex-col justify-between items-center py-12 w-full h-screen min-h-[inherit] z-10 select-none">
+            {/* Top Initials Oval */}
+            <div className="reveal border-[1.5px] border-white rounded-[16px] w-[35px] h-[52px] relative flex flex-col items-center justify-center mt-4" style={{ transitionDelay: `${animDelayMs}ms` }}>
+              <div className="text-white font-antic text-[17px] leading-none mb-0.5">{names.firstName.charAt(0).toUpperCase()}</div>
+              <div className="text-white font-antic text-[17px] leading-none mt-0.5">{names.secondName.charAt(0).toUpperCase()}</div>
+            </div>
+
+            {/* Names & Subtitle */}
+            <div className="flex flex-col items-center w-full px-6">
+              <Text color="#fff" fontSize={38} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>
+                {`${names.firstName}\n${names.secondName}`}
+              </Text>
+              <Text color="#fff" fontSize={16} family="Cormorant, serif" letterSpacing="0.15em" reveal={true} delay={200} delayOffset={animDelayMs} className="mt-4 lowercase first-letter:uppercase">
+                {"Welcome To Our\nMediterranean Abode"}
+              </Text>
+
+              {/* Date Info */}
+              <div className="flex items-center justify-center gap-6 mt-6 w-full">
+                <Text color="#fff" fontSize={17} fontStyle="italic" transform="uppercase" letterSpacing="0.15em" reveal={true} delay={400} delayOffset={animDelayMs}>
+                  {dateParts.month}
+                </Text>
+                <div className="w-[1px] h-[20px] bg-white opacity-40"></div>
+                <Text color="#fff" fontSize={17} fontStyle="italic" transform="uppercase" letterSpacing="0.15em" reveal={true} delay={400} delayOffset={animDelayMs}>
+                  {dateParts.year}
+                </Text>
+              </div>
+            </div>
+
+            {/* Bottom Scroll down button */}
+            <button
+              type="button"
+              onClick={handleScrollDown}
+              className="reveal bg-white text-blue rounded-[100px] border-none px-6 py-2.5 cursor-pointer shadow-md flex items-center justify-center text-sm font-semibold tracking-wider hover:opacity-95"
+              style={{ transitionDelay: `${500 + animDelayMs}ms` }}
+            >
+              Scroll down
+            </button>
+          </div>
+
+          {/* Interactive Doors / Webp Render overlays */}
+          {revealOpacity < 1 ? (
+            <button
+              type="button"
+              onClick={handleDoorClick}
+              aria-label="Open reveal doors"
+              className="reveal absolute cursor-pointer bg-transparent p-0 border-none outline-none focus:outline-none flex gap-2"
+              onTransitionEnd={(event) => {
+                if (event.propertyName === "opacity") {
+                  handleDoorClick();
+                }
+              }}
+              style={{
+                bottom: "10vh",
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 6,
+                transitionDelay: `${900 + animDelayMs}ms`
+              }}
+            >
+              {doorSlots.map((door, idx) => (
+                <img
+                  key={idx}
+                  src={doorFrameSources[doorFrame]}
+                  alt=""
+                  className="w-[80px] h-[120px] object-contain"
+                  draggable="false"
                 />
-
-                {/* Flying Birds stylesheet & elements */}
-                {invite.enableBirds !== false && (
-                  <>
-                    <style>{`
-                      @keyframes fly-left-to-right {
-                        0% { left: -10%; top: 120px; transform: scale(0.6); opacity: 0; }
-                        10% { opacity: 0.7; }
-                        90% { opacity: 0.7; }
-                        100% { left: 110%; top: 50px; transform: scale(0.8); opacity: 0; }
-                      }
-                      @keyframes fly-left-to-right-2 {
-                        0% { left: -10%; top: 200px; transform: scale(0.4); opacity: 0; }
-                        15% { opacity: 0.5; }
-                        85% { opacity: 0.5; }
-                        100% { left: 110%; top: 130px; transform: scale(0.5); opacity: 0; }
-                      }
-                    `}</style>
-                    <div
-                      className="absolute pointer-events-none"
-                      style={{
-                        animation: "fly-left-to-right 18s linear infinite",
-                        width: "28px",
-                        height: "20px",
-                        zIndex: 10,
-                      }}
-                    >
-                      <svg viewBox="0 0 24 14" style={{ width: "100%", height: "100%", fill: "#7A9EB2", opacity: 0.4 }}>
-                        <path d="M 0 0 C 4 6, 8 10, 12 3 C 16 10, 20 6, 24 0 C 19 4, 15 2, 12 1 C 9 2, 5 4, 0 0 Z" fill="currentColor" />
-                      </svg>
-                    </div>
-                    <div
-                      className="absolute pointer-events-none"
-                      style={{
-                        animation: "fly-left-to-right-2 24s linear infinite",
-                        animationDelay: "6s",
-                        width: "20px",
-                        height: "14px",
-                        zIndex: 10,
-                      }}
-                    >
-                      <svg viewBox="0 0 24 14" style={{ width: "100%", height: "100%", fill: "#7A9EB2", opacity: 0.3 }}>
-                        <path d="M 0 0 C 4 6, 8 10, 12 3 C 16 10, 20 6, 24 0 C 19 4, 15 2, 12 1 C 9 2, 5 4, 0 0 Z" fill="currentColor" />
-                      </svg>
-                    </div>
-                  </>
-                )}
-
-                <div
-                  className="absolute left-0 top-1/2 w-full -translate-y-1/2"
-                  style={{ height: pct(340, 804), zIndex: 3 }}
-                >
-                  {/* Initials Mark */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(194, pageWidth), top: pct(0, 340), width: pct(35, pageWidth), height: pct(72, 340), border: "1.5px solid #fff", borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                    <div style={{ position: "absolute", top: "12%", left: "31%", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                    <div style={{ position: "absolute", bottom: "12%", left: "49%", color: "#fff", fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
-                  </div>
-
-                  {/* Names */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(85, pageWidth), top: pct(75, 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(35.88px, ${(46 / pageWidth) * 100}vw, 46px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{`${names.firstName}\n${names.secondName}`}</div>
-
-                  {/* Subtitle */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(85, pageWidth), top: pct(204, 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant, serif", fontSize: `clamp(12.48px, ${(16 / pageWidth) * 100}vw, 16px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", letterSpacing: "0.1em", textTransform: "capitalize", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${200 + animDelayMs}ms` }}>{"Welcome To Our\nMediterranean Abode"}</div>
-
-                  {/* Dates Left and Right */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(80, pageWidth), top: pct(127, 340), width: pct(75, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(13.26px, ${(17 / pageWidth) * 100}vw, 17px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "right", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.month}</div>
-                  <div className="reveal" style={{ position: "absolute", left: pct(275, pageWidth), top: pct(127, 340), width: pct(75, pageWidth), color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(13.26px, ${(17 / pageWidth) * 100}vw, 17px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "left", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.year}</div>
-
-                  {/* Scroll down button */}
-                  <button
-                    type="button"
-                    onClick={handleScrollDown}
-                    className="reveal"
-                    style={{
-                      position: "absolute",
-                      left: pct(164, pageWidth),
-                      top: pct(302, 340),
-                      width: pct(100, pageWidth),
-                      height: pct(38, 340),
-                      backgroundColor: "#fff",
-                      borderRadius: "100px",
-                      zIndex: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "none",
-                      cursor: "pointer",
-                      transitionDelay: `${500 + animDelayMs}ms`
-                    }}
-                  >
-                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
-                  </button>
-                </div>
-
-              </>
-            );
-          }}
+              ))}
+            </button>
+          ) : (
+            <div 
+              className="absolute flex justify-center items-center gap-4"
+              style={{ bottom: "14vh", left: "50%", transform: "translateX(-50%)", zIndex: 6 }}
+            >
+              <div style={{ opacity: revealOpacity, transition: "opacity 0.3s ease-out" }} className="text-blue font-antic text-2xl font-bold">{revealDateParts.day}</div>
+              <div className="w-[1px] h-[20px] bg-blue opacity-30"></div>
+              <div style={{ opacity: revealOpacity, transition: "opacity 0.3s ease-out" }} className="text-blue font-antic text-2xl font-bold">{revealDateParts.monthNum}</div>
+              <div className="w-[1px] h-[20px] bg-blue opacity-30"></div>
+              <div style={{ opacity: revealOpacity, transition: "opacity 0.3s ease-out" }} className="text-blue font-antic text-2xl font-bold">{revealDateParts.year2D}</div>
+            </div>
+          )}
         </Section>
 
-        {/* Canvas 2: Reveal */}
-        <Section
-          startY={501}
-          height={303}
-          delayOffset={animDelayMs}
-          data-section-index={1}
-          layerNames={[
-            "reveal-corner-top-right.png",
-            "reveal-hand.svg",
-            "reveal-corner-bottom-left.png"
-          ]}
-        >
-          {({ absoluteBox, textLayer }) => {
-            const revealOpacity = doorFrameSources.length ? doorFrame / (doorFrameSources.length - 1) : 0;
-            return (
-              <>
-                {/* Reveal Titles */}
-                {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, reveal: true, children: "Reveal" })}
-                {textLayer({ left: 85, top: 565, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0646\u0647\u0627\u0631 \u062c\u0627\u0621" })}
-
-                {/* Reveal Box Content */}
-                {textLayer({ left: 86, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.day}</div> })}
-                {textLayer({ left: 183, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.monthNum}</div> })}
-                {textLayer({ left: 280, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.year2D}</div> })}
-
-                {doorFrameSources.length ? (
-                  <button
-                    type="button"
-                    onClick={handleDoorClick}
-                    aria-label="Open reveal doors"
-                    className="reveal absolute cursor-pointer bg-transparent p-0 focus:outline-none"
-                    onTransitionEnd={(event) => {
-                      if (event.propertyName === "opacity") {
-                        handleDoorClick();
-                      }
-                    }}
-                    style={{ ...absoluteBox({ left: 82, top: 610, width: 267, height: 170 }), zIndex: 6, transitionDelay: `${900 + animDelayMs}ms` }}
-                  >
-                    {doorSlots.map((door) => (
-                      <img
-                        key={door.left}
-                        src={doorFrameSources[doorFrame]}
-                        alt=""
-                        className="absolute"
-                        style={{ left: pct(door.left - 82, 267), top: pct(door.top - 610, 170), width: pct(door.width, 267), height: pct(door.height, 170) }}
-                        draggable="false"
-                      />
-                    ))}
-                  </button>
-                ) : null}
-              </>
-            );
-          }}
-        </Section>
-
-        {/* Canvas 5: Our Story (moved here, startY=804, height=340) */}
+        {/* Canvas 5: Our Story (visually Section 2, grows dynamically) */}
         <Section
           startY={804}
           height={340}
           delayOffset={animDelayMs}
           data-section-index={1}
           layerNames={[]}
+          className="py-12"
         >
-          {({ absoluteBox, textLayer }) => (
+          {({ absoluteBox }) => (
             <>
-              {/* Tile Ornaments */}
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
-                alt=""
-                src={layer1}
-                draggable="false"
-              />
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
-                alt=""
-                src={layer2}
-                draggable="false"
-              />
+              <Text fontSize={22} family="Antic Didone, serif" reveal={true} delayOffset={animDelayMs}>Our Story</Text>
+              <Text fontSize={20} family="Gulzar, serif" reveal={true} delay={250} delayOffset={animDelayMs} className="mt-2">حكايتنا</Text>
 
-              {/* Watercolor bougainvillea */}
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2, transitionDelay: `${2200 + animDelayMs}ms` }}
-                alt="Watercolor bougainvillea"
-                src={watercolorBougainvillea}
-                draggable="false"
-              />
+              {/* Collage Container wrapper of fixed aspect ratio 430/340 */}
+              <div className="relative w-full max-w-[430px] aspect-[430/340] mt-6 overflow-hidden">
+                {/* Tile Ornaments */}
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
+                  alt=""
+                  src={layer1}
+                  draggable="false"
+                />
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
+                  alt=""
+                  src={layer2}
+                  draggable="false"
+                />
 
-              {/* Decorative tape */}
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3, transitionDelay: `${950 + animDelayMs}ms` }}
-                alt="Decorative tape"
-                src={tape}
-                draggable="false"
-              />
+                {/* Watercolor bougainvillea */}
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 85, top: 804 + 65, width: 164, height: 164 }), zIndex: 2, transitionDelay: `${2200 + animDelayMs}ms` }}
+                  alt="Watercolor bougainvillea"
+                  src={watercolorBougainvillea}
+                  draggable="false"
+                />
 
-              {/* Couple Photo */}
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2, transitionDelay: `${550 + animDelayMs}ms` }}
-                alt="Couple"
-                src={vectorBg}
-                draggable="false"
-              />
+                {/* Decorative tape */}
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 256, top: 804 + 93, width: 114, height: 52 }), zIndex: 3, transitionDelay: `${950 + animDelayMs}ms` }}
+                  alt="Decorative tape"
+                  src={tape}
+                  draggable="false"
+                />
 
-              {/* Torn paper */}
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2, transitionDelay: `${1750 + animDelayMs}ms` }}
-                alt="Torn paper"
-                src={tornPaper}
-                draggable="false"
-              />
+                {/* Couple Photo */}
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225, height: 172 }), zIndex: 2, transitionDelay: `${550 + animDelayMs}ms` }}
+                  alt="Couple"
+                  src={invite.couplePhoto || vectorBg}
+                  draggable="false"
+                />
 
-              {/* Decorative stamp (layered for depth) */}
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), zIndex: 3, transitionDelay: `${1750 + animDelayMs}ms` }}
-                alt="Decorative stamp"
-                src={stamp2}
-                draggable="false"
-              />
-              <img
-                className="reveal absolute"
-                style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4, transitionDelay: `${1750 + animDelayMs}ms` }}
-                alt="Decorative stamp"
-                src={stamp3}
-                draggable="false"
-              />
+                {/* Torn paper */}
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 15, top: 804 + 138, width: 223, height: 165 }), zIndex: 2, transitionDelay: `${1750 + animDelayMs}ms` }}
+                  alt="Torn paper"
+                  src={tornPaper}
+                  draggable="false"
+                />
 
-              {/* Our Story titles */}
-              {textLayer({ left: 131, top: 804 + 17, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, letterSpacing: "1.1px", reveal: true, children: "Our Story" })}
-              {textLayer({ left: 134, top: 804 + 47, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, reveal: true, delay: 250, children: "\u062d\u0643\u0627\u064a\u062a\u0646\u0627" })}
+                {/* Decorative stamp */}
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 301, top: 804 + 230, width: 68, height: 101 }), zIndex: 3, transitionDelay: `${1750 + animDelayMs}ms` }}
+                  alt="Decorative stamp"
+                  src={stamp2}
+                  draggable="false"
+                />
+                <img
+                  className="reveal absolute"
+                  style={{ ...absoluteBox({ left: 306, top: 804 + 237, width: 57, height: 86 }), zIndex: 4, transitionDelay: `${1750 + animDelayMs}ms` }}
+                  alt="Decorative stamp"
+                  src={stamp3}
+                  draggable="false"
+                />
 
-              {/* Rotated text on torn paper */}
-              <div
-                className="reveal"
-                style={{
-                  ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }),
-                  transform: "rotate(-10deg)",
-                  fontFamily: "Cormorant Infant, serif",
-                  fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
-                  color: "#49606b",
-                  textAlign: "center",
-                  letterSpacing: "1.2px",
-                  lineHeight: "18px",
-                  zIndex: 3,
-                  transitionDelay: `${2200 + animDelayMs}ms`
-                }}
-              >
-                Our Happy Ever After
-                <br />
-                starts
-                <br />
-                now
+                {/* Rotated text on torn paper */}
+                <div
+                  className="reveal"
+                  style={{
+                    ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }),
+                    transform: "rotate(-10deg)",
+                    fontFamily: "Cormorant Infant, serif",
+                    fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
+                    color: "#49606b",
+                    textAlign: "center",
+                    letterSpacing: "1.2px",
+                    lineHeight: "18px",
+                    zIndex: 3,
+                    transitionDelay: `${2200 + animDelayMs}ms`
+                  }}
+                >
+                  Our Happy Ever After
+                  <br />
+                  starts
+                  <br />
+                  now
+                </div>
               </div>
             </>
           )}
         </Section>
 
-        {/* Canvas 2: Countdown (shifted, startY=1144, height=296) */}
+        {/* Canvas 2: Countdown (visually Section 3, grows dynamically) */}
         <Section
           startY={1144}
           height={296}
           delayOffset={animDelayMs}
           data-section-index={2}
           layerNames={["countdown-panel.png"]}
+          className="py-12"
         >
-          {({ absoluteBox, textLayer }) => (
-            <>
-              {textLayer({ left: 85, top: 1201, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: "#fff", letterSpacing: "0.1em", reveal: true, children: "Countdown" })}
-              {textLayer({ left: 85, top: 1236, width: 260, fontSize: 22, family: "Gulzar, serif", color: "#fff", reveal: true, delay: 150, children: "\u0627\u0644\u0639\u062f \u0627\u0644\u062a\u0646\u0627\u0632\u0644\u064a" })}
+          <div className="relative z-10 flex flex-col items-center w-full max-w-[390px]">
+            <Text color="#fff" fontSize={22} letterSpacing="0.15em" reveal={true} delayOffset={animDelayMs}>Countdown</Text>
+            <Text color="#fff" fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">العد التنازلي</Text>
 
+            <div className="flex gap-6 justify-center items-center mt-8 w-full">
               {[
-                { left: 75, value: countdown.days, label: "Days" },
-                { left: 185, value: countdown.hours, label: "Hours" },
-                { left: 295, value: countdown.minutes, label: "Minutes" },
+                { value: countdown.days, label: "Days" },
+                { value: countdown.hours, label: "Hours" },
+                { value: countdown.minutes, label: "Minutes" },
               ].map((box, index) => (
                 <div
                   key={box.label}
-                  className="reveal"
-                  style={{
-                    ...absoluteBox({ left: box.left, top: 1300, width: 60, height: 60 }),
-                    backgroundColor: "rgba(240, 248, 255, 0.9)",
-                    border: `1px solid ${blue}`,
-                    borderRadius: "12px",
-                    zIndex: 3,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transitionDelay: `${index * 150 + 300 + animDelayMs}ms`
-                  }}
+                  className="reveal w-[75px] h-[75px] bg-[rgba(240,248,255,0.9)] border border-blue-400 rounded-xl flex flex-col items-center justify-center shadow-sm"
+                  style={{ transitionDelay: `${index * 150 + 300 + animDelayMs}ms` }}
                 >
-                  <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(16 / pageWidth) * 100}vw, 16px)`, color: blue, lineHeight: "1.2", fontWeight: "600" }}>{String(box.value).padStart(2, '0')}</div>
-                  <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(9px, ${(10 / pageWidth) * 100}vw, 10px)`, color: blue, letterSpacing: "0.05em", marginTop: "2px" }}>{box.label}</div>
+                  <span className="font-cormorant text-xl font-bold leading-none text-blue">{String(box.value).padStart(2, '0')}</span>
+                  <span className="font-cormorant text-xs text-blue tracking-wide mt-1.5">{box.label}</span>
                 </div>
               ))}
-            </>
-          )}
+            </div>
+          </div>
         </Section>
 
-        {/* Canvas 3: Celebrations Title (shifted, startY=1440, height=100) */}
-        <Section startY={1440} height={100} delayOffset={animDelayMs} data-section-index={3}>
-          {({ textLayer }) => (
-            <>
-              {textLayer({ left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", reveal: true, children: "The Celebrations" })}
-              {textLayer({ left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0644\u064a\u0627\u0644\u064a" })}
-            </>
-          )}
-        </Section>
+        {/* Canvas 3 & 4: Celebrations (Combined into stack of dynamic height cards) */}
+        <Section bg="transparent" className="py-12 px-6">
+          <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>The Celebrations</Text>
+          <Text fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">الليالي</Text>
 
-        {/* Canvas 4: Dynamic Flex Celebrations Container */}
-        <div data-section-index={4} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent" }}>
-          {(invite.timeline || []).map((event, index) => {
-            return (
-              <section
+          <div className="flex flex-col gap-8 w-full max-w-[430px] mt-8">
+            {(invite.timeline || []).map((event, index) => (
+              <div 
                 key={index}
-                className="reveal"
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  aspectRatio: `${pageWidth} / 460`,
-                  overflow: "hidden",
-                  transitionDelay: `${animDelayMs}ms`
-                }}
+                className="reveal relative w-full aspect-[430/460] overflow-hidden"
+                style={{ transitionDelay: `${animDelayMs}ms` }}
               >
-                {/* Render the identical source-of-truth decorations for each card */}
+                {/* Card figma decorations */}
                 {eventDecorations.map(dec => (
                   <img
                     key={dec.name}
-                    className="celebration-decoration"
+                    className="celebration-decoration absolute pointer-events-none"
                     src={exportImageSources[dec.name]}
                     style={{
-                      position: "absolute",
                       left: pct(dec.left, pageWidth),
                       top: pct(dec.top, 460),
                       width: pct(dec.width, pageWidth),
@@ -890,247 +797,238 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                   />
                 ))}
 
-                {/* Event Card Content Box */}
+                {/* Content Card Body */}
                 <div
+                  className="absolute flex flex-col items-center pt-8"
                   style={{
-                    position: "absolute",
                     left: pct(55, pageWidth),
-                    top: pct(0, 460),
+                    top: 0,
                     width: pct(320, pageWidth),
                     height: pct(420, 460),
                     border: `1.5px solid ${blue}`,
                     borderRadius: "10px",
                     zIndex: 3,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    paddingTop: "35px",
                     backgroundColor: "transparent"
                   }}
                 >
-                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>{event.title}</span>
-                  <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>{event.titleAr}</span>
+                  <span className="font-cormorant text-2xl font-semibold leading-none text-blue">{event.title}</span>
+                  <span className="font-gulzar text-xl leading-relaxed text-blue mt-1">{event.titleAr}</span>
 
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
-                    <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{formatEventDate(event.date || invite.eventDate).weekday}</span>
+                  <div className="flex items-center justify-between w-[80%] mt-6">
+                    <div className="border-t border-b border-gray-400 py-1.5 flex-1 text-center">
+                      <span className="font-cormorant text-[15px] text-[#496067]">{formatEventDate(event.date || invite.eventDate).weekday}</span>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{formatEventDate(event.date || invite.eventDate).day}</span>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{formatEventDate(event.date || invite.eventDate).year}</span>
+                    <div className="flex flex-col items-center px-4">
+                      <span className="font-cormorant text-[30px] leading-none font-bold text-[#496067]">{formatEventDate(event.date || invite.eventDate).day}</span>
+                      <span className="font-cormorant text-[13px] leading-none text-[#496067] mt-1">{formatEventDate(event.date || invite.eventDate).year}</span>
                     </div>
-                    <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{formatEventDate(event.date || invite.eventDate).month}</span>
+                    <div className="border-t border-b border-gray-400 py-1.5 flex-1 text-center">
+                      <span className="font-cormorant text-[15px] text-[#496067]">{formatEventDate(event.date || invite.eventDate).month}</span>
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
-                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${event.venue || ""}\n${event.city || ""}`}</span>
-                    <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(event.venue, event.city)}</span>
+                  <div className="flex flex-col items-center mt-8">
+                    <span className="font-cormorant text-xs font-semibold tracking-wider text-blue text-center leading-relaxed whitespace-pre-wrap">{`${event.venue || ""}\n${event.city || ""}`}</span>
+                    <span className="font-gulzar text-sm text-blue text-center mt-2.5 leading-relaxed">{getArabicVenueAndCity(event.venue, event.city)}</span>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => window.open(event.mapUrl || invite.mapUrl || "https://maps.google.com", "_blank")}
-                    style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
+                    className="mt-8 border border-gray-200 rounded-lg px-6 py-2 bg-white cursor-pointer hover:bg-gray-50 flex items-center justify-center"
                   >
-                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
+                    <span className="font-cormorant text-[11px] font-semibold text-[#496067] tracking-wider uppercase">Open in maps</span>
                   </button>
                 </div>
-              </section>
-            );
-          })}
-        </div>
+              </div>
+            ))}
+          </div>
+        </Section>
 
-               {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
+        {/* Canvas 6: Dress Code */}
         <Section
           startY={2790}
           height={430}
           delayOffset={animDelayMs}
           data-section-index={5}
           layerNames={["dress-code-illustration.png"]}
+          className="py-12 min-h-[360px] justify-center"
         >
-          {({ textLayer }) => (
-            <>
-              {textLayer({ left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Dress Code" })}
-              {textLayer({ left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u062a\u0628\u062f\u064a\u0644\u0629" })}
-              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", reveal: true, delay: 300, children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
-            </>
-          )}
+          <div className="relative z-10 flex flex-col items-center text-center px-6">
+            <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>Dress Code</Text>
+            <Text fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">التبديلة</Text>
+            <Text fontSize={14} family="Cormorant, serif" color="#49606B" reveal={true} delay={300} delayOffset={animDelayMs} className="mt-8 max-w-[280px] leading-relaxed">
+              {invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
+            </Text>
+          </div>
         </Section>
 
-        {/* Canvas 7: Programme (shifted, startY=3220, height=430) */}
+        {/* Canvas 7: Programme */}
         <Section
           startY={3220}
           height={430}
           delayOffset={animDelayMs}
           data-section-index={6}
           layerNames={[]}
+          className="py-12"
         >
-          {({ absoluteBox, textLayer }) => (
+          {({ absoluteBox }) => (
             <>
-              {textLayer({ left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Programme" })}
-              {textLayer({ left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c" })}
+              <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>Programme</Text>
+              <Text fontSize={22} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">البرنامج</Text>
 
-              {/* Programme Steps mapping */}
-              {(invite.programmeSteps || [
-                { time: "17:00", name: "Sdek" },
-                { time: "18:00", name: "Reception" },
-                { time: "20:00", name: "Dinner" },
-                { time: "00:00", name: "Dance" },
-              ]).map((item, index) => {
-                const isFinal = index === 3;
-                const top = 3330 + index * 75;
-                const image = [rect121, rect120, rect119, rect118][index];
-                const percent = [0, 0.25, 0.50, 1.00][index];
-                return (
-                  <div key={index} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+              {/* Steps Area container */}
+              <div className="relative w-full max-w-[430px] aspect-[430/260] mt-8 overflow-hidden">
+                {(invite.programmeSteps || [
+                  { time: "17:00", name: "Sdek" },
+                  { time: "18:00", name: "Reception" },
+                  { time: "20:00", name: "Dinner" },
+                  { time: "00:00", name: "Dance" },
+                ]).map((item, index) => {
+                  const isFinal = index === 3;
+                  const top = 3330 + index * 75;
+                  const image = [rect121, rect120, rect119, rect118][index];
+                  const percent = [0, 0.25, 0.50, 1.00][index];
+                  return (
+                    <div key={index} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
 
-                    {/* Dot */}
-                    <div
-                      className="reveal"
-                      style={{
-                        ...absoluteBox({ left: 209, top: top + 2, width: 13, height: 13 }),
-                        zIndex: 3,
-                        transitionDelay: `${index * 900 + animDelayMs}ms`
-                      }}
-                    >
-                      <WavyCircle percent={percent} />
-                    </div>
-
-                    {/* Step Content Wrapper (Time, Icon, and Label) */}
-                    <div
-                      className="reveal"
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        transitionDelay: `${index * 900 + 200 + animDelayMs}ms`
-                      }}
-                    >
-                      {/* Time */}
+                      {/* Dot */}
                       <div
+                        className="reveal"
                         style={{
-                          ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }),
-                          fontFamily: "Cormorant Infant, serif",
-                          fontWeight: "600",
-                          fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
-                          color: "#2e88e2",
-                          letterSpacing: "1.2px",
-                          textAlign: "left",
-                          zIndex: 3
+                          ...absoluteBox({ left: 209, top: top + 2, width: 13, height: 13 }),
+                          zIndex: 3,
+                          transitionDelay: `${index * 900 + animDelayMs}ms`
                         }}
                       >
-                        {item.time}
+                        <WavyCircle percent={percent} />
                       </div>
 
-                      {/* Step Icon Flourish */}
-                      <img
-                        className="absolute"
-                        style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
-                        alt=""
-                        src={image}
-                      />
-
-                      {/* Label */}
+                      {/* Step Content Wrapper (Time, Icon, and Label) */}
                       <div
+                        className="reveal"
                         style={{
-                          ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }),
-                          fontFamily: "Cormorant Infant, serif",
-                          fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
-                          color: "#49606b",
-                          letterSpacing: "1.2px",
-                          textAlign: "center",
-                          zIndex: 3
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          transitionDelay: `${index * 900 + 200 + animDelayMs}ms`
                         }}
                       >
-                        {item.name}
+                        {/* Time */}
+                        <div
+                          style={{
+                            ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }),
+                            fontFamily: "Cormorant Infant, serif",
+                            fontWeight: "600",
+                            fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
+                            color: "#2e88e2",
+                            letterSpacing: "1.2px",
+                            textAlign: "left",
+                            zIndex: 3
+                          }}
+                        >
+                          {item.time}
+                        </div>
+
+                        {/* Step Icon Flourish */}
+                        <img
+                          className="absolute"
+                          style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
+                          alt=""
+                          src={image}
+                        />
+
+                        {/* Label */}
+                        <div
+                          style={{
+                            ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }),
+                            fontFamily: "Cormorant Infant, serif",
+                            fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
+                            color: "#49606b",
+                            letterSpacing: "1.2px",
+                            textAlign: "center",
+                            zIndex: 3
+                          }}
+                        >
+                          {item.name}
+                        </div>
                       </div>
+
+                      {/* Connecting Line Segment to next step */}
+                      {!isFinal && (
+                        <div
+                          className="reveal line-segment"
+                          style={{
+                            ...absoluteBox({ left: 215, top: top + 15, width: 1, height: 62 }),
+                            backgroundColor: "#2e88e2",
+                            zIndex: 2,
+                            transitionDelay: `${index * 900 + 400 + animDelayMs}ms`
+                          }}
+                        />
+                      )}
+
                     </div>
-
-                    {/* Connecting Line Segment to next step */}
-                    {!isFinal && (
-                      <div
-                        className="reveal line-segment"
-                        style={{
-                          ...absoluteBox({ left: 215, top: top + 15, width: 1, height: 62 }),
-                          backgroundColor: "#2e88e2",
-                          zIndex: 2,
-                          transitionDelay: `${index * 900 + 400 + animDelayMs}ms`
-                        }}
-                      />
-                    )}
-
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </>
           )}
         </Section>
 
-        {/* Canvas 8: RSVP (shifted, startY=3650, height=700) */}
+        {/* Canvas 8: RSVP (grows dynamically) */}
         {invite.rsvpEnabled !== false ? (
-          <Section startY={3650} height={535} delayOffset={animDelayMs} data-section-index={7}>
-            {({ absoluteBox, textLayer }) => (
-              <>
-                {textLayer({ left: 131, top: 3650, width: 168, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "RSVP" })}
-                {textLayer({ left: 45, top: 3685, width: 340, fontSize: 12, lineHeight: 20, family: "Cormorant Infant, serif", color: "rgb(73, 96, 107)", align: "center", reveal: true, delay: 150, children: rsvpDeadline.inline })}
+          <Section bg="transparent" className="py-12 px-6">
+            <Text fontSize={22} family="Cormorant Infant, serif" reveal={true} delayOffset={animDelayMs}>RSVP</Text>
+            <Text fontSize={12} color="rgb(73, 96, 107)" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-2">{rsvpDeadline.inline}</Text>
 
-                <div className="reveal" style={{ ...absoluteBox({ left: 40, top: 3750, width: 350, height: 420 }), zIndex: 10, display: "flex", flexDirection: "column", gap: "15px", transitionDelay: `${300 + animDelayMs}ms` }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Name</label>
-                    <input type="text" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Sir Name</label>
-                    <input type="text" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Email</label>
-                    <input type="email" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    <label style={{ fontFamily: "Cormorant Infant, serif", fontSize: "16px", color: "rgb(73, 96, 107)", fontWeight: 600 }}>Number of guests</label>
-                    <input type="number" style={{ padding: "12px", border: "1px solid #ccc", borderRadius: "8px", outline: "none", fontFamily: "Cormorant Infant, serif", fontSize: "16px", backgroundColor: "#fff" }} />
-                  </div>
-                  <button style={{ backgroundColor: "#008CDE", color: "#fff", padding: "16px", borderRadius: "8px", border: "none", marginTop: "15px", fontFamily: "Cormorant Infant, serif", fontSize: "18px", cursor: "pointer", width: "100%" }}>
-                    Send Confirmation
-                  </button>
-                </div>
-              </>
-            )}
+            <div 
+              className="reveal flex flex-col gap-4 w-full max-w-[360px] bg-white border border-gray-100 rounded-xl p-6 mt-8 shadow-sm"
+              style={{ transitionDelay: `${300 + animDelayMs}ms` }}
+            >
+              <div className="flex flex-col gap-1.5">
+                <label className="font-cormorant text-[15px] font-semibold text-gray-500">Name</label>
+                <input type="text" className="p-3 border border-gray-200 rounded-lg outline-none font-cormorant text-base bg-white" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="font-cormorant text-[15px] font-semibold text-gray-500">Sir Name</label>
+                <input type="text" className="p-3 border border-gray-200 rounded-lg outline-none font-cormorant text-base bg-white" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="font-cormorant text-[15px] font-semibold text-gray-500">Email</label>
+                <input type="email" className="p-3 border border-gray-200 rounded-lg outline-none font-cormorant text-base bg-white" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="font-cormorant text-[15px] font-semibold text-gray-500">Number of guests</label>
+                <input type="number" className="p-3 border border-gray-200 rounded-lg outline-none font-cormorant text-base bg-white" />
+              </div>
+              <button className="bg-blue hover:opacity-90 text-white py-4 rounded-lg border-none mt-2 font-cormorant text-lg font-semibold cursor-pointer w-full">
+                Send Confirmation
+              </button>
+            </div>
           </Section>
         ) : null}
 
         {/* Canvas 9: Footer */}
-        <Section
-          startY={4200}
-          height={240}
-          delayOffset={animDelayMs}
-          data-section-index={8}
-        >
-          {({ absoluteBox, textLayer }) => (
-            <>
-              <div className="reveal" style={{ ...absoluteBox({ left: 194, top: 4200, width: 35, height: 52 }), border: `1.5px solid ${blue}`, borderRadius: "16px", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                <div style={{ position: "absolute", top: "12%", left: "31%", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                <div style={{ position: "absolute", bottom: "12%", left: "49%", color: blue, fontFamily: "Antic Didone, serif", fontSize: `clamp(17px, ${(21 / pageWidth) * 100}vw, 21px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
-              </div>
-              {textLayer({ left: 85, top: 4285, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", reveal: true, children: "\u0627\u0646 \u0634\u0627\u0621 \u0627\u0644\u0644\u0647 \u0644\u064a\u0644\u062a\u0643\u0645 \u0632\u064a\u0646\u0629" })}
-              <img
-                className="celebration-decoration"
-                src={exportImageSources["closing-small-ornament.png"]}
-                style={{
-                  ...absoluteBox({ left: 198, top: 4320, width: 29, height: 12 }),
-                  zIndex: 5,
-                  animationDelay: "0.2s"
-                }}
-                alt=""
-                draggable="false"
-              />
-            </>
-          )}
+        <Section bg="transparent" className="py-12 pb-16">
+          {/* Initials Oval */}
+          <div className="reveal border-[1.5px] border-blue rounded-[16px] w-[35px] h-[52px] relative flex flex-col items-center justify-center" style={{ transitionDelay: `${animDelayMs}ms` }}>
+            <div className="text-blue font-antic text-[17px] leading-none mb-0.5">{names.firstName.charAt(0).toUpperCase()}</div>
+            <div className="text-blue font-antic text-[17px] leading-none mt-0.5">{names.secondName.charAt(0).toUpperCase()}</div>
+          </div>
+
+          <Text fontSize={26} family="Gulzar, serif" reveal={true} delay={150} delayOffset={animDelayMs} className="mt-6">
+            ان شاء الله ليلتكم زينة
+          </Text>
+
+          <img
+            className="celebration-decoration w-[29px] h-[12px] object-contain mt-6"
+            src={exportImageSources["closing-small-ornament.png"]}
+            style={{ animationDelay: "0.2s" }}
+            alt=""
+            draggable="false"
+          />
         </Section>
 
         {/* Particle Emitter */}
