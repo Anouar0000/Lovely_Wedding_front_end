@@ -279,8 +279,7 @@ useEffect(() => {
   const handleCanvasClick = (e) => { if (e.target === e.currentTarget) { setSelectedTextId(null); } };
   
   const handleDownloadExact = async () => {
-    const canvas = contentContainerRef.current;
-    if (!canvas) { alert("Erreur : La zone de personnalisation n'a pas pu etre trouvee."); return; }
+    if (!contentContainerRef.current) { alert("Erreur : La zone de personnalisation n'a pas pu etre trouvee."); return; }
 
     try {
         if (document.fonts?.ready) {

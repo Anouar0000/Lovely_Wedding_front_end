@@ -56,7 +56,7 @@ function InvitationsPhysiquePage() {
       setSelectedCategory(null);
       localStorage.removeItem("selectedCategory");
     }
-  }, [location.state]); // Updated dependency for clarity
+  }, [location.key, location.state?.selectedCategory]);
 
   useEffect(() => {
     if (selectedCategory) {

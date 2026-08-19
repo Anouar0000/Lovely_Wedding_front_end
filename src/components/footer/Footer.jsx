@@ -14,19 +14,19 @@ function Footer() {
           <div className="grid grid-cols-2 gap-4">
             <div className='text-center'>
               <h3 className="font-semibold">Commande et contact</h3>
-              <a>Délai de traitement</a><br></br>
-              <a>Suivi de commande</a><br></br>
-              <a>Besoin d'aide</a><br></br>
-              <a>Nous contacter</a><br></br>
-              <a>Presse</a>
+              <span>Délai de traitement</span><br></br>
+              <span>Suivi de commande</span><br />
+              <span>Besoin d'aide</span><br />
+              <span>Nous contacter</span><br />
+              <span>Presse</span>
             </div>
             <div className='text-center'>
               <h3 className="font-semibold">Plus sur Lovely Invitations</h3>
-              <a>Nos engagements</a><br></br>
-              <a>Données personnelles</a><br></br>
-              <a>Le journal</a><br></br>
-              <a>Cookies</a><br></br>
-              <a>Nos faire-part</a>
+              <span>Nos engagements</span><br />
+              <span>Données personnelles</span><br></br>
+              <span>Le journal</span><br />
+              <span>Cookies</span><br />
+              <span>Nos faire-part</span>
             </div>
           </div>
         </div>
