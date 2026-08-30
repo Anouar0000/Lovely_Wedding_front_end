@@ -554,13 +554,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
       `}</style>
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col">
 
+        
         {/* Canvas 1: Hero */}
         <Section invite={invite}
           startY={0}
-          height={804}
+          height={708}
           delayOffset={animDelayMs}
           data-section-index={0} data-section-id="sec-hero"
-          isFullScreenHeight={true}
+          isFullScreenHeight={false}
           layerNames={[]}
         >
           {({ absoluteBox, textLayer }) => {
@@ -623,82 +624,98 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                   </>
                 )}
 
+
+
                 <div
-                  className="absolute left-0 top-1/2 w-full -translate-y-1/2"
-                  style={{ height: pct(340, 804), zIndex: 3, marginTop: invite?.styleOverrides?.['sec-hero']?.posY || 0 }}
+                  className="absolute left-0 top-0 w-full flex items-center justify-center pointer-events-none"
+                  style={{ height: '100%', zIndex: 3, marginTop: invite?.styleOverrides?.['sec-hero']?.posY || 0 }}
                 >
-                  {/* Initials Mark */}
-                  <div className="reveal" style={{ position: "absolute", left: pct(194 + (invite?.styleOverrides?.['hero-initials']?.posX || 0), pageWidth), top: pct(0 + (invite?.styleOverrides?.['hero-initials']?.posY || 0), 340), width: pct(35, pageWidth), height: pct(72, 340), border: `1.5px solid ${invite?.styleOverrides?.['hero-initials']?.color || '#fff'}`, borderRadius: `${invite?.styleOverrides?.['hero-initials']?.radius ?? 16}px`, zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
-                    <div onClick={makeClickHandler('sec-hero', 'hero-initial-1')} style={{ cursor: "pointer", position: "absolute", top: `calc(12% + ${invite?.styleOverrides?.['hero-initial-1']?.posY || 0}px)`, left: `calc(31% + ${invite?.styleOverrides?.['hero-initial-1']?.posX || 0}px)`, color: invite?.styleOverrides?.['hero-initials']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-initials']?.fontFamily && invite?.styleOverrides?.['hero-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-initials']?.fontFamily : "Antic Didone, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-initials']?.fontSize || 21) * 0.78}px, ${((invite?.styleOverrides?.['hero-initials']?.fontSize || 21) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-initials']?.fontSize || 21}px)`, lineHeight: "1", fontWeight: "400" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                    <div onClick={makeClickHandler('sec-hero', 'hero-initial-2')} style={{ cursor: "pointer", position: "absolute", bottom: `calc(12% - ${invite?.styleOverrides?.['hero-initial-2']?.posY || 0}px)`, left: `calc(49% + ${invite?.styleOverrides?.['hero-initial-2']?.posX || 0}px)`, color: invite?.styleOverrides?.['hero-initials']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-initials']?.fontFamily && invite?.styleOverrides?.['hero-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-initials']?.fontFamily : "Antic Didone, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-initials']?.fontSize || 21) * 0.78}px, ${((invite?.styleOverrides?.['hero-initials']?.fontSize || 21) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-initials']?.fontSize || 21}px)`, lineHeight: "1", fontWeight: "400" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '430/708', pointerEvents: 'auto' }}>
+                    {/* Initials Mark (Pill border, precise position) */}
+                    <div className="reveal" style={{ position: "absolute", left: pct(194 + (invite?.styleOverrides?.['hero-initials']?.posX || 0), 430), top: pct(202 + (invite?.styleOverrides?.['hero-initials']?.posY || 0), 708), width: pct(43, 430), height: pct(66, 708), borderRadius: "40px", border: `1px solid ${invite?.styleOverrides?.['hero-initials']?.color || "#fff"}`, zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>
+                      <div style={{ cursor: "pointer", position: "absolute", left: pct(195 - 194, 43), top: pct(208 - 202, 66), width: pct(32.17, 43), height: pct(28.5, 66), textAlign: "center", color: invite?.styleOverrides?.['hero-initials']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-initials']?.fontFamily && invite?.styleOverrides?.['hero-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-initials']?.fontFamily : "Antic Didone", fontSize: `clamp(${30 * 0.78}px, ${(30 / 430) * 100}vw, 30px)`, lineHeight: 1.066, fontWeight: 400 }}>{names.firstName.charAt(0)}</div>
+                      <div style={{ cursor: "pointer", position: "absolute", left: pct(203 - 194, 43), top: pct(231 - 202, 66), width: pct(32.17, 43), height: pct(28.5, 66), textAlign: "center", color: invite?.styleOverrides?.['hero-initials']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-initials']?.fontFamily && invite?.styleOverrides?.['hero-initials']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-initials']?.fontFamily : "Antic Didone", fontSize: `clamp(${30 * 0.78}px, ${(30 / 430) * 100}vw, 30px)`, lineHeight: 1.066, fontWeight: 400 }}>{names.secondName.charAt(0)}</div>
+                    </div>
+
+                    <div onClick={makeClickHandler('hero', 'hero-name-1')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(165 + (invite?.styleOverrides?.['hero-names']?.posX || 0) + (invite?.styleOverrides?.['hero-name-1']?.posX || 0), 430), top: pct(272 + (invite?.styleOverrides?.['hero-names']?.posY || 0) + (invite?.styleOverrides?.['hero-name-1']?.posY || 0), 708), width: pct(105, 430), color: invite?.styleOverrides?.['hero-names']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-names']?.fontFamily && invite?.styleOverrides?.['hero-names']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-names']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${38 * 0.78}px, ${(38 / 430) * 100}vw, 38px)`, fontWeight: 400, lineHeight: 1.1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{names.firstName}</div>
+                    <div onClick={makeClickHandler('hero', 'hero-name-2')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(165 + (invite?.styleOverrides?.['hero-names']?.posX || 0) + (invite?.styleOverrides?.['hero-name-2']?.posX || 0), 430), top: pct(310 + (invite?.styleOverrides?.['hero-names']?.posY || 0) + (invite?.styleOverrides?.['hero-name-2']?.posY || 0), 708), width: pct(105, 430), color: invite?.styleOverrides?.['hero-names']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-names']?.fontFamily && invite?.styleOverrides?.['hero-names']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-names']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${38 * 0.78}px, ${(38 / 430) * 100}vw, 38px)`, fontWeight: 400, lineHeight: 1.1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{names.secondName}</div>
+
+                    <div onClick={makeClickHandler('hero', 'hero-subtitle')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(121 + (invite?.styleOverrides?.['hero-subtitle']?.posX || 0), 430), top: pct(360 + (invite?.styleOverrides?.['hero-subtitle']?.posY || 0), 708), width: pct(188, 430), color: "#fff", fontFamily: "Cormorant, serif", fontSize: `clamp(12.48px, ${(16 / 430) * 100}vw, 16px)`, fontWeight: 400, lineHeight: 1.2, textAlign: "center", letterSpacing: "0.1em", textTransform: "none", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${200 + animDelayMs}ms` }}>{(invite?.welcomeSubtitle || "Welcome To Our\nMediterranean Abode").replace(/\\n/g, '\n')}</div>
+
+                    {/* Dates Left and Right */}
+                    <div onClick={makeClickHandler('hero', 'hero-date-month')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(101 + (invite?.styleOverrides?.['hero-date']?.posX || 0) + (invite?.styleOverrides?.['hero-date-month']?.posX || 0), 430), top: pct(305 + (invite?.styleOverrides?.['hero-date']?.posY || 0) + (invite?.styleOverrides?.['hero-date-month']?.posY || 0), 708), width: pct(63, 430), color: invite?.styleOverrides?.['hero-date']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-date']?.fontFamily && invite?.styleOverrides?.['hero-date']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-date']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${20 * 0.78}px, ${(20 / 430) * 100}vw, 20px)`, fontStyle: "normal", fontWeight: 400, lineHeight: 1.2, textAlign: "center", letterSpacing: "0em", textTransform: "none", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.month}</div>
+                    <div onClick={makeClickHandler('hero', 'hero-date-year')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(266 + (invite?.styleOverrides?.['hero-date']?.posX || 0) + (invite?.styleOverrides?.['hero-date-year']?.posX || 0), 430), top: pct(305 + (invite?.styleOverrides?.['hero-date']?.posY || 0) + (invite?.styleOverrides?.['hero-date-year']?.posY || 0), 708), width: pct(63, 430), color: invite?.styleOverrides?.['hero-date']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-date']?.fontFamily && invite?.styleOverrides?.['hero-date']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-date']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${20 * 0.78}px, ${(20 / 430) * 100}vw, 20px)`, fontStyle: "normal", fontWeight: 400, lineHeight: 1.2, textAlign: "center", letterSpacing: "0em", textTransform: "none", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.year}</div>
+
+                    {/* Scroll down button */}
+                    <button
+                      type="button"
+                      onClick={handleScrollDown}
+                      className="reveal"
+                      style={{
+                        position: "absolute",
+                        left: pct(158, 430),
+                        top: pct(430, 708),
+                        width: pct(116, 430),
+                        height: pct(32, 708),
+                        backgroundColor: "#fff",
+                        borderRadius: "20px",
+                        zIndex: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "none",
+                        cursor: "pointer",
+                        transitionDelay: `${500 + animDelayMs}ms`
+                      }}
+                    >
+                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / 430) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
+                    </button>
                   </div>
-
-                  {/* Names */}
-                  <div onClick={makeClickHandler('sec-hero', 'hero-name-1')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(85 + (invite?.styleOverrides?.['hero-names']?.posX || 0) + (invite?.styleOverrides?.['hero-name-1']?.posX || 0), pageWidth), top: pct(75 + (invite?.styleOverrides?.['hero-names']?.posY || 0) + (invite?.styleOverrides?.['hero-name-1']?.posY || 0), 340), width: pct(260, pageWidth), color: invite?.styleOverrides?.['hero-names']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-names']?.fontFamily && invite?.styleOverrides?.['hero-names']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-names']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-names']?.fontSize || 46) * 0.78}px, ${( (invite?.styleOverrides?.['hero-names']?.fontSize || 46) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-names']?.fontSize || 46}px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{names.firstName}</div>
-                  <div onClick={makeClickHandler('sec-hero', 'hero-name-2')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(85 + (invite?.styleOverrides?.['hero-names']?.posX || 0) + (invite?.styleOverrides?.['hero-name-2']?.posX || 0), pageWidth), top: pct(75 + (invite?.styleOverrides?.['hero-names']?.fontSize || 46) + (invite?.styleOverrides?.['hero-names']?.posY || 0) + (invite?.styleOverrides?.['hero-name-2']?.posY || 0), 340), width: pct(260, pageWidth), color: invite?.styleOverrides?.['hero-names']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-names']?.fontFamily && invite?.styleOverrides?.['hero-names']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-names']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-names']?.fontSize || 46) * 0.78}px, ${( (invite?.styleOverrides?.['hero-names']?.fontSize || 46) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-names']?.fontSize || 46}px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${animDelayMs}ms` }}>{names.secondName}</div>
-
-                  {/* Subtitle */}
-                  <div onClick={makeClickHandler('sec-hero', 'hero-subtitle')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(85 + (invite?.styleOverrides?.['hero-subtitle']?.posX || 0), pageWidth), top: pct(204 + (invite?.styleOverrides?.['hero-subtitle']?.posY || 0), 340), width: pct(260, pageWidth), color: "#fff", fontFamily: "Cormorant, serif", fontSize: `clamp(12.48px, ${(16 / pageWidth) * 100}vw, 16px)`, fontWeight: 400, lineHeight: 1, textAlign: "center", letterSpacing: "0.1em", textTransform: "capitalize", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${200 + animDelayMs}ms` }}>{invite?.welcomeSubtitle || "Welcome To Our\nMediterranean Abode"}</div>
-
-                  {/* Dates Left and Right */}
-                  <div onClick={makeClickHandler('sec-hero', 'hero-date-month')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(80 + (invite?.styleOverrides?.['hero-date']?.posX || 0) + (invite?.styleOverrides?.['hero-date-month']?.posX || 0), pageWidth), top: pct(127 + (invite?.styleOverrides?.['hero-date']?.posY || 0) + (invite?.styleOverrides?.['hero-date-month']?.posY || 0), 340), width: pct(75, pageWidth), color: invite?.styleOverrides?.['hero-date']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-date']?.fontFamily && invite?.styleOverrides?.['hero-date']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-date']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-date']?.fontSize || 17) * 0.78}px, ${((invite?.styleOverrides?.['hero-date']?.fontSize || 17) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-date']?.fontSize || 17}px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "right", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.month}</div>
-                  <div onClick={makeClickHandler('sec-hero', 'hero-date-year')} className="reveal" style={{ cursor: "pointer", position: "absolute", left: pct(275 + (invite?.styleOverrides?.['hero-date']?.posX || 0) + (invite?.styleOverrides?.['hero-date-year']?.posX || 0), pageWidth), top: pct(127 + (invite?.styleOverrides?.['hero-date']?.posY || 0) + (invite?.styleOverrides?.['hero-date-year']?.posY || 0), 340), width: pct(75, pageWidth), color: invite?.styleOverrides?.['hero-date']?.color || "#fff", fontFamily: (invite?.styleOverrides?.['hero-date']?.fontFamily && invite?.styleOverrides?.['hero-date']?.fontFamily !== 'Défaut du Template') ? invite?.styleOverrides?.['hero-date']?.fontFamily : "Cormorant Infant, serif", fontSize: `clamp(${(invite?.styleOverrides?.['hero-date']?.fontSize || 17) * 0.78}px, ${((invite?.styleOverrides?.['hero-date']?.fontSize || 17) / pageWidth) * 100}vw, ${invite?.styleOverrides?.['hero-date']?.fontSize || 17}px)`, fontStyle: "italic", fontWeight: 400, lineHeight: 18 / 17, textAlign: "left", letterSpacing: "0.15em", textTransform: "uppercase", whiteSpace: "pre-wrap", zIndex: 3, transitionDelay: `${400 + animDelayMs}ms` }}>{dateParts.year}</div>
-
-                  {/* Scroll down button */}
-                  <button
-                    type="button"
-                    onClick={handleScrollDown}
-                    className="reveal"
-                    style={{
-                      position: "absolute",
-                      left: pct(164, pageWidth),
-                      top: pct(302, 340),
-                      width: pct(100, pageWidth),
-                      height: pct(38, 340),
-                      backgroundColor: "#fff",
-                      borderRadius: "100px",
-                      zIndex: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "none",
-                      cursor: "pointer",
-                      transitionDelay: `${500 + animDelayMs}ms`
-                    }}
-                  >
-                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
-                  </button>
                 </div>
 
               </>
             );
           }}
         </Section>
-
-        {/* Canvas 2: Reveal */}
-        <Section invite={invite}
-          startY={501}
-          height={303}
-          delayOffset={animDelayMs}
-          data-section-index={1} data-section-id="sec-reveal"
-          layerNames={[
-            "reveal-corner-top-right.png",
-            "reveal-hand.svg",
-            "reveal-corner-bottom-left.png"
-          ]}
-        >
+{/* Canvas 2: Reveal */}
+        <Section invite={invite} startY={708} height={316} delayOffset={animDelayMs} data-section-index={1} data-section-id="sec-reveal">
           {({ absoluteBox, textLayer }) => {
             const revealOpacity = doorFrameSources.length ? doorFrame / (doorFrameSources.length - 1) : 0;
             return (
               <>
                 {/* Reveal Titles */}
-                {textLayer({ left: 85, top: 535, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, reveal: true, children: "Reveal" })}
-                {textLayer({ left: 85, top: 565, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0646\u0647\u0627\u0631 \u062c\u0627\u0621" })}
+                {textLayer({ id: 'reveal-title-en', left: 131, top: 730, width: 168, fontSize: 22, family: "Antic Didone, serif", color: blue, align: "center", letterSpacing: "1.1px", lineHeight: 30, zIndex: 7, reveal: true, children: "Reveal" })}
+                {textLayer({ id: 'reveal-title-ar', left: 134, top: 770, width: 162, fontSize: 20, family: "Gulzar, serif", color: blue, align: "center", lineHeight: 26, zIndex: 7, reveal: true, children: "النهار جاء" })}
 
-                {/* Reveal Box Content */}
-                {textLayer({ left: 86, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.day}</div> })}
-                {textLayer({ left: 183, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.monthNum}</div> })}
-                {textLayer({ left: 280, top: 668, width: 63, fontSize: 20, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 7, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.year2D}</div> })}
+                {/* Khamsa Hand Vector */}
+                <img
+                  src={require("../assets/digital/sidi-bousaid/export-v2/objects.svg").default || require("../assets/digital/sidi-bousaid/export-v2/objects.svg")}
+                  className="reveal"
+                  alt=""
+                  draggable="false"
+                  style={{ ...absoluteBox({ left: 160, top: 800, width: 111, height: 132 }), zIndex: 4, transitionDelay: `${200 + animDelayMs}ms` }}
+                />
+
+                {/* Corner Blue Florals */}
+                <img
+                  src={exportImageSources["reveal-corner.png"]}
+                  alt=""
+                  className="reveal absolute"
+                  draggable="false"
+                  style={{ ...absoluteBox({ left: -3, top: 932, width: 62, height: 55 }), zIndex: 2, transform: 'scaleX(-1) scaleY(-1)', transitionDelay: "1500ms" }}
+                />
+                <img
+                  src={exportImageSources["reveal-corner.png"]}
+                  alt=""
+                  className="reveal absolute"
+                  draggable="false"
+                  style={{ ...absoluteBox({ left: 369, top: 708, width: 63, height: 55 }), zIndex: 2, transitionDelay: "1500ms" }}
+                />
+
+                {/* Reveal Box Content (Behind the doors) */}
+                {textLayer({ left: 93, top: 850, width: 51, fontSize: 13, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 5, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.day}</div> })}
+                {textLayer({ left: 190, top: 850, width: 51, fontSize: 13, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 5, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.monthNum}</div> })}
+                {textLayer({ left: 287, top: 850, width: 51, fontSize: 13, family: "Antic Didone, serif", color: blue, align: "center", zIndex: 5, pointerEvents: "none", children: <div style={{ opacity: revealOpacity, transition: "opacity 0.25s ease-out" }}>{revealDateParts.year2D}</div> })}
 
                 {doorFrameSources.length ? (
                   <button
@@ -706,20 +723,19 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
                     onClick={handleDoorClick}
                     aria-label="Open reveal doors"
                     className="reveal absolute cursor-pointer bg-transparent p-0 focus:outline-none"
-                    onTransitionEnd={(event) => {
-                      if (event.propertyName === "opacity") {
-                        handleDoorClick();
-                      }
-                    }}
-                    style={{ ...absoluteBox({ left: 82, top: 610, width: 267, height: 170 }), zIndex: 6, transitionDelay: `${900 + animDelayMs}ms` }}
+                    style={{ ...absoluteBox({ left: 93, top: 810, width: 245, height: 99 }), zIndex: 6, transitionDelay: `${900 + animDelayMs}ms` }}
                   >
-                    {doorSlots.map((door) => (
+                    {[
+                      { left: 93, top: 810, width: 51, height: 99 },
+                      { left: 190, top: 810, width: 51, height: 99 },
+                      { left: 287, top: 810, width: 51, height: 99 }
+                    ].map((door) => (
                       <img
                         key={door.left}
                         src={doorFrameSources[doorFrame]}
                         alt=""
                         className="absolute"
-                        style={{ left: pct(door.left - 82, 267), top: pct(door.top - 610, 170), width: pct(door.width, 267), height: pct(door.height, 170) }}
+                        style={{ left: pct(door.left - 93, 245), top: 0, width: pct(door.width, 245), height: '100%' }}
                         draggable="false"
                       />
                     ))}
@@ -730,27 +746,29 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
           }}
         </Section>
 
-        {/* Canvas 5: Our Story (moved here, startY=804, height=340) */}
-        <Section invite={invite}
-          startY={804}
-          height={340}
-          delayOffset={animDelayMs}
-          data-section-index={1}
-          layerNames={[]}
-        >
+        {/* Canvas 5: Our Story */}
+        <div style={{ marginTop: "-20px" }}>
+          <Section invite={invite}
+            startY={804}
+            height={340}
+            delayOffset={animDelayMs}
+            data-section-index={2}
+            data-section-id="sec-story"
+            layerNames={[]}
+          >
           {({ absoluteBox, textLayer }) => (
             <>
               {/* Tile Ornaments */}
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 0, top: 804 + 290, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 0, top: 804 + 286, width: 30, height: 39 }), transform: "rotate(180deg)", zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
                 alt=""
                 src={layer1}
                 draggable="false"
               />
               <img
                 className="reveal absolute"
-                style={{ ...absoluteBox({ left: 398, top: 804 + 15, width: 32, height: 40 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
+                style={{ ...absoluteBox({ left: 400, top: 804 + 45, width: 30, height: 39 }), zIndex: 2, transitionDelay: `${1300 + animDelayMs}ms` }}
                 alt=""
                 src={layer2}
                 draggable="false"
@@ -836,14 +854,16 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
               </div>
             </>
           )}
-        </Section>
+          </Section>
+        </div>
 
-        {/* Canvas 2: Countdown (shifted, startY=1144, height=296) */}
-        <Section invite={invite}
-          startY={1144}
+        {/* Canvas 6: Countdown */}
+        <Section
+          invite={invite}
+          startY={1140}
           height={296}
           delayOffset={animDelayMs}
-          data-section-index={2} data-section-id="sec-story"
+          data-section-index={3} data-section-id="sec-countdown"
           layerNames={["countdown-panel.png"]}
         >
           {({ absoluteBox, textLayer }) => (
@@ -881,14 +901,16 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 3: Celebrations Title (shifted, startY=1440, height=100) */}
-        <Section invite={invite} startY={1440} height={100} delayOffset={animDelayMs} data-section-index={3} data-section-id="sec-countdown">
-          {({ textLayer }) => (
-            <>
-              {textLayer({ id: "celeb-title", left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", reveal: true, children: "The Celebrations" })}
-              {textLayer({ id: "celeb-title-ar", left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0644\u064a\u0627\u0644\u064a" })}
-            </>
-          )}
-        </Section>
+        <div style={{ marginTop: "-20px" }}>
+          <Section invite={invite} startY={1440} height={100} delayOffset={animDelayMs} data-section-index={4} data-section-id="sec-celebrations">
+            {({ textLayer }) => (
+              <>
+                {textLayer({ id: "celeb-title", left: 85, top: 1457, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, letterSpacing: "0.05em", reveal: true, children: "The Celebrations" })}
+                {textLayer({ id: "celeb-title-ar", left: 85, top: 1487, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, reveal: true, delay: 150, children: "\u0627\u0644\u0644\u064a\u0627\u0644\u064a" })}
+              </>
+            )}
+          </Section>
+        </div>
 
         {/* Canvas 4: Dynamic Flex Celebrations Container */}
         <div data-section-index={4} data-section-id="sec-celeb" style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", backgroundColor: "transparent", marginTop: invite?.styleOverrides?.['sec-celeb']?.posY || 0 }}>
@@ -995,115 +1017,117 @@ function SidiBouSaidInvitePage({ invite = defaultInvite }) {
         </Section>
 
         {/* Canvas 7: Programme (shifted, startY=3220, height=430) */}
-        <Section invite={invite}
-          startY={3220}
-          height={430}
-          delayOffset={animDelayMs}
-          data-section-index={6} data-section-id="sec-prog"
-          layerNames={[]}
-        >
-          {({ absoluteBox, textLayer }) => (
-            <>
-              {textLayer({ id: "prog-title", left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Programme" })}
-              {textLayer({ id: "prog-title-ar", left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c" })}
+        <div style={{ marginTop: "-20px" }}>
+          <Section invite={invite}
+            startY={3220}
+            height={430}
+            delayOffset={animDelayMs}
+            data-section-index={6} data-section-id="sec-prog"
+            layerNames={[]}
+          >
+            {({ absoluteBox, textLayer }) => (
+              <>
+                {textLayer({ id: "prog-title", left: 85, top: 3220, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", reveal: true, children: "Programme" })}
+                {textLayer({ id: "prog-title-ar", left: 85, top: 3250, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", reveal: true, delay: 150, children: "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c" })}
 
-              {/* Programme Steps mapping */}
-              {(invite.programmeSteps || [
-                { time: "17:00", name: "Sdek" },
-                { time: "18:00", name: "Reception" },
-                { time: "20:00", name: "Dinner" },
-                { time: "00:00", name: "Dance" },
-              ]).map((item, index) => {
-                const isFinal = index === 3;
-                const top = 3330 + index * 75;
-                const image = [rect121, rect120, rect119, rect118][index];
-                const percent = [0, 0.25, 0.50, 1.00][index];
-                return (
-                  <div key={index} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+                {/* Programme Steps mapping */}
+                {(invite.programmeSteps || [
+                  { time: "17:00", name: "Sdek" },
+                  { time: "18:00", name: "Reception" },
+                  { time: "20:00", name: "Dinner" },
+                  { time: "00:00", name: "Dance" },
+                ]).map((item, index) => {
+                  const isFinal = index === 3;
+                  const top = 3330 + index * 75;
+                  const image = [rect121, rect120, rect119, rect118][index];
+                  const percent = [0, 0.25, 0.50, 1.00][index];
+                  return (
+                    <div key={index} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
 
-                    {/* Dot */}
-                    <div
-                      className="reveal"
-                      style={{
-                        ...absoluteBox({ left: 209, top: top + 2, width: 13, height: 13 }),
-                        zIndex: 3,
-                        transitionDelay: `${index * 900 + animDelayMs}ms`
-                      }}
-                    >
-                      <WavyCircle percent={percent} />
-                    </div>
-
-                    {/* Step Content Wrapper (Time, Icon, and Label) */}
-                    <div
-                      className="reveal"
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        transitionDelay: `${index * 900 + 200 + animDelayMs}ms`
-                      }}
-                    >
-                      {/* Time */}
+                      {/* Dot */}
                       <div
+                        className="reveal"
                         style={{
-                          ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }),
-                          fontFamily: "Cormorant Infant, serif",
-                          fontWeight: "600",
-                          fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
-                          color: "#2e88e2",
-                          letterSpacing: "1.2px",
-                          textAlign: "left",
-                          zIndex: 3
+                          ...absoluteBox({ left: 209, top: top + 2, width: 13, height: 13 }),
+                          zIndex: 3,
+                          transitionDelay: `${index * 900 + animDelayMs}ms`
                         }}
                       >
-                        {item.time}
+                        <WavyCircle percent={percent} />
                       </div>
 
-                      {/* Step Icon Flourish */}
-                      <img
-                        className="absolute"
-                        style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
-                        alt=""
-                        src={image}
-                      />
-
-                      {/* Label */}
+                      {/* Step Content Wrapper (Time, Icon, and Label) */}
                       <div
+                        className="reveal"
                         style={{
-                          ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }),
-                          fontFamily: "Cormorant Infant, serif",
-                          fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
-                          color: "#49606b",
-                          letterSpacing: "1.2px",
-                          textAlign: "center",
-                          zIndex: 3
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          transitionDelay: `${index * 900 + 200 + animDelayMs}ms`
                         }}
                       >
-                        {item.name}
+                        {/* Time */}
+                        <div
+                          style={{
+                            ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }),
+                            fontFamily: "Cormorant Infant, serif",
+                            fontWeight: "600",
+                            fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
+                            color: "#2e88e2",
+                            letterSpacing: "1.2px",
+                            textAlign: "left",
+                            zIndex: 3
+                          }}
+                        >
+                          {item.time}
+                        </div>
+
+                        {/* Step Icon Flourish */}
+                        <img
+                          className="absolute"
+                          style={{ ...absoluteBox({ left: 248, top: top - 13, width: 37, height: 33 }), zIndex: 3 }}
+                          alt=""
+                          src={image}
+                        />
+
+                        {/* Label */}
+                        <div
+                          style={{
+                            ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }),
+                            fontFamily: "Cormorant Infant, serif",
+                            fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`,
+                            color: "#49606b",
+                            letterSpacing: "1.2px",
+                            textAlign: "center",
+                            zIndex: 3
+                          }}
+                        >
+                          {item.name}
+                        </div>
                       </div>
+
+                      {/* Connecting Line Segment to next step */}
+                      {!isFinal && (
+                        <div
+                          className="reveal line-segment"
+                          style={{
+                            ...absoluteBox({ left: 215, top: top + 15, width: 1, height: 62 }),
+                            backgroundColor: "#2e88e2",
+                            zIndex: 2,
+                            transitionDelay: `${index * 900 + 400 + animDelayMs}ms`
+                          }}
+                        />
+                      )}
+
                     </div>
-
-                    {/* Connecting Line Segment to next step */}
-                    {!isFinal && (
-                      <div
-                        className="reveal line-segment"
-                        style={{
-                          ...absoluteBox({ left: 215, top: top + 15, width: 1, height: 62 }),
-                          backgroundColor: "#2e88e2",
-                          zIndex: 2,
-                          transitionDelay: `${index * 900 + 400 + animDelayMs}ms`
-                        }}
-                      />
-                    )}
-
-                  </div>
-                );
-              })}
-            </>
-          )}
-        </Section>
+                  );
+                })}
+              </>
+            )}
+          </Section>
+        </div>
 
         {/* Canvas 8: RSVP (shifted, startY=3650, height=700) */}
         {invite.rsvpEnabled !== false ? (
