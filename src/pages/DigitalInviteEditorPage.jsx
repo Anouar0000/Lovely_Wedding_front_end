@@ -21,6 +21,7 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiMove,
+  FiRotateCcw,
 } from "react-icons/fi";
 import {
   createDigitalInviteDraft,
@@ -127,55 +128,55 @@ const getElementsForSection = (sectionId) => {
       { id: 'hero-initials', label: 'Cercle Initiales (Groupe)', controls: ['position', 'radius', 'color', 'font', 'fontSize'], subElements: [ { id: 'hero-initial-1', label: 'Initiale 1' }, { id: 'hero-initial-2', label: 'Initiale 2' } ] },
       { id: 'hero-names', label: 'Noms du Couple (Groupe)', controls: ['position', 'font', 'fontSize', 'color'], subElements: [ { id: 'hero-name-1', label: 'Nom 1' }, { id: 'hero-name-2', label: 'Nom 2' } ] },
       { id: 'hero-date', label: 'Date (Groupe)', controls: ['position', 'font', 'fontSize', 'color'], subElements: [ { id: 'hero-date-month', label: 'Mois' }, { id: 'hero-date-year', label: 'Année' } ] },
-      { id: 'hero-subtitle', label: 'Sous-titre', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'hero-btn', label: 'Bouton Scroll', controls: ['position', 'position', 'radius', 'color', 'font', 'fontSize'] }
+      { id: 'hero-subtitle', label: 'Sous-titre', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'hero-btn', label: 'Bouton Scroll', controls: ['position', 'radius', 'color', 'font', 'fontSize', 'text'] }
     ];
     case 'reveal': return [
       { id: 'sec-reveal', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'reveal-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'reveal-title-ar', label: 'Titre AR (النهار جاء)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'reveal-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'reveal-title-ar', label: 'Titre AR (النهار جاء)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'reveal-doors', label: 'Portes (Images)', controls: ['position', 'upload'] },
-      { id: 'reveal-date', label: 'Date cachée', controls: ['position', 'position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'reveal-date', label: 'Date cachée', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'reveal-hands', label: 'Mains (Image bas)', controls: ['position', 'upload'] }
     ];
     case 'our-story': return [
       { id: 'sec-story', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'story-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'story-title-ar', label: 'Titre AR (حكايتنا)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'story-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'story-title-ar', label: 'Titre AR (حكايتنا)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'story-quote', label: 'Texte Rotatif', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'story-photo', label: 'Photo de Couple', controls: ['position', 'upload'] },
       { id: 'story-ornaments', label: 'Ornements (Fleurs, Timbres)', controls: ['position', 'upload'] }
     ];
     case 'countdown': return [
       { id: 'sec-countdown', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'countdown-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'countdown-title-ar', label: 'Titre AR (العد التنازلي)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'countdown-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'countdown-title-ar', label: 'Titre AR (العد التنازلي)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'countdown-date', label: 'Date et Chiffres', controls: ['position', 'font', 'fontSize', 'color'] }
     ];
     case 'celebrations': return [
       { id: 'sec-celeb', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'celeb-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'celeb-title-ar', label: 'Titre AR (الليالي)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'celeb-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'celeb-title-ar', label: 'Titre AR (الليالي)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'celeb-venue', label: 'Nom du Lieu', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'celeb-list', label: 'Liste des Événements (Timeline)', controls: ['eventList'] }
     ];
     case 'dress-code': return [
       { id: 'sec-dress', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'dress-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'dress-title-ar', label: 'Titre AR (التبديلة)', controls: ['position', 'font', 'fontSize', 'color'] },
+      { id: 'dress-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'dress-title-ar', label: 'Titre AR (التبديلة)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'dress-text', label: 'Texte Instructions', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'dress-illustration', label: 'Illustration', controls: ['position', 'upload'] }
     ];
     case 'programme': return [
       { id: 'sec-prog', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'prog-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'prog-title-ar', label: 'Titre AR (البرنامج)', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'prog-steps', label: 'Étapes du Programme', controls: ['position', 'font', 'fontSize', 'color'] }
+      { id: 'prog-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'prog-title-ar', label: 'Titre AR (البرنامج)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'prog-steps', label: 'Étapes du Programme', controls: ['progStepsList', 'position', 'font', 'fontSize', 'color'] }
     ];
     case 'rsvp': return [
       { id: 'sec-rsvp', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'rsvp-title', label: 'Titre RSVP', controls: ['position', 'font', 'fontSize', 'color'] },
-      { id: 'rsvp-form', label: 'Formulaire', controls: ['position', 'font', 'fontSize', 'color'] }
+      { id: 'rsvp-title', label: 'Titre RSVP', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'rsvp-form', label: 'Formulaire / Sous-titre', controls: ['position', 'font', 'fontSize', 'color', 'text'] }
     ];
     case 'footer': return [
       { id: 'sec-footer', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
@@ -461,57 +462,77 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                    </div>
                  )}
 
-                 {/* Music Upload Control */}
-                 {el.controls.includes('musicUpload') && invite && (
-                   <div className="space-y-2">
-                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Audio (MP3)</label>
-                     {invite.musicUrl ? (
-                       <div className="flex items-center justify-between mb-2">
-                         <div className="text-xs text-emerald-600 font-semibold">♪ Musique active</div>
-                         <button type="button" onClick={() => updateInvite('musicUrl', '')} className="text-[10px] font-semibold text-red-500 hover:text-red-700">Supprimer</button>
-                       </div>
-                     ) : null}
-                     <input 
-                       type="file" 
-                       accept="audio/*" 
-                       onChange={handleMusicUpload} 
-                       disabled={uploadingMusic}
-                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
-                     />
-                     {uploadingMusic && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
-                   </div>
-                 )}
-                 
-                 {/* Video Upload Control */}
-                 {el.controls.includes('videoUpload') && invite && (
-                   <div className="space-y-2">
-                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Vidéo (MP4)</label>
-                     {invite.videoUrl ? (
-                       <div className="flex items-center justify-between mb-2">
-                         <div className="text-xs text-emerald-600 font-semibold">▶ Vidéo active</div>
-                         <button type="button" onClick={() => updateInvite('videoUrl', '')} className="text-[10px] font-semibold text-red-500 hover:text-red-700">Supprimer</button>
-                       </div>
-                     ) : null}
-                     <input 
-                       type="file" 
-                       accept="video/*" 
-                       onChange={handleVideoUpload} 
-                       disabled={uploadingVideo}
-                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
-                     />
-                     {uploadingVideo && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
-                     
-                     <label className="flex items-center gap-2 mt-3 cursor-pointer">
-                       <input 
-                         type="checkbox" 
-                         checked={invite.videoIntroEnabled !== false} 
-                         onChange={(e) => updateInvite('videoIntroEnabled', e.target.checked)}
-                         className="w-4 h-4 accent-black"
-                       />
-                       <span className="text-xs font-semibold text-gray-700">Activer la vidéo d'ouverture</span>
-                     </label>
-                   </div>
-                 )}
+                  {/* Music Upload Control */}
+                  {el.controls.includes('musicUpload') && invite && (
+                    <div className="space-y-2">
+                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Audio (MP3)</label>
+                      {invite.musicUrl ? (
+                        <div className="flex items-center justify-between mb-2 border border-emerald-200 bg-emerald-50 p-2">
+                          <div className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">♪ Musique active</div>
+                          <button type="button" onClick={() => updateInvite('musicUrl', '')} className="text-xs font-semibold text-red-600 hover:text-red-800 cursor-pointer">Supprimer</button>
+                        </div>
+                      ) : null}
+                      <input 
+                        type="file" 
+                        accept="audio/*" 
+                        onChange={handleMusicUpload} 
+                        disabled={uploadingMusic}
+                        className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
+                      />
+                      {uploadingMusic && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Ou URL Audio directe (.mp3)</label>
+                        <input
+                          type="text"
+                          placeholder="https://.../music.mp3"
+                          value={invite.musicUrl || ""}
+                          onChange={(e) => updateInvite('musicUrl', e.target.value)}
+                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Video Upload Control */}
+                  {el.controls.includes('videoUpload') && invite && (
+                    <div className="space-y-2">
+                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Vidéo d'ouverture (MP4)</label>
+                      {invite.videoUrl ? (
+                        <div className="flex items-center justify-between mb-2 border border-emerald-200 bg-emerald-50 p-2">
+                          <div className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">▶ Vidéo active</div>
+                          <button type="button" onClick={() => updateInvite('videoUrl', '')} className="text-xs font-semibold text-red-600 hover:text-red-800 cursor-pointer">Supprimer</button>
+                        </div>
+                      ) : null}
+                      <input 
+                        type="file" 
+                        accept="video/*" 
+                        onChange={handleVideoUpload} 
+                        disabled={uploadingVideo}
+                        className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
+                      />
+                      {uploadingVideo && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
+                      <div>
+                        <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Ou URL Vidéo directe (.mp4)</label>
+                        <input
+                          type="text"
+                          placeholder="https://.../intro.mp4"
+                          value={invite.videoUrl || ""}
+                          onChange={(e) => updateInvite('videoUrl', e.target.value)}
+                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
+                        />
+                      </div>
+                      
+                      <label className="flex items-center gap-2 mt-3 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={invite.videoIntroEnabled !== false} 
+                          onChange={(e) => updateInvite('videoIntroEnabled', e.target.checked)}
+                          className="w-4 h-4 accent-black"
+                        />
+                        <span className="text-xs font-semibold text-gray-700">Activer la vidéo d'ouverture</span>
+                      </label>
+                    </div>
+                  )}
 
                  {/* Petals Toggle */}
                  {el.controls.includes('petalsToggle') && invite && updateInvite && (
@@ -594,17 +615,132 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                  {el.controls.includes('text') && (
                    <div>
                       <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Texte / Contenu</label>
-                      <textarea className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black resize-y" rows={2} placeholder="Valeur par défaut..." />
+                      <textarea
+                        value={invite.styleOverrides?.[el.id]?.text !== undefined ? invite.styleOverrides[el.id].text : ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const current = invite.styleOverrides?.[el.id] || {};
+                          updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, text: val } });
+                        }}
+                        className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black resize-y bg-white" 
+                        rows={2} 
+                        placeholder="Valeur personnalisée..." 
+                      />
                    </div>
                  )}
 
-                 {/* Image Control */}
-                 {el.controls.includes('upload') && (
-                   <div>
-                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Remplacer l'Image / Fond</label>
-                      <input type="file" accept="image/*,video/*" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer" />
+                 {/* Programme Steps Array Editor */}
+                 {el.controls.includes('progStepsList') && invite && (
+                   <div className="space-y-3">
+                     {(invite.programmeSteps || [
+                       { time: "17:00", name: "Sdek" },
+                       { time: "18:00", name: "Reception" },
+                       { time: "20:00", name: "Dinner" },
+                       { time: "00:00", name: "Dance" }
+                     ]).map((step, sIndex) => (
+                       <div key={sIndex} className="grid grid-cols-2 gap-2 border border-gray-200 bg-white p-2">
+                         <div>
+                           <label className="block text-[9px] font-semibold text-gray-500 uppercase">Heure</label>
+                           <input
+                             type="text"
+                             value={step.time || ""}
+                             onChange={(e) => {
+                               const newSteps = [...(invite.programmeSteps || [
+                                 { time: "17:00", name: "Sdek" },
+                                 { time: "18:00", name: "Reception" },
+                                 { time: "20:00", name: "Dinner" },
+                                 { time: "00:00", name: "Dance" }
+                               ])];
+                               newSteps[sIndex] = { ...newSteps[sIndex], time: e.target.value };
+                               updateInvite('programmeSteps', newSteps);
+                             }}
+                             className="w-full border p-1 text-xs outline-none focus:border-black"
+                           />
+                         </div>
+                         <div>
+                           <label className="block text-[9px] font-semibold text-gray-500 uppercase">Étape</label>
+                           <input
+                             type="text"
+                             value={step.name || ""}
+                             onChange={(e) => {
+                               const newSteps = [...(invite.programmeSteps || [
+                                 { time: "17:00", name: "Sdek" },
+                                 { time: "18:00", name: "Reception" },
+                                 { time: "20:00", name: "Dinner" },
+                                 { time: "00:00", name: "Dance" }
+                               ])];
+                               newSteps[sIndex] = { ...newSteps[sIndex], name: e.target.value };
+                               updateInvite('programmeSteps', newSteps);
+                             }}
+                             className="w-full border p-1 text-xs outline-none focus:border-black"
+                           />
+                         </div>
+                       </div>
+                     ))}
                    </div>
                  )}
+
+                 {/* Media Upload (Image / Video) */}
+                  {el.controls.includes('upload') && (
+                    <div className="space-y-2">
+                       <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Remplacer l'Image / Fond (Image ou Vidéo MP4)</label>
+                       {invite.styleOverrides?.[el.id]?.image || (el.id === 'story-photo' && invite.storyPhoto) ? (
+                         <div className="flex items-center justify-between border border-emerald-200 bg-emerald-50 p-2">
+                           <span className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">
+                             {String(invite.styleOverrides?.[el.id]?.image || invite.storyPhoto).includes('video') || String(invite.styleOverrides?.[el.id]?.image).endsWith('.mp4') ? "▶ Vidéo active" : "🖼 Image active"}
+                           </span>
+                           <button
+                             type="button"
+                             onClick={() => {
+                               const updated = { ...invite.styleOverrides };
+                               if (updated[el.id]) {
+                                 const copy = { ...updated[el.id] };
+                                 delete copy.image;
+                                 updated[el.id] = copy;
+                               }
+                               if (el.id === 'story-photo') updateInvite('storyPhoto', '');
+                               updateInvite('styleOverrides', updated);
+                             }}
+                             className="text-xs text-red-600 hover:text-red-800 font-semibold cursor-pointer"
+                           >
+                             Supprimer
+                           </button>
+                         </div>
+                       ) : null}
+                       <input
+                         type="file"
+                         accept="image/*,video/*"
+                         onChange={(e) => {
+                           const file = e.target.files?.[0];
+                           if (!file) return;
+                           const reader = new FileReader();
+                           reader.onload = (uploadEv) => {
+                             const b64 = uploadEv.target.result;
+                             const current = invite.styleOverrides?.[el.id] || {};
+                             if (el.id === 'story-photo') updateInvite('storyPhoto', b64);
+                             updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, image: b64 } });
+                           };
+                           reader.readAsDataURL(file);
+                         }}
+                         className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer"
+                       />
+                       <div>
+                         <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Ou URL directe (Image ou Vidéo MP4)</label>
+                         <input
+                           type="text"
+                           placeholder="https://.../video.mp4 ou image.png"
+                           value={invite.styleOverrides?.[el.id]?.image || ""}
+                           onChange={(e) => {
+                             const val = e.target.value;
+                             const current = invite.styleOverrides?.[el.id] || {};
+                             if (el.id === 'story-photo') updateInvite('storyPhoto', val);
+                             updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, image: val } });
+                           }}
+                           className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
+                         />
+                       </div>
+                    </div>
+                  )}
 
                </div>
             )}
@@ -630,6 +766,56 @@ function DigitalInviteEditorPage() {
   const [openEvents, setOpenEvents] = useState({});
   const [uploadingMusic, setUploadingMusic] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState({});
+
+  const handleMediaUpload = async (elementId, file) => {
+    if (!file) return;
+    setUploadingMedia((prev) => ({ ...prev, [elementId]: true }));
+    setError("");
+
+    try {
+      const inviteId = id || invite.slug || slugify(invite.coupleNames) || "temp-invite";
+      let fileUrl;
+      try {
+        fileUrl = await uploadInviteAsset(inviteId, file, elementId);
+      } catch (storageErr) {
+        console.warn("Storage upload failed or not configured, using fallback:", storageErr);
+        if (file.size < 600 * 1024) {
+          const reader = new FileReader();
+          fileUrl = await new Promise((resolve) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+          });
+        } else {
+          throw new Error("Ce fichier est trop volumineux (>600Ko) pour Firestore. Utilisez une URL directe (https://...) ou configurez Firebase Storage.");
+        }
+      }
+
+      setInvite((currentInvite) => {
+        const currentOverrides = currentInvite.styleOverrides || {};
+        const elOverrides = currentOverrides[elementId] || {};
+        const updated = {
+          ...currentOverrides,
+          [elementId]: {
+            ...elOverrides,
+            image: fileUrl,
+          },
+        };
+        const next = {
+          ...currentInvite,
+          styleOverrides: updated,
+        };
+        if (elementId === "story-photo") {
+          next.storyPhoto = fileUrl;
+        }
+        return next;
+      });
+    } catch (err) {
+      setError(err.message || "Erreur lors du téléchargement du média.");
+    } finally {
+      setUploadingMedia((prev) => ({ ...prev, [elementId]: false }));
+    }
+  };
 
   const toggleEvent = (index) => {
     setOpenEvents((prev) => ({
@@ -690,15 +876,29 @@ function DigitalInviteEditorPage() {
       setError("");
 
       try {
-        const loadedInvite = await getDigitalInviteById(id);
+        let loadedInvite = await getDigitalInviteById(id);
+        if (!loadedInvite) {
+          try {
+            const cached = localStorage.getItem("digital_invite_" + id);
+            if (cached) loadedInvite = JSON.parse(cached);
+          } catch (e) {}
+        }
 
         if (!isMounted) {
           return;
         }
 
         if (!loadedInvite) {
-          setError("Invitation introuvable.");
-          return;
+          if (id === "test" || id === "demo") {
+            const sidiTpl = getDigitalInviteTemplate("sidi-bousaid") || defaultTemplate;
+            loadedInvite = {
+              ...createDigitalInviteDraft(sidiTpl.defaults),
+              slug: id,
+            };
+          } else {
+            setError("Invitation introuvable.");
+            return;
+          }
         }
 
         const loadedTemplate = getDigitalInviteTemplate(loadedInvite.template) || defaultTemplate;
@@ -767,6 +967,14 @@ function DigitalInviteEditorPage() {
   };
   const { wife, husband } = getNames(invite.coupleNames || "");
 
+  const handlePartnerNameChange = (partnerIndex, newName) => {
+    const current = getNames(invite.coupleNames || "");
+    const updatedWife = partnerIndex === 0 ? newName : current.wife;
+    const updatedHusband = partnerIndex === 1 ? newName : current.husband;
+    const combined = updatedWife && updatedHusband ? `${updatedWife} & ${updatedHusband}` : (updatedWife || updatedHusband || "");
+    updateInvite("coupleNames", combined);
+  };
+
   const fixedTimelineSteps = selectedTemplate.fixedTimelineSteps || [];
   const maxTimelineItems = isSidiBouSaid ? 3 : (fixedTimelineSteps.length || Infinity);
   const getTimelineStepKey = (item, index) =>
@@ -801,11 +1009,16 @@ function DigitalInviteEditorPage() {
     setError("");
 
     try {
+      const inviteId = id || invite.slug || "temp-invite";
       const downloadUrl = await uploadInviteAsset(inviteId, file, "music");
       updateInvite("musicUrl", downloadUrl);
     } catch (uploadError) {
-      console.error(uploadError);
-      setError("Impossible d'importer le fichier audio. Vérifiez que Firebase Storage est configuré.");
+      console.warn("Firebase upload failed, using local FileReader fallback:", uploadError);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        updateInvite("musicUrl", e.target.result);
+      };
+      reader.readAsDataURL(file);
     } finally {
       setUploadingMusic(false);
     }
@@ -815,21 +1028,20 @@ function DigitalInviteEditorPage() {
     const file = event.target.files[0];
     if (!file) return;
 
-    const inviteId = id || invite.slug;
-    if (!inviteId) {
-      setError("Veuillez d'abord spécifier un Slug pour l'invitation.");
-      return;
-    }
-
     setUploadingVideo(true);
     setError("");
 
     try {
+      const inviteId = id || invite.slug || "temp-invite";
       const downloadUrl = await uploadInviteAsset(inviteId, file, "video");
       updateInvite("videoUrl", downloadUrl);
     } catch (uploadError) {
-      console.error(uploadError);
-      setError("Impossible d'importer le fichier vidéo. Vérifiez que Firebase Storage est configuré.");
+      console.warn("Firebase video upload failed, using local FileReader fallback:", uploadError);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        updateInvite("videoUrl", e.target.result);
+      };
+      reader.readAsDataURL(file);
     } finally {
       setUploadingVideo(false);
     }
@@ -994,6 +1206,9 @@ function DigitalInviteEditorPage() {
       const docId = normalizedSlug;
 
       await saveDigitalInvite(docId, cleanedInvite);
+      try {
+        localStorage.setItem("digital_invite_" + docId, JSON.stringify(cleanedInvite));
+      } catch (lsErr) {}
 
       if (initialDocId && initialDocId !== docId) {
         await deleteDigitalInvite(initialDocId);
@@ -1123,6 +1338,26 @@ function DigitalInviteEditorPage() {
     };
   }, [isResizing]);
   
+  const handleResetChanges = () => {
+    if (window.confirm("Voulez-vous réinitialiser toutes les modifications au modèle par défaut ?")) {
+      const templateObj = getDigitalInviteTemplate(invite.template) || defaultTemplate;
+      const resetInvite = {
+        ...createDigitalInviteDraft(templateObj.defaults),
+        ...templateObj.defaults,
+        id: invite.id,
+        slug: invite.slug,
+        status: invite.status,
+      };
+      setInvite(resetInvite);
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({
+          type: "UPDATE_INVITE",
+          payload: { invite: resetInvite }
+        }, "*");
+      }
+    }
+  };
+
   const handleFillDemoData = () => {
     const demoData = {
       template: "sidi-bousaid",
@@ -1196,6 +1431,14 @@ function DigitalInviteEditorPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleResetChanges}
+              className="inline-flex items-center gap-2 border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
+              title="Réinitialiser toutes les modifications"
+            >
+              <FiRotateCcw aria-hidden="true" /> Réinitialiser
+            </button>
             <button
               type="button"
               onClick={handleFillDemoData}
@@ -1275,11 +1518,19 @@ function DigitalInviteEditorPage() {
                       className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
                     />
                   </div>
-                  <Field label="Noms du Couple">
+                  <Field label="Nom de la mariée / Partenaire 1">
                     <TextInput
-                      value={invite.coupleNames || ""}
-                      onChange={(event) => updateInvite("coupleNames", event.target.value)}
-                      placeholder="Sarah & Hedi"
+                      value={wife}
+                      onChange={(event) => handlePartnerNameChange(0, event.target.value)}
+                      placeholder="Sarah"
+                      required
+                    />
+                  </Field>
+                  <Field label="Nom du marié / Partenaire 2">
+                    <TextInput
+                      value={husband}
+                      onChange={(event) => handlePartnerNameChange(1, event.target.value)}
+                      placeholder="Hedi"
                       required
                     />
                   </Field>
@@ -1304,6 +1555,19 @@ function DigitalInviteEditorPage() {
                       ))}
                     </select>
                   </Field>
+                  <Field label="Couleur d'arrière-plan">
+                    <div className="flex items-center gap-3 border border-[#D8DDE2] bg-white px-3 py-2">
+                      <input
+                        type="color"
+                        value={invite.backgroundColor || "#DCEBF0"}
+                        onChange={(e) => updateInvite("backgroundColor", e.target.value)}
+                        className="h-8 w-8 cursor-pointer border-0 p-0"
+                      />
+                      <span className="font-mono text-sm font-semibold uppercase text-gray-700">
+                        {invite.backgroundColor || "#DCEBF0"}
+                      </span>
+                    </div>
+                  </Field>
                   <div className="flex items-end">
                     <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
                       invite.status === "published"
@@ -1316,7 +1580,26 @@ function DigitalInviteEditorPage() {
                 </div>
               </EditorSection>
 
-              <EditorSection icon={FiLayers} title="Structure & Design">
+              <EditorSection
+                icon={FiLayers}
+                title="Structure & Design"
+                action={
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (window.confirm("Êtes-vous sûr de vouloir vider toutes les personnalisations de Structure & Design ?")) {
+                        updateInvite("styleOverrides", {});
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer"
+                    title="Vider tous les styles, textes et positions personnalisés"
+                  >
+                    <FiTrash2 size={13} />
+                    Vider Structure & Design
+                  </button>
+                }
+              >
                 <div className="space-y-2">
                   {SECTION_LIST.map(sec => (
                     <div key={sec.id} className="border border-[#D8DDE2] bg-white">
@@ -1352,6 +1635,8 @@ function DigitalInviteEditorPage() {
                                 uploadingVideo={uploadingVideo}
                                 updateTimelineItem={updateTimelineItem}
                                 removeTimelineItem={removeTimelineItem}
+                                handleMediaUpload={handleMediaUpload}
+                                uploadingMedia={uploadingMedia}
                                 FiPlus={FiPlus}
                                 FiTrash2={FiTrash2}
                               />
@@ -1377,8 +1662,8 @@ function DigitalInviteEditorPage() {
             ref={iframeRef}
             src="/iframe-preview"
             title="Invitation Preview"
-            className="w-full h-full border-none shadow-2xl mx-auto bg-white"
-            style={{ maxWidth: 430 }}
+            className="h-full border-none shadow-2xl mx-auto bg-white"
+            style={{ width: "430px", minWidth: "430px", maxWidth: "430px" }}
           />
         </div>
       </div>

@@ -1,0 +1,4657 @@
+[
+  {
+    "sectionId": "hero",
+    "sectionName": "Hero / Opening",
+    "blockBounds": {
+      "y": 0,
+      "height": 708,
+      "width": 430
+    },
+    "totalElementsCount": 6,
+    "elements": [
+      {
+        "id": "1220:216",
+        "name": "background",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": -4,
+          "globalY": 0,
+          "blockRelativeY": 0,
+          "width": 438,
+          "height": 3821
+        }
+      },
+      {
+        "id": "1288:17",
+        "name": "image 9",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 0,
+          "globalY": 0,
+          "blockRelativeY": 0,
+          "width": 432,
+          "height": 708
+        }
+      },
+      {
+        "id": "1034:170",
+        "name": "Welcome to our mediterranean abode",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 121,
+          "globalY": 360,
+          "blockRelativeY": 360,
+          "width": 188,
+          "height": 27
+        },
+        "textProperties": {
+          "content": "Welcome to our \nmediterranean abode",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 16,
+          "letterSpacing": "1.6px",
+          "lineHeightPx": "16px",
+          "lineHeightRelative": "1.00",
+          "textAlign": "center",
+          "color": "rgba(255,255,255,1)"
+        }
+      },
+      {
+        "id": "1288:19",
+        "name": "Group 8",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 101,
+          "globalY": 272,
+          "blockRelativeY": 272,
+          "width": 228,
+          "height": 71
+        },
+        "children": [
+          {
+            "id": "1176:71",
+            "name": "2026",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 266,
+              "globalY": 305,
+              "blockRelativeY": 305,
+              "width": 63,
+              "height": 23
+            },
+            "textProperties": {
+              "content": "2026",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 400,
+              "fontSize": 20,
+              "letterSpacing": "2px",
+              "lineHeightPx": "18px",
+              "lineHeightRelative": "0.90",
+              "textAlign": "center",
+              "color": "rgba(255,255,255,1)"
+            }
+          },
+          {
+            "id": "1176:72",
+            "name": "July",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 101,
+              "globalY": 305,
+              "blockRelativeY": 305,
+              "width": 63,
+              "height": 23
+            },
+            "textProperties": {
+              "content": "July",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 400,
+              "fontSize": 20,
+              "letterSpacing": "2px",
+              "lineHeightPx": "18px",
+              "lineHeightRelative": "0.90",
+              "textAlign": "center",
+              "color": "rgba(255,255,255,1)"
+            }
+          },
+          {
+            "id": "1035:171",
+            "name": "Sarah Hedi",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 165,
+              "globalY": 272,
+              "blockRelativeY": 272,
+              "width": 105,
+              "height": 71
+            },
+            "textProperties": {
+              "content": "Sarah\nHedi",
+              "fontFamily": "Antic Didone",
+              "fontWeight": 400,
+              "fontSize": 38,
+              "letterSpacing": "0px",
+              "lineHeightPx": "40px",
+              "lineHeightRelative": "1.05",
+              "textAlign": "center",
+              "color": "rgba(255,255,255,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1177:56",
+        "name": "Group 6",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 194,
+          "globalY": 202,
+          "blockRelativeY": 202,
+          "width": 43,
+          "height": 66
+        },
+        "borderRadius": 40,
+        "children": [
+          {
+            "id": "1177:53",
+            "name": "Rectangle 100",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 194,
+              "globalY": 202,
+              "blockRelativeY": 202,
+              "width": 43,
+              "height": 66
+            },
+            "borderRadius": 40,
+            "border": "1px solid rgba(255,255,255,1)"
+          },
+          {
+            "id": "1177:54",
+            "name": "S",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 195,
+              "globalY": 208,
+              "blockRelativeY": 208,
+              "width": 32,
+              "height": 29
+            },
+            "textProperties": {
+              "content": "S",
+              "fontFamily": "Antic Didone",
+              "fontWeight": 400,
+              "fontSize": 30,
+              "letterSpacing": "0px",
+              "lineHeightPx": "32px",
+              "lineHeightRelative": "1.07",
+              "textAlign": "center",
+              "color": "rgba(255,255,255,1)"
+            }
+          },
+          {
+            "id": "1177:55",
+            "name": "H",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 203,
+              "globalY": 231,
+              "blockRelativeY": 231,
+              "width": 32,
+              "height": 29
+            },
+            "textProperties": {
+              "content": "H",
+              "fontFamily": "Antic Didone",
+              "fontWeight": 400,
+              "fontSize": 30,
+              "letterSpacing": "0px",
+              "lineHeightPx": "32px",
+              "lineHeightRelative": "1.07",
+              "textAlign": "center",
+              "color": "rgba(255,255,255,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1288:21",
+        "name": "Group 9",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 100,
+          "globalY": 430,
+          "blockRelativeY": 430,
+          "width": 231,
+          "height": 32
+        },
+        "borderRadius": 20,
+        "children": [
+          {
+            "id": "1288:20",
+            "name": "Rectangle 116",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 158,
+              "globalY": 430,
+              "blockRelativeY": 430,
+              "width": 116,
+              "height": 32
+            },
+            "borderRadius": 20
+          },
+          {
+            "id": "1177:57",
+            "name": "Scroll down",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 100,
+              "globalY": 437,
+              "blockRelativeY": 437,
+              "width": 231,
+              "height": 17
+            },
+            "textProperties": {
+              "content": "Scroll down",
+              "fontFamily": "Cormorant",
+              "fontWeight": 400,
+              "fontSize": 14,
+              "letterSpacing": "0px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(46,136,226,1)"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectionId": "reveal",
+    "sectionName": "Reveal",
+    "blockBounds": {
+      "y": 708,
+      "height": 316,
+      "width": 430
+    },
+    "totalElementsCount": 6,
+    "elements": [
+      {
+        "id": "1396:17",
+        "name": "Calque 3",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 160,
+          "globalY": 800,
+          "blockRelativeY": 92,
+          "width": 111,
+          "height": 132
+        },
+        "children": [
+          {
+            "id": "1396:18",
+            "name": "OBJECTS",
+            "type": "GROUP",
+            "geometry": {
+              "globalX": 160,
+              "globalY": 800,
+              "blockRelativeY": 92,
+              "width": 111,
+              "height": 132
+            },
+            "children": [
+              {
+                "id": "1396:19",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 160,
+                  "globalY": 800,
+                  "blockRelativeY": 92,
+                  "width": 111,
+                  "height": 132
+                }
+              },
+              {
+                "id": "1396:20",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 162,
+                  "globalY": 802,
+                  "blockRelativeY": 94,
+                  "width": 107,
+                  "height": 128
+                }
+              },
+              {
+                "id": "1396:21",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 190,
+                  "globalY": 823,
+                  "blockRelativeY": 115,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:22",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 190,
+                  "globalY": 825,
+                  "blockRelativeY": 117,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:23",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 191,
+                  "globalY": 826,
+                  "blockRelativeY": 118,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:24",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 192,
+                  "globalY": 827,
+                  "blockRelativeY": 119,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:25",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 193,
+                  "globalY": 828,
+                  "blockRelativeY": 120,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:26",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 194,
+                  "globalY": 829,
+                  "blockRelativeY": 121,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:27",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 196,
+                  "globalY": 829,
+                  "blockRelativeY": 121,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:28",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 191,
+                  "globalY": 858,
+                  "blockRelativeY": 150,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:29",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 192,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:30",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 193,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:31",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 195,
+                  "globalY": 860,
+                  "blockRelativeY": 152,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:32",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 196,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:33",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 198,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:34",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 199,
+                  "globalY": 858,
+                  "blockRelativeY": 150,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:35",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 192,
+                  "globalY": 838,
+                  "blockRelativeY": 130,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:36",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 192,
+                  "globalY": 837,
+                  "blockRelativeY": 129,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:37",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 192,
+                  "globalY": 835,
+                  "blockRelativeY": 127,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:38",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 192,
+                  "globalY": 834,
+                  "blockRelativeY": 126,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:39",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 193,
+                  "globalY": 833,
+                  "blockRelativeY": 125,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:40",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 194,
+                  "globalY": 832,
+                  "blockRelativeY": 124,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:41",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 196,
+                  "globalY": 831,
+                  "blockRelativeY": 123,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:42",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 240,
+                  "globalY": 823,
+                  "blockRelativeY": 115,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:43",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 240,
+                  "globalY": 825,
+                  "blockRelativeY": 117,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:44",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 239,
+                  "globalY": 826,
+                  "blockRelativeY": 118,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:45",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 238,
+                  "globalY": 827,
+                  "blockRelativeY": 119,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:46",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 237,
+                  "globalY": 828,
+                  "blockRelativeY": 120,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:47",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 236,
+                  "globalY": 829,
+                  "blockRelativeY": 121,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:48",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 234,
+                  "globalY": 829,
+                  "blockRelativeY": 121,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:49",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 239,
+                  "globalY": 858,
+                  "blockRelativeY": 150,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:50",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 238,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:51",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 237,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:52",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 235,
+                  "globalY": 860,
+                  "blockRelativeY": 152,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:53",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 234,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:54",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 232,
+                  "globalY": 859,
+                  "blockRelativeY": 151,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:55",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 231,
+                  "globalY": 858,
+                  "blockRelativeY": 150,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:56",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 238,
+                  "globalY": 838,
+                  "blockRelativeY": 130,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:57",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 238,
+                  "globalY": 837,
+                  "blockRelativeY": 129,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:58",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 238,
+                  "globalY": 835,
+                  "blockRelativeY": 127,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:59",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 238,
+                  "globalY": 834,
+                  "blockRelativeY": 126,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:60",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 237,
+                  "globalY": 833,
+                  "blockRelativeY": 125,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:61",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 236,
+                  "globalY": 832,
+                  "blockRelativeY": 124,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:62",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 234,
+                  "globalY": 831,
+                  "blockRelativeY": 123,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:63",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 183,
+                  "globalY": 876,
+                  "blockRelativeY": 168,
+                  "width": 6,
+                  "height": 10
+                }
+              },
+              {
+                "id": "1396:64",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 183,
+                  "globalY": 881,
+                  "blockRelativeY": 173,
+                  "width": 4,
+                  "height": 4
+                }
+              },
+              {
+                "id": "1396:65",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 242,
+                  "globalY": 876,
+                  "blockRelativeY": 168,
+                  "width": 6,
+                  "height": 10
+                }
+              },
+              {
+                "id": "1396:66",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 244,
+                  "globalY": 881,
+                  "blockRelativeY": 173,
+                  "width": 4,
+                  "height": 4
+                }
+              },
+              {
+                "id": "1396:67",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 211,
+                  "globalY": 894,
+                  "blockRelativeY": 186,
+                  "width": 8,
+                  "height": 8
+                }
+              },
+              {
+                "id": "1396:68",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 203,
+                  "globalY": 893,
+                  "blockRelativeY": 185,
+                  "width": 24,
+                  "height": 11
+                }
+              },
+              {
+                "id": "1396:69",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 214,
+                  "globalY": 889,
+                  "blockRelativeY": 181,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:70",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 206,
+                  "globalY": 892,
+                  "blockRelativeY": 184,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:71",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 210,
+                  "globalY": 890,
+                  "blockRelativeY": 182,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:72",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 203,
+                  "globalY": 895,
+                  "blockRelativeY": 187,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:73",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 223,
+                  "globalY": 892,
+                  "blockRelativeY": 184,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:74",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 219,
+                  "globalY": 890,
+                  "blockRelativeY": 182,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:75",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 227,
+                  "globalY": 895,
+                  "blockRelativeY": 187,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:76",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 200,
+                  "globalY": 898,
+                  "blockRelativeY": 190,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:77",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 214,
+                  "globalY": 906,
+                  "blockRelativeY": 198,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:78",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 206,
+                  "globalY": 903,
+                  "blockRelativeY": 195,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:79",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 210,
+                  "globalY": 905,
+                  "blockRelativeY": 197,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:80",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 203,
+                  "globalY": 901,
+                  "blockRelativeY": 193,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:81",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 230,
+                  "globalY": 898,
+                  "blockRelativeY": 190,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:82",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 223,
+                  "globalY": 903,
+                  "blockRelativeY": 195,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:83",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 219,
+                  "globalY": 905,
+                  "blockRelativeY": 197,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:84",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 227,
+                  "globalY": 901,
+                  "blockRelativeY": 193,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:85",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 202,
+                  "globalY": 920,
+                  "blockRelativeY": 212,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:86",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 196,
+                  "globalY": 918,
+                  "blockRelativeY": 210,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:87",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 191,
+                  "globalY": 914,
+                  "blockRelativeY": 206,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:88",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 184,
+                  "globalY": 905,
+                  "blockRelativeY": 197,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:89",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 226,
+                  "globalY": 920,
+                  "blockRelativeY": 212,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:90",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 232,
+                  "globalY": 918,
+                  "blockRelativeY": 210,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:91",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 237,
+                  "globalY": 914,
+                  "blockRelativeY": 206,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:92",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 243,
+                  "globalY": 905,
+                  "blockRelativeY": 197,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:93",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 182,
+                  "globalY": 819,
+                  "blockRelativeY": 111,
+                  "width": 66,
+                  "height": 109
+                }
+              },
+              {
+                "id": "1396:94",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 214,
+                  "globalY": 845,
+                  "blockRelativeY": 137,
+                  "width": 3,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:95",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 214,
+                  "globalY": 840,
+                  "blockRelativeY": 132,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:96",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 215,
+                  "globalY": 835,
+                  "blockRelativeY": 127,
+                  "width": 2,
+                  "height": 2
+                }
+              },
+              {
+                "id": "1396:97",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 215,
+                  "globalY": 832,
+                  "blockRelativeY": 124,
+                  "width": 1,
+                  "height": 1
+                }
+              },
+              {
+                "id": "1396:98",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 209,
+                  "globalY": 815,
+                  "blockRelativeY": 107,
+                  "width": 13,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:99",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 209,
+                  "globalY": 811,
+                  "blockRelativeY": 103,
+                  "width": 13,
+                  "height": 3
+                }
+              },
+              {
+                "id": "1396:100",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 215,
+                  "globalY": 808,
+                  "blockRelativeY": 100,
+                  "width": 1,
+                  "height": 13
+                }
+              },
+              {
+                "id": "1396:101",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 214,
+                  "globalY": 806,
+                  "blockRelativeY": 98,
+                  "width": 3,
+                  "height": 5
+                }
+              },
+              {
+                "id": "1396:102",
+                "name": "Vector",
+                "type": "VECTOR",
+                "geometry": {
+                  "globalX": 213,
+                  "globalY": 804,
+                  "blockRelativeY": 96,
+                  "width": 5,
+                  "height": 7
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1085:4",
+        "name": "Reveal",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 740,
+          "blockRelativeY": 32,
+          "width": 168,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "Reveal",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 22,
+          "letterSpacing": "1.1px",
+          "lineHeightPx": "26px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1168:193",
+        "name": "النهار جاء",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 134,
+          "globalY": 759,
+          "blockRelativeY": 51,
+          "width": 162,
+          "height": 26
+        },
+        "textProperties": {
+          "content": "النهار جاء",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1396:16",
+        "name": "Group 10",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 93,
+          "globalY": 810,
+          "blockRelativeY": 102,
+          "width": 245,
+          "height": 99
+        },
+        "children": [
+          {
+            "id": "1203:144",
+            "name": "door 1",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 93,
+              "globalY": 810,
+              "blockRelativeY": 102,
+              "width": 51,
+              "height": 99
+            }
+          },
+          {
+            "id": "1203:145",
+            "name": "door 2",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 190,
+              "globalY": 810,
+              "blockRelativeY": 102,
+              "width": 51,
+              "height": 99
+            }
+          },
+          {
+            "id": "1203:146",
+            "name": "door 3",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 287,
+              "globalY": 810,
+              "blockRelativeY": 102,
+              "width": 51,
+              "height": 99
+            }
+          }
+        ]
+      },
+      {
+        "id": "1199:139",
+        "name": "Rectangle 102",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 369,
+          "globalY": 708,
+          "blockRelativeY": 0,
+          "width": 63,
+          "height": 55
+        }
+      },
+      {
+        "id": "1199:142",
+        "name": "Rectangle 105",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": -3,
+          "globalY": 932,
+          "blockRelativeY": 224,
+          "width": 62,
+          "height": 55
+        }
+      }
+    ]
+  },
+  {
+    "sectionId": "story",
+    "sectionName": "Our Story",
+    "blockBounds": {
+      "y": 1024,
+      "height": 357,
+      "width": 430
+    },
+    "totalElementsCount": 11,
+    "elements": [
+      {
+        "id": "1407:281",
+        "name": "Watercolor_bougainvillea_graphic…_202607262232 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 85,
+          "globalY": 1072,
+          "blockRelativeY": 48,
+          "width": 164,
+          "height": 164
+        }
+      },
+      {
+        "id": "1396:104",
+        "name": "Our Story",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 1024,
+          "blockRelativeY": 0,
+          "width": 168,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "Our Story",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 22,
+          "letterSpacing": "1.1px",
+          "lineHeightPx": "26px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1406:219",
+        "name": "Layer 2",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 400,
+          "globalY": 1056,
+          "blockRelativeY": 32,
+          "width": 38,
+          "height": 38
+        },
+        "children": [
+          {
+            "id": "1406:220",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 400,
+              "globalY": 1056,
+              "blockRelativeY": 32,
+              "width": 38,
+              "height": 38
+            }
+          },
+          {
+            "id": "1406:221",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 419,
+              "globalY": 1075,
+              "blockRelativeY": 51,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "1406:222",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 405,
+              "globalY": 1061,
+              "blockRelativeY": 37,
+              "width": 27,
+              "height": 27
+            }
+          },
+          {
+            "id": "1406:223",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 421,
+              "globalY": 1071,
+              "blockRelativeY": 47,
+              "width": 9,
+              "height": 8
+            }
+          },
+          {
+            "id": "1406:224",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 408,
+              "globalY": 1071,
+              "blockRelativeY": 47,
+              "width": 9,
+              "height": 8
+            }
+          },
+          {
+            "id": "1406:225",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 415,
+              "globalY": 1077,
+              "blockRelativeY": 53,
+              "width": 8,
+              "height": 9
+            }
+          },
+          {
+            "id": "1406:226",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 415,
+              "globalY": 1064,
+              "blockRelativeY": 40,
+              "width": 8,
+              "height": 9
+            }
+          },
+          {
+            "id": "1406:227",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 419,
+              "globalY": 1073,
+              "blockRelativeY": 49,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:228",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 417,
+              "globalY": 1075,
+              "blockRelativeY": 51,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:229",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 419,
+              "globalY": 1075,
+              "blockRelativeY": 51,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:230",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 417,
+              "globalY": 1073,
+              "blockRelativeY": 49,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:231",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 421,
+              "globalY": 1068,
+              "blockRelativeY": 44,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:232",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 412,
+              "globalY": 1068,
+              "blockRelativeY": 44,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:233",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 421,
+              "globalY": 1077,
+              "blockRelativeY": 53,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:234",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 412,
+              "globalY": 1077,
+              "blockRelativeY": 53,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:235",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 430,
+              "globalY": 1074,
+              "blockRelativeY": 50,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:236",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 407,
+              "globalY": 1075,
+              "blockRelativeY": 51,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:237",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 418,
+              "globalY": 1086,
+              "blockRelativeY": 62,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:238",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 418,
+              "globalY": 1063,
+              "blockRelativeY": 39,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:239",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 409,
+              "globalY": 1062,
+              "blockRelativeY": 38,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:240",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 409,
+              "globalY": 1063,
+              "blockRelativeY": 39,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:241",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 406,
+              "globalY": 1065,
+              "blockRelativeY": 41,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:242",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 407,
+              "globalY": 1065,
+              "blockRelativeY": 41,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:243",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 422,
+              "globalY": 1062,
+              "blockRelativeY": 38,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:244",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 425,
+              "globalY": 1063,
+              "blockRelativeY": 39,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:245",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 426,
+              "globalY": 1065,
+              "blockRelativeY": 41,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:246",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 428,
+              "globalY": 1065,
+              "blockRelativeY": 41,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:247",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 409,
+              "globalY": 1082,
+              "blockRelativeY": 58,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:248",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 409,
+              "globalY": 1084,
+              "blockRelativeY": 60,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:249",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 406,
+              "globalY": 1078,
+              "blockRelativeY": 54,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:250",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 407,
+              "globalY": 1081,
+              "blockRelativeY": 57,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:251",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 422,
+              "globalY": 1082,
+              "blockRelativeY": 58,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:252",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 425,
+              "globalY": 1084,
+              "blockRelativeY": 60,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:253",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 426,
+              "globalY": 1078,
+              "blockRelativeY": 54,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:254",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 428,
+              "globalY": 1081,
+              "blockRelativeY": 57,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:255",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 433,
+              "globalY": 1056,
+              "blockRelativeY": 32,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:256",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 431,
+              "globalY": 1058,
+              "blockRelativeY": 34,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:257",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 434,
+              "globalY": 1061,
+              "blockRelativeY": 37,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:258",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 400,
+              "globalY": 1056,
+              "blockRelativeY": 32,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:259",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 405,
+              "globalY": 1058,
+              "blockRelativeY": 34,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:260",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 402,
+              "globalY": 1061,
+              "blockRelativeY": 37,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:261",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 433,
+              "globalY": 1089,
+              "blockRelativeY": 65,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:262",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 432,
+              "globalY": 1090,
+              "blockRelativeY": 66,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:263",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 434,
+              "globalY": 1087,
+              "blockRelativeY": 63,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:264",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 400,
+              "globalY": 1089,
+              "blockRelativeY": 65,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:265",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 405,
+              "globalY": 1090,
+              "blockRelativeY": 66,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:266",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 402,
+              "globalY": 1087,
+              "blockRelativeY": 63,
+              "width": 2,
+              "height": 2
+            }
+          }
+        ]
+      },
+      {
+        "id": "1396:105",
+        "name": "حكايتنا",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 134,
+          "globalY": 1043,
+          "blockRelativeY": 19,
+          "width": 162,
+          "height": 26
+        },
+        "textProperties": {
+          "content": "حكايتنا",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1401:111",
+        "name": "Vector",
+        "type": "VECTOR",
+        "geometry": {
+          "globalX": 188,
+          "globalY": 1101,
+          "blockRelativeY": 77,
+          "width": 227,
+          "height": 176
+        }
+      },
+      {
+        "id": "1401:113",
+        "name": "tape-8 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 260,
+          "globalY": 1093,
+          "blockRelativeY": 69,
+          "width": 114,
+          "height": 52
+        }
+      },
+      {
+        "id": "1401:115",
+        "name": "torn paper 3-8 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 19,
+          "globalY": 1145,
+          "blockRelativeY": 121,
+          "width": 215,
+          "height": 157
+        }
+      },
+      {
+        "id": "1401:116",
+        "name": "our happy ever after starts now",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 5,
+          "globalY": 1182,
+          "blockRelativeY": 158,
+          "width": 248,
+          "height": 100
+        },
+        "textProperties": {
+          "content": "our happy ever after \nstarts\nnow",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1405:120",
+        "name": "stamp 2-8 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 313,
+          "globalY": 1237,
+          "blockRelativeY": 213,
+          "width": 60,
+          "height": 93
+        }
+      },
+      {
+        "id": "1405:121",
+        "name": "stamp 3-8 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 314,
+          "globalY": 1244,
+          "blockRelativeY": 220,
+          "width": 57,
+          "height": 86
+        }
+      },
+      {
+        "id": "1406:122",
+        "name": "Layer 1",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": -10,
+          "globalY": 1303,
+          "blockRelativeY": 279,
+          "width": 38,
+          "height": 38
+        },
+        "children": [
+          {
+            "id": "1406:123",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -10,
+              "globalY": 1303,
+              "blockRelativeY": 279,
+              "width": 38,
+              "height": 38
+            }
+          },
+          {
+            "id": "1406:124",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 9,
+              "globalY": 1322,
+              "blockRelativeY": 298,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "1406:125",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -5,
+              "globalY": 1308,
+              "blockRelativeY": 284,
+              "width": 27,
+              "height": 27
+            }
+          },
+          {
+            "id": "1406:126",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 11,
+              "globalY": 1318,
+              "blockRelativeY": 294,
+              "width": 9,
+              "height": 8
+            }
+          },
+          {
+            "id": "1406:127",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -2,
+              "globalY": 1318,
+              "blockRelativeY": 294,
+              "width": 9,
+              "height": 8
+            }
+          },
+          {
+            "id": "1406:128",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 5,
+              "globalY": 1324,
+              "blockRelativeY": 300,
+              "width": 8,
+              "height": 9
+            }
+          },
+          {
+            "id": "1406:129",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 5,
+              "globalY": 1311,
+              "blockRelativeY": 287,
+              "width": 8,
+              "height": 9
+            }
+          },
+          {
+            "id": "1406:130",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 9,
+              "globalY": 1320,
+              "blockRelativeY": 296,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:131",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 7,
+              "globalY": 1322,
+              "blockRelativeY": 298,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:132",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 9,
+              "globalY": 1322,
+              "blockRelativeY": 298,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:133",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 7,
+              "globalY": 1320,
+              "blockRelativeY": 296,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:134",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 11,
+              "globalY": 1315,
+              "blockRelativeY": 291,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:135",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 2,
+              "globalY": 1315,
+              "blockRelativeY": 291,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:136",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 11,
+              "globalY": 1324,
+              "blockRelativeY": 300,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:137",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 2,
+              "globalY": 1324,
+              "blockRelativeY": 300,
+              "width": 4,
+              "height": 4
+            }
+          },
+          {
+            "id": "1406:138",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 20,
+              "globalY": 1321,
+              "blockRelativeY": 297,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:139",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -3,
+              "globalY": 1322,
+              "blockRelativeY": 298,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:140",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 8,
+              "globalY": 1333,
+              "blockRelativeY": 309,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:141",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 8,
+              "globalY": 1310,
+              "blockRelativeY": 286,
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "id": "1406:142",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -1,
+              "globalY": 1309,
+              "blockRelativeY": 285,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:143",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -1,
+              "globalY": 1310,
+              "blockRelativeY": 286,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:144",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -4,
+              "globalY": 1312,
+              "blockRelativeY": 288,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:145",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -3,
+              "globalY": 1312,
+              "blockRelativeY": 288,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:146",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 12,
+              "globalY": 1309,
+              "blockRelativeY": 285,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:147",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 15,
+              "globalY": 1310,
+              "blockRelativeY": 286,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:148",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 16,
+              "globalY": 1312,
+              "blockRelativeY": 288,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:149",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 18,
+              "globalY": 1312,
+              "blockRelativeY": 288,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:150",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -1,
+              "globalY": 1329,
+              "blockRelativeY": 305,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:151",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -1,
+              "globalY": 1331,
+              "blockRelativeY": 307,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:152",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -4,
+              "globalY": 1325,
+              "blockRelativeY": 301,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:153",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -3,
+              "globalY": 1328,
+              "blockRelativeY": 304,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:154",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 12,
+              "globalY": 1329,
+              "blockRelativeY": 305,
+              "width": 7,
+              "height": 6
+            }
+          },
+          {
+            "id": "1406:155",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 15,
+              "globalY": 1331,
+              "blockRelativeY": 307,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:156",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 16,
+              "globalY": 1325,
+              "blockRelativeY": 301,
+              "width": 6,
+              "height": 7
+            }
+          },
+          {
+            "id": "1406:157",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 18,
+              "globalY": 1328,
+              "blockRelativeY": 304,
+              "width": 3,
+              "height": 3
+            }
+          },
+          {
+            "id": "1406:158",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 23,
+              "globalY": 1303,
+              "blockRelativeY": 279,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:159",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 21,
+              "globalY": 1305,
+              "blockRelativeY": 281,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:160",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 24,
+              "globalY": 1308,
+              "blockRelativeY": 284,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:161",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -10,
+              "globalY": 1303,
+              "blockRelativeY": 279,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:162",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -5,
+              "globalY": 1305,
+              "blockRelativeY": 281,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:163",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -8,
+              "globalY": 1308,
+              "blockRelativeY": 284,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:164",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 23,
+              "globalY": 1336,
+              "blockRelativeY": 312,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:165",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 22,
+              "globalY": 1337,
+              "blockRelativeY": 313,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:166",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": 24,
+              "globalY": 1334,
+              "blockRelativeY": 310,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:167",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -10,
+              "globalY": 1336,
+              "blockRelativeY": 312,
+              "width": 5,
+              "height": 5
+            }
+          },
+          {
+            "id": "1406:168",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -5,
+              "globalY": 1337,
+              "blockRelativeY": 313,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "id": "1406:169",
+            "name": "Vector",
+            "type": "VECTOR",
+            "geometry": {
+              "globalX": -8,
+              "globalY": 1334,
+              "blockRelativeY": 310,
+              "width": 2,
+              "height": 2
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectionId": "countdown",
+    "sectionName": "Countdown",
+    "blockBounds": {
+      "y": 1381,
+      "height": 243,
+      "width": 430
+    },
+    "totalElementsCount": 5,
+    "elements": [
+      {
+        "id": "1220:225",
+        "name": "image 8",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 0,
+          "globalY": 1381,
+          "blockRelativeY": 0,
+          "width": 430,
+          "height": 212
+        }
+      },
+      {
+        "id": "1135:79",
+        "name": "Countdown",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 1408,
+          "blockRelativeY": 27,
+          "width": 168,
+          "height": 42
+        },
+        "textProperties": {
+          "content": "Countdown",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 22,
+          "letterSpacing": "1.1px",
+          "lineHeightPx": "26px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(255,255,255,1)"
+        }
+      },
+      {
+        "id": "1168:194",
+        "name": "العد التنازلي",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 134,
+          "globalY": 1431,
+          "blockRelativeY": 50,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "العد التنازلي",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(255,255,255,1)"
+        }
+      },
+      {
+        "id": "1220:238",
+        "name": "Group 7",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 23,
+          "globalY": 1487,
+          "blockRelativeY": 106,
+          "width": 384,
+          "height": 55
+        },
+        "borderRadius": 12,
+        "children": [
+          {
+            "id": "1220:235",
+            "name": "Rectangle 108",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 78,
+              "globalY": 1487,
+              "blockRelativeY": 106,
+              "width": 56,
+              "height": 55
+            },
+            "borderRadius": 12,
+            "border": "1px solid rgba(0,147,216,1)"
+          },
+          {
+            "id": "1220:236",
+            "name": "Rectangle 109",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 187,
+              "globalY": 1487,
+              "blockRelativeY": 106,
+              "width": 56,
+              "height": 55
+            },
+            "borderRadius": 12,
+            "border": "1px solid rgba(0,147,216,1)"
+          },
+          {
+            "id": "1220:237",
+            "name": "Rectangle 110",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 296,
+              "globalY": 1487,
+              "blockRelativeY": 106,
+              "width": 56,
+              "height": 55
+            },
+            "borderRadius": 12,
+            "border": "1px solid rgba(0,147,216,1)"
+          },
+          {
+            "id": "1220:228",
+            "name": "100",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 23,
+              "globalY": 1497,
+              "blockRelativeY": 116,
+              "width": 168,
+              "height": 18
+            },
+            "textProperties": {
+              "content": "100",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 500,
+              "fontSize": 14,
+              "letterSpacing": "1.4000000000000001px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          },
+          {
+            "id": "1220:229",
+            "name": "13",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 131,
+              "globalY": 1497,
+              "blockRelativeY": 116,
+              "width": 168,
+              "height": 18
+            },
+            "textProperties": {
+              "content": "13",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 500,
+              "fontSize": 14,
+              "letterSpacing": "1.4000000000000001px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          },
+          {
+            "id": "1220:230",
+            "name": "42",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 239,
+              "globalY": 1497,
+              "blockRelativeY": 116,
+              "width": 168,
+              "height": 18
+            },
+            "textProperties": {
+              "content": "42",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 500,
+              "fontSize": 14,
+              "letterSpacing": "1.4000000000000001px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          },
+          {
+            "id": "1220:231",
+            "name": "Days",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 65,
+              "globalY": 1519,
+              "blockRelativeY": 138,
+              "width": 83,
+              "height": 13
+            },
+            "textProperties": {
+              "content": "Days",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 500,
+              "fontSize": 8,
+              "letterSpacing": "0.8px",
+              "lineHeightPx": "10px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          },
+          {
+            "id": "1220:232",
+            "name": "Hours",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 173,
+              "globalY": 1519,
+              "blockRelativeY": 138,
+              "width": 83,
+              "height": 13
+            },
+            "textProperties": {
+              "content": "Hours",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 500,
+              "fontSize": 8,
+              "letterSpacing": "0.8px",
+              "lineHeightPx": "10px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          },
+          {
+            "id": "1220:233",
+            "name": "Minutes",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 281,
+              "globalY": 1519,
+              "blockRelativeY": 138,
+              "width": 83,
+              "height": 13
+            },
+            "textProperties": {
+              "content": "Minutes",
+              "fontFamily": "Cormorant Infant",
+              "fontWeight": 500,
+              "fontSize": 8,
+              "letterSpacing": "0.8px",
+              "lineHeightPx": "10px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1288:14",
+        "name": "Rectangle 115",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": -2,
+          "globalY": 1381,
+          "blockRelativeY": 0,
+          "width": 434,
+          "height": 212
+        }
+      }
+    ]
+  },
+  {
+    "sectionId": "celebrations",
+    "sectionName": "The Celebrations",
+    "blockBounds": {
+      "y": 1624,
+      "height": 944,
+      "width": 430
+    },
+    "totalElementsCount": 36,
+    "elements": [
+      {
+        "id": "1125:37",
+        "name": "The Celebrations",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 1624,
+          "blockRelativeY": 0,
+          "width": 168,
+          "height": 34
+        },
+        "textProperties": {
+          "content": "The Celebrations",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "1px",
+          "lineHeightPx": "24px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1167:180",
+        "name": "الليالي",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 135,
+          "globalY": 1643,
+          "blockRelativeY": 19,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "الليالي",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1220:217",
+        "name": "Rectangle 107",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 54,
+          "globalY": 1714,
+          "blockRelativeY": 90,
+          "width": 323,
+          "height": 383
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(0,147,216,1)"
+      },
+      {
+        "id": "1222:50",
+        "name": "Rectangle 108",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 54,
+          "globalY": 2141,
+          "blockRelativeY": 517,
+          "width": 323,
+          "height": 383
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(0,147,216,1)"
+      },
+      {
+        "id": "1220:219",
+        "name": "evil eye-8 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 328,
+          "globalY": 1734,
+          "blockRelativeY": 110,
+          "width": 143,
+          "height": 95
+        }
+      },
+      {
+        "id": "1222:51",
+        "name": "evil eye-8 3",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 328,
+          "globalY": 2164,
+          "blockRelativeY": 540,
+          "width": 143,
+          "height": 95
+        }
+      },
+      {
+        "id": "1220:220",
+        "name": "evil eye-8 2",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": -40,
+          "globalY": 1878,
+          "blockRelativeY": 254,
+          "width": 143,
+          "height": 95
+        }
+      },
+      {
+        "id": "1222:52",
+        "name": "evil eye-8 4",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": -40,
+          "globalY": 2308,
+          "blockRelativeY": 684,
+          "width": 143,
+          "height": 95
+        }
+      },
+      {
+        "id": "1220:240",
+        "name": "el 7out-8 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 343,
+          "globalY": 2040,
+          "blockRelativeY": 416,
+          "width": 57,
+          "height": 61
+        }
+      },
+      {
+        "id": "1222:53",
+        "name": "el 7out-8 2",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 343,
+          "globalY": 2470,
+          "blockRelativeY": 846,
+          "width": 57,
+          "height": 61
+        }
+      },
+      {
+        "id": "1220:241",
+        "name": "Outeya",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 1746,
+          "blockRelativeY": 122,
+          "width": 168,
+          "height": 34
+        },
+        "textProperties": {
+          "content": "Outeya",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 22,
+          "letterSpacing": "1.1px",
+          "lineHeightPx": "26px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1222:54",
+        "name": "Mariage",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 2176,
+          "blockRelativeY": 552,
+          "width": 168,
+          "height": 34
+        },
+        "textProperties": {
+          "content": "Mariage",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 22,
+          "letterSpacing": "1.1px",
+          "lineHeightPx": "26px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1220:247",
+        "name": "الوطية",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 135,
+          "globalY": 1766,
+          "blockRelativeY": 142,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "الوطية",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1235:57",
+        "name": "هيفاء بالاص مرناق",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 135,
+          "globalY": 1960,
+          "blockRelativeY": 336,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "هيفاء بالاص\nمرناق",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 14,
+          "letterSpacing": "0px",
+          "lineHeightPx": "22px",
+          "lineHeightRelative": "1.57",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1236:130",
+        "name": "هيفاء بالاص مرناق",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 135,
+          "globalY": 2389,
+          "blockRelativeY": 765,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "هيفاء بالاص\nمرناق",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 14,
+          "letterSpacing": "0px",
+          "lineHeightPx": "22px",
+          "lineHeightRelative": "1.57",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1222:55",
+        "name": "العرس",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 135,
+          "globalY": 2196,
+          "blockRelativeY": 572,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "العرس",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1235:37",
+        "name": "Haifa Palace Mornag",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 121,
+          "globalY": 1908,
+          "blockRelativeY": 284,
+          "width": 188,
+          "height": 52
+        },
+        "textProperties": {
+          "content": "\nHaifa Palace\nMornag",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "14px",
+          "lineHeightRelative": "1.17",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1236:131",
+        "name": "Haifa Palace Mornag",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 121,
+          "globalY": 2337,
+          "blockRelativeY": 713,
+          "width": 188,
+          "height": 52
+        },
+        "textProperties": {
+          "content": "\nHaifa Palace\nMornag",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "14px",
+          "lineHeightRelative": "1.17",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1235:38",
+        "name": "20",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 181,
+          "globalY": 1838,
+          "blockRelativeY": 214,
+          "width": 66,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "20",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 30,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.60",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1236:132",
+        "name": "20",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 181,
+          "globalY": 2268,
+          "blockRelativeY": 644,
+          "width": 66,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "20",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 30,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.60",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1235:42",
+        "name": "Monday",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 90,
+          "globalY": 1848,
+          "blockRelativeY": 224,
+          "width": 108,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "Monday",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.90",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1236:133",
+        "name": "Monday",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 90,
+          "globalY": 2278,
+          "blockRelativeY": 654,
+          "width": 108,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "Monday",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.90",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1235:43",
+        "name": "July",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 232,
+          "globalY": 1847,
+          "blockRelativeY": 223,
+          "width": 108,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "July",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.90",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1236:134",
+        "name": "July",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 232,
+          "globalY": 2277,
+          "blockRelativeY": 653,
+          "width": 108,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "July",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.90",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1235:41",
+        "name": "2026",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 176,
+          "globalY": 1863,
+          "blockRelativeY": 239,
+          "width": 77,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "2026",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.90",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1236:135",
+        "name": "2026",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 176,
+          "globalY": 2293,
+          "blockRelativeY": 669,
+          "width": 77,
+          "height": 25
+        },
+        "textProperties": {
+          "content": "2026",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "0.90",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1235:44",
+        "name": "Line 2",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 111,
+          "globalY": 1876,
+          "blockRelativeY": 252,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1236:136",
+        "name": "Line 6",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 111,
+          "globalY": 2306,
+          "blockRelativeY": 682,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1235:51",
+        "name": "Line 4",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 253,
+          "globalY": 1876,
+          "blockRelativeY": 252,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1236:137",
+        "name": "Line 7",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 253,
+          "globalY": 2306,
+          "blockRelativeY": 682,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1235:46",
+        "name": "Line 3",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 111,
+          "globalY": 1840,
+          "blockRelativeY": 216,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1236:138",
+        "name": "Line 8",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 111,
+          "globalY": 2270,
+          "blockRelativeY": 646,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1235:52",
+        "name": "Line 5",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 253,
+          "globalY": 1840,
+          "blockRelativeY": 216,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1236:139",
+        "name": "Line 9",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 253,
+          "globalY": 2270,
+          "blockRelativeY": 646,
+          "width": 67,
+          "height": 0
+        },
+        "border": "0.5px solid rgba(0,0,0,1)"
+      },
+      {
+        "id": "1235:61",
+        "name": "Input",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 162,
+          "globalY": 2023,
+          "blockRelativeY": 399,
+          "width": 106,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(229,229,229,1)",
+        "children": [
+          {
+            "id": "1235:63",
+            "name": "Open in maps",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 94,
+              "globalY": 2033,
+              "blockRelativeY": 409,
+              "width": 241,
+              "height": 27
+            },
+            "textProperties": {
+              "content": "Open in maps",
+              "fontFamily": "Cormorant",
+              "fontWeight": 400,
+              "fontSize": 12,
+              "letterSpacing": "1.2000000000000002px",
+              "lineHeightPx": "18px",
+              "lineHeightRelative": "1.50",
+              "textAlign": "center",
+              "color": "rgba(73,96,107,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1236:140",
+        "name": "Input",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 162,
+          "globalY": 2452,
+          "blockRelativeY": 828,
+          "width": 106,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(229,229,229,1)",
+        "children": [
+          {
+            "id": "1236:141",
+            "name": "Open in maps",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 94,
+              "globalY": 2462,
+              "blockRelativeY": 838,
+              "width": 241,
+              "height": 27
+            },
+            "textProperties": {
+              "content": "Open in maps",
+              "fontFamily": "Cormorant",
+              "fontWeight": 400,
+              "fontSize": 12,
+              "letterSpacing": "1.2000000000000002px",
+              "lineHeightPx": "18px",
+              "lineHeightRelative": "1.50",
+              "textAlign": "center",
+              "color": "rgba(73,96,107,1)"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectionId": "dressCode",
+    "sectionName": "Dress Code",
+    "blockBounds": {
+      "y": 2568,
+      "height": 369,
+      "width": 430
+    },
+    "totalElementsCount": 4,
+    "elements": [
+      {
+        "id": "1394:11",
+        "name": "we request attending the Outeya with a traditional attire",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 95,
+          "globalY": 2854,
+          "blockRelativeY": 286,
+          "width": 241,
+          "height": 41
+        },
+        "textProperties": {
+          "content": "we request attending the Outeya with\na traditional attire",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1222:63",
+        "name": "Dress Code",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 2568,
+          "blockRelativeY": 0,
+          "width": 168,
+          "height": 34
+        },
+        "textProperties": {
+          "content": "Dress Code",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "1px",
+          "lineHeightPx": "24px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1222:64",
+        "name": "التبديلة",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 134,
+          "globalY": 2588,
+          "blockRelativeY": 20,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "التبديلة",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1226:56",
+        "name": "ChatGPT Image 28 juin 2026, 21_24_56 1",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 139,
+          "globalY": 2605,
+          "blockRelativeY": 37,
+          "width": 153,
+          "height": 230
+        }
+      }
+    ]
+  },
+  {
+    "sectionId": "programme",
+    "sectionName": "Programme",
+    "blockBounds": {
+      "y": 2937,
+      "height": 430,
+      "width": 430
+    },
+    "totalElementsCount": 21,
+    "elements": [
+      {
+        "id": "1414:13",
+        "name": "Sdek",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 219,
+          "globalY": 3072,
+          "blockRelativeY": 135,
+          "width": 71,
+          "height": 21
+        },
+        "textProperties": {
+          "content": "Sdek \n",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1414:17",
+        "name": "17:00",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 3047,
+          "blockRelativeY": 110,
+          "width": 54,
+          "height": 60
+        },
+        "textProperties": {
+          "content": "17:00",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 600,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "left",
+          "color": "rgba(46,136,226,1)"
+        }
+      },
+      {
+        "id": "1414:14",
+        "name": "Reception",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 219,
+          "globalY": 3145,
+          "blockRelativeY": 208,
+          "width": 71,
+          "height": 21
+        },
+        "textProperties": {
+          "content": "Reception",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1414:18",
+        "name": "18:00",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 3122,
+          "blockRelativeY": 185,
+          "width": 54,
+          "height": 60
+        },
+        "textProperties": {
+          "content": "18:00",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 600,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "left",
+          "color": "rgba(46,136,226,1)"
+        }
+      },
+      {
+        "id": "1414:15",
+        "name": "Dinner",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 219,
+          "globalY": 3219,
+          "blockRelativeY": 282,
+          "width": 71,
+          "height": 18
+        },
+        "textProperties": {
+          "content": "Dinner",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1414:19",
+        "name": "20:00",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 3197,
+          "blockRelativeY": 260,
+          "width": 54,
+          "height": 60
+        },
+        "textProperties": {
+          "content": "20:00",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 600,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "left",
+          "color": "rgba(46,136,226,1)"
+        }
+      },
+      {
+        "id": "1414:16",
+        "name": "Dance",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 219,
+          "globalY": 3292,
+          "blockRelativeY": 355,
+          "width": 71,
+          "height": 18
+        },
+        "textProperties": {
+          "content": "Dance",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1414:20",
+        "name": "00:00",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 3272,
+          "blockRelativeY": 335,
+          "width": 54,
+          "height": 60
+        },
+        "textProperties": {
+          "content": "00:00",
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 600,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "left",
+          "color": "rgba(46,136,226,1)"
+        }
+      },
+      {
+        "id": "1293:23",
+        "name": "Programme",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 2937,
+          "blockRelativeY": 0,
+          "width": 168,
+          "height": 34
+        },
+        "textProperties": {
+          "content": "Programme",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "1px",
+          "lineHeightPx": "24px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1293:24",
+        "name": "البرنامج",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 134,
+          "globalY": 2957,
+          "blockRelativeY": 20,
+          "width": 162,
+          "height": 30
+        },
+        "textProperties": {
+          "content": "البرنامج",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "0px",
+          "lineHeightPx": "54px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1415:83",
+        "name": "Line 10",
+        "type": "LINE",
+        "geometry": {
+          "globalX": 203,
+          "globalY": 3047,
+          "blockRelativeY": 110,
+          "width": 0,
+          "height": 261
+        },
+        "border": "1px solid rgba(46,136,226,1)"
+      },
+      {
+        "id": "1415:84",
+        "name": "Ellipse 3",
+        "type": "ELLIPSE",
+        "geometry": {
+          "globalX": 197,
+          "globalY": 3275,
+          "blockRelativeY": 338,
+          "width": 13,
+          "height": 13
+        }
+      },
+      {
+        "id": "1415:85",
+        "name": "Ellipse 4",
+        "type": "ELLIPSE",
+        "geometry": {
+          "globalX": 197,
+          "globalY": 3047,
+          "blockRelativeY": 110,
+          "width": 13,
+          "height": 13
+        },
+        "border": "1px solid rgba(46,136,226,1)"
+      },
+      {
+        "id": "1415:86",
+        "name": "Ellipse 5",
+        "type": "ELLIPSE",
+        "geometry": {
+          "globalX": 197,
+          "globalY": 3124,
+          "blockRelativeY": 187,
+          "width": 13,
+          "height": 13
+        },
+        "border": "1px solid rgba(46,136,226,1)"
+      },
+      {
+        "id": "1415:92",
+        "name": "Ellipse 6",
+        "type": "ELLIPSE",
+        "geometry": {
+          "globalX": 197,
+          "globalY": 3200,
+          "blockRelativeY": 263,
+          "width": 13,
+          "height": 13
+        },
+        "border": "1px solid rgba(46,136,226,1)"
+      },
+      {
+        "id": "1415:91",
+        "name": "Vector 5",
+        "type": "VECTOR",
+        "geometry": {
+          "globalX": 199,
+          "globalY": 3133,
+          "blockRelativeY": 196,
+          "width": 10,
+          "height": 4
+        }
+      },
+      {
+        "id": "1415:93",
+        "name": "Vector 6",
+        "type": "VECTOR",
+        "geometry": {
+          "globalX": 197,
+          "globalY": 3205,
+          "blockRelativeY": 268,
+          "width": 13,
+          "height": 8
+        }
+      },
+      {
+        "id": "1418:116",
+        "name": "Rectangle 118",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 236,
+          "globalY": 3254,
+          "blockRelativeY": 317,
+          "width": 37,
+          "height": 33
+        },
+        "borderRadius": 7
+      },
+      {
+        "id": "1418:118",
+        "name": "Rectangle 119",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 236,
+          "globalY": 3182,
+          "blockRelativeY": 245,
+          "width": 37,
+          "height": 33
+        },
+        "borderRadius": 7
+      },
+      {
+        "id": "1418:119",
+        "name": "Rectangle 120",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 236,
+          "globalY": 3111,
+          "blockRelativeY": 174,
+          "width": 37,
+          "height": 33
+        },
+        "borderRadius": 7
+      },
+      {
+        "id": "1418:120",
+        "name": "Rectangle 121",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 236,
+          "globalY": 3034,
+          "blockRelativeY": 97,
+          "width": 37,
+          "height": 33
+        },
+        "borderRadius": 7
+      }
+    ]
+  },
+  {
+    "sectionId": "rsvp",
+    "sectionName": "RSVP",
+    "blockBounds": {
+      "y": 3367,
+      "height": 490,
+      "width": 430
+    },
+    "totalElementsCount": 11,
+    "elements": [
+      {
+        "id": "1222:58",
+        "name": "RSVP",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 131,
+          "globalY": 3367,
+          "blockRelativeY": 0,
+          "width": 168,
+          "height": 34
+        },
+        "textProperties": {
+          "content": "RSVP",
+          "fontFamily": "Antic Didone",
+          "fontWeight": 400,
+          "fontSize": 20,
+          "letterSpacing": "1px",
+          "lineHeightPx": "24px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1222:61",
+        "name": "The favour of a reply is kindly requested by the fifteenth of June, 2026",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 95,
+          "globalY": 3406,
+          "blockRelativeY": 39,
+          "width": 241,
+          "height": 41
+        },
+        "textProperties": {
+          "content": "The favour of a reply is kindly requested by the fifteenth of June, 2026",
+          "fontFamily": "Cormorant",
+          "fontWeight": 400,
+          "fontSize": 12,
+          "letterSpacing": "1.2000000000000002px",
+          "lineHeightPx": "18px",
+          "lineHeightRelative": "1.50",
+          "textAlign": "center",
+          "color": "rgba(73,96,107,1)"
+        }
+      },
+      {
+        "id": "1226:63",
+        "name": "Label",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3624,
+          "blockRelativeY": 257,
+          "width": 398,
+          "height": 14
+        },
+        "children": [
+          {
+            "id": "1226:64",
+            "name": "Email",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 16,
+              "globalY": 3624,
+              "blockRelativeY": 257,
+              "width": 50,
+              "height": 14
+            },
+            "textProperties": {
+              "content": "Email",
+              "fontFamily": "Cormorant",
+              "fontWeight": 700,
+              "fontSize": 14,
+              "letterSpacing": "0px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "left",
+              "color": "rgba(73,96,107,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1226:65",
+        "name": "Input",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3643,
+          "blockRelativeY": 276,
+          "width": 398,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(229,229,229,1)",
+        "children": [
+          {
+            "id": "1226:66",
+            "name": "div#placeholder",
+            "type": "FRAME",
+            "geometry": {
+              "globalX": 57,
+              "globalY": 3656,
+              "blockRelativeY": 289,
+              "width": 356,
+              "height": 15
+            }
+          }
+        ]
+      },
+      {
+        "id": "1226:67",
+        "name": "Label",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3698,
+          "blockRelativeY": 331,
+          "width": 398,
+          "height": 14
+        },
+        "children": [
+          {
+            "id": "1226:68",
+            "name": "Number of guests",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 16,
+              "globalY": 3698,
+              "blockRelativeY": 331,
+              "width": 128,
+              "height": 14
+            },
+            "textProperties": {
+              "content": "Number of guests",
+              "fontFamily": "Cormorant",
+              "fontWeight": 700,
+              "fontSize": 14,
+              "letterSpacing": "0px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "left",
+              "color": "rgba(73,96,107,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1226:69",
+        "name": "Input",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3717,
+          "blockRelativeY": 350,
+          "width": 398,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(229,229,229,1)"
+      },
+      {
+        "id": "1226:57",
+        "name": "Button",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3787,
+          "blockRelativeY": 420,
+          "width": 398,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "children": [
+          {
+            "id": "1226:58",
+            "name": "Send Confirmation",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 156,
+              "globalY": 3800,
+              "blockRelativeY": 433,
+              "width": 118,
+              "height": 15
+            },
+            "textProperties": {
+              "content": "Send Confirmation",
+              "fontFamily": "Cormorant",
+              "fontWeight": 400,
+              "fontSize": 14,
+              "letterSpacing": "0px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "center",
+              "color": "rgba(255,255,255,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1224:37",
+        "name": "Label",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3475,
+          "blockRelativeY": 108,
+          "width": 398,
+          "height": 14
+        },
+        "children": [
+          {
+            "id": "1224:38",
+            "name": "Name",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 16,
+              "globalY": 3475,
+              "blockRelativeY": 108,
+              "width": 50,
+              "height": 14
+            },
+            "textProperties": {
+              "content": "Name",
+              "fontFamily": "Cormorant",
+              "fontWeight": 700,
+              "fontSize": 14,
+              "letterSpacing": "0px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "left",
+              "color": "rgba(73,96,107,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1224:39",
+        "name": "Input",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3494,
+          "blockRelativeY": 127,
+          "width": 398,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(229,229,229,1)",
+        "children": [
+          {
+            "id": "1224:40",
+            "name": "div#placeholder",
+            "type": "FRAME",
+            "geometry": {
+              "globalX": 57,
+              "globalY": 3507,
+              "blockRelativeY": 140,
+              "width": 356,
+              "height": 15
+            }
+          }
+        ]
+      },
+      {
+        "id": "1224:46",
+        "name": "Label",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3549,
+          "blockRelativeY": 182,
+          "width": 398,
+          "height": 14
+        },
+        "children": [
+          {
+            "id": "1224:47",
+            "name": "Sir Name",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 16,
+              "globalY": 3549,
+              "blockRelativeY": 182,
+              "width": 53,
+              "height": 14
+            },
+            "textProperties": {
+              "content": "Sir Name",
+              "fontFamily": "Cormorant",
+              "fontWeight": 700,
+              "fontSize": 14,
+              "letterSpacing": "0px",
+              "lineHeightPx": "17px",
+              "lineHeightRelative": "1.2",
+              "textAlign": "left",
+              "color": "rgba(73,96,107,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1224:48",
+        "name": "Input",
+        "type": "FRAME",
+        "geometry": {
+          "globalX": 16,
+          "globalY": 3568,
+          "blockRelativeY": 201,
+          "width": 398,
+          "height": 40
+        },
+        "borderRadius": 7,
+        "border": "1px solid rgba(229,229,229,1)"
+      }
+    ]
+  },
+  {
+    "sectionId": "footer",
+    "sectionName": "Footer",
+    "blockBounds": {
+      "y": 3857,
+      "height": 193,
+      "width": 430
+    },
+    "totalElementsCount": 3,
+    "elements": [
+      {
+        "id": "1226:70",
+        "name": "ان شاء الله ليلتكم زينة",
+        "type": "TEXT",
+        "geometry": {
+          "globalX": 125,
+          "globalY": 3924,
+          "blockRelativeY": 67,
+          "width": 162,
+          "height": 26
+        },
+        "textProperties": {
+          "content": "ان شاء الله ليلتكم زينة",
+          "fontFamily": "Gulzar",
+          "fontWeight": 400,
+          "fontSize": 18,
+          "letterSpacing": "0px",
+          "lineHeightPx": "49px",
+          "lineHeightRelative": "1.2",
+          "textAlign": "center",
+          "color": "rgba(0,147,216,1)"
+        }
+      },
+      {
+        "id": "1226:71",
+        "name": "Group 6",
+        "type": "GROUP",
+        "geometry": {
+          "globalX": 187,
+          "globalY": 3857,
+          "blockRelativeY": 0,
+          "width": 38,
+          "height": 57
+        },
+        "borderRadius": 20,
+        "children": [
+          {
+            "id": "1226:72",
+            "name": "Rectangle 100",
+            "type": "RECTANGLE",
+            "geometry": {
+              "globalX": 188,
+              "globalY": 3857,
+              "blockRelativeY": 0,
+              "width": 37,
+              "height": 57
+            },
+            "borderRadius": 20,
+            "border": "1px solid rgba(0,147,216,1)"
+          },
+          {
+            "id": "1226:73",
+            "name": "S",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 187,
+              "globalY": 3861,
+              "blockRelativeY": 4,
+              "width": 32,
+              "height": 29
+            },
+            "textProperties": {
+              "content": "S",
+              "fontFamily": "Antic Didone",
+              "fontWeight": 400,
+              "fontSize": 24,
+              "letterSpacing": "0px",
+              "lineHeightPx": "32px",
+              "lineHeightRelative": "1.33",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          },
+          {
+            "id": "1226:74",
+            "name": "H",
+            "type": "TEXT",
+            "geometry": {
+              "globalX": 192,
+              "globalY": 3880,
+              "blockRelativeY": 23,
+              "width": 32,
+              "height": 29
+            },
+            "textProperties": {
+              "content": "H",
+              "fontFamily": "Antic Didone",
+              "fontWeight": 400,
+              "fontSize": 24,
+              "letterSpacing": "0px",
+              "lineHeightPx": "32px",
+              "lineHeightRelative": "1.33",
+              "textAlign": "center",
+              "color": "rgba(0,147,216,1)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1199:143",
+        "name": "Rectangle 106",
+        "type": "RECTANGLE",
+        "geometry": {
+          "globalX": 192,
+          "globalY": 3964,
+          "blockRelativeY": 107,
+          "width": 29,
+          "height": 12
+        }
+      }
+    ]
+  }
+]

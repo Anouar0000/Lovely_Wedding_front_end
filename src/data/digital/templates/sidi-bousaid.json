@@ -4,10 +4,10 @@
   "name": "Sidi Bou Said E-invite",
   "price": "90",
   "thumbnail": "assets/digital/sidi-bousaid/export-v2/dress-code-illustration.png",
-  "description": "Une invitation digitale inspiree de Sidi Bou Said avec une ouverture video et une page partageable.",
+  "description": "Une invitation digitale inspirée de Sidi Bou Said avec une ouverture vidéo et une page partageable.",
   "features": [
-    "Ouverture video",
-    "Lien personnalise",
+    "Ouverture vidéo",
+    "Lien personnalisé",
     "RSVP",
     "Programme"
   ],
@@ -19,12 +19,17 @@
     "title": "Sidi Bou Said",
     "coupleNames": "Bilel & Dorra",
     "eventDate": "2027-08-12",
-    "venueName": "",
+    "backgroundColor": "#DCEBF0",
+    "venueName": "Dar Sidi Bou Said",
     "city": "Sidi Bou Said",
-    "locationLabel": "",
-    "time": "",
-    "mapUrl": "",
+    "locationLabel": "TUNISIE",
+    "time": "20:00",
+    "mapUrl": "https://maps.google.com",
     "rsvpEnabled": true,
+    "welcomeSubtitle": "Welcome To Our\nMediterranean Abode",
+    "ourStoryQuote": "Our Happy Ever After\nstarts\nnow",
+    "dressCodeText": "We Request Attending The Outeya\nWith A Traditional Attire",
+    "closingTextAr": "ان شاء الله ليلتكم زينة",
     "timeline": [
       {
         "title": "Outeya",
@@ -46,125 +51,15 @@
       }
     ],
     "styleOverrides": {
-      "reveal-title-en": {
-        "text": "Reveal"
-      },
-      "sec-hero": {
-        "posY": -20
-      },
-      "story-photo": {
-        "borderRadius": 8
-      },
-      "reveal-title": {
-        "marginBottom": 40,
-        "textSpacing": 10
-      },
-      "celeb-venue": {
-        "marginBottom": 60,
-        "fontFamily": "Antic Didone",
-        "color": "#0093d8",
-        "fontSize": 26
-      },
-      "hero-btn": {
-        "paddingTop": 10,
-        "paddingRight": 30,
-        "paddingBottom": 10,
-        "paddingLeft": 30,
-        "marginTop": 80,
-        "color": "#0093d8",
-        "borderRadius": 100
-      },
-      "story-title-ar": {
-        "text": "حكايتنا"
-      },
-      "footer-initial-2": {
-        "posX": -2
-      },
-      "reveal-date": {
-        "color": "#0093d8",
-        "fontFamily": "Antic Didone",
-        "fontSize": 24
-      },
-      "story-quote": {
-        "fontFamily": "Cormorant Infant",
-        "text": "Our Happy Ever After\\nstarts\\nnow",
-        "fontSize": 14,
-        "color": "#49606b"
-      },
-      "countdown-title": {
-        "fontFamily": "Antic Didone"
-      },
-      "hero-initial-1": {
-        "posX": -2
-      },
-      "hero-names": {
-        "marginBottom": 40,
-        "fontFamily": "Cormorant Infant",
-        "fontSize": 52,
-        "color": "#ffffff"
-      },
-      "footer-arabic": {
-        "posY": 0,
-        "posX": 0
-      },
-      "footer-initial-1": {
-        "posX": -2
-      },
-      "sec-rsvp": {
-        "height": 49
-      },
-      "story-title": {
-        "textSpacing": 10,
-        "marginBottom": 30
-      },
-      "hero-date": {
-        "color": "#ffffff",
-        "fontFamily": "Cormorant Infant",
-        "fontSize": 18
-      },
-      "hero-initials": {
-        "marginBottom": 24,
-        "posY": 0,
-        "posX": 0,
-        "color": "#ffffff",
-        "fontSize": 21,
-        "borderRadius": 16,
-        "fontFamily": "Antic Didone"
-      },
-      "reveal-title-ar": {
-        "text": "النهار جاء"
-      },
-      "hero-initial-2": {
-        "posX": -2
-      },
-      "hero-name-2": {
-        "posY": 5
-      },
-      "story-title-en": {
-        "text": "Our Story"
-      },
-      "hero-date-month": {
-        "posX": -14
-      },
-      "hero-subtitle": {
-        "color": "#ffffff",
-        "fontSize": 16,
-        "marginTop": 60,
-        "fontFamily": "Cormorant"
-      },
-      "hero-name-1": {
-        "posY": -1
+      "hero-bg": {
+        "image": ""
       }
     },
     "animationType": "fade-up",
     "animationDuration": 1.2,
     "enablePetals": true,
-    "petalsIntensity": 150,
+    "petalsIntensity": 30,
     "animationDelay": 0.2,
-    "closingTextAr": "ان شاء الله ليلتكم زينة",
-    "welcomeSubtitle": "Welcome To Our\\nMediterranean Abode",
-    "ourStoryQuote": "Our Happy Ever After\\nstarts\\nnow",
-    "dressCodeText": "We Request Attending The Outeya\\nWith A Traditional Attire",
     "programmeSteps": [
       {
         "time": "17:00",
@@ -175,8 +70,8 @@
         "name": "Reception"
       },
       {
-        "name": "Dinner",
-        "time": "20:00"
+        "time": "20:00",
+        "name": "Dinner"
       },
       {
         "time": "00:00",
@@ -185,6 +80,7 @@
     ],
     "activeSections": [
       "hero",
+      "reveal",
       "our-story",
       "countdown",
       "celebrations",
@@ -192,293 +88,23 @@
       "programme",
       "rsvp",
       "footer"
-    ]
-  },
-  "fixedText": {
-    "introLabel": "We are getting married",
-    "introText": "We would like to invite you to celebrate with us the most special day of our lives",
-    "locationIntro": "The ceremony will take place at",
-    "closingText": "We hope you can make it"
-  },
-  "fixedTimelineSteps": [
-    {
-      "title": "Accueil"
-    },
-    {
-      "title": "Arrivee"
-    },
-    {
-      "title": "Ceremonie"
-    }
-  ],
-  "design": {
-    "colors": {
-      "pageBackground": "#dcebf0",
-      "cardBackground": "#fbfcf5",
-      "primaryText": "#08306b",
-      "heading": "#0d3b7a",
-      "accent": "#f4d23b",
-      "heroText": "#ffffff",
-      "heroOverlay": "linear-gradient(to bottom, rgba(7, 29, 63, 0.55), rgba(7, 29, 63, 0.15), rgba(7, 29, 63, 0.7))"
-    },
-    "fonts": {
-      "body": "Urbanist, sans-serif",
-      "script": "\"Pinyon Script\", cursive",
-      "serif": "Crimson Text, sans-serif"
-    },
-    "card": {
-      "maxWidth": 430
-    },
-    "hero": {
-      "minHeight": 620,
-      "paddingX": 36,
-      "paddingY": 64,
-      "intro": {
-        "fontFamily": "Urbanist, sans-serif",
-        "fontSize": 10,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "letterSpacing": "0.22em",
-        "textTransform": "uppercase"
-      },
-      "title": {
-        "fontFamily": "\"Pinyon Script\", cursive",
-        "fontSize": 56,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "lineHeight": 1
-      },
-      "coupleNames": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 16,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "letterSpacing": "0.16em",
-        "marginTop": 20
-      },
-      "introText": {
-        "fontFamily": "Urbanist, sans-serif",
-        "fontSize": 10,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "lineHeight": 1.6,
-        "letterSpacing": "0.12em",
-        "textTransform": "uppercase",
-        "marginTop": 20,
-        "maxWidth": 280
-      },
-      "arrow": {
-        "width": "auto",
-        "height": 18
-      }
-    },
-    "sections": {
-      "heading": {
-        "fontFamily": "\"Pinyon Script\", cursive",
-        "fontSize": 44,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "lineHeight": 1
-      },
-      "smallText": {
-        "fontFamily": "Urbanist, sans-serif",
-        "fontSize": 8,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "lineHeight": 1.5,
-        "letterSpacing": "0.1em",
-        "textTransform": "uppercase"
-      },
-      "countdownValue": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 16,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "letterSpacing": "0.1em"
-      },
-      "countdownLabel": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 8,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "letterSpacing": "0.1em",
-        "textTransform": "uppercase"
-      },
-      "locationName": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "letterSpacing": "0.1em"
-      },
-      "timelineTime": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "fontStyle": "normal"
-      },
-      "timelineTitle": {
-        "fontFamily": "\"Pinyon Script\", cursive",
-        "fontSize": 24,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "lineHeight": 1
-      },
-      "timelineSubtitle": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 12,
-        "fontWeight": 400,
-        "fontStyle": "normal"
-      },
-      "closingText": {
-        "fontFamily": "Crimson Text, sans-serif",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "letterSpacing": "0.1em"
-      },
-      "closingNames": {
-        "fontFamily": "\"Pinyon Script\", cursive",
-        "fontSize": 34,
-        "fontWeight": 400,
-        "fontStyle": "normal",
-        "lineHeight": 1
-      },
-      "countdown": {
-        "paddingTop": 56,
-        "paddingBottom": 56,
-        "sunWidth": 96,
-        "headingMarginTop": 16,
-        "dateMarginTop": 12,
-        "gridMarginTop": 32
-      },
-      "location": {
-        "paddingBottom": 64,
-        "copyMarginTop": 20,
-        "stageMarginTop": 24,
-        "stageHeight": 220,
-        "stageMaxWidth": 348,
-        "venueNameMarginTop": 0
-      },
-      "timeline": {
-        "paddingBottom": 64,
-        "stageMarginTop": 32,
-        "stageHeight": 350,
-        "stageMaxWidth": 285,
-        "imageHeight": 350,
-        "itemGap": 110
-      },
-      "actions": {
-        "paddingBottom": 64
-      },
-      "closing": {
-        "paddingBottom": 96,
-        "paddingTop": 16,
-        "textTop": 82
-      }
-    },
-    "locationAssets": {
-      "lineLeft": {
-        "top": 4,
-        "left": -40,
-        "width": 146
-      },
-      "lineRight": {
-        "top": -12,
-        "right": -40,
-        "width": 143
-      },
-      "lineLowerLeft": {
-        "top": 100,
-        "left": -40,
-        "width": 149
-      },
-      "lineLowerRight": {
-        "top": 90,
-        "right": -40,
-        "width": 152
-      },
-      "venueSoft": {
-        "top": 0,
-        "left": "50%",
-        "width": 143,
-        "transform": "translateX(-50%)",
-        "filter": "blur(4px)"
-      },
-      "venue": {
-        "top": 8,
-        "left": "50%",
-        "width": 126,
-        "transform": "translateX(-50%)"
-      },
-      "portrait": {
-        "top": 64,
-        "left": 0,
-        "width": 96
-      },
-      "lemons": {
-        "top": 32,
-        "right": 0,
-        "width": 96
-      }
-    },
-    "timelineItems": [
-      {
-        "top": 16,
-        "left": 0,
-        "width": 112,
-        "textAlign": "left",
-        "timeTextAlign": "left"
-      },
-      {
-        "top": 118,
-        "right": 0,
-        "width": 112,
-        "textAlign": "right",
-        "timeTextAlign": "right"
-      },
-      {
-        "top": 238,
-        "left": 0,
-        "width": 112,
-        "textAlign": "left",
-        "timeTextAlign": "left"
-      },
-      {
-        "top": 348,
-        "right": 0,
-        "width": 112,
-        "textAlign": "right",
-        "timeTextAlign": "right"
-      },
-      {
-        "top": 458,
-        "left": 0,
-        "width": 112,
-        "textAlign": "left",
-        "timeTextAlign": "left"
-      },
-      {
-        "top": 568,
-        "right": 0,
-        "width": 112,
-        "textAlign": "right",
-        "timeTextAlign": "right"
-      }
-    ]
+    ],
+    "slug": "test",
+    "videoIntroEnabled": false
   },
   "defaults": {
     "template": "sidi-bousaid",
-    "status": "draft",
-    "title": "Sidi Bou Said",
-    "coupleNames": "",
-    "eventDate": "",
-    "venueName": "",
+    "coupleNames": "Bilel & Dorra",
+    "eventDate": "2027-08-12",
+    "backgroundColor": "#DCEBF0",
+    "venueName": "Dar Sidi Bou Said",
     "city": "Sidi Bou Said",
-    "locationLabel": "",
-    "time": "",
-    "mapUrl": "",
+    "locationLabel": "TUNISIE",
     "rsvpEnabled": true,
+    "welcomeSubtitle": "Welcome To Our\nMediterranean Abode",
+    "ourStoryQuote": "Our Happy Ever After\nstarts\nnow",
+    "dressCodeText": "We Request Attending The Outeya\nWith A Traditional Attire",
+    "closingTextAr": "ان شاء الله ليلتكم زينة",
     "timeline": [
       {
         "title": "Outeya",
@@ -500,125 +126,15 @@
       }
     ],
     "styleOverrides": {
-      "reveal-title-en": {
-        "text": "Reveal"
-      },
-      "sec-hero": {
-        "posY": -20
-      },
-      "story-photo": {
-        "borderRadius": 8
-      },
-      "reveal-title": {
-        "marginBottom": 40,
-        "textSpacing": 10
-      },
-      "celeb-venue": {
-        "marginBottom": 60,
-        "fontFamily": "Antic Didone",
-        "color": "#0093d8",
-        "fontSize": 26
-      },
-      "hero-btn": {
-        "paddingTop": 10,
-        "paddingRight": 30,
-        "paddingBottom": 10,
-        "paddingLeft": 30,
-        "marginTop": 80,
-        "color": "#0093d8",
-        "borderRadius": 100
-      },
-      "story-title-ar": {
-        "text": "حكايتنا"
-      },
-      "footer-initial-2": {
-        "posX": -2
-      },
-      "reveal-date": {
-        "color": "#0093d8",
-        "fontFamily": "Antic Didone",
-        "fontSize": 24
-      },
-      "story-quote": {
-        "fontFamily": "Cormorant Infant",
-        "text": "Our Happy Ever After\\nstarts\\nnow",
-        "fontSize": 14,
-        "color": "#49606b"
-      },
-      "countdown-title": {
-        "fontFamily": "Antic Didone"
-      },
-      "hero-initial-1": {
-        "posX": -2
-      },
-      "hero-names": {
-        "marginBottom": 40,
-        "fontFamily": "Cormorant Infant",
-        "fontSize": 52,
-        "color": "#ffffff"
-      },
-      "footer-arabic": {
-        "posY": 0,
-        "posX": 0
-      },
-      "footer-initial-1": {
-        "posX": -2
-      },
-      "sec-rsvp": {
-        "height": 49
-      },
-      "story-title": {
-        "textSpacing": 10,
-        "marginBottom": 30
-      },
-      "hero-date": {
-        "color": "#ffffff",
-        "fontFamily": "Cormorant Infant",
-        "fontSize": 18
-      },
-      "hero-initials": {
-        "marginBottom": 24,
-        "posY": 0,
-        "posX": 0,
-        "color": "#ffffff",
-        "fontSize": 21,
-        "borderRadius": 16,
-        "fontFamily": "Antic Didone"
-      },
-      "reveal-title-ar": {
-        "text": "النهار جاء"
-      },
-      "hero-initial-2": {
-        "posX": -2
-      },
-      "hero-name-2": {
-        "posY": 5
-      },
-      "story-title-en": {
-        "text": "Our Story"
-      },
-      "hero-date-month": {
-        "posX": -14
-      },
-      "hero-subtitle": {
-        "color": "#ffffff",
-        "fontSize": 16,
-        "marginTop": 60,
-        "fontFamily": "Cormorant"
-      },
-      "hero-name-1": {
-        "posY": -1
+      "hero-bg": {
+        "image": ""
       }
     },
     "animationType": "fade-up",
     "animationDuration": 1.2,
     "enablePetals": true,
-    "petalsIntensity": 150,
+    "petalsIntensity": 30,
     "animationDelay": 0.2,
-    "closingTextAr": "ان شاء الله ليلتكم زينة",
-    "welcomeSubtitle": "Welcome To Our\\nMediterranean Abode",
-    "ourStoryQuote": "Our Happy Ever After\\nstarts\\nnow",
-    "dressCodeText": "We Request Attending The Outeya\\nWith A Traditional Attire",
     "programmeSteps": [
       {
         "time": "17:00",
@@ -629,8 +145,8 @@
         "name": "Reception"
       },
       {
-        "name": "Dinner",
-        "time": "20:00"
+        "time": "20:00",
+        "name": "Dinner"
       },
       {
         "time": "00:00",
@@ -639,6 +155,7 @@
     ],
     "activeSections": [
       "hero",
+      "reveal",
       "our-story",
       "countdown",
       "celebrations",
@@ -646,6 +163,12 @@
       "programme",
       "rsvp",
       "footer"
-    ]
+    ],
+    "slug": "test",
+    "status": "draft",
+    "title": "Sidi Bou Said",
+    "time": "20:00",
+    "mapUrl": "https://maps.google.com",
+    "videoIntroEnabled": false
   }
 }

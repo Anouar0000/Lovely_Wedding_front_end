@@ -1,0 +1,815 @@
+{
+  "canvas": {
+    "width": 430,
+    "height": 4017,
+    "backgroundColor": "#DCEBF0",
+    "primaryColor": "#0093D8",
+    "secondaryColor": "#49606B"
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "name": "Hero / Opening",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 708
+      },
+      "elements": {
+        "bg": {
+          "file": "hero-arch-bg.png",
+          "x": 0,
+          "y": 0,
+          "width": 432,
+          "height": 708
+        },
+        "initialsCircle": {
+          "x": 194,
+          "y": 202,
+          "width": 43,
+          "height": 66,
+          "borderRadius": 40,
+          "border": "1px solid #FFFFFF"
+        },
+        "initial1": {
+          "text": "M",
+          "x": 195,
+          "y": 208,
+          "width": 32,
+          "height": 28,
+          "fontFamily": "Antic Didone",
+          "fontSize": 30,
+          "color": "#FFFFFF"
+        },
+        "initial2": {
+          "text": "S",
+          "x": 203,
+          "y": 231,
+          "width": 32,
+          "height": 28,
+          "fontFamily": "Antic Didone",
+          "fontSize": 30,
+          "color": "#FFFFFF"
+        },
+        "name1": {
+          "text": "Maram",
+          "x": 165,
+          "y": 272,
+          "width": 105,
+          "height": 42,
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 38,
+          "color": "#FFFFFF"
+        },
+        "name2": {
+          "text": "Sofien",
+          "x": 165,
+          "y": 310,
+          "width": 105,
+          "height": 42,
+          "fontFamily": "Cormorant Infant",
+          "fontWeight": 400,
+          "fontSize": 38,
+          "color": "#FFFFFF"
+        },
+        "dateMonth": {
+          "text": "September",
+          "x": 101,
+          "y": 305,
+          "width": 63,
+          "height": 24,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 20,
+          "color": "#FFFFFF"
+        },
+        "dateYear": {
+          "text": "2026",
+          "x": 266,
+          "y": 305,
+          "width": 63,
+          "height": 24,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 20,
+          "color": "#FFFFFF"
+        },
+        "subtitle": {
+          "text": "Welcome to our\\nmediterranean abode",
+          "x": 121,
+          "y": 360,
+          "width": 188,
+          "height": 27,
+          "fontFamily": "Cormorant",
+          "fontSize": 16,
+          "color": "#FFFFFF",
+          "letterSpacing": "0.1em"
+        },
+        "scrollBtn": {
+          "text": "Scroll down",
+          "x": 158,
+          "y": 430,
+          "width": 116,
+          "height": 32,
+          "borderRadius": 20,
+          "bg": "#FFFFFF",
+          "color": "#0093D8",
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 15
+        }
+      }
+    },
+    {
+      "id": "reveal",
+      "name": "Reveal Section",
+      "bounds": {
+        "x": 0,
+        "y": 708,
+        "width": 430,
+        "height": 316
+      },
+      "elements": {
+        "cornerTopRight": {
+          "file": "reveal-corner-top.svg",
+          "x": 369,
+          "y": 708,
+          "width": 63,
+          "height": 55
+        },
+        "cornerBottomLeft": {
+          "file": "reveal-corner-bottom.svg",
+          "x": -3,
+          "y": 932,
+          "width": 62,
+          "height": 55
+        },
+        "titleEn": {
+          "text": "Reveal",
+          "x": 131,
+          "y": 740,
+          "width": 168,
+          "height": 30,
+          "fontFamily": "Antic Didone",
+          "fontSize": 22,
+          "color": "#0093D8",
+          "letterSpacing": "0.05em"
+        },
+        "titleAr": {
+          "text": "النهار جاء",
+          "x": 134,
+          "y": 759,
+          "width": 162,
+          "height": 26,
+          "fontFamily": "Gulzar",
+          "fontSize": 20,
+          "color": "#0093D8"
+        },
+        "doors": {
+          "file": "reveal-doors.svg",
+          "x": 93,
+          "y": 810,
+          "width": 245,
+          "height": 99
+        },
+        "hands": {
+          "file": "reveal-hand.svg",
+          "x": 160,
+          "y": 800,
+          "width": 111,
+          "height": 132
+        },
+        "dateDay": {
+          "text": "20",
+          "x": 93,
+          "y": 850,
+          "width": 51,
+          "height": 18,
+          "fontFamily": "Antic Didone",
+          "fontSize": 13,
+          "color": "#0093D8"
+        },
+        "dateMonthNum": {
+          "text": "07",
+          "x": 190,
+          "y": 850,
+          "width": 51,
+          "height": 18,
+          "fontFamily": "Antic Didone",
+          "fontSize": 13,
+          "color": "#0093D8"
+        },
+        "dateYear2D": {
+          "text": "26",
+          "x": 287,
+          "y": 850,
+          "width": 51,
+          "height": 18,
+          "fontFamily": "Antic Didone",
+          "fontSize": 13,
+          "color": "#0093D8"
+        }
+      }
+    },
+    {
+      "id": "story",
+      "name": "Our Story Section",
+      "bounds": {
+        "x": 0,
+        "y": 1024,
+        "width": 430,
+        "height": 357
+      },
+      "elements": {
+        "titleEn": {
+          "text": "Our Story",
+          "x": 131,
+          "y": 1024,
+          "width": 168,
+          "height": 30,
+          "fontFamily": "Antic Didone",
+          "fontSize": 22,
+          "color": "#0093D8",
+          "letterSpacing": "0.05em"
+        },
+        "titleAr": {
+          "text": "حكايتنا",
+          "x": 134,
+          "y": 1043,
+          "width": 162,
+          "height": 26,
+          "fontFamily": "Gulzar",
+          "fontSize": 20,
+          "color": "#0093D8"
+        },
+        "tileTop": {
+          "file": "story-tile-top.svg",
+          "x": 400,
+          "y": 1056,
+          "width": 38,
+          "height": 38
+        },
+        "bougainvillea": {
+          "file": "watercolor-bougainvillea.png",
+          "x": 85,
+          "y": 1072,
+          "width": 164,
+          "height": 164
+        },
+        "tape": {
+          "file": "story-tape.svg",
+          "x": 260,
+          "y": 1093,
+          "width": 114,
+          "height": 52
+        },
+        "coupleSketch": {
+          "file": "story-sketch-couple.svg",
+          "x": 188,
+          "y": 1101,
+          "width": 227,
+          "height": 176
+        },
+        "tornPaper": {
+          "file": "story-torn-paper.svg",
+          "x": 19,
+          "y": 1145,
+          "width": 215,
+          "height": 157
+        },
+        "quote": {
+          "text": "our happy ever after\\nstarts\\nnow",
+          "x": 5,
+          "y": 1182,
+          "width": 248,
+          "height": 100,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 12,
+          "color": "#49606B",
+          "rotate": -10
+        },
+        "stampLeft": {
+          "file": "story-stamp-left.svg",
+          "x": 313,
+          "y": 1237,
+          "width": 60,
+          "height": 93
+        },
+        "stampRight": {
+          "file": "story-stamp-right.svg",
+          "x": 314,
+          "y": 1244,
+          "width": 57,
+          "height": 86
+        },
+        "tileBottom": {
+          "file": "story-tile-bottom.svg",
+          "x": -10,
+          "y": 1303,
+          "width": 38,
+          "height": 38
+        }
+      }
+    },
+    {
+      "id": "countdown",
+      "name": "Countdown Section",
+      "bounds": {
+        "x": 0,
+        "y": 1381,
+        "width": 430,
+        "height": 243
+      },
+      "elements": {
+        "bg": {
+          "file": "countdown-bg.png",
+          "x": 0,
+          "y": 1381,
+          "width": 430,
+          "height": 212
+        },
+        "titleEn": {
+          "text": "Countdown",
+          "x": 131,
+          "y": 1408,
+          "width": 168,
+          "height": 42,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 22,
+          "color": "#FFFFFF",
+          "letterSpacing": "0.1em"
+        },
+        "titleAr": {
+          "text": "العد التنازلي",
+          "x": 134,
+          "y": 1431,
+          "width": 162,
+          "height": 30,
+          "fontFamily": "Gulzar",
+          "fontSize": 22,
+          "color": "#FFFFFF"
+        },
+        "timerGroup": {
+          "x": 23,
+          "y": 1487,
+          "width": 384,
+          "height": 55,
+          "color": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "id": "celebrations",
+      "name": "Celebrations Section",
+      "bounds": {
+        "x": 0,
+        "y": 1624,
+        "width": 430,
+        "height": 944
+      },
+      "elements": {
+        "titleEn": {
+          "text": "The Celebrations",
+          "x": 131,
+          "y": 1624,
+          "width": 168,
+          "height": 34,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 22,
+          "color": "#0093D8",
+          "letterSpacing": "0.05em"
+        },
+        "titleAr": {
+          "text": "الليالي",
+          "x": 135,
+          "y": 1643,
+          "width": 162,
+          "height": 30,
+          "fontFamily": "Gulzar",
+          "fontSize": 22,
+          "color": "#0093D8"
+        },
+        "outeya": {
+          "cardBg": {
+            "x": 54,
+            "y": 1714,
+            "width": 323,
+            "height": 383,
+            "borderRadius": 20,
+            "bg": "#FFFFFF"
+          },
+          "evilEyeTop": {
+            "file": "evil-eye-outeya-top.svg",
+            "x": 328,
+            "y": 1734,
+            "width": 143,
+            "height": 95
+          },
+          "titleEn": {
+            "text": "Outeya",
+            "x": 131,
+            "y": 1746,
+            "width": 168,
+            "height": 34,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 22,
+            "color": "#0093D8"
+          },
+          "titleAr": {
+            "text": "الوطية",
+            "x": 135,
+            "y": 1766,
+            "width": 162,
+            "height": 30,
+            "fontFamily": "Gulzar",
+            "fontSize": 22,
+            "color": "#0093D8"
+          },
+          "dateDay": {
+            "text": "20",
+            "x": 181,
+            "y": 1838,
+            "width": 66,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 20,
+            "color": "#0093D8"
+          },
+          "dateMonth": {
+            "text": "July",
+            "x": 232,
+            "y": 1847,
+            "width": 108,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 13,
+            "color": "#0093D8"
+          },
+          "dateWeekday": {
+            "text": "Monday",
+            "x": 90,
+            "y": 1848,
+            "width": 108,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 13,
+            "color": "#0093D8"
+          },
+          "dateYear": {
+            "text": "2026",
+            "x": 176,
+            "y": 1863,
+            "width": 77,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 13,
+            "color": "#0093D8"
+          },
+          "evilEyeBottom": {
+            "file": "evil-eye-outeya-bottom.svg",
+            "x": -40,
+            "y": 1878,
+            "width": 143,
+            "height": 95
+          },
+          "venueEn": {
+            "text": "Haifa Palace Mornag",
+            "x": 121,
+            "y": 1908,
+            "width": 188,
+            "height": 52,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 18,
+            "color": "#49606B"
+          },
+          "venueAr": {
+            "text": "هيفاء بالاص مرناق",
+            "x": 135,
+            "y": 1960,
+            "width": 162,
+            "height": 30,
+            "fontFamily": "Gulzar",
+            "fontSize": 16,
+            "color": "#49606B"
+          },
+          "mapBtn": {
+            "text": "Open in maps",
+            "x": 162,
+            "y": 2023,
+            "width": 106,
+            "height": 40,
+            "border": "1px solid #E0E0E0",
+            "borderRadius": 10,
+            "color": "#49606B"
+          },
+          "fish": {
+            "file": "fish-outeya.svg",
+            "x": 343,
+            "y": 2040,
+            "width": 57,
+            "height": 61
+          }
+        },
+        "mariage": {
+          "cardBg": {
+            "x": 54,
+            "y": 2141,
+            "width": 323,
+            "height": 383,
+            "borderRadius": 20,
+            "bg": "#FFFFFF"
+          },
+          "evilEyeTop": {
+            "file": "evil-eye-mariage-top.svg",
+            "x": 328,
+            "y": 2164,
+            "width": 143,
+            "height": 95
+          },
+          "titleEn": {
+            "text": "Mariage",
+            "x": 131,
+            "y": 2176,
+            "width": 168,
+            "height": 34,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 22,
+            "color": "#0093D8"
+          },
+          "titleAr": {
+            "text": "العرس",
+            "x": 135,
+            "y": 2196,
+            "width": 162,
+            "height": 30,
+            "fontFamily": "Gulzar",
+            "fontSize": 22,
+            "color": "#0093D8"
+          },
+          "dateDay": {
+            "text": "20",
+            "x": 181,
+            "y": 2268,
+            "width": 66,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 20,
+            "color": "#0093D8"
+          },
+          "dateMonth": {
+            "text": "July",
+            "x": 232,
+            "y": 2277,
+            "width": 108,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 13,
+            "color": "#0093D8"
+          },
+          "dateWeekday": {
+            "text": "Monday",
+            "x": 90,
+            "y": 2278,
+            "width": 108,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 13,
+            "color": "#0093D8"
+          },
+          "dateYear": {
+            "text": "2026",
+            "x": 176,
+            "y": 2293,
+            "width": 77,
+            "height": 25,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 13,
+            "color": "#0093D8"
+          },
+          "evilEyeBottom": {
+            "file": "evil-eye-mariage-bottom.svg",
+            "x": -40,
+            "y": 2308,
+            "width": 143,
+            "height": 95
+          },
+          "venueEn": {
+            "text": "Haifa Palace Mornag",
+            "x": 121,
+            "y": 2337,
+            "width": 188,
+            "height": 52,
+            "fontFamily": "Cormorant Infant",
+            "fontSize": 18,
+            "color": "#49606B"
+          },
+          "venueAr": {
+            "text": "هيفاء بالاص مرناق",
+            "x": 135,
+            "y": 2389,
+            "width": 162,
+            "height": 30,
+            "fontFamily": "Gulzar",
+            "fontSize": 16,
+            "color": "#49606B"
+          },
+          "mapBtn": {
+            "text": "Open in maps",
+            "x": 162,
+            "y": 2452,
+            "width": 106,
+            "height": 40,
+            "border": "1px solid #E0E0E0",
+            "borderRadius": 10,
+            "color": "#49606B"
+          },
+          "fish": {
+            "file": "fish-mariage.svg",
+            "x": 343,
+            "y": 2470,
+            "width": 57,
+            "height": 61
+          }
+        }
+      }
+    },
+    {
+      "id": "dressCode",
+      "name": "Dress Code Section",
+      "bounds": {
+        "x": 0,
+        "y": 2568,
+        "width": 430,
+        "height": 369
+      },
+      "elements": {
+        "titleEn": {
+          "text": "Dress Code",
+          "x": 131,
+          "y": 2568,
+          "width": 168,
+          "height": 34,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 22,
+          "color": "#0093D8",
+          "letterSpacing": "0.05em"
+        },
+        "titleAr": {
+          "text": "التبديلة",
+          "x": 134,
+          "y": 2588,
+          "width": 162,
+          "height": 30,
+          "fontFamily": "Gulzar",
+          "fontSize": 22,
+          "color": "#0093D8"
+        },
+        "attireImage": {
+          "file": "dress-code-attire.png",
+          "x": 139,
+          "y": 2605,
+          "width": 153,
+          "height": 230
+        },
+        "text": {
+          "text": "we request attending the Outeya with a traditional attire",
+          "x": 95,
+          "y": 2854,
+          "width": 241,
+          "height": 41,
+          "fontFamily": "Cormorant",
+          "fontSize": 14,
+          "color": "#49606B"
+        }
+      }
+    },
+    {
+      "id": "programme",
+      "name": "Programme Section",
+      "bounds": {
+        "x": 0,
+        "y": 2937,
+        "width": 430,
+        "height": 430
+      },
+      "elements": {
+        "titleEn": {
+          "text": "Programme",
+          "x": 131,
+          "y": 2937,
+          "width": 168,
+          "height": 34,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 22,
+          "color": "#0093D8",
+          "letterSpacing": "0.05em"
+        },
+        "titleAr": {
+          "text": "البرنامج",
+          "x": 134,
+          "y": 2957,
+          "width": 162,
+          "height": 30,
+          "fontFamily": "Gulzar",
+          "fontSize": 22,
+          "color": "#0093D8"
+        },
+        "steps": [
+          {
+            "time": "17:00",
+            "label": "Sdek",
+            "icon": "prog-icon-sdek.svg",
+            "y": 3047
+          },
+          {
+            "time": "18:00",
+            "label": "Reception",
+            "icon": "prog-icon-reception.svg",
+            "y": 3122
+          },
+          {
+            "time": "20:00",
+            "label": "Dinner",
+            "icon": "prog-icon-dinner.svg",
+            "y": 3197
+          },
+          {
+            "time": "00:00",
+            "label": "Dance",
+            "icon": "prog-icon-dance.svg",
+            "y": 3272
+          }
+        ]
+      }
+    },
+    {
+      "id": "rsvp",
+      "name": "RSVP Section",
+      "bounds": {
+        "x": 0,
+        "y": 3367,
+        "width": 430,
+        "height": 490
+      },
+      "elements": {
+        "titleEn": {
+          "text": "RSVP",
+          "x": 131,
+          "y": 3367,
+          "width": 168,
+          "height": 34,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 22,
+          "color": "#0093D8",
+          "letterSpacing": "0.05em"
+        },
+        "favourText": {
+          "text": "The favour of a reply is kindly requested by the fifteenth of June, 2026",
+          "x": 95,
+          "y": 3406,
+          "width": 241,
+          "height": 41,
+          "fontFamily": "Cormorant Infant",
+          "fontSize": 12,
+          "color": "#49606B"
+        }
+      }
+    },
+    {
+      "id": "footer",
+      "name": "Footer Section",
+      "bounds": {
+        "x": 0,
+        "y": 3857,
+        "width": 430,
+        "height": 160
+      },
+      "elements": {
+        "initialsCircle": {
+          "x": 187,
+          "y": 3857,
+          "width": 38,
+          "height": 57,
+          "borderRadius": 16,
+          "border": "1.5px solid #0093D8"
+        },
+        "closingArabic": {
+          "text": "ان شاء الله ليلتكم زينة",
+          "x": 125,
+          "y": 3924,
+          "width": 162,
+          "height": 26,
+          "fontFamily": "Gulzar",
+          "fontSize": 26,
+          "color": "#0093D8"
+        },
+        "smallOrnament": {
+          "file": "closing-small-ornament.svg",
+          "x": 192,
+          "y": 3964,
+          "width": 29,
+          "height": 12
+        }
+      }
+    }
+  ]
+}
