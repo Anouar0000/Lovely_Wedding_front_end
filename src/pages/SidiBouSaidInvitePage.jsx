@@ -269,7 +269,6 @@ const HeroBlock = ({ partner1, partner2, initials, month, year, subtitle, overri
    ========================================================================= */
 const RevealBlock = ({ dateDetails, overrides }) => {
   const BLOCK_Y = 708;
-  const [isRevealed, setIsRevealed] = useState(false);
 
   const titleEn = getOverride(overrides, 'reveal-title', {
     position: "absolute", left: "131px", top: "32px", width: "168px", height: "30px", fontFamily: "'Antic Didone', serif", fontSize: "22px", fontWeight: 400, fontStyle: "normal", letterSpacing: "1.1px", lineHeight: "26px", textAlign: "center", color: BLUE
@@ -309,15 +308,9 @@ const RevealBlock = ({ dateDetails, overrides }) => {
       <img
         src={doorsImg}
         alt="Doors"
-        onClick={() => setIsRevealed(!isRevealed)}
         className="reveal"
         style={{
           ...figmaBox({ x: 93, y: 810 - BLOCK_Y, width: 245, height: 99, zIndex: 4 }),
-          cursor: "pointer",
-          transition: "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease",
-          transform: isRevealed ? "scaleY(0.15) translateY(-80px)" : "scaleY(1)",
-          opacity: isRevealed ? 0.3 : 1,
-          transformOrigin: "top center",
           transitionDelay: "350ms"
         }}
         draggable="false"
@@ -375,7 +368,17 @@ const StoryBlock = ({ customPhoto, storyQuote, overrides }) => {
       <img src={storyTape} alt="" className="reveal" style={{ ...figmaBox({ x: 260, y: 69, width: 114, height: 52, zIndex: 4 }), transitionDelay: "400ms" }} draggable="false" />
       <img src={storyTornPaper} alt="" className="reveal" style={{ ...figmaBox({ x: 15.5, y: 121.5, width: 222.6, height: 164.5, zIndex: 3 }), transitionDelay: "450ms" }} draggable="false" />
 
-      <div className="reveal" style={{ ...quote.style, transitionDelay: "500ms" }}>{renderLines(quote.text)}</div>
+      <div
+        className="reveal"
+        style={{
+          ...quote.style,
+          transform: "rotate(-10deg)",
+          transformOrigin: "center center",
+          transitionDelay: "500ms"
+        }}
+      >
+        {renderLines(quote.text)}
+      </div>
 
       <img src={storyStampLeft} alt="" className="reveal" style={{ ...figmaBox({ x: 309, y: 213, width: 67.5, height: 101.4, zIndex: 5 }), transitionDelay: "550ms" }} draggable="false" />
       <img src={storyStampRight} alt="" className="reveal" style={{ ...figmaBox({ x: 314.2, y: 219.7, width: 57.1, height: 86.0, zIndex: 6 }), transitionDelay: "550ms" }} draggable="false" />
@@ -661,8 +664,32 @@ const DressCodeBlock = ({ dressCodeText, overrides }) => {
 /* =========================================================================
    BLOCK 7: PROGRAMME (Height: 430px)
    ========================================================================= */
-const ProgrammeBlock = ({ programmeSteps, overrides }) => {
+const ProgrammeBlock = ({ programmeSteps, overrides, editable }) => {
   const BLOCK_Y = 2937;
+  const [isActive, setIsActive] = useState(editable || false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    if (editable) {
+      setIsActive(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsActive(true);
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [editable]);
 
   const titleEn = getOverride(overrides, 'prog-title', {
     position: "absolute", left: "131px", top: "0px", width: "168px", height: "34px", fontFamily: "'Antic Didone', serif", fontSize: "20px", fontWeight: 400, fontStyle: "normal", letterSpacing: "1px", lineHeight: "24px", textAlign: "center", color: BLUE
@@ -682,58 +709,360 @@ const ProgrammeBlock = ({ programmeSteps, overrides }) => {
   const secPosY = overrides?.['sec-prog']?.posY || 0;
 
   return (
-    <section id="block-programme" data-section-index="6" style={{ position: "relative", width: `${CANVAS_WIDTH}px`, height: "430px", overflow: "hidden", transform: secPosY ? `translateY(${secPosY}px)` : undefined }}>
+    <section
+      ref={sectionRef}
+      id="block-programme"
+      data-section-index="6"
+      style={{
+        position: "relative",
+        width: `${CANVAS_WIDTH}px`,
+        height: "430px",
+        overflow: "hidden",
+        transform: secPosY ? `translateY(${secPosY}px)` : undefined
+      }}
+    >
       <div className="reveal" style={{ ...titleEn.style, transitionDelay: "150ms" }}>{titleEn.text}</div>
       <div className="reveal" style={{ ...titleAr.style, transitionDelay: "200ms" }}>{titleAr.text}</div>
 
-      {/* Continuous Vertical Timeline Line (1px width) */}
-      <div className="reveal" style={{ ...figmaBox({ x: 203, y: 3047 - BLOCK_Y, width: 1, height: 235, zIndex: 1 }), backgroundColor: "rgba(46,136,226,1)", transitionDelay: "250ms" }} />
+      {/* LINE SEGMENT 1 (Between Circle 1 and Circle 2) */}
+      <div
+        style={{
+          position: "absolute",
+          left: "203px",
+          top: "123px",
+          width: "1px",
+          height: isActive ? "64px" : "0px",
+          backgroundColor: "rgba(46, 136, 226, 1)",
+          transition: "height 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.65s",
+          zIndex: 1
+        }}
+      />
 
-      {/* Step 1 (17:00 - Empty Water Level 0%) */}
-      <div className="reveal" style={{ position: "absolute", left: "131px", top: "110px", width: "54px", height: "60px", fontFamily: "'Cormorant Infant', serif", fontSize: "12px", fontWeight: 600, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "left", color: "rgba(46, 136, 226, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "300ms" }}>
-        {steps[0]?.time || "17:00"}
-      </div>
-      <div className="reveal" style={{ ...figmaBox({ x: 197, y: 3047 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }), transitionDelay: "300ms" }}>
+      {/* LINE SEGMENT 2 (Between Circle 2 and Circle 3) */}
+      <div
+        style={{
+          position: "absolute",
+          left: "203px",
+          top: "200px",
+          width: "1px",
+          height: isActive ? "63px" : "0px",
+          backgroundColor: "rgba(46, 136, 226, 1)",
+          transition: "height 0.5s cubic-bezier(0.4, 0, 0.2, 1) 1.7s",
+          zIndex: 1
+        }}
+      />
+
+      {/* LINE SEGMENT 3 (Between Circle 3 and Circle 4) */}
+      <div
+        style={{
+          position: "absolute",
+          left: "203px",
+          top: "276px",
+          width: "1px",
+          height: isActive ? "62px" : "0px",
+          backgroundColor: "rgba(46, 136, 226, 1)",
+          transition: "height 0.5s cubic-bezier(0.4, 0, 0.2, 1) 2.75s",
+          zIndex: 1
+        }}
+      />
+
+      {/* ================= STEP 1 (17:00 / Sdek) ================= */}
+      {/* Circle 1 */}
+      <div
+        style={{
+          ...figmaBox({ x: 197, y: 3047 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "scale(1)" : "scale(0.3)",
+          transition: "opacity 0.4s ease 0.1s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s"
+        }}
+      >
         <WavyCircle percent={0} />
       </div>
-      <img src={progIconSdek} alt="" className="reveal" style={{ ...figmaBox({ x: 236, y: 3034 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }), transitionDelay: "300ms" }} draggable="false" />
-      <div className="reveal" style={{ position: "absolute", left: "219px", top: "135px", width: "71px", height: "21px", fontFamily: "'Cormorant', serif", fontSize: "12px", fontWeight: 400, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "center", color: "rgba(73, 96, 107, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "300ms" }}>
+      {/* Time 1 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "131px",
+          top: "110px",
+          width: "54px",
+          height: "60px",
+          fontFamily: "'Cormorant Infant', serif",
+          fontSize: "12px",
+          fontWeight: 600,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "left",
+          color: "rgba(46, 136, 226, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(-8px)",
+          transition: "opacity 0.4s ease 0.35s, transform 0.4s ease 0.35s"
+        }}
+      >
+        {steps[0]?.time || "17:00"}
+      </div>
+      {/* Icon 1 */}
+      <img
+        src={progIconSdek}
+        alt=""
+        style={{
+          ...figmaBox({ x: 236, y: 3034 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 0.35s, transform 0.4s ease 0.35s"
+        }}
+        draggable="false"
+      />
+      {/* Name 1 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "219px",
+          top: "135px",
+          width: "71px",
+          height: "21px",
+          fontFamily: "'Cormorant', serif",
+          fontSize: "12px",
+          fontWeight: 400,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "center",
+          color: "rgba(73, 96, 107, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 0.35s, transform 0.4s ease 0.35s"
+        }}
+      >
         {steps[0]?.name || "Sdek"}
       </div>
 
-      {/* Step 2 (18:00 - Wavy Liquid Level 35%) */}
-      <div className="reveal" style={{ position: "absolute", left: "131px", top: "185px", width: "54px", height: "60px", fontFamily: "'Cormorant Infant', serif", fontSize: "12px", fontWeight: 600, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "left", color: "rgba(46, 136, 226, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "350ms" }}>
-        {steps[1]?.time || "18:00"}
-      </div>
-      <div className="reveal" style={{ ...figmaBox({ x: 197, y: 3124 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }), transitionDelay: "350ms" }}>
+      {/* ================= STEP 2 (18:00 / Reception) ================= */}
+      {/* Circle 2 */}
+      <div
+        style={{
+          ...figmaBox({ x: 197, y: 3124 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "scale(1)" : "scale(0.3)",
+          transition: "opacity 0.4s ease 1.15s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.15s"
+        }}
+      >
         <WavyCircle percent={0.35} />
       </div>
-      <img src={progIconReception} alt="" className="reveal" style={{ ...figmaBox({ x: 236, y: 3111 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }), transitionDelay: "350ms" }} draggable="false" />
-      <div className="reveal" style={{ position: "absolute", left: "219px", top: "208px", width: "71px", height: "21px", fontFamily: "'Cormorant', serif", fontSize: "12px", fontWeight: 400, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "center", color: "rgba(73, 96, 107, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "350ms" }}>
+      {/* Time 2 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "131px",
+          top: "185px",
+          width: "54px",
+          height: "60px",
+          fontFamily: "'Cormorant Infant', serif",
+          fontSize: "12px",
+          fontWeight: 600,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "left",
+          color: "rgba(46, 136, 226, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(-8px)",
+          transition: "opacity 0.4s ease 1.4s, transform 0.4s ease 1.4s"
+        }}
+      >
+        {steps[1]?.time || "18:00"}
+      </div>
+      {/* Icon 2 */}
+      <img
+        src={progIconReception}
+        alt=""
+        style={{
+          ...figmaBox({ x: 236, y: 3111 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 1.4s, transform 0.4s ease 1.4s"
+        }}
+        draggable="false"
+      />
+      {/* Name 2 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "219px",
+          top: "208px",
+          width: "71px",
+          height: "21px",
+          fontFamily: "'Cormorant', serif",
+          fontSize: "12px",
+          fontWeight: 400,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "center",
+          color: "rgba(73, 96, 107, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 1.4s, transform 0.4s ease 1.4s"
+        }}
+      >
         {steps[1]?.name || "Reception"}
       </div>
 
-      {/* Step 3 (20:00 - Wavy Liquid Level 70%) */}
-      <div className="reveal" style={{ position: "absolute", left: "131px", top: "260px", width: "54px", height: "60px", fontFamily: "'Cormorant Infant', serif", fontSize: "12px", fontWeight: 600, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "left", color: "rgba(46, 136, 226, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "400ms" }}>
-        {steps[2]?.time || "20:00"}
-      </div>
-      <div className="reveal" style={{ ...figmaBox({ x: 197, y: 3200 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }), transitionDelay: "400ms" }}>
+      {/* ================= STEP 3 (20:00 / Dinner) ================= */}
+      {/* Circle 3 */}
+      <div
+        style={{
+          ...figmaBox({ x: 197, y: 3200 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "scale(1)" : "scale(0.3)",
+          transition: "opacity 0.4s ease 2.2s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.2s"
+        }}
+      >
         <WavyCircle percent={0.70} />
       </div>
-      <img src={progIconDinner} alt="" className="reveal" style={{ ...figmaBox({ x: 236, y: 3182 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }), transitionDelay: "400ms" }} draggable="false" />
-      <div className="reveal" style={{ position: "absolute", left: "219px", top: "282px", width: "71px", height: "18px", fontFamily: "'Cormorant', serif", fontSize: "12px", fontWeight: 400, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "center", color: "rgba(73, 96, 107, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "400ms" }}>
+      {/* Time 3 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "131px",
+          top: "260px",
+          width: "54px",
+          height: "60px",
+          fontFamily: "'Cormorant Infant', serif",
+          fontSize: "12px",
+          fontWeight: 600,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "left",
+          color: "rgba(46, 136, 226, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(-8px)",
+          transition: "opacity 0.4s ease 2.45s, transform 0.4s ease 2.45s"
+        }}
+      >
+        {steps[2]?.time || "20:00"}
+      </div>
+      {/* Icon 3 */}
+      <img
+        src={progIconDinner}
+        alt=""
+        style={{
+          ...figmaBox({ x: 236, y: 3182 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 2.45s, transform 0.4s ease 2.45s"
+        }}
+        draggable="false"
+      />
+      {/* Name 3 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "219px",
+          top: "282px",
+          width: "71px",
+          height: "18px",
+          fontFamily: "'Cormorant', serif",
+          fontSize: "12px",
+          fontWeight: 400,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "center",
+          color: "rgba(73, 96, 107, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 2.45s, transform 0.4s ease 2.45s"
+        }}
+      >
         {steps[2]?.name || "Dinner"}
       </div>
 
-      {/* Step 4 (00:00 - Full Liquid Level 100%) */}
-      <div className="reveal" style={{ position: "absolute", left: "131px", top: "335px", width: "54px", height: "60px", fontFamily: "'Cormorant Infant', serif", fontSize: "12px", fontWeight: 600, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "left", color: "rgba(46, 136, 226, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "450ms" }}>
-        {steps[3]?.time || "00:00"}
-      </div>
-      <div className="reveal" style={{ ...figmaBox({ x: 197, y: 3275 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }), transitionDelay: "450ms" }}>
+      {/* ================= STEP 4 (00:00 / Dance) ================= */}
+      {/* Circle 4 */}
+      <div
+        style={{
+          ...figmaBox({ x: 197, y: 3275 - BLOCK_Y, width: 13, height: 13, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "scale(1)" : "scale(0.3)",
+          transition: "opacity 0.4s ease 3.25s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 3.25s"
+        }}
+      >
         <WavyCircle percent={1.0} />
       </div>
-      <img src={progIconDance} alt="" className="reveal" style={{ ...figmaBox({ x: 236, y: 3254 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }), transitionDelay: "450ms" }} draggable="false" />
-      <div className="reveal" style={{ position: "absolute", left: "219px", top: "355px", width: "71px", height: "18px", fontFamily: "'Cormorant', serif", fontSize: "12px", fontWeight: 400, fontStyle: "normal", letterSpacing: "1.2px", lineHeight: "18px", textAlign: "center", color: "rgba(73, 96, 107, 1)", textTransform: "capitalize", zIndex: 3, transitionDelay: "450ms" }}>
+      {/* Time 4 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "131px",
+          top: "335px",
+          width: "54px",
+          height: "60px",
+          fontFamily: "'Cormorant Infant', serif",
+          fontSize: "12px",
+          fontWeight: 600,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "left",
+          color: "rgba(46, 136, 226, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(-8px)",
+          transition: "opacity 0.4s ease 3.5s, transform 0.4s ease 3.5s"
+        }}
+      >
+        {steps[3]?.time || "00:00"}
+      </div>
+      {/* Icon 4 */}
+      <img
+        src={progIconDance}
+        alt=""
+        style={{
+          ...figmaBox({ x: 236, y: 3254 - BLOCK_Y, width: 37, height: 33, zIndex: 3 }),
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 3.5s, transform 0.4s ease 3.5s"
+        }}
+        draggable="false"
+      />
+      {/* Name 4 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "219px",
+          top: "355px",
+          width: "71px",
+          height: "18px",
+          fontFamily: "'Cormorant', serif",
+          fontSize: "12px",
+          fontWeight: 400,
+          fontStyle: "normal",
+          letterSpacing: "1.2px",
+          lineHeight: "18px",
+          textAlign: "center",
+          color: "rgba(73, 96, 107, 1)",
+          textTransform: "capitalize",
+          zIndex: 3,
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "translateX(0)" : "translateX(8px)",
+          transition: "opacity 0.4s ease 3.5s, transform 0.4s ease 3.5s"
+        }}
+      >
         {steps[3]?.name || "Dance"}
       </div>
     </section>
@@ -982,7 +1311,7 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
 
   // IntersectionObserver for scroll-reveal animation
   useEffect(() => {
-    if (animType === "none") {
+    if (editable || animType === "none") {
       const els = document.querySelectorAll(".reveal");
       els.forEach((el) => el.classList.add("revealed"));
       return;
@@ -1005,7 +1334,7 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
     return () => {
       elements.forEach((el) => observer.unobserve(el));
     };
-  }, [animType, currentInvite]);
+  }, [animType, currentInvite, editable]);
 
   return (
     <div
@@ -1022,14 +1351,12 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
     >
       <style>{`
         .reveal {
-          opacity: ${animType === "none" ? "1" : "0"};
-          transform: ${animType === "fade-up" ? "translateY(24px)" : animType === "zoom-in" ? "scale(0.96)" : "none"};
-          transition: opacity ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1), transform ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: opacity, transform;
+          opacity: ${editable || animType === "none" ? "1" : "0"};
+          transition: opacity ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity;
         }
         .reveal.revealed {
           opacity: 1 !important;
-          transform: none !important;
         }
 
         /* Continuous Wavy Liquid Animation for Programme Dots */
@@ -1139,7 +1466,7 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
           <CountdownBlock targetDate={currentInvite.eventDate} overrides={overrides} />
           <CelebrationsBlock timeline={currentInvite.timeline} overrides={overrides} />
           <DressCodeBlock dressCodeText={currentInvite.dressCodeText} overrides={overrides} />
-          <ProgrammeBlock programmeSteps={currentInvite.programmeSteps} overrides={overrides} />
+          <ProgrammeBlock programmeSteps={currentInvite.programmeSteps} overrides={overrides} editable={editable} />
           <RsvpBlock onSubmitRsvp={handleRsvpSubmit} overrides={overrides} />
           <FooterBlock initials={initials} overrides={overrides} />
         </div>
