@@ -38,6 +38,7 @@ import progIconDinner from "../assets/digital/sidi-bousaid/fresh-figma/prog-icon
 import progIconDance from "../assets/digital/sidi-bousaid/fresh-figma/prog-icon-dance.png";
 
 import closingSmallOrnament from "../assets/digital/sidi-bousaid/fresh-figma/closing-small-ornament.png";
+import sidiCursor from "../assets/digital/sidi-bousaid/fresh-figma/sidi-cursor.png";
 
 const BLUE = "rgba(0, 147, 216, 1)";
 const CANVAS_WIDTH = 430;
@@ -1338,6 +1339,7 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
 
   return (
     <div
+      className="sidi-bou-said-wrapper"
       style={{
         minHeight: "100vh",
         backgroundColor: editable ? bgColor : "#2B3544",
@@ -1350,6 +1352,17 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
       }}
     >
       <style>{`
+        .sidi-bou-said-wrapper,
+        .sidi-bou-said-wrapper * {
+          cursor: url(${sidiCursor}) 4 0, auto;
+        }
+        .sidi-bou-said-wrapper button,
+        .sidi-bou-said-wrapper a,
+        .sidi-bou-said-wrapper input,
+        .sidi-bou-said-wrapper [role="button"],
+        .sidi-bou-said-wrapper [onClick] {
+          cursor: url(${sidiCursor}) 4 0, pointer;
+        }
         .reveal {
           opacity: ${editable || animType === "none" ? "1" : "0"};
           transition: opacity ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1);

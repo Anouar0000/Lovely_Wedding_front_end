@@ -35,6 +35,7 @@ import progIconDinner from "../assets/digital/sidi-bousaid/fresh-figma/prog-icon
 import progIconDance from "../assets/digital/sidi-bousaid/fresh-figma/prog-icon-dance.png";
 
 import closingSmallOrnament from "../assets/digital/sidi-bousaid/fresh-figma/closing-small-ornament.png";
+import sidiCursor from "../assets/digital/sidi-bousaid/fresh-figma/sidi-cursor.png";
 
 // Shared Theme Colors
 const BLUE = "rgba(0, 147, 216, 1)";
@@ -472,6 +473,7 @@ export default function SidiBouSaidFigmaMirror() {
 
   return (
     <div
+      className="sidi-bou-said-wrapper"
       style={{
         minHeight: "100vh",
         backgroundColor: "#2B3544",
@@ -481,6 +483,18 @@ export default function SidiBouSaidFigmaMirror() {
         fontFamily: "'Urbanist', sans-serif"
       }}
     >
+      <style>{`
+        .sidi-bou-said-wrapper,
+        .sidi-bou-said-wrapper * {
+          cursor: url(${sidiCursor}) 4 0, auto;
+        }
+        .sidi-bou-said-wrapper button,
+        .sidi-bou-said-wrapper a,
+        .sidi-bou-said-wrapper input,
+        .sidi-bou-said-wrapper [role="button"] {
+          cursor: url(${sidiCursor}) 4 0, pointer;
+        }
+      `}</style>
       <div
         style={{
           position: "relative",
