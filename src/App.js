@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CanvasContainer from './pages/CanvasContainer';
 import InvitationsPhysiquePage from './pages/InvitationsPhysiquePage';
@@ -9,6 +9,8 @@ import SidiBouSaidInvitePage from './pages/SidiBouSaidInvitePage';
 import SidiBouSaidFigmaMirror from './pages/SidiBouSaidFigmaMirror';
 import BrezzaMarinaInvitePage from './pages/BrezzaMarinaInvitePage';
 import BrezzaMarinaFigmaMirror from './pages/BrezzaMarinaFigmaMirror';
+import BridgertonInvitePage from './pages/BridgertonInvitePage';
+import BridgertonFigmaMirror from './pages/BridgertonFigmaMirror';
 import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -21,11 +23,21 @@ import TestPDFDownload from './pages/TestPDFDownload';
 import IframePreviewPage from './pages/IframePreviewPage';
 
 
+function ScrollToTop() {
+  const { pathname, search } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname, search]);
+
+  return null;
+}
 
 function App() {
   return (
     <Router>
       <AuthProvider>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/canvas" element={<CanvasContainer />} />
@@ -36,8 +48,10 @@ function App() {
           <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
           <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
           <Route path="/digital-invitation/brezza-marina" element={<BrezzaMarinaInvitePage />} />
+          <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
           <Route path="/sidi-bou-said-mirror" element={<SidiBouSaidFigmaMirror />} />
           <Route path="/brezza-marina-mirror" element={<BrezzaMarinaFigmaMirror />} />
+          <Route path="/bridgerton-mirror" element={<BridgertonFigmaMirror />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/dashboard"

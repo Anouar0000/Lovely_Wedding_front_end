@@ -1342,7 +1342,7 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
       className="sidi-bou-said-wrapper"
       style={{
         minHeight: "100vh",
-        backgroundColor: editable ? bgColor : "#2B3544",
+        backgroundColor: editable || scale < 1 ? bgColor : "#DCEBF0",
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",

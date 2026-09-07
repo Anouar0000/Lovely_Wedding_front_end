@@ -122,6 +122,50 @@ const SECTION_LIST = [
 ];
 
 const getElementsForSection = (sectionId, templateId) => {
+  if (templateId === 'bridgerton') {
+    switch (sectionId) {
+      case 'hero': return [
+        { id: 'hero-names', label: 'Noms des Mariés (Calligraphie)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Karim\n&\nAzza" },
+        { id: 'hero-quote', label: 'Texte d\'Introduction ("Our Happy Ever After")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Our Happy Ever After" },
+        { id: 'hero-photo', label: 'Photo du Couple (Cadre Principal)', controls: ['upload'] }
+      ];
+      case 'countdown': return [
+        { id: 'event-date', label: 'Date Vintage (3 Lignes)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "23\n11\n26" },
+        { id: 'countdown-waiting', label: 'Texte d\'Attente ("waiting for you...")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "waiting for you..." }
+      ];
+      case 'celebrations': return [
+        { id: 'banner-quote', label: 'Citation Bannière ("Join Us For The...")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join Us For The \nBest Day Ever" }
+      ];
+      case 'location': return [
+        { id: 'venue-title', label: 'Titre Lieu ("Wedding Venue")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Wedding Venue" },
+        { id: 'venue-details', label: 'Détails & Adresse du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H" },
+        { id: 'venue-photo', label: 'Photo Ovale du Lieu', controls: ['upload'] }
+      ];
+      case 'dress-code': return [
+        { id: 'dress-title', label: 'Titre Dress Code', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dress Code" },
+        { id: 'dress-text', label: 'Consignes Vestimentaires', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We'd love for guests to embrace a formal look for our celebration." },
+        { id: 'transport-title', label: 'Titre Transport', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Transport" },
+        { id: 'transport-text', label: 'Consignes Transport & Parking', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Parking: On-site parking will be available at the venue.\nTaxis: We recommend booking taxis in advance." }
+      ];
+      case 'our-story': return [
+        { id: 'message-title', label: 'Titre Livre d\'Or ("Leave a message")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave\na message" },
+        { id: 'message-subtitle', label: 'Texte d\'Invitation au Message', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave a heartfelt message to the brides" }
+      ];
+      case 'rsvp': return [
+        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
+        { id: 'rsvp-deadline', label: 'Texte Date Limite RSVP', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The favour of a reply is kindly requested by the 15th of June, 2026" },
+        { id: 'rsvp-btn', label: 'Bouton de Confirmation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Send Confirmation" }
+      ];
+      case 'footer': return [
+        { id: 'footer-names', label: 'Monogramme Sceau Dentelle', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Karim\n&\nAzza" }
+      ];
+      case 'settings': return [
+        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] }
+      ];
+      default: return [];
+    }
+  }
+
   if (templateId === 'brezza-marina') {
     switch (sectionId) {
       case 'hero': return [

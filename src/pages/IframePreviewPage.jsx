@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 import sidiBouSaidFullReference from "../assets/digital/sidi-bousaid/fresh-figma/sidi_bou_said_full_reference.png";
 import brezzaMarinaFullReference from "../assets/digital/brezza-marina/brezza_marina_full_reference.png";
+import bridgertonFullReference from "../assets/digital/bridgerton/bridgerton_full_reference.png";
 
 export default function IframePreviewPage() {
   const [invite, setInvite] = useState(null);
@@ -37,7 +38,7 @@ export default function IframePreviewPage() {
   }
   
   const Component = template.Component;
-  const bgColor = invite?.backgroundColor || "#DCEBF0";
+  const bgColor = invite?.backgroundColor || (invite?.template === "bridgerton" ? "#FFFFFF" : invite?.template === "brezza-marina" ? "#DCEBF0" : "#F6F7F5");
 
   return (
     <div className="min-h-screen relative overflow-x-hidden overflow-y-auto" style={{ width: 430, minWidth: 430, maxWidth: 430, margin: '0 auto', backgroundColor: bgColor }}>
@@ -48,7 +49,7 @@ export default function IframePreviewPage() {
         selectedElementId={selectedElementId}
         onSelectElement={(id) => {
           if (window.parent && window.parent !== window) {
-             window.parent.postMessage({ type: "SELECT_ELEMENT", id }, "*");
+            window.parent.postMessage({ type: "SELECT_ELEMENT", id }, "*");
           }
         }}
       />
@@ -56,14 +57,23 @@ export default function IframePreviewPage() {
       {/* Figma Reference Image Overlay */}
       {overlayOpacity > 0 && (
         <img
-          src={invite.template === "brezza-marina" ? brezzaMarinaFullReference : sidiBouSaidFullReference}
+          src={
+            invite.template === "bridgerton"
+              ? bridgertonFullReference
+              : invite.template === "brezza-marina"
+              ? brezzaMarinaFullReference
+              : sidiBouSaidFullReference
+          }
           alt="Figma Reference"
           style={{
             position: "absolute",
             left: 0,
             top: 0,
             width: "430px",
-            height: invite.template === "brezza-marina" ? "3243px" : "4017px",
+            height:
+              invite.template === "bridgerton" || invite.template === "brezza-marina"
+                ? "3243px"
+                : "4017px",
             opacity: overlayOpacity,
             pointerEvents: "none",
             mixBlendMode: isDiffMode ? "difference" : "normal",

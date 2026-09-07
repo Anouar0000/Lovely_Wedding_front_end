@@ -42,7 +42,7 @@ const templateThemes = {
     panel: "bg-[#fbf8ea]",
     accent: "text-[#130554]",
     border: "border-[#e3d17b]",
-    button: "bg-[#130554] text-white",
+    button: "bg-[#08306b] text-white",
     preview: "dolce",
   },
   "sidi-bousaid": {
@@ -60,7 +60,7 @@ const templateThemes = {
     panel: "bg-[#ffffff]",
     accent: "text-[#0093d8]",
     border: "border-[#aacfe1]",
-    button: "bg-[#0093d8] text-white",
+    button: "bg-[#08306b] text-white",
     preview: "brezza",
   },
 };
@@ -72,7 +72,7 @@ const getTemplateTheme = (templateId) =>
     panel: "bg-white",
     accent: "text-black",
     border: "border-gray-200",
-    button: "bg-black text-white",
+    button: "bg-[#08306b] text-white",
     preview: "image",
   };
 

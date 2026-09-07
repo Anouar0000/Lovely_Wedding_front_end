@@ -1,14 +1,17 @@
 import DolceVitaInvitePage from "../pages/DolceVitaInvitePage";
 import SidiBouSaidInvitePage from "../pages/SidiBouSaidInvitePage";
 import BrezzaMarinaInvitePage from "../pages/BrezzaMarinaInvitePage";
+import BridgertonInvitePage from "../pages/BridgertonInvitePage";
 import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import brezzaMarinaTemplate from "../data/digital/templates/brezza-marina.json";
+import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
 
 export const DIGITAL_TEMPLATE_IDS = {
   DOLCE_VITA: dolceVitaTemplate.id,
   SIDI_BOUSAID: sidiBouSaidTemplate.id,
   BREZZA_MARINA: brezzaMarinaTemplate.id,
+  BRIDGERTON: bridgertonTemplate.id,
 };
 
 export const digitalInviteTemplates = [
@@ -35,6 +38,14 @@ export const digitalInviteTemplates = [
     Component: BrezzaMarinaInvitePage,
     defaults: brezzaMarinaTemplate.defaults,
     fixedTimelineSteps: brezzaMarinaTemplate.fixedTimelineSteps,
+  },
+  {
+    id: bridgertonTemplate.id,
+    label: bridgertonTemplate.label,
+    description: bridgertonTemplate.description,
+    Component: BridgertonInvitePage,
+    defaults: bridgertonTemplate.defaults,
+    fixedTimelineSteps: bridgertonTemplate.fixedTimelineSteps,
   },
 ];
 
