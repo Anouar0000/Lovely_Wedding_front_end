@@ -112,17 +112,41 @@ export default function BrezzaMarinaFigmaMirror() {
           {"Houssem\n&\nDorra"}
         </div>
 
-        {/* Line indicator #1518:525 */}
+        {/* Scroll down indicator (line with corner-connected rectangle/diamond) #1518:525 */}
         <div
-          style={{
-            ...figmaBox({ x: 215, y: 561, width: 0, height: 15, zIndex: 3 }),
-            borderLeft: "1px solid #FFFFFF"
+          onClick={() => {
+            const countdownEl = document.getElementById("countdown-section");
+            if (countdownEl) {
+              countdownEl.scrollIntoView({ behavior: "smooth" });
+            } else {
+              window.scrollTo({ top: 654, behavior: "smooth" });
+            }
           }}
-        />
+          style={{
+            ...figmaBox({ x: 210.5, y: 561, width: 9, height: 22, zIndex: 3 }),
+            cursor: "pointer",
+            display: "flex",
+            justifyContent: "center"
+          }}
+          title="Défiler vers le bas"
+        >
+          <svg
+            width="9"
+            height="22"
+            viewBox="0 0 9 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ display: "block" }}
+          >
+            <line x1="4.5" y1="0" x2="4.5" y2="15" stroke="#FFFFFF" strokeWidth="1" />
+            <polygon points="4.5,15 7.5,18 4.5,21 1.5,18" fill="#FFFFFF" />
+          </svg>
+        </div>
 
         {/* =========================================================================
             SECTION 2: COUNTDOWN (717 - 950px)
             ========================================================================= */}
+        <div id="countdown-section" style={figmaBox({ x: 0, y: 654, width: 430, height: 1, zIndex: 0 })} />
 
         {/* Shell 2 ornament #1520:52 */}
         <div style={figmaBox({ x: 0, y: 662, width: 81.1, height: 141.2, zIndex: 1 })}>
