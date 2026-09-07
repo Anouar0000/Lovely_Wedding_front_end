@@ -45,6 +45,9 @@
       "rsvp",
       "footer"
     ],
+    "animationType": "fade-up",
+    "animationDuration": 1.2,
+    "musicUrl": "",
     "slug": "brezza-marina-demo"
   },
   "defaults": {
@@ -75,7 +78,10 @@
       "dress-code",
       "rsvp",
       "footer"
-    ]
+    ],
+    "animationType": "fade-up",
+    "animationDuration": 1.2,
+    "musicUrl": ""
   },
   "fixedTimelineSteps": [
     "Accueil",

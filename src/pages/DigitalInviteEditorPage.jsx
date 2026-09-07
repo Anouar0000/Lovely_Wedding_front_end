@@ -112,7 +112,7 @@ const SECTION_LIST = [
   { id: 'reveal', label: 'Dévoilement (الكشف)' },
   { id: 'countdown', label: 'Compte à rebours' },
   { id: 'location', label: 'Localisation' },
-  { id: 'our-story', label: 'Notre Histoire (قصتنا)' },
+  { id: 'our-story', label: 'Notre Histoire' },
   { id: 'timeline', label: 'Programme (Timeline)' },
   { id: 'celebrations', label: 'Célébrations' },
   { id: 'dress-code', label: 'Dress Code' },
@@ -121,7 +121,61 @@ const SECTION_LIST = [
   { id: 'settings', label: 'Animations & Musique' }
 ];
 
-const getElementsForSection = (sectionId) => {
+const getElementsForSection = (sectionId, templateId) => {
+  if (templateId === 'brezza-marina') {
+    switch (sectionId) {
+      case 'hero': return [
+        { id: 'hero-subtitle', label: 'Texte de la Citation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "L'amour n'est qu'un mot, jusqu'à ce que quelqu'un vienne lui donner un sens." },
+        { id: 'hero-names', label: 'Noms des Mariés', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Houssem\n&\nDorra" }
+      ];
+      case 'countdown': return [
+        { id: 'countdown-title', label: 'Titre (Countdown)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Countdown" },
+        { id: 'countdown-title-ar', label: 'Titre Arabe (العد التنازلي)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "العد التنازلي" }
+      ];
+      case 'location': return [
+        { id: 'location-title', label: 'Titre (Location)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Location" },
+        { id: 'location-title-ar', label: 'Titre Arabe (وين بش نتقابلو)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "وين بش نتقابلو" },
+        { id: 'location-intro', label: 'Texte d\'invitation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The ceremony will take place at" },
+        { id: 'location-venue', label: 'Nom du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage Malaga" },
+        { id: 'location-btn', label: 'Bouton Carte ("Open in maps")', controls: ['text', 'mapAddress', 'font', 'fontSize', 'color'], defaultText: "Open in maps" }
+      ];
+      case 'our-story': return [
+        { id: 'story-title', label: 'Titre (Our Story)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Our Story" },
+        { id: 'story-title-ar', label: 'Titre Arabe (حكايتنا)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "حكايتنا" },
+        { id: 'story-photo', label: 'Photo du Couple (Cadre)', controls: ['upload'] },
+        { id: 'story-card-title', label: 'Titre Carte Postale ("Hi, it\'s Us !")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Hi, it's\nUs !" },
+        { id: 'story-card-quote', label: 'Message Carte Postale', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Placeat accusamus\n in rem a id et ad. \nAdipisci quia et eos " }
+      ];
+      case 'timeline': return [
+        { id: 'timeline-title', label: 'Titre (Timeline)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
+        { id: 'timeline-title-ar', label: 'Titre Arabe (البرنامج)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "البرنامج" },
+        { id: 'timeline-stage-1', label: 'Étape 1 (Accueil)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Accueil" },
+        { id: 'timeline-stage-2', label: 'Étape 2 (Contrat de mariage)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Contrat\nde mariage" },
+        { id: 'timeline-stage-3', label: 'Étape 3 (Fête)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Fête" },
+        { id: 'timeline-stage-4', label: 'Étape 4 (Photos)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Photos" },
+        { id: 'timeline-stage-5', label: 'Étape 5 (La fin)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "La fin" },
+        { id: 'timeline-instructions', label: 'Instruction Perle', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Drag the Pearl to complete the schedule" }
+      ];
+      case 'dress-code': return [
+        { id: 'dress-title', label: 'Titre (Dress Code)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dress Code" },
+        { id: 'dress-title-ar', label: 'Titre Arabe (الهندام)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "الهندام" },
+        { id: 'dress-text', label: 'Consignes Vestimentaires', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Nous prions nos invités d'éviter de porter du blanc et du noir" }
+      ];
+      case 'rsvp': return [
+        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
+        { id: 'rsvp-deadline', label: 'Texte Date Limite', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The favour of a reply is kindly requested by the fifteenth of June, 2026" }
+      ];
+      case 'footer': return [
+        { id: 'footer-title', label: 'Message Final ("See you there!")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "See you there!" }
+      ];
+      case 'settings': return [
+        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] }
+      ];
+      default: return [];
+    }
+  }
+
+  // Sidi Bou Said (default)
   switch (sectionId) {
     case 'hero': return [
       { id: 'sec-hero', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
@@ -204,7 +258,7 @@ const getElementsForSection = (sectionId) => {
 };
 
 function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, updateInvite, handleMusicUpload, uploadingMusic, handleVideoUpload, uploadingVideo, addTimelineItem, updateTimelineItem, removeTimelineItem, FiPlus, FiTrash2 }) {
-   const elements = getElementsForSection(sectionId);
+   const elements = getElementsForSection(sectionId, invite?.template);
    
    return (
      <div className="space-y-2">
@@ -471,6 +525,42 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                    </div>
                  )}
 
+                  {/* Map Address / Google Maps Link Control */}
+                  {el.controls.includes('mapAddress') && invite && updateInvite && (
+                    <div className="space-y-2">
+                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                        Adresse ou Lien Google Maps
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ex: Dar Bouraoui Carthage Malaga ou https://maps.google.com/..."
+                        value={invite.styleOverrides?.[el.id]?.address !== undefined 
+                          ? invite.styleOverrides[el.id].address 
+                          : (invite.mapAddress || invite.mapUrl || "")}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const current = invite.styleOverrides?.[el.id] || {};
+                          updateInvite('styleOverrides', {
+                            ...invite.styleOverrides,
+                            [el.id]: { ...current, address: val }
+                          });
+                          updateInvite('mapAddress', val);
+                          if (val.startsWith("http://") || val.startsWith("https://")) {
+                            updateInvite('mapUrl', val);
+                          } else if (val) {
+                            updateInvite('mapUrl', `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val)}`);
+                          } else {
+                            updateInvite('mapUrl', '');
+                          }
+                        }}
+                        className="w-full border border-gray-300 p-2 text-xs outline-none focus:border-black bg-white"
+                      />
+                      <p className="text-[10px] text-gray-400">
+                        Entrez une adresse ou un lien Google Maps. En cliquant sur le bouton, vos invités ouvriront directement cette destination.
+                      </p>
+                    </div>
+                  )}
+
                   {/* Music Upload Control */}
                   {el.controls.includes('musicUpload') && invite && (
                     <div className="space-y-2">
@@ -633,7 +723,7 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                         }}
                         className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black resize-y bg-white" 
                         rows={2} 
-                        placeholder="Valeur personnalisée..." 
+                        placeholder={el.defaultText || "Valeur personnalisée..."} 
                       />
                    </div>
                  )}
