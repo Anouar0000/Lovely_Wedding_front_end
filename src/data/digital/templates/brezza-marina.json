@@ -1,0 +1,87 @@
+{
+  "id": "brezza-marina",
+  "label": "Brezza Marina",
+  "name": "Brezza Marina E-invite",
+  "price": "90",
+  "thumbnail": "assets/digital/brezza-marina/dress-code-attire.png",
+  "description": "Une invitation digitale côtière et élégante aux teintes marines avec compte à rebours, carte postale d'histoire d'amour et programme interactif.",
+  "features": [
+    "Compte à rebours",
+    "Programme interactif",
+    "Lien personnalisé",
+    "RSVP en ligne",
+    "Localisation Google Maps"
+  ],
+  "format": "Landing page",
+  "previewPath": "/digital-invitation/brezza-marina",
+  "sample": {
+    "template": "brezza-marina",
+    "status": "draft",
+    "title": "Brezza Marina",
+    "coupleNames": "Houssem & Dorra",
+    "eventDate": "2026-06-15",
+    "heroQuote": "L'amour n'est qu'un mot, jusqu'à ce que quelqu'un vienne lui donner un sens.",
+    "venueName": "Dar Bouraoui Carthage Malaga",
+    "city": "Carthage Malaga",
+    "mapUrl": "https://maps.google.com",
+    "ourStoryTitle": "Hi, it’s\nUs !",
+    "ourStoryText": "Placeat accusamus\n in rem a id et ad. \nAdipisci quia et eos",
+    "dressCodeText": "Nous prions nos invités d'éviter de porter du blanc et du noir",
+    "rsvpDeadline": "the fifteenth of June, 2026",
+    "timeline": [
+      { "name": "Accueil", "time": "17:00" },
+      { "name": "Contrat de mariage", "time": "18:00" },
+      { "name": "Fête", "time": "20:00" },
+      { "name": "Photos", "time": "22:00" },
+      { "name": "La fin", "time": "02:00" }
+    ],
+    "activeSections": [
+      "hero",
+      "countdown",
+      "location",
+      "our-story",
+      "timeline",
+      "dress-code",
+      "rsvp",
+      "footer"
+    ],
+    "slug": "brezza-marina-demo"
+  },
+  "defaults": {
+    "template": "brezza-marina",
+    "coupleNames": "Houssem & Dorra",
+    "eventDate": "2026-06-15",
+    "heroQuote": "L'amour n'est qu'un mot, jusqu'à ce que quelqu'un vienne lui donner un sens.",
+    "venueName": "Dar Bouraoui Carthage Malaga",
+    "city": "Carthage Malaga",
+    "mapUrl": "https://maps.google.com",
+    "ourStoryTitle": "Hi, it’s\nUs !",
+    "ourStoryText": "Placeat accusamus\n in rem a id et ad. \nAdipisci quia et eos",
+    "dressCodeText": "Nous prions nos invités d'éviter de porter du blanc et du noir",
+    "rsvpDeadline": "the fifteenth of June, 2026",
+    "timeline": [
+      { "name": "Accueil", "time": "17:00" },
+      { "name": "Contrat de mariage", "time": "18:00" },
+      { "name": "Fête", "time": "20:00" },
+      { "name": "Photos", "time": "22:00" },
+      { "name": "La fin", "time": "02:00" }
+    ],
+    "activeSections": [
+      "hero",
+      "countdown",
+      "location",
+      "our-story",
+      "timeline",
+      "dress-code",
+      "rsvp",
+      "footer"
+    ]
+  },
+  "fixedTimelineSteps": [
+    "Accueil",
+    "Contrat de mariage",
+    "Fête",
+    "Photos",
+    "La fin"
+  ]
+}

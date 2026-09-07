@@ -6,16 +6,20 @@ import Footer from "../components/footer/Footer";
 import groupsData from "../data/digital/groups.json";
 import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
+import brezzaMarinaTemplate from "../data/digital/templates/brezza-marina.json";
 import heroImage from "../assets/images/onlydigital1.png";
 import dolceColumns from "../assets/digital/dolce-vita/figma-layer-01.png";
 import dolceSun from "../assets/digital/dolce-vita/figma-layer-05.png";
 import dolceVenue from "../assets/digital/dolce-vita/figma-layer-07.png";
 import sidiView from "../assets/digital/sidi-bousaid/export-v2/dress-code-illustration.png";
 import sidiLines from "../assets/digital/sidi-bousaid/export-v2/countdown-panel.png";
+import brezzaVenue from "../assets/digital/brezza-marina/location-venue.png";
+import brezzaAttire from "../assets/digital/brezza-marina/dress-code-attire.png";
 
 const digitalTemplatesById = {
   [dolceVitaTemplate.id]: dolceVitaTemplate,
   [sidiBouSaidTemplate.id]: sidiBouSaidTemplate,
+  [brezzaMarinaTemplate.id]: brezzaMarinaTemplate,
 };
 
 const getGroupTemplates = (group) =>
@@ -49,6 +53,15 @@ const templateThemes = {
     border: "border-[#8fb9d4]",
     button: "bg-[#08306b] text-white",
     preview: "sidi",
+  },
+  "brezza-marina": {
+    eyebrow: "Brezza Marina",
+    bg: "bg-[#e8f3f8]",
+    panel: "bg-[#ffffff]",
+    accent: "text-[#0093d8]",
+    border: "border-[#aacfe1]",
+    button: "bg-[#0093d8] text-white",
+    preview: "brezza",
   },
 };
 
@@ -86,6 +99,18 @@ const TemplatePreview = ({ template }) => {
         <div className="absolute inset-5 border border-[#130554]/20 bg-[#f9faf3]/80" />
         <img src={dolceSun} alt="" className="absolute top-8 w-16" />
         <img src={dolceVenue} alt={template.name} className="relative mt-16 w-[44%] max-w-[145px] drop-shadow-xl" />
+      </div>
+    );
+  }
+
+  if (theme.preview === "brezza") {
+    return (
+      <div className="relative flex h-full min-h-[230px] items-center justify-center overflow-hidden bg-[#e8f3f8]">
+        <img src={brezzaVenue} alt="" className="absolute inset-x-0 top-2 h-28 w-full object-contain opacity-75" />
+        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-[#ffffff]" />
+        <div className="relative w-[50%] max-w-[150px] overflow-hidden rounded-lg border-4 border-white shadow-[0_15px_35px_rgba(0,147,216,0.18)]">
+          <img src={brezzaAttire} alt={template.name} className="h-full w-full object-cover" />
+        </div>
       </div>
     );
   }

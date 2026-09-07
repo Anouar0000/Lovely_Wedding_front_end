@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 import sidiBouSaidFullReference from "../assets/digital/sidi-bousaid/fresh-figma/sidi_bou_said_full_reference.png";
+import brezzaMarinaFullReference from "../assets/digital/brezza-marina/brezza_marina_full_reference.png";
 
 export default function IframePreviewPage() {
   const [invite, setInvite] = useState(null);
@@ -55,14 +56,14 @@ export default function IframePreviewPage() {
       {/* Figma Reference Image Overlay */}
       {overlayOpacity > 0 && (
         <img
-          src={sidiBouSaidFullReference}
+          src={invite.template === "brezza-marina" ? brezzaMarinaFullReference : sidiBouSaidFullReference}
           alt="Figma Reference"
           style={{
             position: "absolute",
             left: 0,
             top: 0,
             width: "430px",
-            height: "4017px",
+            height: invite.template === "brezza-marina" ? "3243px" : "4017px",
             opacity: overlayOpacity,
             pointerEvents: "none",
             mixBlendMode: isDiffMode ? "difference" : "normal",
@@ -168,3 +169,5 @@ export default function IframePreviewPage() {
     </div>
   );
 }
+
+

@@ -500,7 +500,7 @@ export default function SidiBouSaidFigmaMirror() {
           position: "relative",
           width: `${CANVAS_WIDTH}px`,
           height: "4017px",
-          backgroundColor: "#DCEBF0",
+          backgroundColor: "#FFFFFF",
           boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
           borderRadius: "8px",
           overflow: "hidden"

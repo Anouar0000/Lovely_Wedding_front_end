@@ -109,12 +109,13 @@ function EditorSection({ icon, title, children, action }) {
 
 const SECTION_LIST = [
   { id: 'hero', label: 'Ouverture (Hero)' },
-  { id: 'reveal', label: 'Dévoilement (النهار جاء)' },
-  { id: 'our-story', label: 'Notre Histoire (حكايتنا)' },
+  { id: 'reveal', label: 'Dévoilement (الكشف)' },
   { id: 'countdown', label: 'Compte à rebours' },
+  { id: 'location', label: 'Localisation' },
+  { id: 'our-story', label: 'Notre Histoire (قصتنا)' },
+  { id: 'timeline', label: 'Programme (Timeline)' },
   { id: 'celebrations', label: 'Célébrations' },
   { id: 'dress-code', label: 'Dress Code' },
-  { id: 'programme', label: 'Programme' },
   { id: 'rsvp', label: 'RSVP' },
   { id: 'footer', label: 'Pied de page' },
   { id: 'settings', label: 'Animations & Musique' }
@@ -167,7 +168,15 @@ const getElementsForSection = (sectionId) => {
       { id: 'dress-text', label: 'Texte Instructions', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'dress-illustration', label: 'Illustration', controls: ['position', 'upload'] }
     ];
-    case 'programme': return [
+    case 'location': return [
+      { id: 'sec-location', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
+      { id: 'location-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'location-title-ar', label: 'Titre AR', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'location-venue', label: 'Nom du lieu', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
+      { id: 'location-map', label: 'Lien Google Maps', controls: ['text'] },
+      { id: 'location-btn', label: 'Bouton Voir la carte', controls: ['position', 'color', 'font', 'fontSize'] }
+    ];
+    case 'timeline': return [
       { id: 'sec-prog', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
       { id: 'prog-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
       { id: 'prog-title-ar', label: 'Titre AR (البرنامج)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
@@ -1601,7 +1610,7 @@ function DigitalInviteEditorPage() {
                 }
               >
                 <div className="space-y-2">
-                  {SECTION_LIST.map(sec => (
+                  {(getDigitalInviteTemplate(invite.template)?.defaults?.activeSections ? SECTION_LIST.filter(s => getDigitalInviteTemplate(invite.template).defaults.activeSections.includes(s.id) || s.id === 'settings') : SECTION_LIST).map(sec => (
                     <div key={sec.id} className="border border-[#D8DDE2] bg-white">
                         <button 
                           type="button" 
@@ -1673,3 +1682,5 @@ function DigitalInviteEditorPage() {
 }
 
 export default DigitalInviteEditorPage;
+
+

@@ -7,6 +7,8 @@ import InvitationsDigitalPage from './pages/InvitationsDigitalPage';
 import DolceVitaInvitePage from './pages/DolceVitaInvitePage';
 import SidiBouSaidInvitePage from './pages/SidiBouSaidInvitePage';
 import SidiBouSaidFigmaMirror from './pages/SidiBouSaidFigmaMirror';
+import BrezzaMarinaInvitePage from './pages/BrezzaMarinaInvitePage';
+import BrezzaMarinaFigmaMirror from './pages/BrezzaMarinaFigmaMirror';
 import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -33,7 +35,9 @@ function App() {
           <Route path="/invitations-digital/e/:slug" element={<SharedDigitalInvitePage />} />
           <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
           <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
+          <Route path="/digital-invitation/brezza-marina" element={<BrezzaMarinaInvitePage />} />
           <Route path="/sidi-bou-said-mirror" element={<SidiBouSaidFigmaMirror />} />
+          <Route path="/brezza-marina-mirror" element={<BrezzaMarinaFigmaMirror />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/dashboard"

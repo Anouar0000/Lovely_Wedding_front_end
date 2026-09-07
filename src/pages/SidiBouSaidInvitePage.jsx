@@ -1264,7 +1264,7 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
 
   const dateDetails = useMemo(() => parseDateDetails(currentInvite.eventDate, { weekday: "Monday", day: "20", month: "July", year: "2026", monthNum: "07", yearShort: "26" }), [currentInvite.eventDate]);
 
-  const bgColor = currentInvite.backgroundColor || "#DCEBF0";
+  const bgColor = currentInvite.backgroundColor || "#FFFFFF";
   const overrides = currentInvite.styleOverrides || {};
 
   // Compute total canvas height based on dynamic celebration event cards
