@@ -7,6 +7,7 @@ import groupsData from "../data/digital/groups.json";
 import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import brezzaMarinaTemplate from "../data/digital/templates/brezza-marina.json";
+import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
 import heroImage from "../assets/images/onlydigital1.png";
 import dolceColumns from "../assets/digital/dolce-vita/figma-layer-01.png";
 import dolceSun from "../assets/digital/dolce-vita/figma-layer-05.png";
@@ -15,11 +16,17 @@ import sidiView from "../assets/digital/sidi-bousaid/export-v2/dress-code-illust
 import sidiLines from "../assets/digital/sidi-bousaid/export-v2/countdown-panel.png";
 import brezzaVenue from "../assets/digital/brezza-marina/location-venue.png";
 import brezzaAttire from "../assets/digital/brezza-marina/dress-code-attire.png";
+import bridgertonHeroBg from "../assets/digital/bridgerton/hero-bg.png";
+import bridgertonCouplePhoto from "../assets/digital/bridgerton/hero-couple-photo.png";
+import bridgertonStampButterfly from "../assets/digital/bridgerton/stamp-4-4471f0.png";
+import bridgertonStampSwan from "../assets/digital/bridgerton/stamp-1-4de4a6.png";
+import bridgertonTornPaper from "../assets/digital/bridgerton/torn-paper-1.svg";
 
 const digitalTemplatesById = {
   [dolceVitaTemplate.id]: dolceVitaTemplate,
   [sidiBouSaidTemplate.id]: sidiBouSaidTemplate,
   [brezzaMarinaTemplate.id]: brezzaMarinaTemplate,
+  [bridgertonTemplate.id]: bridgertonTemplate,
 };
 
 const getGroupTemplates = (group) =>
@@ -63,6 +70,15 @@ const templateThemes = {
     button: "bg-[#08306b] text-white",
     preview: "brezza",
   },
+  "bridgerton": {
+    eyebrow: "Bridgerton Regency",
+    bg: "bg-[#fdfbf7]",
+    panel: "bg-[#ffffff]",
+    accent: "text-[#722f37]",
+    border: "border-[#e8d8d8]",
+    button: "bg-[#722f37] text-white",
+    preview: "bridgerton",
+  },
 };
 
 const getTemplateTheme = (templateId) =>
@@ -78,6 +94,29 @@ const getTemplateTheme = (templateId) =>
 
 const TemplatePreview = ({ template }) => {
   const theme = getTemplateTheme(template.id);
+
+  if (theme.preview === "bridgerton") {
+    return (
+      <div className="relative flex h-full min-h-[230px] items-center justify-center overflow-hidden bg-[#fdfbf7]">
+        <img src={bridgertonHeroBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
+        <div className="absolute inset-0 bg-[#722f37]/10" />
+        <img src={bridgertonTornPaper} alt="" className="absolute -bottom-5 inset-x-0 w-full object-cover opacity-90 pointer-events-none" />
+        <div className="relative z-10 w-[52%] max-w-[155px] overflow-hidden rounded border-4 border-white shadow-[0_16px_36px_rgba(114,47,55,0.22)]">
+          <img src={bridgertonCouplePhoto} alt={template.name} className="h-full w-full object-cover" />
+        </div>
+        <img
+          src={bridgertonStampButterfly}
+          alt=""
+          className="absolute right-3 top-3 z-20 w-11 drop-shadow-md -rotate-12 pointer-events-none"
+        />
+        <img
+          src={bridgertonStampSwan}
+          alt=""
+          className="absolute left-3 bottom-4 z-20 w-10 drop-shadow-md rotate-12 opacity-90 pointer-events-none"
+        />
+      </div>
+    );
+  }
 
   if (theme.preview === "sidi") {
     return (

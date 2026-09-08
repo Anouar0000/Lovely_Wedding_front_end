@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -137,7 +137,7 @@ const getElementsForSection = (sectionId, templateId) => {
         { id: 'banner-quote', label: 'Citation Bannière ("Join Us For The...")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join Us For The \nBest Day Ever" }
       ];
       case 'location': return [
-        { id: 'venue-title', label: 'Titre Lieu ("Wedding Venue")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Wedding Venue" },
+        { id: 'venue-title', label: 'Titre Lieu ("Wedding Venue")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Wedding\nVenue" },
         { id: 'venue-details', label: 'Détails & Adresse du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H" },
         { id: 'venue-photo', label: 'Photo Ovale du Lieu', controls: ['upload'] }
       ];
@@ -160,7 +160,9 @@ const getElementsForSection = (sectionId, templateId) => {
         { id: 'footer-names', label: 'Monogramme Sceau Dentelle', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Karim\n&\nAzza" }
       ];
       case 'settings': return [
-        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] }
+        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
+        { id: 'visual-effects', label: 'Effets Visuels (Pétales de Roses)', controls: ['petalsToggle'] },
+        { id: 'text-animation', label: 'Apparition du texte', controls: ['animationType', 'animationDuration', 'animationDelay'] }
       ];
       default: return [];
     }
@@ -463,6 +465,8 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                             }}
                           >
                             <option>Défaut du Template</option>
+                            <option>MADE Voyager PERSONAL_USE</option>
+                            <option>Black Mango</option>
                             <option>Urbanist</option>
                             <option>Pinyon Script</option>
                             <option>Crimson Text</option>
@@ -690,20 +694,72 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                        <span className="text-xs font-semibold text-gray-700">Activer la chute de pétales</span>
                      </label>
                      {invite.enablePetals !== false && (
-                       <div>
-                         <label className="flex items-center justify-between text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                           Intensité (Nombre)
-                           <span className="text-black font-bold">{invite.petalsIntensity || 30}</span>
-                         </label>
-                         <input
-                           type="range"
-                           min="5"
-                           max="150"
-                           step="1"
-                           value={invite.petalsIntensity || 30}
-                           onChange={(e) => updateInvite('petalsIntensity', parseInt(e.target.value))}
-                           className="w-full accent-black cursor-pointer"
-                         />
+                       <div className="space-y-4">
+                         <div>
+                           <label className="flex items-center justify-between text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                             Intensité (Nombre)
+                             <span className="text-black font-bold">{invite.petalsIntensity || (invite.template === "bridgerton" ? 28 : 30)}</span>
+                           </label>
+                           <input
+                             type="range"
+                             min="5"
+                             max="150"
+                             step="1"
+                             value={invite.petalsIntensity || (invite.template === "bridgerton" ? 28 : 30)}
+                             onChange={(e) => updateInvite('petalsIntensity', parseInt(e.target.value))}
+                             className="w-full accent-black cursor-pointer"
+                           />
+                         </div>
+
+                         <div>
+                           <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                             Couleur des pétales
+                           </label>
+                           <div className="flex items-center gap-2.5 border border-gray-200 bg-white p-2">
+                             <input 
+                               type="color" 
+                               className="h-7 w-7 border-0 p-0 cursor-pointer" 
+                               value={invite.petalsColor || (invite.template === "bridgerton" ? "#FFFFFF" : "#E87A90")}
+                               onChange={(e) => updateInvite('petalsColor', e.target.value)}
+                             />
+                             <span className="text-xs text-gray-700 font-mono uppercase font-semibold">
+                               {invite.petalsColor || (invite.template === "bridgerton" ? "#FFFFFF" : "#E87A90")}
+                             </span>
+                             {/* Quick Presets */}
+                             <div className="ml-auto flex items-center gap-1.5">
+                               <button
+                                 type="button"
+                                 onClick={() => updateInvite('petalsColor', '#FFFFFF')}
+                                 className="w-5 h-5 rounded-full border border-gray-300 bg-white shadow-xs cursor-pointer hover:scale-110 transition-transform"
+                                 title="Blanc Pur (Base)"
+                               />
+                               <button
+                                 type="button"
+                                 onClick={() => updateInvite('petalsColor', '#FDF6EC')}
+                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#FDF6EC] shadow-xs cursor-pointer hover:scale-110 transition-transform"
+                                 title="Ivoire"
+                               />
+                               <button
+                                 type="button"
+                                 onClick={() => updateInvite('petalsColor', '#F5C2C7')}
+                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#F5C2C7] shadow-xs cursor-pointer hover:scale-110 transition-transform"
+                                 title="Rose Pâle"
+                               />
+                               <button
+                                 type="button"
+                                 onClick={() => updateInvite('petalsColor', '#722F37')}
+                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#722F37] shadow-xs cursor-pointer hover:scale-110 transition-transform"
+                                 title="Mauve Bridgerton"
+                               />
+                               <button
+                                 type="button"
+                                 onClick={() => updateInvite('petalsColor', '#D4AF37')}
+                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#D4AF37] shadow-xs cursor-pointer hover:scale-110 transition-transform"
+                                 title="Or Vintage"
+                               />
+                             </div>
+                           </div>
+                         </div>
                        </div>
                      )}
                    </div>
@@ -827,10 +883,10 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                   {el.controls.includes('upload') && (
                     <div className="space-y-2">
                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Remplacer l'Image / Fond (Image ou Vidéo MP4)</label>
-                       {invite.styleOverrides?.[el.id]?.image || (el.id === 'story-photo' && invite.storyPhoto) ? (
+                       {invite.styleOverrides?.[el.id]?.image || (el.id === 'story-photo' && invite.storyPhoto) || (el.id === 'hero-photo' && invite.heroPhoto) || (el.id === 'venue-photo' && invite.venuePhoto) ? (
                          <div className="flex items-center justify-between border border-emerald-200 bg-emerald-50 p-2">
                            <span className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">
-                             {String(invite.styleOverrides?.[el.id]?.image || invite.storyPhoto).includes('video') || String(invite.styleOverrides?.[el.id]?.image).endsWith('.mp4') ? "▶ Vidéo active" : "🖼 Image active"}
+                             {String(invite.styleOverrides?.[el.id]?.image || invite.storyPhoto || invite.heroPhoto || invite.venuePhoto).includes('video') || String(invite.styleOverrides?.[el.id]?.image).endsWith('.mp4') ? "▶ Vidéo active" : "🖼 Image active"}
                            </span>
                            <button
                              type="button"
@@ -842,6 +898,8 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                                  updated[el.id] = copy;
                                }
                                if (el.id === 'story-photo') updateInvite('storyPhoto', '');
+                               if (el.id === 'hero-photo') updateInvite('heroPhoto', '');
+                               if (el.id === 'venue-photo') updateInvite('venuePhoto', '');
                                updateInvite('styleOverrides', updated);
                              }}
                              className="text-xs text-red-600 hover:text-red-800 font-semibold cursor-pointer"
@@ -861,6 +919,8 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                              const b64 = uploadEv.target.result;
                              const current = invite.styleOverrides?.[el.id] || {};
                              if (el.id === 'story-photo') updateInvite('storyPhoto', b64);
+                             if (el.id === 'hero-photo') updateInvite('heroPhoto', b64);
+                             if (el.id === 'venue-photo') updateInvite('venuePhoto', b64);
                              updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, image: b64 } });
                            };
                            reader.readAsDataURL(file);
@@ -896,9 +956,21 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
 function DigitalInviteEditorPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isEditing = Boolean(id);
+
+  const initialTemplate = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const urlTemplateId = searchParams.get("template");
+    if (urlTemplateId) {
+      const found = getDigitalInviteTemplate(urlTemplateId);
+      if (found) return found;
+    }
+    return defaultTemplate;
+  }, [location.search]);
+
   const [invite, setInvite] = useState(() =>
-    createDigitalInviteDraft(defaultTemplate.defaults)
+    createDigitalInviteDraft(initialTemplate.defaults)
   );
   const [initialDocId, setInitialDocId] = useState(id || "");
   const [loading, setLoading] = useState(isEditing);
@@ -950,6 +1022,12 @@ function DigitalInviteEditorPage() {
         };
         if (elementId === "story-photo") {
           next.storyPhoto = fileUrl;
+        }
+        if (elementId === "hero-photo") {
+          next.heroPhoto = fileUrl;
+        }
+        if (elementId === "venue-photo") {
+          next.venuePhoto = fileUrl;
         }
         return next;
       });
@@ -1257,11 +1335,22 @@ function DigitalInviteEditorPage() {
 
   const handleTemplateChange = (templateId) => {
     const nextTemplate = getDigitalInviteTemplate(templateId);
+    if (!nextTemplate) return;
+    const defaults = nextTemplate.defaults || {};
 
     setInvite((currentInvite) => ({
       ...currentInvite,
+      ...defaults,
       template: templateId,
-      timeline: nextTemplate.defaults.timeline,
+      coupleNames: currentInvite.coupleNames || defaults.coupleNames,
+      eventDate: currentInvite.eventDate || defaults.eventDate,
+      slug: currentInvite.slug,
+      id: currentInvite.id,
+      status: currentInvite.status,
+      timeline: defaults.timeline || [],
+      activeSections: defaults.activeSections,
+      backgroundColor: defaults.backgroundColor || (templateId === "bridgerton" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5")),
+      styleOverrides: {},
     }));
   };
 
@@ -1417,16 +1506,22 @@ function DigitalInviteEditorPage() {
   };
 
 
+  // Resizable Sidebar State
+  const [isResizing, setIsResizing] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(600);
+  const [expandedSection, setExpandedSection] = useState(null);
+  const [expandedElement, setExpandedElement] = useState(null);
+
   const iframeRef = useRef(null);
   
   useEffect(() => {
     if (iframeRef.current && iframeRef.current.contentWindow) {
       iframeRef.current.contentWindow.postMessage({ 
         type: "UPDATE_INVITE", 
-        payload: { invite } 
+        payload: { invite, selectedElementId: expandedElement } 
       }, "*");
     }
-  }, [invite]);
+  }, [invite, expandedElement]);
 
   useEffect(() => {
     const handleMessage = (e) => {
@@ -1434,14 +1529,26 @@ function DigitalInviteEditorPage() {
           if (iframeRef.current && iframeRef.current.contentWindow) {
              iframeRef.current.contentWindow.postMessage({ 
                type: "UPDATE_INVITE", 
-               payload: { invite } 
+               payload: { invite, selectedElementId: expandedElement } 
              }, "*");
           }
        }
-       if (e.data && e.data.type === 'ELEMENT_CLICKED') {
-          console.log("RECEIVED ELEMENT CLICK:", e.data.payload);
-          const { sectionId, elementId } = e.data.payload;
-          setExpandedSection(sectionId);
+       if (e.data && (e.data.type === 'ELEMENT_CLICKED' || e.data.type === 'SELECT_ELEMENT')) {
+          const elementId = e.data.payload?.elementId || e.data.payload?.id || e.data.id;
+          let targetSectionId = e.data.payload?.sectionId;
+          if (!targetSectionId && elementId) {
+            const sections = ['hero', 'countdown', 'celebrations', 'location', 'our-story', 'timeline', 'dress-code', 'rsvp', 'footer', 'settings'];
+            for (const sId of sections) {
+              const els = getElementsForSection(sId, invite?.template);
+              if (els.some(el => el.id === elementId)) {
+                targetSectionId = sId;
+                break;
+              }
+            }
+          }
+          if (targetSectionId) {
+            setExpandedSection(targetSectionId);
+          }
           setExpandedElement(elementId);
           setTimeout(() => {
              const el = document.getElementById(`editor-el-${elementId}`);
@@ -1451,13 +1558,7 @@ function DigitalInviteEditorPage() {
     };
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [invite]);
-
-  // Resizable Sidebar State
-  const [isResizing, setIsResizing] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(600);
-  const [expandedSection, setExpandedSection] = useState(null);
-  const [expandedElement, setExpandedElement] = useState(null);
+  }, [invite, expandedElement]);
 
   const startResizing = (mouseDownEvent) => {
     mouseDownEvent.preventDefault();
@@ -1502,6 +1603,46 @@ function DigitalInviteEditorPage() {
   };
 
   const handleFillDemoData = () => {
+    if (invite.template === "bridgerton") {
+      const demoData = {
+        template: "bridgerton",
+        status: "draft",
+        title: "Bridgerton",
+        coupleNames: "Karim & Azza",
+        eventDate: "2026-11-23",
+        heroQuote: "Our Happy Ever After",
+        bannerQuote: "Join Us For The \nBest Day Ever",
+        venueName: "Dar Bouraoui Carthage",
+        venueDetails: "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H",
+        city: "Carthage",
+        mapUrl: "https://maps.google.com",
+        mapAddress: "Dar Bouraoui Carthage",
+        dressCodeText: "We'd love for guests to embrace a formal look for our celebration.",
+        transportText: "Parking: On-site parking will be available at the venue.\nTaxis: We recommend booking taxis in advance.",
+        messagePrompt: "Leave a heartfelt message to the brides",
+        rsvpDeadline: "The favour of a reply is kindly requested by the 15th of June, 2026",
+        activeSections: [
+          "hero",
+          "countdown",
+          "celebrations",
+          "location",
+          "dress-code",
+          "our-story",
+          "rsvp",
+          "footer"
+        ],
+        animationType: "fade-up",
+        animationDuration: 1.2,
+        enablePetals: true,
+        petalsIntensity: 28,
+        petalsColor: "#FFFFFF",
+        musicUrl: "",
+        slug: "karim-azza"
+      };
+      setInvite((prev) => ({ ...prev, ...demoData }));
+      return;
+    }
+
     const demoData = {
       template: "sidi-bousaid",
       status: "draft",

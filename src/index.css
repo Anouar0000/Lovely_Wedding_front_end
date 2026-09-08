@@ -5,6 +5,34 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'MADE Voyager PERSONAL_USE';
+  src: url('./assets/fonts/MADEVoyagerPERSONAL_USE-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MADE Voyager PERSONAL_USE';
+  src: url('./assets/fonts/MADEVoyagerPERSONAL_USE-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Black Mango';
+  src: url('./assets/fonts/black-mango-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pinyon Script';
+  src: url('./assets/fonts/PinyonScript-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Taprom&family=Urbanist:wght@400;700&display=swap');
 
 @tailwind base;

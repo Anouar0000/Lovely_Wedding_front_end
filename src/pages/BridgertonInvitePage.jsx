@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../components/audio/AudioPlayer";
+import ParticleEmitter from "../components/animations/ParticleEmitter";
 import templateConfig from "../data/digital/templates/bridgerton.json";
 
 // Assets for Bridgerton Template
@@ -22,7 +23,6 @@ import stamp4 from "../assets/digital/bridgerton/stamp-4-4471f0.png";
 import statueDoodle from "../assets/digital/bridgerton/statue-doodle.png";
 import venuePhoto from "../assets/digital/bridgerton/venue-photo.png";
 import flourishBorder from "../assets/digital/bridgerton/flourish-border.svg";
-import dividerFlourish from "../assets/digital/bridgerton/divider-flourish.svg";
 import laceSeal from "../assets/digital/bridgerton/lace-seal.svg";
 
 const CANVAS_WIDTH = 430;
@@ -35,7 +35,7 @@ const COLOR_BORDER = "#E5E5E5";
 // Font stack definitions
 const FONT_SCRIPT = "'Pinyon Script', cursive";
 const FONT_SERIF = "'Black Mango', 'Cormorant Garamond', 'Antic Didone', serif";
-const FONT_VOYAGER = "'MADE Voyager PERSONAL_USE', 'Cinzel', 'Playfair Display', serif";
+const FONT_VOYAGER = "'MADE Voyager PERSONAL_USE', 'Playfair Display', 'Cormorant Garamond', 'Antic Didone', serif";
 
 const figmaBox = ({ x, y, width, height, zIndex = 2, extra = {} }) => ({
   position: "absolute",
@@ -43,6 +43,7 @@ const figmaBox = ({ x, y, width, height, zIndex = 2, extra = {} }) => ({
   top: `${y}px`,
   width: width !== undefined ? `${width}px` : "auto",
   height: height !== undefined ? `${height}px` : "auto",
+  maxWidth: "none",
   zIndex,
   boxSizing: "border-box",
   ...extra,
@@ -58,7 +59,22 @@ export default function BridgertonInvitePage({
   const currentInvite = invite || templateConfig.sample;
   const overrides = currentInvite.styleOverrides || {};
 
-  const getText = (id, fallback) => overrides[id]?.text || fallback;
+  const getText = (id, fallback) => {
+    const custom = overrides[id]?.text;
+    if (custom !== undefined && custom !== null && custom !== "") {
+      if (id === "hero-quote" && (custom.includes("L'amour") || custom.includes("quelqu'un"))) {
+        return fallback;
+      }
+      if (id === "dress-text" && custom.includes("Outeya")) {
+        return fallback;
+      }
+      if (id === "rsvp-deadline" && custom.toLowerCase().includes("fifteenth")) {
+        return fallback;
+      }
+      return custom;
+    }
+    return fallback;
+  };
 
   // Responsive scale for mobile devices
   const [scale, setScale] = useState(1);
@@ -172,6 +188,15 @@ export default function BridgertonInvitePage({
   // Date formatting for the 3-line vintage display (e.g. 23 / 11 / 26)
   const dateFormatted = (() => {
     if (!currentInvite.eventDate) return "23\n11\n26";
+    if (typeof currentInvite.eventDate === "string" && currentInvite.eventDate.includes("-")) {
+      const parts = currentInvite.eventDate.split("-");
+      if (parts.length === 3) {
+        const year = parts[0].slice(-2);
+        const month = parts[1].padStart(2, "0");
+        const day = parts[2].padStart(2, "0");
+        return `${day}\n${month}\n${year}`;
+      }
+    }
     const d = new Date(currentInvite.eventDate);
     if (isNaN(d.getTime())) return "23\n11\n26";
     const day = String(d.getDate()).padStart(2, "0");
@@ -185,7 +210,7 @@ export default function BridgertonInvitePage({
     name: "",
     sirName: "",
     email: "",
-    guests: "1",
+    guests: "",
   });
   const [rsvpStatus, setRsvpStatus] = useState("idle"); // idle | sending | success
 
@@ -223,21 +248,173 @@ export default function BridgertonInvitePage({
     >
       <style>{`
         .reveal {
-          opacity: 0;
-          transform: translateY(22px);
-          transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity: ${animType === "none" ? "1" : "0"} !important;
+          transition: opacity ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1), transform ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1);
           will-change: opacity, transform;
+          ${animType === "fade-up" ? "transform: translate3d(0, 24px, 0) !important;" : ""}
+          ${animType === "zoom-in" ? "transform: scale(0.94) !important;" : ""}
         }
         .reveal.revealed {
-          opacity: 1;
-          transform: translateY(0);
+          opacity: 1 !important;
+          ${animType === "fade-up" ? "transform: translate3d(0, 0, 0) !important;" : ""}
+          ${animType === "zoom-in" ? "transform: scale(1) !important;" : ""}
         }
-        .soft-float {
-          animation: bridgertonFloat 6s ease-in-out infinite;
+
+        /* Regency Birds Organic Hover Sway */
+        @keyframes bird-sway-left {
+          0%, 100% {
+            transform: translate3d(0, 0, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate3d(3px, -7px, 0) rotate(2deg);
+          }
         }
-        @keyframes bridgertonFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
+        .bird-float-left {
+          will-change: transform;
+          animation: bird-sway-left 5.5s ease-in-out infinite alternate !important;
+        }
+
+        @keyframes bird-sway-right {
+          0%, 100% {
+            transform: translate3d(0, 0, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate3d(-3px, -7px, 0) rotate(-2deg);
+          }
+        }
+        .bird-float-right {
+          will-change: transform;
+          animation: bird-sway-right 6s ease-in-out infinite alternate !important;
+        }
+
+        /* Vintage Stamps Floating Sway (preserving base rotations) */
+        @keyframes stamp1-sway {
+          0%, 100% {
+            transform: rotate(-15deg) translate3d(0, 0, 0);
+          }
+          50% {
+            transform: rotate(-13deg) translate3d(2px, -6px, 0);
+          }
+        }
+        .stamp-float-1 {
+          will-change: transform;
+          animation: stamp1-sway 4.8s ease-in-out infinite alternate !important;
+        }
+
+        @keyframes stamp2-sway {
+          0%, 100% {
+            transform: rotate(30deg) translate3d(0, 0, 0);
+          }
+          50% {
+            transform: rotate(32.5deg) translate3d(-2px, -6px, 0);
+          }
+        }
+        .stamp-float-2 {
+          will-change: transform;
+          animation: stamp2-sway 5.2s ease-in-out infinite alternate !important;
+        }
+
+        @keyframes stamp3-sway {
+          0%, 100% {
+            transform: rotate(-30deg) translate3d(0, 0, 0);
+          }
+          50% {
+            transform: rotate(-28deg) translate3d(2px, -5px, 0);
+          }
+        }
+        .stamp-float-3 {
+          will-change: transform;
+          animation: stamp3-sway 4.6s ease-in-out infinite alternate !important;
+        }
+
+        /* Butterfly Flutter & Flight Motion */
+        @keyframes butterfly-flutter {
+          0%, 100% {
+            transform: rotate(-45deg) translate3d(0, 0, 0) scale(1);
+          }
+          25% {
+            transform: rotate(-43deg) translate3d(2px, -5px, 0) scale(1.03);
+          }
+          50% {
+            transform: rotate(-47deg) translate3d(-3px, -2px, 0) scale(0.97);
+          }
+          75% {
+            transform: rotate(-43.5deg) translate3d(1px, -7px, 0) scale(1.02);
+          }
+        }
+        .butterfly-float {
+          will-change: transform;
+          animation: butterfly-flutter 4.2s ease-in-out infinite alternate !important;
+        }
+
+        /* Statue Doodle Gentle Breathing Float */
+        @keyframes statue-float {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+        }
+        .statue-float {
+          will-change: transform;
+          animation: statue-float 6s ease-in-out infinite alternate !important;
+        }
+
+        /* Footer Monogram Lace Seal Continuous Slow Rotation & Pulse */
+        @keyframes lace-rotate {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        .lace-spin {
+          animation: lace-rotate 65s linear infinite !important;
+          transform-origin: center center;
+        }
+
+        @keyframes seal-pulse {
+          0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 2px 8px rgba(114, 47, 55, 0.06));
+          }
+          50% {
+            transform: scale(1.02);
+            filter: drop-shadow(0 6px 18px rgba(114, 47, 55, 0.16));
+          }
+        }
+        .seal-pulse {
+          animation: seal-pulse 4.5s ease-in-out infinite alternate !important;
+        }
+
+        /* Hero Scroll Down Indicator Bounce */
+        @keyframes hero-scroll-bounce {
+          0%, 100% {
+            transform: translateX(-50%) translateY(0);
+            opacity: 0.6;
+          }
+          50% {
+            transform: translateX(-50%) translateY(6px);
+            opacity: 1;
+          }
+        }
+        .hero-scroll-bounce {
+          animation: hero-scroll-bounce 2.2s ease-in-out infinite !important;
+        }
+
+        .bridgerton-message-input,
+        .bridgerton-message-input::placeholder {
+          color: #FFFFFF !important;
+          opacity: 1 !important;
+          -webkit-text-fill-color: #FFFFFF !important;
+        }
+        .bridgerton-message-input:disabled,
+        .bridgerton-message-input[readonly] {
+          color: #FFFFFF !important;
+          -webkit-text-fill-color: #FFFFFF !important;
+          opacity: 1 !important;
         }
       `}</style>
 
@@ -252,7 +429,7 @@ export default function BridgertonInvitePage({
           position: "relative",
           width: `${CANVAS_WIDTH}px`,
           height: `${CANVAS_HEIGHT}px`,
-          backgroundColor: COLOR_WHITE,
+          backgroundColor: currentInvite.backgroundColor || COLOR_WHITE,
           overflow: "hidden",
           transform: scale < 1 ? `scale(${scale})` : undefined,
           transformOrigin: "top center",
@@ -260,6 +437,16 @@ export default function BridgertonInvitePage({
           boxShadow: "0 15px 40px rgba(0,0,0,0.12)",
         }}
       >
+        {/* Falling Rose Petals Effect */}
+        {currentInvite.enablePetals !== false && (
+          <ParticleEmitter
+            type="petals"
+            count={currentInvite.petalsIntensity || 28}
+            color={currentInvite.petalsColor || "#FFFFFF"}
+            active={true}
+          />
+        )}
+
         {/* =========================================================================
             SECTION 1: HERO (0 - 649px)
            ========================================================================= */}
@@ -295,6 +482,8 @@ export default function BridgertonInvitePage({
 
         {/* #1584:89 Hero Couple Photo Frame */}
         <div
+          id="preview-el-hero-photo"
+          data-element-id="hero-photo"
           className="reveal"
           onClick={() => handleElementClick("hero-photo")}
           style={makeSelectable(
@@ -306,11 +495,11 @@ export default function BridgertonInvitePage({
               height: 421,
               zIndex: 3,
               extra: {
-                backgroundImage: `url(${overrides["hero-photo"]?.url || heroCouplePhoto})`,
+                backgroundImage: `url(${overrides["hero-photo"]?.image || overrides["hero-photo"]?.url || currentInvite.heroPhoto || heroCouplePhoto})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 overflow: "hidden",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                opacity: (overrides["hero-photo"]?.image || overrides["hero-photo"]?.url || currentInvite.heroPhoto) ? 1 : 0.8,
               },
             })
           )}
@@ -318,6 +507,8 @@ export default function BridgertonInvitePage({
 
         {/* #1583:85 Hero Couple Names */}
         <div
+          id="preview-el-hero-names"
+          data-element-id="hero-names"
           className="reveal"
           onClick={() => handleElementClick("hero-names")}
           style={makeSelectable(
@@ -332,11 +523,10 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "40px",
                 lineHeight: "44px",
-                letterSpacing: "0.05em",
+                letterSpacing: "2px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
                 whiteSpace: "pre-line",
-                textShadow: "0 1px 2px rgba(255,255,255,0.6)",
               },
             })
           )}
@@ -346,6 +536,8 @@ export default function BridgertonInvitePage({
 
         {/* #1584:90 "Our Happy Ever After" */}
         <div
+          id="preview-el-hero-quote"
+          data-element-id="hero-quote"
           className="reveal"
           onClick={() => handleElementClick("hero-quote")}
           style={makeSelectable(
@@ -360,15 +552,35 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "20px",
                 lineHeight: "44px",
-                letterSpacing: "0.05em",
+                letterSpacing: "1px",
                 textAlign: "center",
                 color: COLOR_WHITE,
-                textShadow: "0 1px 4px rgba(0,0,0,0.3)",
               },
             })
           )}
         >
-          {getText("hero-quote", currentInvite.heroQuote || "Our Happy Ever After")}
+          {getText(
+            "hero-quote",
+            (!currentInvite.heroQuote || currentInvite.heroQuote.includes("L'amour") || currentInvite.heroQuote.includes("quelqu'un"))
+              ? "Our Happy Ever After"
+              : currentInvite.heroQuote
+          )}
+        </div>
+
+        {/* Hero Scroll Down Indicator */}
+        <div
+          className="hero-scroll-bounce"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "572px",
+            zIndex: 4,
+            pointerEvents: "none",
+          }}
+        >
+          <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1L10 10L19 1" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.85"/>
+          </svg>
         </div>
 
         {/* #1585:91 Torn Paper 1 */}
@@ -387,7 +599,7 @@ export default function BridgertonInvitePage({
 
         {/* #1586:717 TE_Bird-01 1 (Bird Left) */}
         <div
-          className="soft-float"
+          className="bird-float-left"
           style={figmaBox({
             x: -33,
             y: 640,
@@ -405,6 +617,8 @@ export default function BridgertonInvitePage({
            ========================================================================= */}
         {/* #1586:98 Date: 23 / 11 / 26 */}
         <div
+          id="preview-el-event-date"
+          data-element-id="event-date"
           className="reveal"
           onClick={() => handleElementClick("event-date")}
           style={makeSelectable(
@@ -414,12 +628,12 @@ export default function BridgertonInvitePage({
               y: 674,
               width: 331,
               height: 189,
-              zIndex: 4,
+              zIndex: 6,
               extra: {
                 fontFamily: FONT_VOYAGER,
                 fontSize: "46px",
                 lineHeight: "52px",
-                letterSpacing: "0.2em",
+                letterSpacing: "9.2px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
                 whiteSpace: "pre-line",
@@ -432,6 +646,8 @@ export default function BridgertonInvitePage({
 
         {/* #1586:99 "waiting for you..." */}
         <div
+          id="preview-el-countdown-waiting"
+          data-element-id="countdown-waiting"
           className="reveal"
           onClick={() => handleElementClick("countdown-waiting")}
           style={makeSelectable(
@@ -441,11 +657,12 @@ export default function BridgertonInvitePage({
               y: 845,
               width: 331,
               height: 24,
-              zIndex: 4,
+              zIndex: 6,
               extra: {
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                letterSpacing: "0.2em",
+                lineHeight: "18.2px",
+                letterSpacing: "2.4px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
               },
@@ -464,7 +681,7 @@ export default function BridgertonInvitePage({
             y: 869,
             width: 72,
             height: 51,
-            zIndex: 4,
+            zIndex: 6,
             extra: { pointerEvents: "none" },
           })}
         />
@@ -483,16 +700,22 @@ export default function BridgertonInvitePage({
           })}
         />
 
-        {/* #1586:100 Stamp 1 */}
+        {/* #1586:100 Stamp 1 (Swan - Rotated -15deg) */}
         <img
           src={stamp1}
           alt="Stamp"
+          className="stamp-float-1"
           style={figmaBox({
-            x: 357,
-            y: 824,
-            width: 108.67,
-            height: 123.72,
+            x: 369,
+            y: 833,
+            width: 84,
+            height: 106,
             zIndex: 6,
+            extra: {
+              transform: "rotate(-15deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
@@ -531,6 +754,8 @@ export default function BridgertonInvitePage({
 
         {/* #1592:4171 "Join Us For The Best Day Ever" */}
         <div
+          id="preview-el-banner-quote"
+          data-element-id="banner-quote"
           className="reveal"
           onClick={() => handleElementClick("banner-quote")}
           style={makeSelectable(
@@ -545,11 +770,10 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "20px",
                 lineHeight: "24px",
-                letterSpacing: "0.05em",
+                letterSpacing: "1px",
                 textAlign: "center",
                 color: COLOR_WHITE,
                 whiteSpace: "pre-line",
-                textShadow: "0 1px 3px rgba(0,0,0,0.3)",
               },
             })
           )}
@@ -578,6 +802,7 @@ export default function BridgertonInvitePage({
         <img
           src={statueDoodle}
           alt=""
+          className="statue-float"
           style={figmaBox({
             x: 255,
             y: 1304,
@@ -589,6 +814,8 @@ export default function BridgertonInvitePage({
 
         {/* #1586:2002 Title: "Wedding Venue" */}
         <div
+          id="preview-el-venue-title"
+          data-element-id="venue-title"
           className="reveal"
           onClick={() => handleElementClick("venue-title")}
           style={makeSelectable(
@@ -603,18 +830,21 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "36px",
                 lineHeight: "38px",
-                letterSpacing: "0.05em",
+                letterSpacing: "1.8px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
+                whiteSpace: "pre-line",
               },
             })
           )}
         >
-          {getText("venue-title", "Wedding Venue")}
+          {getText("venue-title", "Wedding\nVenue")}
         </div>
 
         {/* #1586:2003 Venue Address Text */}
         <div
+          id="preview-el-venue-details"
+          data-element-id="venue-details"
           className="reveal"
           onClick={() => handleElementClick("venue-details")}
           style={makeSelectable(
@@ -628,8 +858,8 @@ export default function BridgertonInvitePage({
               extra: {
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                lineHeight: "1.5em",
-                letterSpacing: "0.2em",
+                lineHeight: "18.2px",
+                letterSpacing: "2.4px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
                 whiteSpace: "pre-line",
@@ -643,21 +873,29 @@ export default function BridgertonInvitePage({
           )}
         </div>
 
-        {/* #1587:2013 Stamp 3 */}
+        {/* #1587:2013 Stamp 3 (Hummingbird - Rotated -30deg) */}
         <img
           src={stamp3}
           alt="Stamp"
+          className="stamp-float-3"
           style={figmaBox({
-            x: 342,
-            y: 1438,
-            width: 125.71,
-            height: 133.5,
+            x: 363,
+            y: 1452,
+            width: 84,
+            height: 106,
             zIndex: 4,
+            extra: {
+              transform: "rotate(-30deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
-        {/* #1587:3497 Venue Photo Group (Oval / Frame) */}
+        {/* #1587:3497 Venue Photo Group (Oval / Golden Baroque Frame - zIndex 6 on top of torn paper) */}
         <div
+          id="preview-el-venue-photo"
+          data-element-id="venue-photo"
           className="reveal"
           onClick={() => handleElementClick("venue-photo")}
           style={makeSelectable(
@@ -667,14 +905,14 @@ export default function BridgertonInvitePage({
               y: 1531,
               width: 120,
               height: 180,
-              zIndex: 4,
+              zIndex: 6,
               extra: {
                 position: "absolute",
               },
             })
           )}
         >
-          {/* #1587:3496 White Ellipse Base */}
+          {/* #1587:3496 White Ellipse Base / User Uploaded Venue Photo */}
           <div
             style={{
               position: "absolute",
@@ -684,12 +922,21 @@ export default function BridgertonInvitePage({
               height: "126.84px",
               backgroundColor: COLOR_WHITE,
               borderRadius: "50%",
+              overflow: "hidden",
             }}
-          />
-          {/* #1587:3493 Venue Photo */}
+          >
+            {(overrides["venue-photo"]?.image || overrides["venue-photo"]?.url || currentInvite.venuePhoto) && (
+              <img
+                src={overrides["venue-photo"]?.image || overrides["venue-photo"]?.url || currentInvite.venuePhoto}
+                alt="Venue"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            )}
+          </div>
+          {/* #1587:3493 Golden Baroque Frame */}
           <img
-            src={overrides["venue-photo"]?.url || venuePhoto}
-            alt="Venue"
+            src={venuePhoto}
+            alt="Venue Frame"
             style={{
               position: "absolute",
               left: 0,
@@ -697,11 +944,12 @@ export default function BridgertonInvitePage({
               width: "120px",
               height: "180px",
               objectFit: "cover",
+              pointerEvents: "none",
             }}
           />
         </div>
 
-        {/* #1587:2203 Torn Paper 4 */}
+        {/* #1587:2203 Torn Paper 4 (Sage green strip - zIndex 3 behind golden frame) */}
         <img
           src={tornPaper4}
           alt=""
@@ -710,7 +958,7 @@ export default function BridgertonInvitePage({
             y: 1579,
             width: 1556,
             height: 92,
-            zIndex: 5,
+            zIndex: 3,
             extra: { pointerEvents: "none" },
           })}
         />
@@ -720,6 +968,8 @@ export default function BridgertonInvitePage({
            ========================================================================= */}
         {/* #1586:95 Title: "Dress Code" */}
         <div
+          id="preview-el-dress-title"
+          data-element-id="dress-title"
           className="reveal"
           onClick={() => handleElementClick("dress-title")}
           style={makeSelectable(
@@ -734,7 +984,7 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "40px",
                 lineHeight: "44px",
-                letterSpacing: "0.05em",
+                letterSpacing: "2px",
                 textAlign: "right",
                 color: COLOR_MAUVE,
               },
@@ -746,6 +996,8 @@ export default function BridgertonInvitePage({
 
         {/* #1586:96 Dress Code Text */}
         <div
+          id="preview-el-dress-text"
+          data-element-id="dress-text"
           className="reveal"
           onClick={() => handleElementClick("dress-text")}
           style={makeSelectable(
@@ -759,8 +1011,8 @@ export default function BridgertonInvitePage({
               extra: {
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                lineHeight: "1.5em",
-                letterSpacing: "0.2em",
+                lineHeight: "18.2px",
+                letterSpacing: "2.4px",
                 textAlign: "right",
                 color: COLOR_MAUVE,
               },
@@ -769,41 +1021,56 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "dress-text",
-            currentInvite.dressCodeText ||
-              "We'd love for guests to embrace a formal look for our celebration."
+            (!currentInvite.dressCodeText || currentInvite.dressCodeText.includes("Outeya"))
+              ? "We'd love for guests to embrace a formal look for our celebration."
+              : currentInvite.dressCodeText
           )}
         </div>
 
-        {/* #1586:126 Stamp 2 */}
+        {/* #1586:126 Stamp 2 (Rose - Rotated 30deg) */}
         <img
           src={stamp2}
           alt="Stamp"
+          className="stamp-float-2"
           style={figmaBox({
-            x: -34,
-            y: 1791,
-            width: 125.71,
-            height: 133.5,
+            x: -13,
+            y: 1805,
+            width: 84,
+            height: 106,
             zIndex: 4,
+            extra: {
+              transform: "rotate(30deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
-        {/* #1587:2202 Divider Flourish */}
-        <img
-          src={dividerFlourish}
-          alt=""
+        {/* #1587:2202 Group 13 - Dress Code Color Swatches */}
+        <div
+          className="reveal"
           style={figmaBox({
             x: 125,
             y: 1853,
             width: 181,
             height: 34,
             zIndex: 4,
-            extra: { pointerEvents: "none" },
+            extra: {
+              display: "flex",
+              gap: "15px",
+              alignItems: "center",
+            },
           })}
-        />
+        >
+          <div className="hover:scale-110 transition-transform duration-300 cursor-pointer shadow-sm hover:shadow" style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#D9E5EB" }} />
+          <div className="hover:scale-110 transition-transform duration-300 cursor-pointer shadow-sm hover:shadow" style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#F9F5D4" }} />
+          <div className="hover:scale-110 transition-transform duration-300 cursor-pointer shadow-sm hover:shadow" style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#F2C1BE" }} />
+          <div className="hover:scale-110 transition-transform duration-300 cursor-pointer shadow-sm hover:shadow" style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#C8D4D0" }} />
+        </div>
 
         {/* #1587:2207 TE_Bird-01 2 (Bird Right) */}
         <div
-          className="soft-float"
+          className="bird-float-right"
           style={figmaBox({
             x: 326,
             y: 1899,
@@ -818,6 +1085,8 @@ export default function BridgertonInvitePage({
 
         {/* #1586:124 Title: "Transport" */}
         <div
+          id="preview-el-transport-title"
+          data-element-id="transport-title"
           className="reveal"
           onClick={() => handleElementClick("transport-title")}
           style={makeSelectable(
@@ -832,7 +1101,7 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "40px",
                 lineHeight: "44px",
-                letterSpacing: "0.05em",
+                letterSpacing: "2px",
                 textAlign: "left",
                 color: COLOR_MAUVE,
               },
@@ -844,6 +1113,8 @@ export default function BridgertonInvitePage({
 
         {/* #1586:125 Transport Guidance Text */}
         <div
+          id="preview-el-transport-text"
+          data-element-id="transport-text"
           className="reveal"
           onClick={() => handleElementClick("transport-text")}
           style={makeSelectable(
@@ -857,8 +1128,8 @@ export default function BridgertonInvitePage({
               extra: {
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                lineHeight: "1.5em",
-                letterSpacing: "0.2em",
+                lineHeight: "18.2px",
+                letterSpacing: "2.4px",
                 textAlign: "left",
                 color: COLOR_MAUVE,
                 whiteSpace: "pre-line",
@@ -900,8 +1171,9 @@ export default function BridgertonInvitePage({
             zIndex: 2,
             extra: {
               backgroundImage: `url(${messageBannerBg})`,
-              backgroundSize: "cover",
+              backgroundSize: "100% 100%",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             },
           })}
         />
@@ -922,6 +1194,8 @@ export default function BridgertonInvitePage({
 
         {/* #1587:3511 Title: "Leave a message" */}
         <div
+          id="preview-el-message-title"
+          data-element-id="message-title"
           className="reveal"
           onClick={() => handleElementClick("message-title")}
           style={makeSelectable(
@@ -936,11 +1210,10 @@ export default function BridgertonInvitePage({
                 fontFamily: FONT_SCRIPT,
                 fontSize: "36px",
                 lineHeight: "38px",
-                letterSpacing: "0.05em",
+                letterSpacing: "1.8px",
                 textAlign: "right",
                 color: COLOR_WHITE,
                 whiteSpace: "pre-line",
-                textShadow: "0 1px 3px rgba(0,0,0,0.3)",
               },
             })
           )}
@@ -950,6 +1223,8 @@ export default function BridgertonInvitePage({
 
         {/* #1587:3508 Subtitle: "Leave a heartfelt message to the brides" */}
         <div
+          id="preview-el-message-subtitle"
+          data-element-id="message-subtitle"
           className="reveal"
           onClick={() => handleElementClick("message-subtitle")}
           style={makeSelectable(
@@ -963,11 +1238,10 @@ export default function BridgertonInvitePage({
               extra: {
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                lineHeight: "1.4em",
-                letterSpacing: "0.2em",
+                lineHeight: "18.2px",
+                letterSpacing: "2.4px",
                 textAlign: "right",
                 color: COLOR_WHITE,
-                textShadow: "0 1px 2px rgba(0,0,0,0.3)",
               },
             })
           )}
@@ -975,8 +1249,9 @@ export default function BridgertonInvitePage({
           {getText("message-subtitle", currentInvite.messagePrompt || "Leave a heartfelt message to the brides")}
         </div>
 
-        {/* #1602:3 Message Input Box (Interactive) */}
+        {/* #1602:3 Message Input Box */}
         <div
+          className="reveal transition-all duration-300 focus-within:shadow-[0_0_12px_rgba(255,255,255,0.4)]"
           style={figmaBox({
             x: 86,
             y: 2348,
@@ -988,9 +1263,8 @@ export default function BridgertonInvitePage({
               borderRadius: "7px",
               display: "flex",
               alignItems: "center",
-              padding: "0 12px",
-              backgroundColor: "rgba(255, 255, 255, 0.15)",
-              backdropFilter: "blur(4px)",
+              padding: "0 14px",
+              backgroundColor: "transparent",
             },
           })}
         >
@@ -999,9 +1273,11 @@ export default function BridgertonInvitePage({
               style={{
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                letterSpacing: "0.15em",
+                letterSpacing: "2.4px",
                 color: COLOR_WHITE,
                 fontWeight: 600,
+                textAlign: "right",
+                width: "100%",
               }}
             >
               ✓ Thank you for your warm wishes!
@@ -1013,10 +1289,11 @@ export default function BridgertonInvitePage({
             >
               <input
                 type="text"
-                placeholder="Enter text here..."
+                placeholder="Enter text here"
                 value={guestMessage}
-                disabled={editable}
+                readOnly={editable}
                 onChange={(e) => setGuestMessage(e.target.value)}
+                className="bridgerton-message-input placeholder-white placeholder:text-white"
                 style={{
                   width: "100%",
                   background: "transparent",
@@ -1024,23 +1301,12 @@ export default function BridgertonInvitePage({
                   outline: "none",
                   fontFamily: FONT_SERIF,
                   fontSize: "12px",
-                  letterSpacing: "0.15em",
+                  letterSpacing: "2.4px",
                   color: COLOR_WHITE,
+                  WebkitTextFillColor: COLOR_WHITE,
+                  textAlign: "right",
                 }}
               />
-              <button
-                type="submit"
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: COLOR_WHITE,
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  padding: "0 4px",
-                }}
-              >
-                ➔
-              </button>
             </form>
           )}
         </div>
@@ -1064,6 +1330,8 @@ export default function BridgertonInvitePage({
            ========================================================================= */}
         {/* #1587:3520 Title: "RSVP" */}
         <div
+          id="preview-el-rsvp-title"
+          data-element-id="rsvp-title"
           className="reveal"
           onClick={() => handleElementClick("rsvp-title")}
           style={makeSelectable(
@@ -1073,11 +1341,11 @@ export default function BridgertonInvitePage({
               y: 2496,
               width: 168,
               height: 42,
-              zIndex: 4,
+              zIndex: 6,
               extra: {
                 fontFamily: FONT_SCRIPT,
                 fontSize: "40px",
-                letterSpacing: "0.05em",
+                letterSpacing: "2px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
               },
@@ -1089,6 +1357,8 @@ export default function BridgertonInvitePage({
 
         {/* #1587:3521 RSVP Deadline */}
         <div
+          id="preview-el-rsvp-deadline"
+          data-element-id="rsvp-deadline"
           className="reveal"
           onClick={() => handleElementClick("rsvp-deadline")}
           style={makeSelectable(
@@ -1098,12 +1368,12 @@ export default function BridgertonInvitePage({
               y: 2555,
               width: 320,
               height: 43,
-              zIndex: 4,
+              zIndex: 6,
               extra: {
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                lineHeight: "1.4em",
-                letterSpacing: "0.2em",
+                lineHeight: "18.2px",
+                letterSpacing: "2.4px",
                 textAlign: "center",
                 color: COLOR_MAUVE,
               },
@@ -1112,21 +1382,28 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "rsvp-deadline",
-            currentInvite.rsvpDeadline ||
-              "The favour of a reply is kindly requested by the 15th of June, 2026"
+            (!currentInvite.rsvpDeadline || currentInvite.rsvpDeadline.toLowerCase().includes("fifteenth"))
+              ? "The favour of a reply is kindly requested by the 15th of June, 2026"
+              : currentInvite.rsvpDeadline
           )}
         </div>
 
-        {/* #1587:4168 Stamp 4 */}
+        {/* #1587:4168 Stamp 4 (Butterfly - Rotated -45deg) */}
         <img
           src={stamp4}
           alt="Stamp"
+          className="butterfly-float"
           style={figmaBox({
-            x: 349,
-            y: 2538,
-            width: 134.17,
-            height: 134.17,
+            x: 374,
+            y: 2552,
+            width: 84,
+            height: 106,
             zIndex: 4,
+            extra: {
+              transform: "rotate(-45deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
@@ -1148,7 +1425,7 @@ export default function BridgertonInvitePage({
                   display: "block",
                   fontFamily: FONT_SERIF,
                   fontSize: "12px",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "2.4px",
                   color: COLOR_MAUVE,
                   marginBottom: "5px",
                 }}
@@ -1184,7 +1461,7 @@ export default function BridgertonInvitePage({
                   display: "block",
                   fontFamily: FONT_SERIF,
                   fontSize: "12px",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "2.4px",
                   color: COLOR_MAUVE,
                   marginBottom: "5px",
                 }}
@@ -1220,7 +1497,7 @@ export default function BridgertonInvitePage({
                   display: "block",
                   fontFamily: FONT_SERIF,
                   fontSize: "12px",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "2.4px",
                   color: COLOR_MAUVE,
                   marginBottom: "5px",
                 }}
@@ -1256,17 +1533,20 @@ export default function BridgertonInvitePage({
                   display: "block",
                   fontFamily: FONT_SERIF,
                   fontSize: "12px",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "2.4px",
                   color: COLOR_MAUVE,
                   marginBottom: "5px",
                 }}
               >
                 Number of guests
               </label>
-              <select
+              <input
+                type="number"
+                min="1"
                 disabled={editable}
                 value={rsvpData.guests}
                 onChange={(e) => setRsvpData({ ...rsvpData, guests: e.target.value })}
+                placeholder=""
                 style={{
                   width: "398px",
                   height: "40px",
@@ -1280,20 +1560,18 @@ export default function BridgertonInvitePage({
                   outline: "none",
                   boxSizing: "border-box",
                 }}
-              >
-                <option value="1">1 Person</option>
-                <option value="2">2 Persons</option>
-                <option value="3">3 Persons</option>
-                <option value="4">4 Persons</option>
-              </select>
+              />
             </div>
           </div>
 
           {/* #1587:3529 Submit Button */}
           <button
+            id="preview-el-rsvp-btn"
+            data-element-id="rsvp-btn"
             type="submit"
             disabled={editable || rsvpStatus === "sending" || rsvpStatus === "success"}
             onClick={() => handleElementClick("rsvp-btn")}
+            className="hover:scale-[1.015] active:scale-[0.985] transition-all duration-300 shadow-md hover:shadow-lg"
             style={makeSelectable(
               "rsvp-btn",
               figmaBox({
@@ -1303,24 +1581,24 @@ export default function BridgertonInvitePage({
                 height: 40,
                 zIndex: 5,
                 extra: {
-                  backgroundColor: rsvpStatus === "success" ? "#10B981" : COLOR_MAUVE,
+                  backgroundColor: rsvpStatus === "success" ? "#10B981" : (overrides["rsvp-btn"]?.color || COLOR_MAUVE),
                   borderRadius: "8px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  cursor: editable ? "default" : "pointer",
+                  cursor: editable ? "pointer" : "pointer",
                   border: "none",
-                  transition: "background-color 0.3s ease",
+                  transition: "background-color 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease",
                 },
               })
             )}
           >
             <span
               style={{
-                fontFamily: FONT_SERIF,
-                fontSize: "12px",
-                lineHeight: "1.5em",
-                letterSpacing: "0.2em",
+                fontFamily: overrides["rsvp-btn"]?.fontFamily && overrides["rsvp-btn"]?.fontFamily !== "Défaut du Template" ? overrides["rsvp-btn"].fontFamily : FONT_SERIF,
+                fontSize: overrides["rsvp-btn"]?.fontSize ? (typeof overrides["rsvp-btn"].fontSize === "number" ? `${overrides["rsvp-btn"].fontSize}px` : overrides["rsvp-btn"].fontSize) : "12px",
+                lineHeight: "18px",
+                letterSpacing: "2.4px",
                 color: COLOR_WHITE,
               }}
             >
@@ -1338,7 +1616,9 @@ export default function BridgertonInvitePage({
            ========================================================================= */}
         {/* #1583:14 Lace 1 Frame */}
         <div
-          className="reveal"
+          id="preview-el-footer-names"
+          data-element-id="footer-names"
+          className="reveal seal-pulse"
           onClick={() => handleElementClick("footer-names")}
           style={makeSelectable(
             "footer-names",
@@ -1355,6 +1635,7 @@ export default function BridgertonInvitePage({
           <img
             src={laceSeal}
             alt="Lace Seal"
+            className="lace-spin"
             style={{
               position: "absolute",
               left: 0,
@@ -1372,12 +1653,12 @@ export default function BridgertonInvitePage({
               top: "60px",
               width: "157px",
               height: "77px",
-              fontFamily: FONT_SCRIPT,
-              fontSize: "20px",
+              fontFamily: overrides["footer-names"]?.fontFamily && overrides["footer-names"]?.fontFamily !== "Défaut du Template" ? overrides["footer-names"].fontFamily : FONT_SCRIPT,
+              fontSize: overrides["footer-names"]?.fontSize ? (typeof overrides["footer-names"].fontSize === "number" ? `${overrides["footer-names"].fontSize}px` : overrides["footer-names"].fontSize) : "20px",
               lineHeight: "22px",
-              letterSpacing: "0.05em",
+              letterSpacing: "1px",
               textAlign: "center",
-              color: COLOR_MAUVE,
+              color: overrides["footer-names"]?.color || COLOR_MAUVE,
               whiteSpace: "pre-line",
             }}
           >

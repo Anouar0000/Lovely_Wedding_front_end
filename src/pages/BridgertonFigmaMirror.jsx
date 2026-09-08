@@ -20,7 +20,6 @@ import stamp4 from "../assets/digital/bridgerton/stamp-4-4471f0.png";
 import statueDoodle from "../assets/digital/bridgerton/statue-doodle.png";
 import venuePhoto from "../assets/digital/bridgerton/venue-photo.png";
 import flourishBorder from "../assets/digital/bridgerton/flourish-border.svg";
-import dividerFlourish from "../assets/digital/bridgerton/divider-flourish.svg";
 import laceSeal from "../assets/digital/bridgerton/lace-seal.svg";
 import fullReferenceImg from "../assets/digital/bridgerton/bridgerton_full_reference.png";
 
@@ -42,6 +41,7 @@ const figmaBox = ({ x, y, width, height, zIndex = 2, extra = {} }) => ({
   top: `${y}px`,
   width: width !== undefined ? `${width}px` : "auto",
   height: height !== undefined ? `${height}px` : "auto",
+  maxWidth: "none",
   zIndex,
   boxSizing: "border-box",
   ...extra,
@@ -208,12 +208,12 @@ export default function BridgertonFigmaMirror() {
             y: 674,
             width: 331,
             height: 189,
-            zIndex: 4,
+            zIndex: 6,
             extra: {
               fontFamily: FONT_VOYAGER,
               fontSize: "46px",
               lineHeight: "52px",
-              letterSpacing: "0.2em",
+              letterSpacing: "9.2px",
               textAlign: "center",
               color: COLOR_MAUVE,
               whiteSpace: "pre-line",
@@ -230,11 +230,12 @@ export default function BridgertonFigmaMirror() {
             y: 845,
             width: 331,
             height: 24,
-            zIndex: 4,
+            zIndex: 6,
             extra: {
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              letterSpacing: "0.2em",
+              lineHeight: "18.2px",
+              letterSpacing: "2.4px",
               textAlign: "center",
               color: COLOR_MAUVE,
             },
@@ -252,7 +253,7 @@ export default function BridgertonFigmaMirror() {
             y: 869,
             width: 72,
             height: 51,
-            zIndex: 4,
+            zIndex: 6,
             extra: { pointerEvents: "none" },
           })}
         />
@@ -271,16 +272,21 @@ export default function BridgertonFigmaMirror() {
           })}
         />
 
-        {/* #1586:100 Stamp 1 */}
+        {/* #1586:100 Stamp 1 (Swan - Rotated -15deg) */}
         <img
           src={stamp1}
           alt="Stamp"
           style={figmaBox({
-            x: 357,
-            y: 824,
-            width: 108.67,
-            height: 123.72,
+            x: 369,
+            y: 833,
+            width: 84,
+            height: 106,
             zIndex: 6,
+            extra: {
+              transform: "rotate(-15deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
@@ -381,13 +387,14 @@ export default function BridgertonFigmaMirror() {
               fontFamily: FONT_SCRIPT,
               fontSize: "36px",
               lineHeight: "38px",
-              letterSpacing: "0.05em",
+              letterSpacing: "1.8px",
               textAlign: "center",
               color: COLOR_MAUVE,
+              whiteSpace: "pre-line",
             },
           })}
         >
-          Wedding Venue
+          {"Wedding\nVenue"}
         </div>
 
         {/* #1586:2003 Venue Address Text */}
@@ -401,8 +408,8 @@ export default function BridgertonFigmaMirror() {
             extra: {
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              lineHeight: "1.5em",
-              letterSpacing: "0.2em",
+              lineHeight: "18.2px",
+              letterSpacing: "2.4px",
               textAlign: "center",
               color: COLOR_MAUVE,
               whiteSpace: "pre-line",
@@ -412,27 +419,32 @@ export default function BridgertonFigmaMirror() {
           {"Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H"}
         </div>
 
-        {/* #1587:2013 Stamp 3 */}
+        {/* #1587:2013 Stamp 3 (Hummingbird - Rotated -30deg) */}
         <img
           src={stamp3}
           alt="Stamp"
           style={figmaBox({
-            x: 342,
-            y: 1438,
-            width: 125.71,
-            height: 133.5,
+            x: 363,
+            y: 1452,
+            width: 84,
+            height: 106,
             zIndex: 4,
+            extra: {
+              transform: "rotate(-30deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
-        {/* #1587:3497 Venue Photo Group (Oval / Frame) */}
+        {/* #1587:3497 Venue Photo Group (Oval / Golden Baroque Frame - zIndex 6 on top of torn paper) */}
         <div
           style={figmaBox({
             x: 43,
             y: 1531,
             width: 120,
             height: 180,
-            zIndex: 4,
+            zIndex: 6,
             extra: {
               position: "absolute",
             },
@@ -450,7 +462,7 @@ export default function BridgertonFigmaMirror() {
               borderRadius: "50%",
             }}
           />
-          {/* #1587:3493 Venue Photo */}
+          {/* #1587:3493 Venue Golden Frame */}
           <img
             src={venuePhoto}
             alt="Venue"
@@ -461,11 +473,12 @@ export default function BridgertonFigmaMirror() {
               width: "120px",
               height: "180px",
               objectFit: "cover",
+              pointerEvents: "none",
             }}
           />
         </div>
 
-        {/* #1587:2203 Torn Paper 4 */}
+        {/* #1587:2203 Torn Paper 4 (Sage green strip - zIndex 3 behind golden frame) */}
         <img
           src={tornPaper4}
           alt=""
@@ -474,7 +487,7 @@ export default function BridgertonFigmaMirror() {
             y: 1579,
             width: 1556,
             height: 92,
-            zIndex: 5,
+            zIndex: 3,
             extra: { pointerEvents: "none" },
           })}
         />
@@ -494,7 +507,7 @@ export default function BridgertonFigmaMirror() {
               fontFamily: FONT_SCRIPT,
               fontSize: "40px",
               lineHeight: "44px",
-              letterSpacing: "0.05em",
+              letterSpacing: "2px",
               textAlign: "right",
               color: COLOR_MAUVE,
             },
@@ -514,8 +527,8 @@ export default function BridgertonFigmaMirror() {
             extra: {
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              lineHeight: "1.5em",
-              letterSpacing: "0.2em",
+              lineHeight: "18.2px",
+              letterSpacing: "2.4px",
               textAlign: "right",
               color: COLOR_MAUVE,
             },
@@ -524,32 +537,44 @@ export default function BridgertonFigmaMirror() {
           We'd love for guests to embrace a formal look for our celebration.
         </div>
 
-        {/* #1586:126 Stamp 2 */}
+        {/* #1586:126 Stamp 2 (Rose - Rotated 30deg) */}
         <img
           src={stamp2}
           alt="Stamp"
           style={figmaBox({
-            x: -34,
-            y: 1791,
-            width: 125.71,
-            height: 133.5,
+            x: -13,
+            y: 1805,
+            width: 84,
+            height: 106,
             zIndex: 4,
+            extra: {
+              transform: "rotate(30deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
-        {/* #1587:2202 Divider Flourish */}
-        <img
-          src={dividerFlourish}
-          alt=""
+        {/* #1587:2202 Group 13 - Dress Code Color Swatches */}
+        <div
           style={figmaBox({
             x: 125,
             y: 1853,
             width: 181,
             height: 34,
             zIndex: 4,
-            extra: { pointerEvents: "none" },
+            extra: {
+              display: "flex",
+              gap: "15px",
+              alignItems: "center",
+            },
           })}
-        />
+        >
+          <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#D9E5EB" }} />
+          <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#F9F5D4" }} />
+          <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#F2C1BE" }} />
+          <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#C8D4D0" }} />
+        </div>
 
         {/* #1587:2207 TE_Bird-01 2 (Bird Right) */}
         <img
@@ -577,7 +602,7 @@ export default function BridgertonFigmaMirror() {
               fontFamily: FONT_SCRIPT,
               fontSize: "40px",
               lineHeight: "44px",
-              letterSpacing: "0.05em",
+              letterSpacing: "2px",
               textAlign: "left",
               color: COLOR_MAUVE,
             },
@@ -597,8 +622,8 @@ export default function BridgertonFigmaMirror() {
             extra: {
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              lineHeight: "1.5em",
-              letterSpacing: "0.2em",
+              lineHeight: "18.2px",
+              letterSpacing: "2.4px",
               textAlign: "left",
               color: COLOR_MAUVE,
               whiteSpace: "pre-line",
@@ -635,8 +660,9 @@ export default function BridgertonFigmaMirror() {
             zIndex: 2,
             extra: {
               backgroundImage: `url(${messageBannerBg})`,
-              backgroundSize: "cover",
+              backgroundSize: "100% 100%",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             },
           })}
         />
@@ -667,7 +693,7 @@ export default function BridgertonFigmaMirror() {
               fontFamily: FONT_SCRIPT,
               fontSize: "36px",
               lineHeight: "38px",
-              letterSpacing: "0.05em",
+              letterSpacing: "1.8px",
               textAlign: "right",
               color: COLOR_WHITE,
               whiteSpace: "pre-line",
@@ -688,8 +714,8 @@ export default function BridgertonFigmaMirror() {
             extra: {
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              lineHeight: "1.4em",
-              letterSpacing: "0.2em",
+              lineHeight: "18.2px",
+              letterSpacing: "2.4px",
               textAlign: "right",
               color: COLOR_WHITE,
             },
@@ -711,6 +737,7 @@ export default function BridgertonFigmaMirror() {
               borderRadius: "7px",
               display: "flex",
               alignItems: "center",
+              justifyContent: "flex-end",
               padding: "0 14px",
               backgroundColor: "transparent",
             },
@@ -720,8 +747,9 @@ export default function BridgertonFigmaMirror() {
             style={{
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              letterSpacing: "0.2em",
+              letterSpacing: "2.4px",
               color: "rgba(255, 255, 255, 0.8)",
+              textAlign: "right",
             }}
           >
             Enter text here
@@ -752,11 +780,11 @@ export default function BridgertonFigmaMirror() {
             y: 2496,
             width: 168,
             height: 42,
-            zIndex: 4,
+            zIndex: 6,
             extra: {
               fontFamily: FONT_SCRIPT,
               fontSize: "40px",
-              letterSpacing: "0.05em",
+              letterSpacing: "2px",
               textAlign: "center",
               color: COLOR_MAUVE,
             },
@@ -772,12 +800,12 @@ export default function BridgertonFigmaMirror() {
             y: 2555,
             width: 320,
             height: 43,
-            zIndex: 4,
+            zIndex: 6,
             extra: {
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              lineHeight: "1.4em",
-              letterSpacing: "0.2em",
+              lineHeight: "18.2px",
+              letterSpacing: "2.4px",
               textAlign: "center",
               color: COLOR_MAUVE,
             },
@@ -786,16 +814,21 @@ export default function BridgertonFigmaMirror() {
           The favour of a reply is kindly requested by the 15th of June, 2026
         </div>
 
-        {/* #1587:4168 Stamp 4 */}
+        {/* #1587:4168 Stamp 4 (Butterfly - Rotated -45deg) */}
         <img
           src={stamp4}
           alt="Stamp"
           style={figmaBox({
-            x: 349,
-            y: 2538,
-            width: 134.17,
-            height: 134.17,
+            x: 374,
+            y: 2552,
+            width: 84,
+            height: 106,
             zIndex: 4,
+            extra: {
+              transform: "rotate(-45deg)",
+              transformOrigin: "center center",
+              pointerEvents: "none",
+            },
           })}
         />
 
@@ -815,7 +848,7 @@ export default function BridgertonFigmaMirror() {
               style={{
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                letterSpacing: "0.2em",
+                letterSpacing: "2.4px",
                 color: COLOR_MAUVE,
                 marginBottom: "5px",
               }}
@@ -839,7 +872,7 @@ export default function BridgertonFigmaMirror() {
               style={{
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                letterSpacing: "0.2em",
+                letterSpacing: "2.4px",
                 color: COLOR_MAUVE,
                 marginBottom: "5px",
               }}
@@ -863,7 +896,7 @@ export default function BridgertonFigmaMirror() {
               style={{
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                letterSpacing: "0.2em",
+                letterSpacing: "2.4px",
                 color: COLOR_MAUVE,
                 marginBottom: "5px",
               }}
@@ -887,7 +920,7 @@ export default function BridgertonFigmaMirror() {
               style={{
                 fontFamily: FONT_SERIF,
                 fontSize: "12px",
-                letterSpacing: "0.2em",
+                letterSpacing: "2.4px",
                 color: COLOR_MAUVE,
                 marginBottom: "5px",
               }}
@@ -928,8 +961,8 @@ export default function BridgertonFigmaMirror() {
             style={{
               fontFamily: FONT_SERIF,
               fontSize: "12px",
-              lineHeight: "1.5em",
-              letterSpacing: "0.2em",
+              lineHeight: "18px",
+              letterSpacing: "2.4px",
               color: COLOR_WHITE,
             }}
           >
@@ -995,6 +1028,7 @@ export default function BridgertonFigmaMirror() {
               top: 0,
               width: "100%",
               height: "100%",
+              maxWidth: "none",
               opacity: overlayOpacity,
               pointerEvents: "none",
               zIndex: 9998,

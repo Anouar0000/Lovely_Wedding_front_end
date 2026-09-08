@@ -33,17 +33,19 @@
     "rsvpDeadline": "The favour of a reply is kindly requested by the 15th of June, 2026",
     "activeSections": [
       "hero",
-      "date",
-      "quote-banner",
+      "countdown",
+      "celebrations",
       "location",
       "dress-code",
-      "transport",
-      "guestbook",
+      "our-story",
       "rsvp",
       "footer"
     ],
     "animationType": "fade-up",
     "animationDuration": 1.2,
+    "enablePetals": true,
+    "petalsIntensity": 28,
+    "petalsColor": "#FFFFFF",
     "musicUrl": "",
     "slug": "bridgerton-demo"
   },
@@ -64,17 +66,19 @@
     "rsvpDeadline": "The favour of a reply is kindly requested by the 15th of June, 2026",
     "activeSections": [
       "hero",
-      "date",
-      "quote-banner",
+      "countdown",
+      "celebrations",
       "location",
       "dress-code",
-      "transport",
-      "guestbook",
+      "our-story",
       "rsvp",
       "footer"
     ],
     "animationType": "fade-up",
     "animationDuration": 1.2,
+    "enablePetals": true,
+    "petalsIntensity": 28,
+    "petalsColor": "#FFFFFF",
     "musicUrl": ""
   },
   "fixedTimelineSteps": []

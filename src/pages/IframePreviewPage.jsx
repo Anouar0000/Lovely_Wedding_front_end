@@ -28,6 +28,15 @@ export default function IframePreviewPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
+  useEffect(() => {
+    if (selectedElementId) {
+      const el = document.getElementById(`preview-el-${selectedElementId}`) || document.querySelector(`[data-element-id="${selectedElementId}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [selectedElementId]);
+
   if (!invite) {
     return <div className="min-h-screen bg-[#F6F7F5]" />;
   }
