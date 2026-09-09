@@ -33,7 +33,17 @@
   font-style: normal;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Taprom&family=Urbanist:wght@400;700&display=swap');
+@font-face {
+  font-family: 'Onirom';
+  src: local('Onirom'),
+       local('Onirom Regular'),
+       local('Onirom-Regular');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Antic+Didone&family=Beau+Rivage&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Italiana&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Rosario:ital,wght@0,300..700;1,300..700&family=Taprom&family=Urbanist:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;

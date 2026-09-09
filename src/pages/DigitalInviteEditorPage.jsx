@@ -161,8 +161,64 @@ const getElementsForSection = (sectionId, templateId) => {
       ];
       case 'settings': return [
         { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
-        { id: 'visual-effects', label: 'Effets Visuels (Pétales de Roses)', controls: ['petalsToggle'] },
+        { id: 'visual-effects', label: 'Effets Particules & Scintillements (Sparkles)', controls: ['petalsToggle'] },
         { id: 'text-animation', label: 'Apparition du texte', controls: ['animationType', 'animationDuration', 'animationDelay'] }
+      ];
+      default: return [];
+    }
+  }
+
+  if (templateId === 'celestial') {
+    switch (sectionId) {
+      case 'hero': return [
+        { id: 'hero-names', label: 'Noms du Couple (Carte Invitation)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "JONATHAN\n&\nMARRISAH" },
+        { id: 'visual-effects', label: 'Effet Scintillements (Sparkles)', controls: ['petalsToggle'] },
+      ];
+      case 'our-story': return [
+        { id: 'story-title', label: 'Titre ("OUR STORY")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "OUR STORY" },
+        { id: 'story-subtitle', label: 'Sous-titre Cérémonie', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "To celebrate their wedding ceremony" },
+        { id: 'story-photo', label: 'Photo du Couple (Cadre Ovale)', controls: ['upload'] },
+      ];
+      case 'reveal': return [
+        { id: 'reveal-title', label: 'Titre ("REVEAL")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "REVEAL" },
+        { id: 'reveal-subtitle', label: 'Sous-titre Lune & Soleil', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join the moon  to the sun.." },
+        { id: 'date-text', label: 'Date Astronomique ("10 . 10 .2026")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "10 . 10 .2026" },
+      ];
+      case 'location':
+      case 'venue': return [
+        { id: 'venue-title', label: 'Titre ("VENUE")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "VENUE" },
+        { id: 'venue-name', label: 'Nom du Lieu & Adresse', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Kobbet Ennhas Manouba" },
+        { id: 'venue-photo', label: 'Illustration Porte du Palais', controls: ['upload'] },
+        { id: 'venue-time', label: 'Horaires Cérémonie', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:00 - 21:00" },
+        { id: 'venue-map-btn', label: 'Bouton Localisation ("Open in maps")', controls: ['text', 'mapAddress', 'font', 'fontSize', 'color'], defaultText: "Open in maps" },
+      ];
+      case 'timeline':
+      case 'programme': return [
+        { id: 'programme-title', label: 'Titre ("PROGRAMME")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "PROGRAMME" },
+        { id: 'timeline-1', label: 'Étape 1 (Accueil)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:00\nAccueil" },
+        { id: 'timeline-2', label: 'Étape 2 (Contrat)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:15\nContrat" },
+        { id: 'timeline-3', label: 'Étape 3 (Réception)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:45\nRéception" },
+        { id: 'timeline-4', label: 'Étape 4 (Photos)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "20:30\nPhotos" },
+        { id: 'timeline-5', label: 'Étape 5 (Fin)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "21:00\nFin" },
+      ];
+      case 'celebrations':
+      case 'principles': return [
+        { id: 'principles-title', label: 'Titre ("PRINCIPLES")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "PRINCIPLES" },
+        { id: 'principles-text-1', label: 'Paragraphe Principes 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui. Non rem sunt fugiat numquam molestiae vero dolores dolores. Dolor ut sit quos accusantium vitae aliquid ducimus" },
+        { id: 'principles-text-2', label: 'Paragraphe Principes 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui." },
+      ];
+      case 'rsvp': return [
+        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
+        { id: 'rsvp-attend-label', label: 'Question de Présence', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Will you attend" },
+        { id: 'rsvp-submit-btn', label: 'Bouton de Confirmation ("Send !")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Send !" },
+      ];
+      case 'footer': return [
+        { id: 'footer-infinity', label: 'Citation Calligraphie ("Untill infinity")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Untill infinity" },
+        { id: 'footer-names', label: 'Noms Monogramme', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "JONATHAN & MARRISAH" },
+      ];
+      case 'settings': return [
+        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
+        { id: 'visual-effects', label: 'Scintillements & Étoiles (Sparkles)', controls: ['petalsToggle'] },
       ];
       default: return [];
     }
@@ -215,7 +271,8 @@ const getElementsForSection = (sectionId, templateId) => {
         { id: 'footer-title', label: 'Message Final ("See you there!")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "See you there!" }
       ];
       case 'settings': return [
-        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] }
+        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
+        { id: 'visual-effects', label: 'Scintillements & Particules (Sparkles)', controls: ['petalsToggle'] }
       ];
       default: return [];
     }
@@ -296,7 +353,7 @@ const getElementsForSection = (sectionId, templateId) => {
     case 'settings': return [
       { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
       { id: 'global-video', label: 'Vidéo d\'ouverture (MP4)', controls: ['videoUpload'] },
-      { id: 'visual-effects', label: 'Effets Visuels', controls: ['petalsToggle'] },
+      { id: 'visual-effects', label: 'Effets Particules & Scintillements (Sparkles)', controls: ['petalsToggle'] },
       { id: 'text-animation', label: 'Apparition du texte', controls: ['animationType', 'animationDuration', 'animationDelay'] }
     ];
     default: return [];
@@ -681,89 +738,282 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                     </div>
                   )}
 
-                 {/* Petals Toggle */}
-                 {el.controls.includes('petalsToggle') && invite && updateInvite && (
-                   <div className="space-y-4">
-                     <label className="flex items-center gap-2 cursor-pointer">
-                       <input 
-                         type="checkbox" 
-                         checked={invite.enablePetals !== false} 
-                         onChange={(e) => updateInvite('enablePetals', e.target.checked)}
-                         className="w-4 h-4 accent-black"
-                       />
-                       <span className="text-xs font-semibold text-gray-700">Activer la chute de pétales</span>
-                     </label>
-                     {invite.enablePetals !== false && (
-                       <div className="space-y-4">
-                         <div>
-                           <label className="flex items-center justify-between text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                             Intensité (Nombre)
-                             <span className="text-black font-bold">{invite.petalsIntensity || (invite.template === "bridgerton" ? 28 : 30)}</span>
-                           </label>
-                           <input
-                             type="range"
-                             min="5"
-                             max="150"
-                             step="1"
-                             value={invite.petalsIntensity || (invite.template === "bridgerton" ? 28 : 30)}
-                             onChange={(e) => updateInvite('petalsIntensity', parseInt(e.target.value))}
-                             className="w-full accent-black cursor-pointer"
-                           />
-                         </div>
+                  {/* Sparkles / Particles Toggle & Amount Controls */}
+                  {el.controls.includes('petalsToggle') && invite && updateInvite && (() => {
+                    const isCelestial = invite.template === "celestial";
+                    const isBridgerton = invite.template === "bridgerton";
+                    const isEnabled = isCelestial
+                      ? (invite.enableStars !== false && invite.enableSparkles !== false)
+                      : invite.enablePetals !== false;
+                    const currentCount = isCelestial
+                      ? (invite.starsIntensity || invite.sparklesIntensity || 250)
+                      : (invite.petalsIntensity || invite.sparklesIntensity || (isBridgerton ? 28 : 30));
+                    const currentColor = isCelestial
+                      ? (invite.starsColor || invite.sparklesColor || "#E0E7FF")
+                      : (invite.petalsColor || (isBridgerton ? "#FFFFFF" : "#E87A90"));
+                    const defaultParticleType = isCelestial ? "sparkles" : (isBridgerton ? "petals" : "mixed");
+                    const particleType = invite.particleType || defaultParticleType;
 
-                         <div>
-                           <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                             Couleur des pétales
-                           </label>
-                           <div className="flex items-center gap-2.5 border border-gray-200 bg-white p-2">
-                             <input 
-                               type="color" 
-                               className="h-7 w-7 border-0 p-0 cursor-pointer" 
-                               value={invite.petalsColor || (invite.template === "bridgerton" ? "#FFFFFF" : "#E87A90")}
-                               onChange={(e) => updateInvite('petalsColor', e.target.value)}
+                    const handleAmountChange = (num) => {
+                      const val = Math.max(5, Math.min(300, parseInt(num) || 5));
+                      if (isCelestial) {
+                        updateInvite('starsIntensity', val);
+                        updateInvite('sparklesIntensity', val);
+                      } else {
+                        updateInvite('petalsIntensity', val);
+                        updateInvite('sparklesIntensity', val);
+                      }
+                    };
+
+                    const handleColorChange = (hex) => {
+                      if (isCelestial) {
+                        updateInvite('starsColor', hex);
+                        updateInvite('sparklesColor', hex);
+                      } else {
+                        updateInvite('petalsColor', hex);
+                        updateInvite('sparklesColor', hex);
+                      }
+                    };
+
+                    return (
+                      <div className="space-y-4">
+                        {/* Toggle Checkbox */}
+                        <div className="flex items-center justify-between p-2.5 bg-gray-50 border border-gray-200 rounded">
+                          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                            <input 
+                              type="checkbox" 
+                              checked={isEnabled} 
+                              onChange={(e) => {
+                                if (isCelestial) {
+                                  updateInvite('enableStars', e.target.checked);
+                                  updateInvite('enableSparkles', e.target.checked);
+                                }
+                                updateInvite('enablePetals', e.target.checked);
+                              }}
+                              className="w-4 h-4 accent-black rounded cursor-pointer"
+                            />
+                            <span className="text-xs font-semibold text-gray-800">
+                              {isCelestial 
+                                ? "✨ Scintillements & Poussière d'Étoiles" 
+                                : isBridgerton 
+                                ? "🌸 Chute de Pétales (Standard)" 
+                                : "✨ Chute de Particules & Scintillements"}
+                            </span>
+                          </label>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${isEnabled ? "bg-amber-100 text-amber-800 border border-amber-300" : "bg-gray-200 text-gray-500"}`}>
+                            {isEnabled ? "Actif" : "Désactivé"}
+                          </span>
+                        </div>
+
+                        {isEnabled && (
+                          <div className="space-y-4 pt-1">
+                            {/* Particle Mode Selection (for non-celestial templates) */}
+                            {!isCelestial && (
+                              <div>
+                                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                  Type d'Effet Visuel
+                                </label>
+                                <div className="grid grid-cols-3 gap-1.5 p-1 bg-gray-100 rounded border border-gray-200">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateInvite('particleType', 'petals')}
+                                    className={`py-1.5 px-2 text-[11px] font-medium rounded text-center transition-all ${particleType === 'petals' ? 'bg-white text-black shadow-xs font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
+                                  >
+                                    🌸 Pétales {isBridgerton ? "(Standard)" : ""}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateInvite('particleType', 'mixed')}
+                                    className={`py-1.5 px-2 text-[11px] font-medium rounded text-center transition-all ${particleType === 'mixed' ? 'bg-white text-black shadow-xs font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
+                                  >
+                                    🌸+✨ Mixte
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateInvite('particleType', 'sparkles')}
+                                    className={`py-1.5 px-2 text-[11px] font-medium rounded text-center transition-all ${particleType === 'sparkles' ? 'bg-white text-black shadow-xs font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
+                                  >
+                                    ✨ Scintillements
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Amount / Intensity Slider & Direct Controls */}
+                            <div className="p-3 bg-white border border-gray-200 rounded space-y-2.5">
+                              <div className="flex items-center justify-between">
+                                <label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                                  <span>✨ Quantité de {isCelestial || particleType === 'sparkles' ? 'scintillements' : (particleType === 'petals' ? 'pétales' : 'particules')}</span>
+                                </label>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[10px] text-gray-400 font-medium">
+                                    {currentCount < 50 ? "Léger" : currentCount < 120 ? "Équilibré" : currentCount < 200 ? "Dense" : "Galaxie Intense"}
+                                  </span>
+                                  <input
+                                    type="number"
+                                    min="5"
+                                    max="300"
+                                    value={currentCount}
+                                    onChange={(e) => handleAmountChange(e.target.value)}
+                                    className="w-14 px-1.5 py-0.5 text-center text-xs font-bold border border-gray-300 rounded focus:border-black focus:outline-none bg-gray-50"
+                                  />
+                                </div>
+                              </div>
+
+                             {/* Range Slider */}
+                             <input
+                               type="range"
+                               min="5"
+                               max="300"
+                               step="1"
+                               value={currentCount}
+                               onChange={(e) => handleAmountChange(e.target.value)}
+                               className="w-full accent-black cursor-pointer"
                              />
-                             <span className="text-xs text-gray-700 font-mono uppercase font-semibold">
-                               {invite.petalsColor || (invite.template === "bridgerton" ? "#FFFFFF" : "#E87A90")}
-                             </span>
-                             {/* Quick Presets */}
-                             <div className="ml-auto flex items-center gap-1.5">
-                               <button
-                                 type="button"
-                                 onClick={() => updateInvite('petalsColor', '#FFFFFF')}
-                                 className="w-5 h-5 rounded-full border border-gray-300 bg-white shadow-xs cursor-pointer hover:scale-110 transition-transform"
-                                 title="Blanc Pur (Base)"
+
+                             {/* Quick Increase / Presets */}
+                             <div className="flex items-center justify-between gap-1 pt-1">
+                               <div className="flex items-center gap-1">
+                                 <button
+                                   type="button"
+                                   onClick={() => handleAmountChange(currentCount - 15)}
+                                   className="px-2 py-1 text-[10px] font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
+                                   title="Diminuer de 15"
+                                 >
+                                   -15
+                                 </button>
+                                 <button
+                                   type="button"
+                                   onClick={() => handleAmountChange(currentCount + 15)}
+                                   className="px-2 py-1 text-[10px] font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
+                                   title="Augmenter de 15"
+                                 >
+                                   +15
+                                 </button>
+                                 <button
+                                   type="button"
+                                   onClick={() => handleAmountChange(currentCount + 35)}
+                                   className="px-2 py-1 text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded transition-colors"
+                                   title="Augmenter de 35 (Beaucoup de scintillements)"
+                                 >
+                                   +35 ✨
+                                 </button>
+                               </div>
+
+                               {/* Quick Preset Buttons */}
+                               <div className="flex items-center gap-1">
+                                 {[
+                                   { label: "35", val: 35, tip: "Léger" },
+                                   { label: "80", val: 80, tip: "Équilibré" },
+                                   { label: "150", val: 150, tip: "Dense" },
+                                   { label: "250", val: 250, tip: "Standard Céleste" },
+                                 ].map((preset) => (
+                                   <button
+                                     key={preset.val}
+                                     type="button"
+                                     onClick={() => handleAmountChange(preset.val)}
+                                     title={preset.tip}
+                                     className={`px-1.5 py-0.5 text-[10px] rounded transition-all ${currentCount === preset.val ? 'bg-black text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                   >
+                                     {preset.label}
+                                   </button>
+                                 ))}
+                               </div>
+                             </div>
+                           </div>
+
+                           {/* Color Picker & Presets */}
+                           <div>
+                             <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                               Couleur {isCelestial || particleType === 'sparkles' ? 'des Scintillements' : (particleType === 'petals' ? 'des Pétales' : 'des Particules')}
+                             </label>
+                             <div className="flex items-center gap-2.5 border border-gray-200 bg-white p-2 rounded">
+                               <input 
+                                 type="color" 
+                                 className="h-7 w-7 border-0 p-0 cursor-pointer rounded overflow-hidden" 
+                                 value={currentColor}
+                                 onChange={(e) => handleColorChange(e.target.value)}
                                />
-                               <button
-                                 type="button"
-                                 onClick={() => updateInvite('petalsColor', '#FDF6EC')}
-                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#FDF6EC] shadow-xs cursor-pointer hover:scale-110 transition-transform"
-                                 title="Ivoire"
-                               />
-                               <button
-                                 type="button"
-                                 onClick={() => updateInvite('petalsColor', '#F5C2C7')}
-                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#F5C2C7] shadow-xs cursor-pointer hover:scale-110 transition-transform"
-                                 title="Rose Pâle"
-                               />
-                               <button
-                                 type="button"
-                                 onClick={() => updateInvite('petalsColor', '#722F37')}
-                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#722F37] shadow-xs cursor-pointer hover:scale-110 transition-transform"
-                                 title="Mauve Bridgerton"
-                               />
-                               <button
-                                 type="button"
-                                 onClick={() => updateInvite('petalsColor', '#D4AF37')}
-                                 className="w-5 h-5 rounded-full border border-gray-300 bg-[#D4AF37] shadow-xs cursor-pointer hover:scale-110 transition-transform"
-                                 title="Or Vintage"
-                               />
+                               <span className="text-xs text-gray-700 font-mono uppercase font-semibold">
+                                 {currentColor}
+                               </span>
+                               {/* Quick Presets */}
+                               <div className="ml-auto flex items-center gap-1.5">
+                                 {isCelestial || particleType === 'sparkles' ? (
+                                   <>
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#E0E7FF')}
+                                       className="w-5 h-5 rounded-full border border-indigo-300 bg-[#E0E7FF] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Lueur Céleste (Standard)"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#F8E4A0')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#F8E4A0] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Or Stellaire"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#FFFFFF')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-white shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Diamant Pur"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#FDE68A')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#FDE68A] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Champagne Doré"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#D48744')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#D48744] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Or Cuivré Solaire"
+                                     />
+                                   </>
+                                 ) : (
+                                   <>
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#FFFFFF')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-white shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Blanc Pur"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#FDF6EC')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#FDF6EC] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Ivoire"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#F5C2C7')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#F5C2C7] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Rose Pâle"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#722F37')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#722F37] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Mauve Bridgerton"
+                                     />
+                                     <button
+                                       type="button"
+                                       onClick={() => handleColorChange('#D4AF37')}
+                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#D4AF37] shadow-xs cursor-pointer hover:scale-115 transition-transform"
+                                       title="Or Vintage"
+                                     />
+                                   </>
+                                 )}
+                               </div>
                              </div>
                            </div>
                          </div>
-                       </div>
-                     )}
-                   </div>
-                 )}
+                       )}
+                     </div>
+                   );
+                 })()}
 
                  {/* Text Animation Controls */}
                  {el.controls.includes('animationType') && invite && updateInvite && (
@@ -977,6 +1227,7 @@ function DigitalInviteEditorPage() {
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [openEvents, setOpenEvents] = useState({});
   const [uploadingMusic, setUploadingMusic] = useState(false);
@@ -1386,6 +1637,7 @@ function DigitalInviteEditorPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setSaveSuccess(false);
 
     const normalizedSlug = slugify(invite.slug || invite.coupleNames);
 
@@ -1405,9 +1657,9 @@ function DigitalInviteEditorPage() {
       delete inviteFields.introText;
       delete inviteFields.closingText;
       delete inviteFields.dateLabel;
-      const lastEvent = invite.timeline && invite.timeline.length > 0
-        ? invite.timeline[invite.timeline.length - 1]
-        : null;
+
+      const rawTimeline = Array.isArray(invite.timeline) ? invite.timeline : [];
+      const lastEvent = rawTimeline.length > 0 ? rawTimeline[rawTimeline.length - 1] : null;
 
       const cleanedInvite = {
         ...inviteFields,
@@ -1415,26 +1667,35 @@ function DigitalInviteEditorPage() {
         template: selectedTemplate.id,
         eventDate: isSidiBouSaid && lastEvent?.date ? lastEvent.date : invite.eventDate,
         time: isSidiBouSaid && lastEvent?.time ? lastEvent.time : invite.time,
-        timeline: invite.timeline
-          .slice(0, maxTimelineItems)
-          .map((item, index) => {
-            if (isSidiBouSaid) {
-              return {
-                title: item.title || "",
-                titleAr: item.titleAr || "",
-                date: item.date || "",
-                time: item.time || "",
-                venue: item.venue || "",
-                city: item.city || "",
-                mapUrl: item.mapUrl || "",
-              };
+        ...(rawTimeline.length > 0 || isSidiBouSaid || selectedTemplate.fixedTimelineSteps?.length
+          ? {
+              timeline: rawTimeline
+                .slice(0, maxTimelineItems)
+                .map((item, index) => {
+                  if (isSidiBouSaid) {
+                    return {
+                      title: item.title || "",
+                      titleAr: item.titleAr || "",
+                      date: item.date || "",
+                      time: item.time || "",
+                      venue: item.venue || "",
+                      city: item.city || "",
+                      mapUrl: item.mapUrl || "",
+                    };
+                  }
+                  return {
+                    step: getTimelineStepKey(item, index),
+                    time: item.time || "",
+                  };
+                }),
             }
-            return {
-              step: getTimelineStepKey(item, index),
-              time: item.time || "",
-            };
-          }),
+          : {}),
       };
+
+      if (Array.isArray(invite.timelineEvents)) {
+        cleanedInvite.timelineEvents = invite.timelineEvents;
+      }
+
       const docId = normalizedSlug;
 
       await saveDigitalInvite(docId, cleanedInvite);
@@ -1443,13 +1704,20 @@ function DigitalInviteEditorPage() {
       } catch (lsErr) {}
 
       if (initialDocId && initialDocId !== docId) {
-        await deleteDigitalInvite(initialDocId);
+        try {
+          await deleteDigitalInvite(initialDocId);
+        } catch (delErr) {
+          console.warn("Could not delete old invite document:", delErr);
+        }
       }
 
       navigate(`/dashboard/invitations/${docId}/edit`, { replace: true });
       setInitialDocId(docId);
       setInvite(cleanedInvite);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 4000);
     } catch (saveError) {
+      console.error("Erreur lors de l'enregistrement:", saveError);
       setError("Impossible d'enregistrer cette invitation.");
     } finally {
       setSaving(false);
@@ -1603,6 +1871,58 @@ function DigitalInviteEditorPage() {
   };
 
   const handleFillDemoData = () => {
+    if (invite.template === "celestial") {
+      const demoData = {
+        template: "celestial",
+        status: "draft",
+        title: "Celestial",
+        coupleNames: "JONATHAN & MARRISAH",
+        groomName: "Jonathan",
+        brideName: "Marrisah",
+        eventDate: "2026-10-10",
+        storyTitle: "OUR STORY",
+        storySubtitle: "To celebrate their wedding ceremony",
+        revealTitle: "REVEAL",
+        revealSubtitle: "Join the moon  to the sun..",
+        venueTitle: "VENUE",
+        venueName: "Kobbet Ennhas Manouba",
+        eventTime: "19:00 - 21:00",
+        mapUrl: "https://maps.google.com/?q=Kobbet+Ennhas+Manouba",
+        mapAddress: "Kobbet Ennhas Manouba",
+        programmeTitle: "PROGRAMME",
+        timelineEvents: [
+          { time: "19:00", title: "Accueil" },
+          { time: "19:15", title: "Contrat" },
+          { time: "19:45", title: "Réception" },
+          { time: "20:30", title: "Photos" },
+          { time: "21:00", title: "Fin" }
+        ],
+        principlesTitle: "PRINCIPLES",
+        principlesP1: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui. Non rem sunt fugiat numquam molestiae vero dolores dolores. Dolor ut sit quos accusantium vitae aliquid ducimus",
+        principlesP2: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui.",
+        rsvpTitle: "RSVP",
+        rsvpAttendLabel: "Will you attend",
+        footerQuote: "Untill infinity",
+        activeSections: [
+          "hero",
+          "our-story",
+          "reveal",
+          "location",
+          "timeline",
+          "celebrations",
+          "rsvp",
+          "footer"
+        ],
+        animationType: "fade-up",
+        animationDuration: 1.2,
+        enableStars: true,
+        musicUrl: "",
+        slug: "jonathan-marrisah"
+      };
+      setInvite((prev) => ({ ...prev, ...demoData }));
+      return;
+    }
+
     if (invite.template === "bridgerton") {
       const demoData = {
         template: "bridgerton",
@@ -1764,9 +2084,11 @@ function DigitalInviteEditorPage() {
               type="submit"
               form="digital-invite-form"
               disabled={saving}
-              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+              className={`inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white transition-all disabled:cursor-not-allowed ${
+                saveSuccess ? "bg-emerald-600 hover:bg-emerald-700" : "bg-black hover:bg-gray-800 disabled:bg-gray-400"
+              }`}
             >
-              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
+              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : saveSuccess ? "Enregistré ✓" : "Enregistrer"}
             </button>
           </div>
         </div>
@@ -1786,8 +2108,13 @@ function DigitalInviteEditorPage() {
                     
             <div className="space-y-6">
               {error ? (
-                <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
+                <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700 rounded">
                   {error}
+                </div>
+              ) : null}
+              {saveSuccess ? (
+                <div className="border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 rounded flex items-center justify-between">
+                  <span>✓ Invitation enregistrée avec succès !</span>
                 </div>
               ) : null}
 

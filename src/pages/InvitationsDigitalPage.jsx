@@ -8,6 +8,7 @@ import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import brezzaMarinaTemplate from "../data/digital/templates/brezza-marina.json";
 import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
+import celestialTemplate from "../data/digital/templates/celestial.json";
 import heroImage from "../assets/images/onlydigital1.png";
 import dolceColumns from "../assets/digital/dolce-vita/figma-layer-01.png";
 import dolceSun from "../assets/digital/dolce-vita/figma-layer-05.png";
@@ -21,12 +22,17 @@ import bridgertonCouplePhoto from "../assets/digital/bridgerton/hero-couple-phot
 import bridgertonStampButterfly from "../assets/digital/bridgerton/stamp-4-4471f0.png";
 import bridgertonStampSwan from "../assets/digital/bridgerton/stamp-1-4de4a6.png";
 import bridgertonTornPaper from "../assets/digital/bridgerton/torn-paper-1.svg";
+import celestialHeroBg from "../assets/digital/celestial/hero-bg.png";
+import celestialEnvelope from "../assets/digital/celestial/black-enveloppe.png";
+import celestialSunIcon from "../assets/digital/celestial/sun-icon.svg";
+import celestialMoonSun from "../assets/digital/celestial/moon-sun-reveal.svg";
 
 const digitalTemplatesById = {
   [dolceVitaTemplate.id]: dolceVitaTemplate,
   [sidiBouSaidTemplate.id]: sidiBouSaidTemplate,
   [brezzaMarinaTemplate.id]: brezzaMarinaTemplate,
   [bridgertonTemplate.id]: bridgertonTemplate,
+  [celestialTemplate.id]: celestialTemplate,
 };
 
 const getGroupTemplates = (group) =>
@@ -79,6 +85,15 @@ const templateThemes = {
     button: "bg-[#722f37] text-white",
     preview: "bridgerton",
   },
+  "celestial": {
+    eyebrow: "Cosmic & Celestial",
+    bg: "bg-[#0f172a]",
+    panel: "bg-[#1e293b]",
+    accent: "text-[#e8cc33]",
+    border: "border-[#334155]",
+    button: "bg-[#d48744] text-white",
+    preview: "celestial",
+  },
 };
 
 const getTemplateTheme = (templateId) =>
@@ -94,6 +109,24 @@ const getTemplateTheme = (templateId) =>
 
 const TemplatePreview = ({ template }) => {
   const theme = getTemplateTheme(template.id);
+
+  if (theme.preview === "celestial") {
+    return (
+      <div className="relative flex h-full min-h-[230px] items-center justify-center overflow-hidden bg-[#0a0d14]">
+        <img src={celestialHeroBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0d14]/40 via-transparent to-[#0a0d14]/80" />
+        <img src={celestialMoonSun} alt="" className="absolute -bottom-4 inset-x-0 w-full object-contain opacity-75 pointer-events-none" />
+        <div className="relative z-10 w-[50%] max-w-[145px] overflow-hidden rounded-md border-2 border-[#d48744]/60 shadow-[0_16px_36px_rgba(0,0,0,0.7)]">
+          <img src={celestialEnvelope} alt={template.name} className="h-full w-full object-cover" />
+        </div>
+        <img
+          src={celestialSunIcon}
+          alt=""
+          className="absolute right-4 top-4 z-20 w-7 drop-shadow-[0_0_8px_rgba(232,204,51,0.8)] pointer-events-none animate-pulse"
+        />
+      </div>
+    );
+  }
 
   if (theme.preview === "bridgerton") {
     return (

@@ -16,3 +16,7 @@
   - `maxWidth: "none"` must always be maintained on the torn paper SVG elements in `BridgertonFigmaMirror.jsx` and `BridgertonInvitePage.jsx` to avoid Tailwind's preflight shrinking them down to 430px.
   - The Date (`23\n11\n26`) and RSVP title/deadline must remain at `zIndex: 6` so they sit visibly over the overlapping torn paper edges.
   - "Leave a message" background banner image must keep `backgroundSize: "100% 100%"` (no-repeat) to preserve Figma's exact framing without zoom-cropping the couple.
+
+## Template Isolation Constraints
+- **Strict Template Scope**: NEVER edit or touch files, components, styles, assets, or template data belonging to another template while working on a specific template. Stay strictly and exclusively within the boundaries of the target template requested by the user.
+

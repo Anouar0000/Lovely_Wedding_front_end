@@ -437,12 +437,14 @@ export default function BridgertonInvitePage({
           boxShadow: "0 15px 40px rgba(0,0,0,0.12)",
         }}
       >
-        {/* Falling Rose Petals Effect */}
+        {/* Falling Particles (Petals & Sparkles) Effect */}
         {currentInvite.enablePetals !== false && (
           <ParticleEmitter
-            type="petals"
-            count={currentInvite.petalsIntensity || 28}
-            color={currentInvite.petalsColor || "#FFFFFF"}
+            type={currentInvite.particleType === "sparkles" ? "sparkles" : "petals"}
+            count={currentInvite.petalsIntensity || currentInvite.sparklesIntensity || 28}
+            color={currentInvite.petalsColor || currentInvite.sparklesColor || "#FFFFFF"}
+            withSparkles={currentInvite.particleType === "mixed"}
+            sparkleRatio={currentInvite.particleType === "sparkles" ? 1 : 0.35}
             active={true}
           />
         )}

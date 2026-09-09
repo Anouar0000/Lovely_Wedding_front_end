@@ -46,6 +46,7 @@
     "enablePetals": true,
     "petalsIntensity": 28,
     "petalsColor": "#FFFFFF",
+    "particleType": "petals",
     "musicUrl": "",
     "slug": "bridgerton-demo"
   },
@@ -79,6 +80,7 @@
     "enablePetals": true,
     "petalsIntensity": 28,
     "petalsColor": "#FFFFFF",
+    "particleType": "petals",
     "musicUrl": ""
   },
   "fixedTimelineSteps": []

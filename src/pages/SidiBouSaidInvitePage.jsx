@@ -1451,11 +1451,14 @@ export default function SidiBouSaidInvitePage({ invite, editable = false }) {
             overflow: "hidden",
           }}
         >
-          {/* Falling Petals Effect using ParticleEmitter */}
+          {/* Falling Particles (Petals & Sparkles) Effect */}
           {currentInvite.enablePetals !== false && (
             <ParticleEmitter
-              type="petals"
-              count={currentInvite.petalsIntensity || 30}
+              type={currentInvite.particleType === "sparkles" ? "sparkles" : "petals"}
+              count={currentInvite.petalsIntensity || currentInvite.sparklesIntensity || 30}
+              color={currentInvite.petalsColor || currentInvite.sparklesColor || "#FFFFFF"}
+              withSparkles={currentInvite.particleType !== "petals"}
+              sparkleRatio={currentInvite.particleType === "sparkles" ? 1 : 0.35}
               active={true}
             />
           )}
