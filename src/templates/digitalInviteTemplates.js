@@ -3,11 +3,13 @@ import SidiBouSaidInvitePage from "../pages/SidiBouSaidInvitePage";
 import BrezzaMarinaInvitePage from "../pages/BrezzaMarinaInvitePage";
 import BridgertonInvitePage from "../pages/BridgertonInvitePage";
 import CelestialInvitePage from "../pages/CelestialInvitePage";
+import MajesticWhiteInvitePage from "../pages/MajesticWhiteInvitePage";
 import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import brezzaMarinaTemplate from "../data/digital/templates/brezza-marina.json";
 import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
 import celestialTemplate from "../data/digital/templates/celestial.json";
+import majesticWhiteTemplate from "../data/digital/templates/majestic-white.json";
 
 export const DIGITAL_TEMPLATE_IDS = {
   DOLCE_VITA: dolceVitaTemplate.id,
@@ -15,6 +17,7 @@ export const DIGITAL_TEMPLATE_IDS = {
   BREZZA_MARINA: brezzaMarinaTemplate.id,
   BRIDGERTON: bridgertonTemplate.id,
   CELESTIAL: celestialTemplate.id,
+  MAJESTIC_WHITE: majesticWhiteTemplate.id,
 };
 
 export const digitalInviteTemplates = [
@@ -57,6 +60,14 @@ export const digitalInviteTemplates = [
     Component: CelestialInvitePage,
     defaults: celestialTemplate.defaults,
     fixedTimelineSteps: celestialTemplate.fixedTimelineSteps,
+  },
+  {
+    id: majesticWhiteTemplate.id,
+    label: majesticWhiteTemplate.label,
+    description: majesticWhiteTemplate.description,
+    Component: MajesticWhiteInvitePage,
+    defaults: majesticWhiteTemplate.defaults,
+    fixedTimelineSteps: majesticWhiteTemplate.fixedTimelineSteps,
   },
 ];
 

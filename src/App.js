@@ -13,6 +13,8 @@ import BridgertonInvitePage from './pages/BridgertonInvitePage';
 import BridgertonFigmaMirror from './pages/BridgertonFigmaMirror';
 import CelestialInvitePage from './pages/CelestialInvitePage';
 import CelestialFigmaMirror from './pages/CelestialFigmaMirror';
+import MajesticWhiteInvitePage from './pages/MajesticWhiteInvitePage';
+import MajesticWhiteFigmaMirror from './pages/MajesticWhiteFigmaMirror';
 import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -52,11 +54,14 @@ function App() {
           <Route path="/digital-invitation/brezza-marina" element={<BrezzaMarinaInvitePage />} />
           <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
           <Route path="/digital-invitation/celestial" element={<CelestialInvitePage />} />
+          <Route path="/digital-invitation/majestic-white" element={<MajesticWhiteInvitePage />} />
           <Route path="/sidi-bou-said-mirror" element={<SidiBouSaidFigmaMirror />} />
           <Route path="/brezza-marina-mirror" element={<BrezzaMarinaFigmaMirror />} />
           <Route path="/bridgerton-mirror" element={<BridgertonFigmaMirror />} />
           <Route path="/celestial-mirror" element={<CelestialFigmaMirror />} />
           <Route path="/digital-invitation/mirror/celestial" element={<CelestialFigmaMirror />} />
+          <Route path="/majestic-white-mirror" element={<MajesticWhiteFigmaMirror />} />
+          <Route path="/digital-invitation/mirror/majestic-white" element={<MajesticWhiteFigmaMirror />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/dashboard"

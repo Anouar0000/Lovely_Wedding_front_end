@@ -111,17 +111,71 @@ const SECTION_LIST = [
   { id: 'hero', label: 'Ouverture (Hero)' },
   { id: 'reveal', label: 'Dévoilement (الكشف)' },
   { id: 'countdown', label: 'Compte à rebours' },
+  { id: 'formal-invite', label: 'Faire-part formel' },
   { id: 'location', label: 'Localisation' },
   { id: 'our-story', label: 'Notre Histoire' },
   { id: 'timeline', label: 'Programme (Timeline)' },
   { id: 'celebrations', label: 'Célébrations' },
   { id: 'dress-code', label: 'Dress Code' },
+  { id: 'leave-a-message', label: 'Livre d\'or (Messages)' },
   { id: 'rsvp', label: 'RSVP' },
   { id: 'footer', label: 'Pied de page' },
   { id: 'settings', label: 'Animations & Musique' }
 ];
 
 const getElementsForSection = (sectionId, templateId) => {
+  if (templateId === 'majestic-white') {
+    switch (sectionId) {
+      case 'hero': return [
+        { id: 'hero-monogram', label: 'Monogramme D & A (Logo)', controls: ['upload'] },
+        { id: 'hero-date', label: 'Date Vintage ("15 . 09 . 2026")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "15 . 09 . 2026" },
+        { id: 'visual-effects', label: 'Effet Scintillements (Sparkles)', controls: ['petalsToggle'] },
+      ];
+      case 'our-story': return [
+        { id: 'story-title', label: 'Titre ("Our Story")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Our Story" },
+        { id: 'story-text', label: 'Texte Notre Histoire', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas\nRerum Qui. Non R Numquam Molestiae Vero\nDolores Dolores. Dolor Ut Sit Quos\nAccusantium Vitae Aliquid Ducimus" },
+        { id: 'story-photo', label: 'Photo du Couple (Cadre Ovale)', controls: ['upload'] },
+      ];
+      case 'countdown': return [
+        { id: 'countdown-title', label: 'Titre ("Countdown")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Countdown" },
+      ];
+      case 'formal-invite': return [
+        { id: 'formal-invite-title', label: 'Titre ("Formal Invite")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Formal Invite" },
+        { id: 'paper-card-img', label: 'Carte d\'Invitation Formelle', controls: ['upload'] },
+      ];
+      case 'celebrations': return [
+        { id: 'celebrations-title', label: 'Titre ("Celebrations")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Celebrations" },
+        { id: 'celebrations-subtitle', label: 'Sous-titre Célébrations 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas" },
+        { id: 'celebration1-title', label: 'Lieu 1 ("Club Nautique")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Club Nautique" },
+        { id: 'celebration1-address', label: 'Adresse & Heure Lieu 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Les Berges Du Lac 1\nÀ 18h" },
+        { id: 'celebration2-subtitle', label: 'Sous-titre Célébrations 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas" },
+        { id: 'celebration2-title', label: 'Lieu 2 ("Club Nautique")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Club Nautique" },
+        { id: 'celebration2-address', label: 'Adresse & Heure Lieu 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Les Berges Du Lac 1\nÀ 18h" },
+      ];
+      case 'timeline': return [
+        { id: 'timeline-title', label: 'Titre ("Timeline")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
+        { id: 'timeline-subtitle', label: 'Sous-titre Programme', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas" },
+      ];
+      case 'leave-a-message':
+      case 'guestbook': return [
+        { id: 'message-title', label: 'Titre ("Leave A Message")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave A Message" },
+        { id: 'message-subtitle', label: 'Texte d\'invitation au message', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave A Heartfelt Message To The Brides" },
+      ];
+      case 'rsvp': return [
+        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
+        { id: 'rsvp-form', label: 'Formulaire RSVP', controls: ['text'] },
+      ];
+      case 'footer': return [
+        { id: 'footer-names', label: 'Noms du Couple ("Damon & Alice")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Damon & Alice" },
+      ];
+      case 'settings': return [
+        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
+        { id: 'visual-effects', label: 'Effet Scintillements (Sparkles)', controls: ['petalsToggle'] },
+      ];
+      default: return [];
+    }
+  }
+
   if (templateId === 'bridgerton') {
     switch (sectionId) {
       case 'hero': return [
@@ -1600,7 +1654,7 @@ function DigitalInviteEditorPage() {
       status: currentInvite.status,
       timeline: defaults.timeline || [],
       activeSections: defaults.activeSections,
-      backgroundColor: defaults.backgroundColor || (templateId === "bridgerton" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5")),
+      backgroundColor: defaults.backgroundColor || (templateId === "majestic-white" ? "#FAF7F5" : (templateId === "bridgerton" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5"))),
       styleOverrides: {},
     }));
   };
@@ -1871,6 +1925,58 @@ function DigitalInviteEditorPage() {
   };
 
   const handleFillDemoData = () => {
+    if (invite.template === "majestic-white") {
+      const demoData = {
+        template: "majestic-white",
+        status: "draft",
+        title: "Majestic White",
+        coupleNames: "Damon & Alice",
+        groomName: "Damon",
+        brideName: "Alice",
+        eventDate: "2026-09-15",
+        storyTitle: "Our Story",
+        storyText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas\nRerum Qui. Non R Numquam Molestiae Vero\nDolores Dolores. Dolor Ut Sit Quos\nAccusantium Vitae Aliquid Ducimus",
+        countdownTitle: "Countdown",
+        formalInviteTitle: "Formal Invite",
+        celebrationsTitle: "Celebrations",
+        celebrationsSubtitle: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas",
+        celebration1Title: "Club Nautique",
+        celebration1Address: "Les Berges Du Lac 1\nÀ 18h",
+        celebration1MapUrl: "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac",
+        celebration2Subtitle: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas",
+        celebration2Title: "Club Nautique",
+        celebration2Address: "Les Berges Du Lac 1\nÀ 18h",
+        celebration2MapUrl: "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac",
+        timelineTitle: "Timeline",
+        timelineSubtitle: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas",
+        messageTitle: "Leave A Message",
+        messageSubtitle: "Leave A Heartfelt Message To The Brides",
+        rsvpTitle: "RSVP",
+        footerCoupleNames: "Damon & Alice",
+        backgroundColor: "#FAF7F5",
+        activeSections: [
+          "hero",
+          "our-story",
+          "countdown",
+          "formal-invite",
+          "celebrations",
+          "timeline",
+          "leave-a-message",
+          "rsvp",
+          "footer"
+        ],
+        animationType: "fade-up",
+        animationDuration: 1.2,
+        enablePetals: true,
+        petalsIntensity: 30,
+        petalsColor: "#FFFFFF",
+        musicUrl: "",
+        slug: "damon-alice"
+      };
+      setInvite((prev) => ({ ...prev, ...demoData }));
+      return;
+    }
+
     if (invite.template === "celestial") {
       const demoData = {
         template: "celestial",

@@ -9,6 +9,7 @@ import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import brezzaMarinaTemplate from "../data/digital/templates/brezza-marina.json";
 import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
 import celestialTemplate from "../data/digital/templates/celestial.json";
+import majesticWhiteTemplate from "../data/digital/templates/majestic-white.json";
 import heroImage from "../assets/images/onlydigital1.png";
 import dolceColumns from "../assets/digital/dolce-vita/figma-layer-01.png";
 import dolceSun from "../assets/digital/dolce-vita/figma-layer-05.png";
@@ -26,6 +27,11 @@ import celestialHeroBg from "../assets/digital/celestial/hero-bg.png";
 import celestialEnvelope from "../assets/digital/celestial/black-enveloppe.png";
 import celestialSunIcon from "../assets/digital/celestial/sun-icon.svg";
 import celestialMoonSun from "../assets/digital/celestial/moon-sun-reveal.svg";
+import majesticHeroBg from "../assets/digital/majestic-white/hero-bg.png";
+import majesticStoryFrame from "../assets/digital/majestic-white/story-frame.png";
+import majesticStoryPhoto from "../assets/digital/majestic-white/story-photo.png";
+import majesticPearl from "../assets/digital/majestic-white/pearl-right.png";
+import majesticMonogram from "../assets/digital/majestic-white/monogram-logo.svg";
 
 const digitalTemplatesById = {
   [dolceVitaTemplate.id]: dolceVitaTemplate,
@@ -33,6 +39,7 @@ const digitalTemplatesById = {
   [brezzaMarinaTemplate.id]: brezzaMarinaTemplate,
   [bridgertonTemplate.id]: bridgertonTemplate,
   [celestialTemplate.id]: celestialTemplate,
+  [majesticWhiteTemplate.id]: majesticWhiteTemplate,
 };
 
 const getGroupTemplates = (group) =>
@@ -94,6 +101,15 @@ const templateThemes = {
     button: "bg-[#d48744] text-white",
     preview: "celestial",
   },
+  "majestic-white": {
+    eyebrow: "Royal & Grand Palais",
+    bg: "bg-[#FAF7F5]",
+    panel: "bg-[#FFFFFF]",
+    accent: "text-[#977F6D]",
+    border: "border-[#E5E5E5]",
+    button: "bg-[#977F6D] text-white",
+    preview: "majestic",
+  },
 };
 
 const getTemplateTheme = (templateId) =>
@@ -109,6 +125,23 @@ const getTemplateTheme = (templateId) =>
 
 const TemplatePreview = ({ template }) => {
   const theme = getTemplateTheme(template.id);
+
+  if (theme.preview === "majestic") {
+    return (
+      <div className="relative flex h-full min-h-[230px] items-center justify-center overflow-hidden bg-[#FAF7F5]">
+        <img src={majesticHeroBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-[#FAF7F5]" />
+        <img src={majesticMonogram} alt="" className="absolute top-4 w-16 opacity-85 drop-shadow-sm pointer-events-none" />
+        <div className="relative z-10 w-[44%] max-w-[130px] flex items-center justify-center">
+          <img src={majesticStoryFrame} alt="" className="w-full drop-shadow-[0_12px_28px_rgba(151,127,109,0.25)]" />
+          <div className="absolute w-[60%] h-[53%] rounded-full overflow-hidden">
+            <img src={majesticStoryPhoto} alt={template.name} className="h-full w-full object-cover" />
+          </div>
+        </div>
+        <img src={majesticPearl} alt="" className="absolute -right-3 -bottom-5 w-20 opacity-85 pointer-events-none drop-shadow" />
+      </div>
+    );
+  }
 
   if (theme.preview === "celestial") {
     return (
