@@ -110,7 +110,9 @@ function EditorSection({ icon, title, children, action }) {
 const SECTION_LIST = [
   { id: 'hero', label: 'Ouverture (Hero)' },
   { id: 'reveal', label: 'Dévoilement (الكشف)' },
+  { id: 'join-us', label: 'Invitation (Join Us)' },
   { id: 'countdown', label: 'Compte à rebours' },
+  { id: 'the-day', label: 'Le Jour J (The Day)' },
   { id: 'formal-invite', label: 'Faire-part formel' },
   { id: 'location', label: 'Localisation' },
   { id: 'our-story', label: 'Notre Histoire' },
@@ -124,6 +126,55 @@ const SECTION_LIST = [
 ];
 
 const getElementsForSection = (sectionId, templateId) => {
+  if (templateId === 'club-capri') {
+    switch (sectionId) {
+      case 'hero': return [
+        { id: 'hero-title', label: 'Titre Bandeau ("POST Card FROM Summer")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "POST Card\nFROM Summer" },
+        { id: 'groom-name', label: 'Nom Marié ("Chedy")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Chedy" },
+        { id: 'bride-name', label: 'Nom Mariée ("HELA")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "HELA" },
+        { id: 'volume-label', label: 'Label Cassette ("VOLUME")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "VOLUME" },
+      ];
+      case 'join-us': return [
+        { id: 'join-us-title', label: 'En-tête ("Join us in")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join us in" },
+        { id: 'join-us-month', label: 'Mois ("JUNE")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "JUNE" },
+        { id: 'join-us-text', label: 'Texte d\'invitation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We warmly invite you to celebrate our wedding day with us." },
+      ];
+      case 'the-day':
+      case 'countdown': return [
+        { id: 'the-day-title', label: 'Titre ("The Day")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The Day" },
+        { id: 'boat-photo', label: 'Photo Yacht / Événement', controls: ['upload'] },
+      ];
+      case 'celebrations': return [
+        { id: 'celebrations-title', label: 'Titre ("Celebrations")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Celebrations" },
+        { id: 'postcard1-title', label: 'Titre Carte 1 ("WEDDING")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "WEDDING" },
+        { id: 'postcard-photo-1', label: 'Photo Carte 1 (Aperitivo)', controls: ['upload'] },
+        { id: 'postcard1-address', label: 'Adresse & Horaires Carte 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage\nMalaga\n18h" },
+        { id: 'postcard2-title', label: 'Titre Carte 2 ("HENNA")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "HENNA" },
+        { id: 'postcard-photo-2', label: 'Photo Carte 2 (Cocktail)', controls: ['upload'] },
+        { id: 'postcard2-address', label: 'Adresse & Horaires Carte 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage\nMalaga\n18h" },
+      ];
+      case 'dress-code': return [
+        { id: 'dress-code-title', label: 'En-tête ("Dress Code")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dress Code" },
+        { id: 'dress-code-chic', label: 'Style ("CASUAL CHIC")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "CASUAL CHIC" },
+        { id: 'dress-code-text', label: 'Description tenue', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We warmly invite you to celebrate our wedding day with us." },
+        { id: 'dress-code-photo', label: 'Photo Guide Tenue', controls: ['upload'] },
+      ];
+      case 'rsvp': return [
+        { id: 'arrival-title', label: 'En-tête ("Arrival")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Arrival" },
+        { id: 'rsvp-title', label: 'Titre ("RSVP")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
+        { id: 'rsvp-deadline', label: 'Délai de réponse', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The favour of a reply is kindly requested by the fifteenth of June, 2026" },
+        { id: 'rsvp-form', label: 'Formulaire RSVP', controls: ['text'] },
+      ];
+      case 'footer': return [
+        { id: 'footer-title', label: 'Signature ("club Capri")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "club Capri" },
+      ];
+      case 'settings': return [
+        { id: 'global-music', label: 'Musique Cassette Audio (MP3)', controls: ['musicUpload'] },
+      ];
+      default: return [];
+    }
+  }
+
   if (templateId === 'majestic-white') {
     switch (sectionId) {
       case 'hero': return [
@@ -1654,7 +1705,7 @@ function DigitalInviteEditorPage() {
       status: currentInvite.status,
       timeline: defaults.timeline || [],
       activeSections: defaults.activeSections,
-      backgroundColor: defaults.backgroundColor || (templateId === "majestic-white" ? "#FAF7F5" : (templateId === "bridgerton" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5"))),
+      backgroundColor: defaults.backgroundColor || (templateId === "club-capri" ? "#FFFBF0" : (templateId === "majestic-white" ? "#FAF7F5" : (templateId === "bridgerton" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5")))),
       styleOverrides: {},
     }));
   };
@@ -1925,6 +1976,55 @@ function DigitalInviteEditorPage() {
   };
 
   const handleFillDemoData = () => {
+    if (invite.template === "club-capri") {
+      const demoData = {
+        template: "club-capri",
+        status: "draft",
+        title: "Club Capri",
+        coupleNames: "Chedy & Hela",
+        groomName: "Chedy",
+        brideName: "Hela",
+        eventDate: "2026-06-15",
+        heroPostcardFrom: "POST Card",
+        heroFromSummer: "FROM Summer",
+        joinUsTitle: "Join us in",
+        joinUsMonth: "JUNE",
+        joinUsText: "We warmly invite you to celebrate our wedding day with us.",
+        theDayTitle: "The Day",
+        celebrationsTitle: "Celebrations",
+        postcard1Category: "Postcard",
+        postcard1Title: "WEDDING",
+        postcard1Address: "Dar Bouraoui Carthage\nMalaga\n18h",
+        postcard1MapUrl: "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
+        postcard2Category: "Postcard",
+        postcard2Title: "HENNA",
+        postcard2Address: "Dar Bouraoui Carthage\nMalaga\n18h",
+        postcard2MapUrl: "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
+        dressCodeCategory: "Dress Code",
+        dressCodeTitle: "CASUAL CHIC",
+        dressCodeText: "We warmly invite you to celebrate our wedding day with us.",
+        rsvpArrival: "Arrival",
+        rsvpTitle: "RSVP",
+        rsvpDeadline: "The favour of a reply is kindly requested by the fifteenth of June, 2026",
+        footerClub: "club",
+        footerCapri: "Capri",
+        backgroundColor: "#FFFBF0",
+        activeSections: [
+          "hero",
+          "join-us",
+          "the-day",
+          "celebrations",
+          "dress-code",
+          "rsvp",
+          "footer"
+        ],
+        musicUrl: "",
+        slug: "chedy-hela"
+      };
+      setInvite((prev) => ({ ...prev, ...demoData }));
+      return;
+    }
+
     if (invite.template === "majestic-white") {
       const demoData = {
         template: "majestic-white",

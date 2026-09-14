@@ -5,6 +5,7 @@ import brezzaMarinaFullReference from "../assets/digital/brezza-marina/brezza_ma
 import bridgertonFullReference from "../assets/digital/bridgerton/bridgerton_full_reference.png";
 import celestialFullReference from "../assets/digital/celestial/celestial-reference.png";
 import majesticWhiteFullReference from "../assets/digital/majestic-white/majestic-white-reference.png";
+import clubCapriFullReference from "../assets/digital/club-capri/club-capri-reference.png";
 
 export default function IframePreviewPage() {
   const [invite, setInvite] = useState(null);
@@ -49,7 +50,7 @@ export default function IframePreviewPage() {
   }
   
   const Component = template.Component;
-  const bgColor = invite?.backgroundColor || (invite?.template === "majestic-white" ? "#FAF7F5" : invite?.template === "celestial" ? "#000000" : invite?.template === "bridgerton" ? "#FFFFFF" : invite?.template === "brezza-marina" ? "#DCEBF0" : "#F6F7F5");
+  const bgColor = invite?.backgroundColor || (invite?.template === "club-capri" ? "#FFFBF0" : invite?.template === "majestic-white" ? "#FAF7F5" : invite?.template === "celestial" ? "#000000" : invite?.template === "bridgerton" ? "#FFFFFF" : invite?.template === "brezza-marina" ? "#DCEBF0" : "#F6F7F5");
 
   return (
     <div className="min-h-screen relative overflow-x-hidden overflow-y-auto" style={{ width: 430, minWidth: 430, maxWidth: 430, margin: '0 auto', backgroundColor: bgColor }}>
@@ -69,7 +70,9 @@ export default function IframePreviewPage() {
       {overlayOpacity > 0 && (
         <img
           src={
-            invite.template === "majestic-white"
+            invite.template === "club-capri"
+              ? clubCapriFullReference
+              : invite.template === "majestic-white"
               ? majesticWhiteFullReference
               : invite.template === "celestial"
               ? celestialFullReference
@@ -86,7 +89,9 @@ export default function IframePreviewPage() {
             top: 0,
             width: "430px",
             height:
-              invite.template === "majestic-white"
+              invite.template === "club-capri"
+                ? "3454px"
+                : invite.template === "majestic-white"
                 ? "4130px"
                 : invite.template === "celestial"
                 ? "4604px"

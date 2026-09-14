@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    ignore:
+      # Ignore local dev server and compile-time tooling that do not affect the production build
+      - dependency-name: "webpack-dev-server"
+      - dependency-name: "rollup"
+      - dependency-name: "shell-quote"
+      - dependency-name: "body-parser"
+      - dependency-name: "websocket-driver"
+      - dependency-name: "svgo"
+      - dependency-name: "node-forge"

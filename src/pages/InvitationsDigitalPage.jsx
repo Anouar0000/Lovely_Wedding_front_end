@@ -32,6 +32,10 @@ import majesticStoryFrame from "../assets/digital/majestic-white/story-frame.png
 import majesticStoryPhoto from "../assets/digital/majestic-white/story-photo.png";
 import majesticPearl from "../assets/digital/majestic-white/pearl-right.png";
 import majesticMonogram from "../assets/digital/majestic-white/monogram-logo.svg";
+import clubCapriTemplate from "../data/digital/templates/club-capri.json";
+import clubCapriHeroBg from "../assets/digital/club-capri/hero-bg.png";
+import clubCapriCassette from "../assets/digital/club-capri/cassette.png";
+import clubCapriStripes from "../assets/digital/club-capri/stripes-bottom.svg";
 
 const digitalTemplatesById = {
   [dolceVitaTemplate.id]: dolceVitaTemplate,
@@ -40,6 +44,7 @@ const digitalTemplatesById = {
   [bridgertonTemplate.id]: bridgertonTemplate,
   [celestialTemplate.id]: celestialTemplate,
   [majesticWhiteTemplate.id]: majesticWhiteTemplate,
+  [clubCapriTemplate.id]: clubCapriTemplate,
 };
 
 const getGroupTemplates = (group) =>
@@ -110,6 +115,15 @@ const templateThemes = {
     button: "bg-[#977F6D] text-white",
     preview: "majestic",
   },
+  "club-capri": {
+    eyebrow: "Dolce Vita & Riviera",
+    bg: "bg-[#FFFBF0]",
+    panel: "bg-[#FFFFFF]",
+    accent: "text-[#083B50]",
+    border: "border-[#C0D5D8]",
+    button: "bg-[#083B50] text-white",
+    preview: "capri",
+  },
 };
 
 const getTemplateTheme = (templateId) =>
@@ -125,6 +139,19 @@ const getTemplateTheme = (templateId) =>
 
 const TemplatePreview = ({ template }) => {
   const theme = getTemplateTheme(template.id);
+
+  if (theme.preview === "capri") {
+    return (
+      <div className="relative flex h-full min-h-[230px] items-center justify-center overflow-hidden bg-[#FFFBF0]">
+        <img src={clubCapriHeroBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-[#FFFBF0]" />
+        <img src={clubCapriStripes} alt="" className="absolute -bottom-6 inset-x-0 w-full object-cover opacity-80 pointer-events-none" />
+        <div className="relative z-10 w-[52%] max-w-[155px] drop-shadow-[0_12px_24px_rgba(8,59,80,0.22)] flex items-center justify-center">
+          <img src={clubCapriCassette} alt={template.name} className="w-full object-contain" />
+        </div>
+      </div>
+    );
+  }
 
   if (theme.preview === "majestic") {
     return (
