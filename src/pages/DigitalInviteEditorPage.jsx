@@ -148,6 +148,7 @@ const getElementsForSection = (sectionId, templateId) => {
       ];
       case 'timeline': return [
         { id: 'timeline-title', label: 'Titre ("Timeline")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
+        { id: 'timeline-steps', label: 'Étapes du Programme (Timeline)', controls: ['dolceTimelineSteps'] }
       ];
       case 'menu': return [
         { id: 'menu-title', label: 'Titre ("Menu")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Menu" },
@@ -778,6 +779,98 @@ function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, u
                       <button type="button" onClick={addTimelineItem} className="w-full py-2 border border-dashed border-gray-400 text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 hover:bg-gray-50">
                         <FiPlus size={14} /> Ajouter un événement
                       </button>
+                   </div>
+                 )}
+
+                 {/* Dolce Vita Timeline Steps List */}
+                 {el.controls.includes('dolceTimelineSteps') && invite && (
+                   <div className="space-y-3">
+                     {(() => {
+                       const template = getDigitalInviteTemplate(invite?.template);
+                       const fixedSteps = template?.fixedTimelineSteps || [
+                         { title: "accueil des invites", image: "accueil" },
+                         { title: "arrivee des maries", image: "arrivee" },
+                         { title: "contrat de mariage", image: "contrat" },
+                         { title: "soirée dansante", image: "soiree" },
+                         { title: "la fin", image: "fin" },
+                       ];
+                       const timelineList = invite.timeline || [];
+
+                       return (
+                         <>
+                           {timelineList.map((step, index) => {
+                             const stepKey = step.step || step.image || fixedSteps[index]?.image || "accueil";
+                             return (
+                               <div key={index} className="border border-gray-200 bg-white p-3 space-y-2 relative shadow-sm rounded-sm">
+                                 <div className="flex items-center justify-between">
+                                   <span className="text-xs font-bold text-gray-700">Étape {index + 1}</span>
+                                   <button
+                                     type="button"
+                                     onClick={() => removeTimelineItem(index)}
+                                     className="text-red-500 hover:text-red-700 p-1"
+                                     title="Supprimer cette étape"
+                                   >
+                                     <FiTrash2 size={14} />
+                                   </button>
+                                 </div>
+                                 <div className="grid grid-cols-2 gap-2">
+                                   <div>
+                                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Type d'étape</label>
+                                     <select
+                                       value={stepKey}
+                                       onChange={(e) => {
+                                         const newStep = e.target.value;
+                                         const oldFixed = fixedSteps.find((s) => s.image === stepKey);
+                                         const newFixed = fixedSteps.find((s) => s.image === newStep);
+                                         updateTimelineItem(index, "step", newStep);
+                                         if (!step.title || (oldFixed && step.title.toLowerCase() === oldFixed.title.toLowerCase())) {
+                                           updateTimelineItem(index, "title", newFixed?.title || "");
+                                         }
+                                       }}
+                                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
+                                     >
+                                       {fixedSteps.map((fStep) => (
+                                         <option key={fStep.image} value={fStep.image}>
+                                           {fStep.title}
+                                         </option>
+                                       ))}
+                                     </select>
+                                   </div>
+                                   <div>
+                                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Heure</label>
+                                     <input
+                                       type="text"
+                                       value={step.time || ""}
+                                       onChange={(e) => updateTimelineItem(index, "time", e.target.value)}
+                                       placeholder="Ex: 20h"
+                                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black"
+                                     />
+                                   </div>
+                                 </div>
+                                 <div>
+                                   <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Titre personnalisé (optionnel)</label>
+                                   <input
+                                     type="text"
+                                     value={step.title || ""}
+                                     onChange={(e) => updateTimelineItem(index, "title", e.target.value)}
+                                     placeholder={fixedSteps.find(s => s.image === stepKey)?.title || "Titre de l'étape"}
+                                     className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black"
+                                   />
+                                 </div>
+                               </div>
+                             );
+                           })}
+                           <button
+                             type="button"
+                             onClick={addTimelineItem}
+                             disabled={timelineList.length >= fixedSteps.length}
+                             className="w-full py-2.5 border border-dashed border-gray-400 text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                           >
+                             <FiPlus size={14} /> Ajouter une étape
+                           </button>
+                         </>
+                       );
+                     })()}
                    </div>
                  )}
 
@@ -1711,9 +1804,17 @@ function DigitalInviteEditorPage() {
           mapUrl: lastItem?.mapUrl || currentInvite.mapUrl || "https://maps.google.com"
         };
       } else {
+        const nextStepKey = getNextTimelineStepKey(currentInvite.timeline);
+        const defaultTimes = {
+          accueil: "20h",
+          arrivee: "20h30",
+          contrat: "21h",
+          soiree: "21h30",
+          fin: "00h00",
+        };
         newItem = {
-          step: getNextTimelineStepKey(currentInvite.timeline),
-          time: "",
+          step: nextStepKey,
+          time: defaultTimes[nextStepKey] || "",
         };
       }
 

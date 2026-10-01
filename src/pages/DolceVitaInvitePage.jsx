@@ -13,11 +13,21 @@ import locLineLowerRight from "../assets/digital/dolce-vita/loc_line_lower_right
 import locationPortrait from "../assets/digital/dolce-vita/location_portrait.png";
 import locationLemons from "../assets/digital/dolce-vita/location_lemons.png";
 import locationVenue from "../assets/digital/dolce-vita/location_venue.png";
-import timelineFullSvg from "../assets/digital/dolce-vita/timeline_full.svg";
 import tomatoesDish from "../assets/digital/dolce-vita/tomatoes_dish.png";
 import menuFrame from "../assets/digital/dolce-vita/menu_frame.png";
 import pastaDish from "../assets/digital/dolce-vita/pasta_dish.png";
 import footerFrame from "../assets/digital/dolce-vita/footer_frame.png";
+
+// Individual Timeline Assets
+import accueilIcon from "../assets/digital/dolce-vita/accueil-des-invites.png";
+import arriveeIcon from "../assets/digital/dolce-vita/arrivee-des-maries.png";
+import contratIcon from "../assets/digital/dolce-vita/contrat-de-mariage.png";
+import soireeIcon from "../assets/digital/dolce-vita/soiree-dansante.png";
+import finIcon from "../assets/digital/dolce-vita/la-fin.png";
+import arrow1 from "../assets/digital/dolce-vita/arrow1.png";
+import arrow2 from "../assets/digital/dolce-vita/arrow2.png";
+import arrow3 from "../assets/digital/dolce-vita/arrow3.png";
+import arrow4 from "../assets/digital/dolce-vita/arrow4.png";
 
 const CANVAS_WIDTH = 430;
 const CANVAS_HEIGHT = 3050;
@@ -26,10 +36,76 @@ const CANVAS_HEIGHT = 3050;
 const COLOR_WHITE = "#FFFFFF";
 const COLOR_NAVY = "#130554";
 const COLOR_GOLD = "#E8CC33";
+const COLOR_DARK_BLUE = "#23224C";
 
 // Fonts
 const FONT_TAPROM = "'Taprom', 'Pinyon Script', cursive";
 const FONT_CRIMSON = "'Crimson Text', serif";
+const FONT_HOMEMADE = "'Homemade Apple', 'Pinyon Script', cursive";
+
+const TIMELINE_SLOTS = [
+  {
+    iconPos: { left: 64, top: 6, width: 38, height: 57 },
+    textPos: { left: 0, top: 6, width: 66, textAlign: "right", timeMarginTop: "0px" },
+    titleLineHeight: "13px",
+    arrow: arrow1,
+    arrowPos: { left: 89, top: 71, width: 26, height: 24 },
+  },
+  {
+    iconPos: { left: 136, top: 89, width: 57, height: 46 },
+    textPos: { left: 120, top: 51, width: 62, textAlign: "right", timeMarginTop: "3px" },
+    titleLineHeight: "13px",
+    arrow: arrow2,
+    arrowPos: { left: 92, top: 146, width: 42, height: 27 },
+  },
+  {
+    iconPos: { left: 44, top: 162, width: 54, height: 39 },
+    textPos: { left: 2, top: 134, width: 65, textAlign: "left", timeMarginTop: "6px" },
+    titleLineHeight: "13px",
+    arrow: arrow3,
+    arrowPos: { left: 82, top: 216, width: 38, height: 29 },
+  },
+  {
+    iconPos: { left: 139, top: 240, width: 50, height: 45 },
+    textPos: { left: 82, top: 195, width: 80, textAlign: "center", timeMarginTop: "5px" },
+    titleLineHeight: "14px",
+    arrow: arrow4,
+    arrowPos: { left: 95, top: 296, width: 45, height: 27 },
+  },
+  {
+    iconPos: { left: 8, top: 319, width: 79, height: 46 },
+    textPos: { left: 15, top: 299, width: 55, textAlign: "center", timeMarginTop: "7px" },
+    titleLineHeight: "13px",
+    arrow: null,
+    arrowPos: null,
+  },
+];
+
+const STEP_ICONS = {
+  accueil: accueilIcon,
+  arrivee: arriveeIcon,
+  contrat: contratIcon,
+  soiree: soireeIcon,
+  fin: finIcon,
+};
+
+const DEFAULT_TITLES = {
+  accueil: "Accueil\ndes invités",
+  arrivee: "Arrivée\ndes mariés",
+  contrat: "contrat\nde mariage",
+  soiree: "Soirée\ndansante",
+  fin: "La Fin",
+};
+
+const DEFAULT_TIMES = {
+  accueil: "20h",
+  arrivee: "20h30",
+  contrat: "21h",
+  soiree: "21h30",
+  fin: "00h00",
+};
+
+const STEP_ORDER = ["accueil", "arrivee", "contrat", "soiree", "fin"];
 
 const defaultInvite = templateConfig.sample;
 
@@ -114,6 +190,30 @@ export default function DolceVitaInvitePage({
   const venueName = currentInvite.venueName || "Dar Bouraoui Carthage";
   const city = currentInvite.locationLabel || currentInvite.city || "MALAGA";
   const eventTime = currentInvite.time || "19H00";
+
+  // Dynamic Timeline Entries (positioned along the sequential winding path slots)
+  const rawTimeline = Array.isArray(currentInvite.timeline) && currentInvite.timeline.length > 0
+    ? currentInvite.timeline
+    : templateConfig.sample?.timeline || [];
+
+  const timelineEntries = rawTimeline.map((item, index) => {
+    const slot = TIMELINE_SLOTS[Math.min(index, TIMELINE_SLOTS.length - 1)];
+    const stepKey = item.step || item.image || STEP_ORDER[index % 5];
+    const icon = STEP_ICONS[stepKey] || STEP_ICONS[STEP_ORDER[index % 5]];
+    const title = item.title || DEFAULT_TITLES[stepKey] || DEFAULT_TITLES[STEP_ORDER[index % 5]] || "";
+    const time = item.time !== undefined && item.time !== "" 
+      ? item.time 
+      : (DEFAULT_TIMES[stepKey] || DEFAULT_TIMES[STEP_ORDER[index % 5]] || "");
+
+    return {
+      stepKey,
+      icon,
+      title,
+      time,
+      slot,
+      index,
+    };
+  });
 
   // Real-time Countdown
   const [timeLeft, setTimeLeft] = useState({
@@ -815,8 +915,11 @@ export default function DolceVitaInvitePage({
           {getText("timeline-title", "Timeline")}
         </div>
 
-        {/* Timeline Graphic Block (1:1 Figma vector tree) */}
+        {/* Dynamic Timeline Graphic Block */}
         <div
+          id="preview-el-timeline-steps"
+          data-element-id="timeline-steps"
+          onClick={() => handleElementClick("timeline-steps", "timeline")}
           style={{
             position: "absolute",
             left: 119,
@@ -824,17 +927,85 @@ export default function DolceVitaInvitePage({
             width: 196.8,
             height: 365.82,
             zIndex: 2,
+            cursor: editable ? "pointer" : "default",
+            ...getElementHighlightStyle("timeline-steps"),
           }}
         >
-          <img
-            src={timelineFullSvg}
-            alt="Timeline"
-            style={{
-              width: "100%",
-              height: "100%",
-              pointerEvents: "none",
-            }}
-          />
+          {timelineEntries.map((item, index) => {
+            const hasNext = index < timelineEntries.length - 1;
+            return (
+              <React.Fragment key={`${item.stepKey}-${index}`}>
+                {/* Step Illustration (positioned at this sequential slot) */}
+                {item.icon && (
+                  <img
+                    src={item.icon}
+                    alt=""
+                    style={{
+                      position: "absolute",
+                      left: item.slot.iconPos.left,
+                      top: item.slot.iconPos.top,
+                      width: item.slot.iconPos.width,
+                      height: item.slot.iconPos.height,
+                      objectFit: "contain",
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+
+                {/* Connecting Arrow to Next Step Slot */}
+                {hasNext && item.slot.arrow && (
+                  <img
+                    src={item.slot.arrow}
+                    alt=""
+                    style={{
+                      position: "absolute",
+                      left: item.slot.arrowPos.left,
+                      top: item.slot.arrowPos.top,
+                      width: item.slot.arrowPos.width,
+                      height: item.slot.arrowPos.height,
+                      objectFit: "contain",
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+
+                {/* Step Text (Title & Time positioned at this sequential slot) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: item.slot.textPos.left,
+                    top: item.slot.textPos.top,
+                    width: item.slot.textPos.width,
+                    textAlign: item.slot.textPos.textAlign,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: FONT_HOMEMADE,
+                      fontSize: "10px",
+                      lineHeight: item.slot.titleLineHeight || "13px",
+                      color: COLOR_DARK_BLUE,
+                      whiteSpace: "pre-line",
+                    }}
+                  >
+                    {item.title}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: FONT_HOMEMADE,
+                      fontSize: "10px",
+                      lineHeight: "13px",
+                      color: COLOR_GOLD,
+                      marginTop: item.slot.textPos.timeMarginTop || "1px",
+                    }}
+                  >
+                    {item.time}
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          })}
         </div>
 
         {/* ============================================================
