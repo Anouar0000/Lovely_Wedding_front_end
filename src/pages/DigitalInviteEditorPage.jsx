@@ -22,7 +22,20 @@ import {
   FiChevronRight,
   FiMove,
   FiRotateCcw,
+  FiCheckSquare,
+  FiEye,
+  FiHeart,
+  FiGift,
+  FiNavigation,
+  FiBookOpen,
+  FiTag,
+  FiMessageSquare,
+  FiInfo,
 } from "react-icons/fi";
+import {
+  getComponentsForTemplate,
+  findMasterComponent,
+} from "../data/digital/componentsMaster";
 import {
   createDigitalInviteDraft,
   deleteDigitalInvite,
@@ -36,6 +49,24 @@ import {
   getDefaultDigitalInviteTemplate,
   getDigitalInviteTemplate,
 } from "../templates/digitalInviteTemplates";
+
+const COMPONENT_ICONS = {
+  FiEye,
+  FiMapPin,
+  FiCheckSquare,
+  FiHeart,
+  FiGift,
+  FiNavigation,
+  FiFileText,
+  FiClock,
+  FiCalendar,
+  FiBookOpen,
+  FiTag,
+  FiMessageSquare,
+  FiInfo,
+  FiHome,
+  FiLayers,
+};
 
 const defaultTemplate = getDefaultDigitalInviteTemplate();
 
@@ -1857,6 +1888,50 @@ function DigitalInviteEditorPage() {
     }));
   };
 
+  const currentActiveSections = useMemo(() => {
+    return (
+      invite.activeSections ||
+      getDigitalInviteTemplate(invite.template)?.defaults?.activeSections ||
+      []
+    );
+  }, [invite.activeSections, invite.template]);
+
+  const templateComponents = useMemo(() => {
+    return getComponentsForTemplate(invite.template);
+  }, [invite.template]);
+
+  const handleToggleSection = (componentId) => {
+    const master = findMasterComponent(componentId);
+    const targetId = componentId;
+    const isCurrentlyActive =
+      currentActiveSections.includes(targetId) ||
+      (master?.aliasIds && master.aliasIds.some((a) => currentActiveSections.includes(a)));
+
+    let updated;
+    if (isCurrentlyActive) {
+      if (targetId === "hero") return;
+      const toRemove = [targetId, ...(master?.aliasIds || [])];
+      updated = currentActiveSections.filter((id) => !toRemove.includes(id));
+    } else {
+      updated = [...currentActiveSections, targetId];
+    }
+    updateInvite("activeSections", updated);
+  };
+
+  const handleEnableAllTemplateSections = () => {
+    const supported = templateComponents
+      .filter((c) => c.isSupported)
+      .map((c) => c.id);
+    const fullList = Array.from(new Set(["hero", ...supported, "footer"]));
+    updateInvite("activeSections", fullList);
+  };
+
+  const handleResetDefaultSections = () => {
+    const templateConfig = getDigitalInviteTemplate(invite.template);
+    const defaults = templateConfig?.defaults?.activeSections || [];
+    updateInvite("activeSections", [...defaults]);
+  };
+
   const handleCoupleBlur = () => {
     if (!invite.slug && invite.coupleNames) {
       updateInvite("slug", slugify(invite.coupleNames));
@@ -2567,6 +2642,157 @@ function DigitalInviteEditorPage() {
                       {invite.status === "published" ? "Publiee" : "Brouillon"}
                     </div>
                   </div>
+
+                  {/* Master Components Selection Menu (Figma node 1637:18) */}
+                  <div className="md:col-span-2 pt-6 mt-2 border-t border-[#D8DDE2]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <FiLayers className="text-[#130554]" size={18} />
+                          <h4 className="text-sm font-bold text-gray-900 tracking-wide uppercase">
+                            Composants & Sections du modèle
+                          </h4>
+                          <span className="px-2.5 py-0.5 text-xs font-semibold bg-[#130554]/10 text-[#130554] rounded-full border border-[#130554]/20">
+                            {templateComponents.filter(c => c.isSupported && (currentActiveSections.includes(c.id) || (c.aliasIds && c.aliasIds.some(a => currentActiveSections.includes(a))))).length} / {templateComponents.filter(c => c.isSupported).length} actives
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Activez ou désactivez les blocs modulaires pour personnaliser l'invitation. Les sections cochées apparaissent ci-dessous dans <strong>Structure & Design</strong>.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleEnableAllTemplateSections}
+                          className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors"
+                        >
+                          Tout activer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResetDefaultSections}
+                          className="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded transition-colors"
+                        >
+                          Par défaut
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Supported components grid */}
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {templateComponents.filter(c => c.isSupported).map((comp) => {
+                        const IconComp = COMPONENT_ICONS[comp.iconName] || FiLayers;
+                        const isSectionActive =
+                          currentActiveSections.includes(comp.id) ||
+                          (comp.aliasIds && comp.aliasIds.some((a) => currentActiveSections.includes(a)));
+
+                        return (
+                          <div
+                            key={comp.id}
+                            onClick={() => handleToggleSection(comp.id)}
+                            className={`p-3.5 rounded-lg border transition-all cursor-pointer flex flex-col justify-between select-none ${
+                              isSectionActive
+                                ? "bg-white border-[#130554] ring-1 ring-[#130554]/20 shadow-sm"
+                                : "bg-gray-50/70 border-gray-200 hover:border-gray-300 opacity-60"
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2.5">
+                                  <div
+                                    className={`w-7 h-7 rounded flex items-center justify-center shrink-0 transition-colors ${
+                                      isSectionActive ? "bg-[#130554] text-white" : "bg-gray-200 text-gray-600"
+                                    }`}
+                                  >
+                                    <IconComp size={14} />
+                                  </div>
+                                  <div>
+                                    <div className="text-xs font-bold text-gray-900 leading-tight">
+                                      {comp.label}
+                                    </div>
+                                    <div className="text-[10px] text-gray-500 font-mono mt-0.5">
+                                      {comp.figmaName}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div
+                                  className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors ${
+                                    isSectionActive
+                                      ? "bg-[#130554] text-white"
+                                      : "border border-gray-300 bg-white"
+                                  }`}
+                                >
+                                  {isSectionActive && <FiCheck size={12} />}
+                                </div>
+                              </div>
+
+                              <p className="text-[11px] text-gray-600 mt-2 leading-relaxed line-clamp-2">
+                                {comp.description}
+                              </p>
+                            </div>
+
+                            <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between">
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
+                                  isSectionActive
+                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                    : "bg-gray-100 text-gray-500"
+                                }`}
+                              >
+                                {isSectionActive ? "✓ Incluse" : "Exclue"}
+                              </span>
+                              <span className="text-[10px] text-gray-400 font-mono">
+                                {comp.id}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Non-supported library components collapsible */}
+                    {templateComponents.some((c) => !c.isSupported) && (
+                      <details className="mt-4 pt-3 border-t border-dashed border-gray-200 group">
+                        <summary className="text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-800 flex items-center justify-between select-none">
+                          <span>Autres composants disponibles dans la bibliothèque ({templateComponents.filter((c) => !c.isSupported).length})</span>
+                          <FiChevronDown className="transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mt-3">
+                          {templateComponents
+                            .filter((c) => !c.isSupported)
+                            .map((comp) => {
+                              const IconComp = COMPONENT_ICONS[comp.iconName] || FiLayers;
+                              return (
+                                <div
+                                  key={comp.id}
+                                  className="p-3 rounded-lg border border-dashed border-gray-200 bg-gray-50/50 opacity-60 flex flex-col justify-between"
+                                >
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded flex items-center justify-center bg-gray-200 text-gray-500 shrink-0">
+                                        <IconComp size={12} />
+                                      </div>
+                                      <div>
+                                        <div className="text-xs font-medium text-gray-700">{comp.label}</div>
+                                        <div className="text-[10px] text-gray-400 font-mono">{comp.figmaName}</div>
+                                      </div>
+                                    </div>
+                                    <p className="text-[11px] text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+                                      {comp.description}
+                                    </p>
+                                  </div>
+                                  <div className="mt-2 text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded w-fit border border-amber-200 font-medium">
+                                    Non inclus dans ce modèle
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </details>
+                    )}
+                  </div>
                 </div>
               </EditorSection>
 
@@ -2591,7 +2817,7 @@ function DigitalInviteEditorPage() {
                 }
               >
                 <div className="space-y-2">
-                  {(getDigitalInviteTemplate(invite.template)?.defaults?.activeSections ? SECTION_LIST.filter(s => getDigitalInviteTemplate(invite.template).defaults.activeSections.includes(s.id) || s.id === 'settings') : SECTION_LIST).map(sec => (
+                  {SECTION_LIST.filter(s => currentActiveSections.includes(s.id) || s.id === 'settings').map(sec => (
                     <div key={sec.id} className="border border-[#D8DDE2] bg-white">
                         <button 
                           type="button" 

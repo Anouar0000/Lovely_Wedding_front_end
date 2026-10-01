@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import templateConfig from "../data/digital/templates/dolce-vita.json";
 
 // Fresh 1:1 Figma Assets
-import heroArch from "../assets/digital/dolce-vita/hero_arch.png";
-import heroDecor from "../assets/digital/dolce-vita/hero_decor.png";
+import heroColumns from "../assets/digital/dolce-vita/hero_columns.png";
+import heroFlourishLeft from "../assets/digital/dolce-vita/hero_flourish_left.png";
+import heroFlourishCenter from "../assets/digital/dolce-vita/hero_flourish_center.png";
+import heroFlourishRight from "../assets/digital/dolce-vita/hero_flourish_right.png";
 import heroArrow from "../assets/digital/dolce-vita/hero_arrow.svg";
 import countdownSun from "../assets/digital/dolce-vita/countdown_sun.png";
 import locLineLeft from "../assets/digital/dolce-vita/loc_line_left.svg";
@@ -107,6 +109,16 @@ const DEFAULT_TIMES = {
 
 const STEP_ORDER = ["accueil", "arrivee", "contrat", "soiree", "fin"];
 
+const SECTION_METRICS = [
+  { id: "hero", defaultStart: 0, height: 337 },
+  { id: "countdown", defaultStart: 337, height: 258 },
+  { id: "location", defaultStart: 595, height: 351 },
+  { id: "timeline", defaultStart: 946, height: 512 },
+  { id: "menu", defaultStart: 1458, height: 705 },
+  { id: "rsvp", defaultStart: 2163, height: 633 },
+  { id: "footer", defaultStart: 2796, height: 254 },
+];
+
 const defaultInvite = templateConfig.sample;
 
 export default function DolceVitaInvitePage({
@@ -120,6 +132,40 @@ export default function DolceVitaInvitePage({
   const overrides = currentInvite.elementOverrides || {};
   const containerRef = useRef(null);
   const [scale, setScale] = useState(1);
+
+  // Active modular sections handling
+  const { totalCanvasHeight, sectionShifts } = useMemo(() => {
+    const activeSections = currentInvite.activeSections || templateConfig.defaults.activeSections || [
+      "hero",
+      "countdown",
+      "location",
+      "timeline",
+      "menu",
+      "rsvp",
+      "footer",
+    ];
+    let currentY = 0;
+    const shifts = {};
+    SECTION_METRICS.forEach(({ id, defaultStart, height }) => {
+      const isAct = id === "hero" || activeSections.includes(id);
+      if (isAct) {
+        shifts[id] = currentY - defaultStart;
+        currentY += height;
+      } else {
+        shifts[id] = null;
+      }
+    });
+    return { totalCanvasHeight: currentY || CANVAS_HEIGHT, sectionShifts: shifts };
+  }, [currentInvite.activeSections]);
+
+  const isSectionActive = (id) =>
+    id === "hero" || (sectionShifts[id] !== null && sectionShifts[id] !== undefined);
+
+  const getSectionStyle = (id) => {
+    const shift = sectionShifts[id] || 0;
+    if (shift === 0) return undefined;
+    return { transform: `translateY(${shift}px)` };
+  };
 
   // Form state for RSVP
   const [attendance, setAttendance] = useState("yes");
@@ -271,7 +317,7 @@ export default function DolceVitaInvitePage({
           width: CANVAS_WIDTH,
           minWidth: CANVAS_WIDTH,
           maxWidth: CANVAS_WIDTH,
-          height: CANVAS_HEIGHT,
+          height: totalCanvasHeight,
           position: "relative",
           backgroundColor: COLOR_WHITE,
           transform: scale !== 1 ? `scale(${scale})` : undefined,
@@ -282,31 +328,57 @@ export default function DolceVitaInvitePage({
         {/* ============================================================
             HERO SECTION (y: 0 to ~337)
         ============================================================ */}
-        {/* Arch Background */}
+        {/* Columns & Orange Tree Pots */}
         <img
-          src={heroArch}
+          src={heroColumns}
           alt=""
           style={{
             position: "absolute",
-            left: -22,
-            top: -229,
-            width: 474,
-            height: 592,
+            left: 0,
+            top: 0,
+            width: 430,
+            height: 363,
             pointerEvents: "none",
             zIndex: 0,
           }}
         />
 
-        {/* Top Flourish Decor */}
+        {/* Top Flourishes */}
         <img
-          src={heroDecor}
+          src={heroFlourishLeft}
           alt=""
           style={{
             position: "absolute",
-            left: 23,
-            top: -63,
-            width: 385,
-            height: 212,
+            left: 70,
+            top: 0,
+            width: 50,
+            height: 83,
+            pointerEvents: "none",
+            zIndex: 1,
+          }}
+        />
+        <img
+          src={heroFlourishCenter}
+          alt=""
+          style={{
+            position: "absolute",
+            left: 186,
+            top: 12,
+            width: 58,
+            height: 17,
+            pointerEvents: "none",
+            zIndex: 1,
+          }}
+        />
+        <img
+          src={heroFlourishRight}
+          alt=""
+          style={{
+            position: "absolute",
+            left: 310,
+            top: 0,
+            width: 50,
+            height: 83,
             pointerEvents: "none",
             zIndex: 1,
           }}
@@ -421,7 +493,17 @@ export default function DolceVitaInvitePage({
         {/* ============================================================
             COUNTDOWN SECTION (y: 337 to ~595)
         ============================================================ */}
-        {/* Sun Illustration */}
+        {isSectionActive("countdown") && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: CANVAS_WIDTH,
+              ...getSectionStyle("countdown"),
+            }}
+          >
+            {/* Sun Illustration */}
         <img
           src={countdownSun}
           alt=""
@@ -614,11 +696,23 @@ export default function DolceVitaInvitePage({
         >
           Minutes
         </div>
+      </div>
+    )}
 
         {/* ============================================================
             LOCATION SECTION (y: 595 to ~946)
         ============================================================ */}
-        {/* Curved decorative lines */}
+        {isSectionActive("location") && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: CANVAS_WIDTH,
+              ...getSectionStyle("location"),
+            }}
+          >
+            {/* Curved decorative lines */}
         <img
           src={locLineLeft}
           alt=""
@@ -882,11 +976,23 @@ export default function DolceVitaInvitePage({
         >
           {getText("location-time", eventTime)}
         </div>
+      </div>
+    )}
 
         {/* ============================================================
             TIMELINE SECTION (y: 946 to ~1458)
         ============================================================ */}
-        {/* Timeline Title */}
+        {isSectionActive("timeline") && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: CANVAS_WIDTH,
+              ...getSectionStyle("timeline"),
+            }}
+          >
+            {/* Timeline Title */}
         <div
           id="preview-el-timeline-title"
           data-element-id="timeline-title"
@@ -1007,11 +1113,23 @@ export default function DolceVitaInvitePage({
             );
           })}
         </div>
+      </div>
+    )}
 
         {/* ============================================================
             MENU SECTION (y: 1458 to ~2163)
         ============================================================ */}
-        {/* Menu Title */}
+        {isSectionActive("menu") && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: CANVAS_WIDTH,
+              ...getSectionStyle("menu"),
+            }}
+          >
+            {/* Menu Title */}
         <div
           id="preview-el-menu-title"
           data-element-id="menu-title"
@@ -1350,11 +1468,23 @@ export default function DolceVitaInvitePage({
             "Savor the finale of your Italian journey\nwith the epitome\nof dolce perfection – Tiramisu."
           )}
         </div>
+      </div>
+    )}
 
         {/* ============================================================
             RSVP SECTION (y: 2163 to ~2796)
         ============================================================ */}
-        {/* RSVP Title */}
+        {isSectionActive("rsvp") && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: CANVAS_WIDTH,
+              ...getSectionStyle("rsvp"),
+            }}
+          >
+            {/* RSVP Title */}
         <div
           id="preview-el-rsvp-title"
           data-element-id="rsvp-title"
@@ -1703,11 +1833,23 @@ export default function DolceVitaInvitePage({
               : getText("rsvp-btn", "Send Confirmation")}
           </button>
         </form>
+      </div>
+    )}
 
         {/* ============================================================
             CLOSING / FOOTER SECTION (y: 2796 to 3050)
         ============================================================ */}
-        {/* Footer Vintage Frame Card */}
+        {isSectionActive("footer") && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: CANVAS_WIDTH,
+              ...getSectionStyle("footer"),
+            }}
+          >
+            {/* Footer Vintage Frame Card */}
         <img
           src={footerFrame}
           alt=""
@@ -1783,6 +1925,8 @@ export default function DolceVitaInvitePage({
         >
           {getText("footer-names", coupleNames)}
         </div>
+      </div>
+    )}
       </div>
     </div>
   );
