@@ -6,6 +6,7 @@ import bridgertonFullReference from "../assets/digital/bridgerton/bridgerton_ful
 import celestialFullReference from "../assets/digital/celestial/celestial-reference.png";
 import majesticWhiteFullReference from "../assets/digital/majestic-white/majestic-white-reference.png";
 import clubCapriFullReference from "../assets/digital/club-capri/club-capri-reference.png";
+import dolceVitaFullReference from "../assets/digital/dolce-vita/dolce_vita_full_reference.png";
 
 export default function IframePreviewPage() {
   const [invite, setInvite] = useState(null);
@@ -50,7 +51,7 @@ export default function IframePreviewPage() {
   }
   
   const Component = template.Component;
-  const bgColor = invite?.backgroundColor || (invite?.template === "club-capri" ? "#FFFBF0" : invite?.template === "majestic-white" ? "#FAF7F5" : invite?.template === "celestial" ? "#000000" : invite?.template === "bridgerton" ? "#FFFFFF" : invite?.template === "brezza-marina" ? "#DCEBF0" : "#F6F7F5");
+  const bgColor = invite?.backgroundColor || (invite?.template === "club-capri" ? "#FFFBF0" : invite?.template === "majestic-white" ? "#FAF7F5" : invite?.template === "celestial" ? "#000000" : invite?.template === "bridgerton" ? "#FFFFFF" : invite?.template === "brezza-marina" ? "#DCEBF0" : invite?.template === "dolce-vita" ? "#FFFFFF" : "#F6F7F5");
 
   return (
     <div className="min-h-screen relative overflow-x-hidden overflow-y-auto" style={{ width: 430, minWidth: 430, maxWidth: 430, margin: '0 auto', backgroundColor: bgColor }}>
@@ -80,6 +81,8 @@ export default function IframePreviewPage() {
               ? bridgertonFullReference
               : invite.template === "brezza-marina"
               ? brezzaMarinaFullReference
+              : invite.template === "dolce-vita"
+              ? dolceVitaFullReference
               : sidiBouSaidFullReference
           }
           alt="Figma Reference"
@@ -97,6 +100,8 @@ export default function IframePreviewPage() {
                 ? "4604px"
                 : invite.template === "bridgerton" || invite.template === "brezza-marina"
                 ? "3243px"
+                : invite.template === "dolce-vita"
+                ? "3050px"
                 : "4017px",
             opacity: overlayOpacity,
             pointerEvents: "none",

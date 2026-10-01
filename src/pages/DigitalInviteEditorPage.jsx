@@ -120,12 +120,58 @@ const SECTION_LIST = [
   { id: 'celebrations', label: 'Célébrations' },
   { id: 'dress-code', label: 'Dress Code' },
   { id: 'leave-a-message', label: 'Livre d\'or (Messages)' },
+  { id: 'menu', label: 'Menu du Mariage' },
   { id: 'rsvp', label: 'RSVP' },
   { id: 'footer', label: 'Pied de page' },
   { id: 'settings', label: 'Animations & Musique' }
 ];
 
 const getElementsForSection = (sectionId, templateId) => {
+  if (templateId === 'dolce-vita') {
+    switch (sectionId) {
+      case 'hero': return [
+        { id: 'hero-intro', label: 'Texte d\'Introduction ("WE ARE GETTING MARRIED")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "WE ARE GETTING MARRIED" },
+        { id: 'hero-title', label: 'Titre Principal ("La Dolce Vita")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "La Dolce Vita" },
+        { id: 'hero-names', label: 'Noms des Mariés ("Bilel & Dorra")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Bilel & Dorra" },
+      ];
+      case 'countdown': return [
+        { id: 'countdown-title', label: 'Titre ("Countdown")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Countdown" },
+        { id: 'countdown-text', label: 'Texte d\'Invitation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "WE WOULD LIKE TO INVITE YOU TO CELEBRATE WITH US THE MOST SPECIAL DAY OF OUR LIVES" },
+      ];
+      case 'location': return [
+        { id: 'location-title', label: 'Titre ("Location")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Location" },
+        { id: 'location-intro', label: 'Texte Cérémonie', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "THE CEREMONY WILL TAKE PLACE AT" },
+        { id: 'location-venue', label: 'Nom du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage" },
+        { id: 'location-city', label: 'Ville / Salle ("MALAGA")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "MALAGA" },
+        { id: 'location-time', label: 'Heure ("19H00")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19H00" },
+        { id: 'location-photo', label: 'Photo du Lieu', controls: ['upload'] },
+      ];
+      case 'timeline': return [
+        { id: 'timeline-title', label: 'Titre ("Timeline")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
+      ];
+      case 'menu': return [
+        { id: 'menu-title', label: 'Titre ("Menu")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Menu" },
+        { id: 'menu-subtitle', label: 'Sous-titre ("Culinary Travel")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Culinary Travel" },
+        { id: 'menu-starter-title', label: 'Entrée - Titre ("Insalata Caprese")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Insalata Caprese" },
+        { id: 'menu-starter-desc', label: 'Entrée - Description', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Layers of creamy buffalo mozzarella,\nripe slices of tomato, and fragrant\nbasil leaves are elegantly arranged on a plate." },
+        { id: 'menu-main-title', label: 'Plat - Titre ("Spaghetti alla Carbonara")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Spaghetti alla Carbonara" },
+        { id: 'menu-main-desc', label: 'Plat - Description', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Al dente spaghetti, lovingly coated\nin a velvety sauce, awaits your palate." },
+        { id: 'menu-dessert-title', label: 'Dessert - Titre ("Tiramisu")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Tiramisu" },
+        { id: 'menu-dessert-desc', label: 'Dessert - Description', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Savor the finale of your Italian journey\nwith the epitome\nof dolce perfection – Tiramisu." },
+      ];
+      case 'rsvp': return [
+        { id: 'rsvp-title', label: 'Titre ("RSVP")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
+        { id: 'rsvp-attend-label', label: 'Question de Présence', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Will you attend" },
+        { id: 'rsvp-btn', label: 'Bouton de Confirmation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Send Confirmation" },
+      ];
+      case 'footer': return [
+        { id: 'footer-closing-text', label: 'Texte de Clôture ("We hope you can make it")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We hope you can make it" },
+        { id: 'footer-names', label: 'Noms Monogramme ("Bilel & Dorra")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Bilel & Dorra" },
+      ];
+      default: return [];
+    }
+  }
+
   if (templateId === 'club-capri') {
     switch (sectionId) {
       case 'hero': return [
@@ -1705,7 +1751,7 @@ function DigitalInviteEditorPage() {
       status: currentInvite.status,
       timeline: defaults.timeline || [],
       activeSections: defaults.activeSections,
-      backgroundColor: defaults.backgroundColor || (templateId === "club-capri" ? "#FFFBF0" : (templateId === "majestic-white" ? "#FAF7F5" : (templateId === "bridgerton" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5")))),
+      backgroundColor: defaults.backgroundColor || (templateId === "club-capri" ? "#FFFBF0" : (templateId === "majestic-white" ? "#FAF7F5" : (templateId === "bridgerton" || templateId === "dolce-vita" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5")))),
       styleOverrides: {},
     }));
   };
@@ -2124,6 +2170,32 @@ function DigitalInviteEditorPage() {
         enableStars: true,
         musicUrl: "",
         slug: "jonathan-marrisah"
+      };
+      setInvite((prev) => ({ ...prev, ...demoData }));
+      return;
+    }
+
+    if (invite.template === "dolce-vita") {
+      const demoData = {
+        template: "dolce-vita",
+        status: "draft",
+        title: "La Dolce Vita",
+        coupleNames: "Bilel & Dorra",
+        eventDate: "2026-08-12",
+        venueName: "Dar Bouraoui Carthage",
+        city: "MALAGA",
+        time: "19H00",
+        activeSections: [
+          "hero",
+          "countdown",
+          "location",
+          "timeline",
+          "menu",
+          "rsvp",
+          "footer"
+        ],
+        slug: "bilel-dorra",
+        backgroundColor: "#FFFFFF",
       };
       setInvite((prev) => ({ ...prev, ...demoData }));
       return;

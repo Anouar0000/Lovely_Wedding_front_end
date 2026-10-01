@@ -32,6 +32,12 @@
   - Separate pearl assets `pearl-right.png` (159x285) and `pearl-left.png` (227.35x316.44) with exact coordinates must be preserved.
   - Flower wax seal at `(x: 296, y: 1918, w: 100, h: 108)` uses tightly cropped `wax-seal.png` with `objectFit: "cover"`.
   - Global background uses exact gradient render `bg-gradient.png` at `(x: 0, y: 652, w: 430, h: 3534)`.
+- **Dolce Vita Template Constraints**:
+  - Canvas dimensions: 430px × 3050px.
+  - Global background: Pure `#FFFFFF` across the entire canvas (no cream/beige outer card margins).
+  - Typography: `Taprom` for script headers (Hero title, Countdown, Location, Timeline, Menu courses, Footer names), `Crimson Text` for serif text and labels, `Homemade Apple` for timeline handwriting.
+  - Menu section: Mixed case (not all-caps) for menu dish descriptions to avoid horizontal overflow into plate graphics.
+  - RSVP Form: 1px solid gold borders (`#E8CC33`), `borderRadius: 5px`, `height: 47px`, transparent inputs, and custom 14px radio buttons with gold borders and navy `#130554` active state.
 
 ## Template Isolation Constraints
 - **Strict Template Scope**: NEVER edit or touch files, components, styles, assets, or template data belonging to another template while working on a specific template. Stay strictly and exclusively within the boundaries of the target template requested by the user.
