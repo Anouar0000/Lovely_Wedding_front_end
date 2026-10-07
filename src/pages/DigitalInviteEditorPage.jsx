@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -11,7 +11,6 @@ import {
   FiFileText,
   FiHome,
   FiLink,
-  FiLayers,
   FiMapPin,
   FiPlus,
   FiSave,
@@ -21,52 +20,20 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiMove,
-  FiRotateCcw,
-  FiCheckSquare,
-  FiEye,
-  FiHeart,
-  FiGift,
-  FiNavigation,
-  FiBookOpen,
-  FiTag,
-  FiMessageSquare,
-  FiInfo,
 } from "react-icons/fi";
-import {
-  getComponentsForTemplate,
-  findMasterComponent,
-} from "../data/digital/componentsMaster";
 import {
   createDigitalInviteDraft,
   deleteDigitalInvite,
   getDigitalInviteById,
   saveDigitalInvite,
   updateDigitalInvite,
-  uploadInviteAsset,
 } from "../services/digitalInvites";
 import {
   digitalInviteTemplates,
   getDefaultDigitalInviteTemplate,
   getDigitalInviteTemplate,
 } from "../templates/digitalInviteTemplates";
-
-const COMPONENT_ICONS = {
-  FiEye,
-  FiMapPin,
-  FiCheckSquare,
-  FiHeart,
-  FiGift,
-  FiNavigation,
-  FiFileText,
-  FiClock,
-  FiCalendar,
-  FiBookOpen,
-  FiTag,
-  FiMessageSquare,
-  FiInfo,
-  FiHome,
-  FiLayers,
-};
+import { useAuth } from "../components/auth/AuthProvider";
 
 const defaultTemplate = getDefaultDigitalInviteTemplate();
 
@@ -115,7 +82,7 @@ function TextInput(props) {
 function SectionHeader({ icon: Icon, title, action }) {
   return (
     <div className="flex flex-col gap-3 border-b border-[#E4E8EA] bg-[#F9FAF8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="inline-flex items-center gap-3 font-abhaya text-3xl leading-none">
+      <h2 className="inline-flex items-center gap-3 lw-h1">
         <span className="inline-flex h-9 w-9 items-center justify-center border border-[#D8DDE2] bg-white text-base">
           <Icon aria-hidden="true" />
         </span>
@@ -135,1434 +102,21 @@ function EditorSection({ icon, title, children, action }) {
   );
 }
 
-
-
-
-const SECTION_LIST = [
-  { id: 'hero', label: 'Ouverture (Hero)' },
-  { id: 'reveal', label: 'Dévoilement (الكشف)' },
-  { id: 'join-us', label: 'Invitation (Join Us)' },
-  { id: 'countdown', label: 'Compte à rebours' },
-  { id: 'the-day', label: 'Le Jour J (The Day)' },
-  { id: 'formal-invite', label: 'Faire-part formel' },
-  { id: 'location', label: 'Localisation' },
-  { id: 'our-story', label: 'Notre Histoire' },
-  { id: 'timeline', label: 'Programme (Timeline)' },
-  { id: 'celebrations', label: 'Célébrations' },
-  { id: 'dress-code', label: 'Dress Code' },
-  { id: 'leave-a-message', label: 'Livre d\'or (Messages)' },
-  { id: 'menu', label: 'Menu du Mariage' },
-  { id: 'rsvp', label: 'RSVP' },
-  { id: 'footer', label: 'Pied de page' },
-  { id: 'settings', label: 'Animations & Musique' }
-];
-
-const getElementsForSection = (sectionId, templateId) => {
-  if (templateId === 'dolce-vita') {
-    switch (sectionId) {
-      case 'hero': return [
-        { id: 'hero-intro', label: 'Texte d\'Introduction ("WE ARE GETTING MARRIED")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "WE ARE GETTING MARRIED" },
-        { id: 'hero-title', label: 'Titre Principal ("La Dolce Vita")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "La Dolce Vita" },
-        { id: 'hero-names', label: 'Noms des Mariés ("Bilel & Dorra")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Bilel & Dorra" },
-      ];
-      case 'countdown': return [
-        { id: 'countdown-title', label: 'Titre ("Countdown")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Countdown" },
-        { id: 'countdown-text', label: 'Texte d\'Invitation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "WE WOULD LIKE TO INVITE YOU TO CELEBRATE WITH US THE MOST SPECIAL DAY OF OUR LIVES" },
-      ];
-      case 'location': return [
-        { id: 'location-title', label: 'Titre ("Location")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Location" },
-        { id: 'location-intro', label: 'Texte Cérémonie', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "THE CEREMONY WILL TAKE PLACE AT" },
-        { id: 'location-venue', label: 'Nom du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage" },
-        { id: 'location-city', label: 'Ville / Salle ("MALAGA")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "MALAGA" },
-        { id: 'location-time', label: 'Heure ("19H00")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19H00" },
-        { id: 'location-photo', label: 'Photo du Lieu', controls: ['upload'] },
-      ];
-      case 'timeline': return [
-        { id: 'timeline-title', label: 'Titre ("Timeline")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
-        { id: 'timeline-steps', label: 'Étapes du Programme (Timeline)', controls: ['dolceTimelineSteps'] }
-      ];
-      case 'menu': return [
-        { id: 'menu-title', label: 'Titre ("Menu")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Menu" },
-        { id: 'menu-subtitle', label: 'Sous-titre ("Culinary Travel")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Culinary Travel" },
-        { id: 'menu-starter-title', label: 'Entrée - Titre ("Insalata Caprese")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Insalata Caprese" },
-        { id: 'menu-starter-desc', label: 'Entrée - Description', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Layers of creamy buffalo mozzarella,\nripe slices of tomato, and fragrant\nbasil leaves are elegantly arranged on a plate." },
-        { id: 'menu-main-title', label: 'Plat - Titre ("Spaghetti alla Carbonara")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Spaghetti alla Carbonara" },
-        { id: 'menu-main-desc', label: 'Plat - Description', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Al dente spaghetti, lovingly coated\nin a velvety sauce, awaits your palate." },
-        { id: 'menu-dessert-title', label: 'Dessert - Titre ("Tiramisu")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Tiramisu" },
-        { id: 'menu-dessert-desc', label: 'Dessert - Description', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Savor the finale of your Italian journey\nwith the epitome\nof dolce perfection – Tiramisu." },
-      ];
-      case 'rsvp': return [
-        { id: 'rsvp-title', label: 'Titre ("RSVP")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
-        { id: 'rsvp-attend-label', label: 'Question de Présence', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Will you attend" },
-        { id: 'rsvp-btn', label: 'Bouton de Confirmation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Send Confirmation" },
-      ];
-      case 'footer': return [
-        { id: 'footer-closing-text', label: 'Texte de Clôture ("We hope you can make it")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We hope you can make it" },
-        { id: 'footer-names', label: 'Noms Monogramme ("Bilel & Dorra")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Bilel & Dorra" },
-      ];
-      default: return [];
-    }
-  }
-
-  if (templateId === 'club-capri') {
-    switch (sectionId) {
-      case 'hero': return [
-        { id: 'hero-title', label: 'Titre Bandeau ("POST Card FROM Summer")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "POST Card\nFROM Summer" },
-        { id: 'groom-name', label: 'Nom Marié ("Chedy")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Chedy" },
-        { id: 'bride-name', label: 'Nom Mariée ("HELA")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "HELA" },
-        { id: 'volume-label', label: 'Label Cassette ("VOLUME")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "VOLUME" },
-      ];
-      case 'join-us': return [
-        { id: 'join-us-title', label: 'En-tête ("Join us in")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join us in" },
-        { id: 'join-us-month', label: 'Mois ("JUNE")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "JUNE" },
-        { id: 'join-us-text', label: 'Texte d\'invitation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We warmly invite you to celebrate our wedding day with us." },
-      ];
-      case 'the-day':
-      case 'countdown': return [
-        { id: 'the-day-title', label: 'Titre ("The Day")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The Day" },
-        { id: 'boat-photo', label: 'Photo Yacht / Événement', controls: ['upload'] },
-      ];
-      case 'celebrations': return [
-        { id: 'celebrations-title', label: 'Titre ("Celebrations")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Celebrations" },
-        { id: 'postcard1-title', label: 'Titre Carte 1 ("WEDDING")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "WEDDING" },
-        { id: 'postcard-photo-1', label: 'Photo Carte 1 (Aperitivo)', controls: ['upload'] },
-        { id: 'postcard1-address', label: 'Adresse & Horaires Carte 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage\nMalaga\n18h" },
-        { id: 'postcard2-title', label: 'Titre Carte 2 ("HENNA")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "HENNA" },
-        { id: 'postcard-photo-2', label: 'Photo Carte 2 (Cocktail)', controls: ['upload'] },
-        { id: 'postcard2-address', label: 'Adresse & Horaires Carte 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage\nMalaga\n18h" },
-      ];
-      case 'dress-code': return [
-        { id: 'dress-code-title', label: 'En-tête ("Dress Code")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dress Code" },
-        { id: 'dress-code-chic', label: 'Style ("CASUAL CHIC")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "CASUAL CHIC" },
-        { id: 'dress-code-text', label: 'Description tenue', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We warmly invite you to celebrate our wedding day with us." },
-        { id: 'dress-code-photo', label: 'Photo Guide Tenue', controls: ['upload'] },
-      ];
-      case 'rsvp': return [
-        { id: 'arrival-title', label: 'En-tête ("Arrival")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Arrival" },
-        { id: 'rsvp-title', label: 'Titre ("RSVP")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
-        { id: 'rsvp-deadline', label: 'Délai de réponse', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The favour of a reply is kindly requested by the fifteenth of June, 2026" },
-        { id: 'rsvp-form', label: 'Formulaire RSVP', controls: ['text'] },
-      ];
-      case 'footer': return [
-        { id: 'footer-title', label: 'Signature ("club Capri")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "club Capri" },
-      ];
-      case 'settings': return [
-        { id: 'global-music', label: 'Musique Cassette Audio (MP3)', controls: ['musicUpload'] },
-      ];
-      default: return [];
-    }
-  }
-
-  if (templateId === 'majestic-white') {
-    switch (sectionId) {
-      case 'hero': return [
-        { id: 'hero-monogram', label: 'Monogramme D & A (Logo)', controls: ['upload'] },
-        { id: 'hero-date', label: 'Date Vintage ("15 . 09 . 2026")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "15 . 09 . 2026" },
-        { id: 'visual-effects', label: 'Effet Scintillements (Sparkles)', controls: ['petalsToggle'] },
-      ];
-      case 'our-story': return [
-        { id: 'story-title', label: 'Titre ("Our Story")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Our Story" },
-        { id: 'story-text', label: 'Texte Notre Histoire', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas\nRerum Qui. Non R Numquam Molestiae Vero\nDolores Dolores. Dolor Ut Sit Quos\nAccusantium Vitae Aliquid Ducimus" },
-        { id: 'story-photo', label: 'Photo du Couple (Cadre Ovale)', controls: ['upload'] },
-      ];
-      case 'countdown': return [
-        { id: 'countdown-title', label: 'Titre ("Countdown")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Countdown" },
-      ];
-      case 'formal-invite': return [
-        { id: 'formal-invite-title', label: 'Titre ("Formal Invite")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Formal Invite" },
-        { id: 'paper-card-img', label: 'Carte d\'Invitation Formelle', controls: ['upload'] },
-      ];
-      case 'celebrations': return [
-        { id: 'celebrations-title', label: 'Titre ("Celebrations")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Celebrations" },
-        { id: 'celebrations-subtitle', label: 'Sous-titre Célébrations 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas" },
-        { id: 'celebration1-title', label: 'Lieu 1 ("Club Nautique")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Club Nautique" },
-        { id: 'celebration1-address', label: 'Adresse & Heure Lieu 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Les Berges Du Lac 1\nÀ 18h" },
-        { id: 'celebration2-subtitle', label: 'Sous-titre Célébrations 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas" },
-        { id: 'celebration2-title', label: 'Lieu 2 ("Club Nautique")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Club Nautique" },
-        { id: 'celebration2-address', label: 'Adresse & Heure Lieu 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Les Berges Du Lac 1\nÀ 18h" },
-      ];
-      case 'timeline': return [
-        { id: 'timeline-title', label: 'Titre ("Timeline")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
-        { id: 'timeline-subtitle', label: 'Sous-titre Programme', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas" },
-      ];
-      case 'leave-a-message':
-      case 'guestbook': return [
-        { id: 'message-title', label: 'Titre ("Leave A Message")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave A Message" },
-        { id: 'message-subtitle', label: 'Texte d\'invitation au message', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave A Heartfelt Message To The Brides" },
-      ];
-      case 'rsvp': return [
-        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
-        { id: 'rsvp-form', label: 'Formulaire RSVP', controls: ['text'] },
-      ];
-      case 'footer': return [
-        { id: 'footer-names', label: 'Noms du Couple ("Damon & Alice")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Damon & Alice" },
-      ];
-      case 'settings': return [
-        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
-        { id: 'visual-effects', label: 'Effet Scintillements (Sparkles)', controls: ['petalsToggle'] },
-      ];
-      default: return [];
-    }
-  }
-
-  if (templateId === 'bridgerton') {
-    switch (sectionId) {
-      case 'hero': return [
-        { id: 'hero-names', label: 'Noms des Mariés (Calligraphie)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Karim\n&\nAzza" },
-        { id: 'hero-quote', label: 'Texte d\'Introduction ("Our Happy Ever After")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Our Happy Ever After" },
-        { id: 'hero-photo', label: 'Photo du Couple (Cadre Principal)', controls: ['upload'] }
-      ];
-      case 'countdown': return [
-        { id: 'event-date', label: 'Date Vintage (3 Lignes)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "23\n11\n26" },
-        { id: 'countdown-waiting', label: 'Texte d\'Attente ("waiting for you...")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "waiting for you..." }
-      ];
-      case 'celebrations': return [
-        { id: 'banner-quote', label: 'Citation Bannière ("Join Us For The...")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join Us For The \nBest Day Ever" }
-      ];
-      case 'location': return [
-        { id: 'venue-title', label: 'Titre Lieu ("Wedding Venue")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Wedding\nVenue" },
-        { id: 'venue-details', label: 'Détails & Adresse du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H" },
-        { id: 'venue-photo', label: 'Photo Ovale du Lieu', controls: ['upload'] }
-      ];
-      case 'dress-code': return [
-        { id: 'dress-title', label: 'Titre Dress Code', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dress Code" },
-        { id: 'dress-text', label: 'Consignes Vestimentaires', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "We'd love for guests to embrace a formal look for our celebration." },
-        { id: 'transport-title', label: 'Titre Transport', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Transport" },
-        { id: 'transport-text', label: 'Consignes Transport & Parking', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Parking: On-site parking will be available at the venue.\nTaxis: We recommend booking taxis in advance." }
-      ];
-      case 'our-story': return [
-        { id: 'message-title', label: 'Titre Livre d\'Or ("Leave a message")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave\na message" },
-        { id: 'message-subtitle', label: 'Texte d\'Invitation au Message', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Leave a heartfelt message to the brides" }
-      ];
-      case 'rsvp': return [
-        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
-        { id: 'rsvp-deadline', label: 'Texte Date Limite RSVP', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The favour of a reply is kindly requested by the 15th of June, 2026" },
-        { id: 'rsvp-btn', label: 'Bouton de Confirmation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Send Confirmation" }
-      ];
-      case 'footer': return [
-        { id: 'footer-names', label: 'Monogramme Sceau Dentelle', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Karim\n&\nAzza" }
-      ];
-      case 'settings': return [
-        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
-        { id: 'visual-effects', label: 'Effets Particules & Scintillements (Sparkles)', controls: ['petalsToggle'] },
-        { id: 'text-animation', label: 'Apparition du texte', controls: ['animationType', 'animationDuration', 'animationDelay'] }
-      ];
-      default: return [];
-    }
-  }
-
-  if (templateId === 'celestial') {
-    switch (sectionId) {
-      case 'hero': return [
-        { id: 'hero-names', label: 'Noms du Couple (Carte Invitation)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "JONATHAN\n&\nMARRISAH" },
-        { id: 'visual-effects', label: 'Effet Scintillements (Sparkles)', controls: ['petalsToggle'] },
-      ];
-      case 'our-story': return [
-        { id: 'story-title', label: 'Titre ("OUR STORY")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "OUR STORY" },
-        { id: 'story-subtitle', label: 'Sous-titre Cérémonie', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "To celebrate their wedding ceremony" },
-        { id: 'story-photo', label: 'Photo du Couple (Cadre Ovale)', controls: ['upload'] },
-      ];
-      case 'reveal': return [
-        { id: 'reveal-title', label: 'Titre ("REVEAL")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "REVEAL" },
-        { id: 'reveal-subtitle', label: 'Sous-titre Lune & Soleil', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Join the moon  to the sun.." },
-        { id: 'date-text', label: 'Date Astronomique ("10 . 10 .2026")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "10 . 10 .2026" },
-      ];
-      case 'location':
-      case 'venue': return [
-        { id: 'venue-title', label: 'Titre ("VENUE")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "VENUE" },
-        { id: 'venue-name', label: 'Nom du Lieu & Adresse', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Kobbet Ennhas Manouba" },
-        { id: 'venue-photo', label: 'Illustration Porte du Palais', controls: ['upload'] },
-        { id: 'venue-time', label: 'Horaires Cérémonie', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:00 - 21:00" },
-        { id: 'venue-map-btn', label: 'Bouton Localisation ("Open in maps")', controls: ['text', 'mapAddress', 'font', 'fontSize', 'color'], defaultText: "Open in maps" },
-      ];
-      case 'timeline':
-      case 'programme': return [
-        { id: 'programme-title', label: 'Titre ("PROGRAMME")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "PROGRAMME" },
-        { id: 'timeline-1', label: 'Étape 1 (Accueil)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:00\nAccueil" },
-        { id: 'timeline-2', label: 'Étape 2 (Contrat)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:15\nContrat" },
-        { id: 'timeline-3', label: 'Étape 3 (Réception)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "19:45\nRéception" },
-        { id: 'timeline-4', label: 'Étape 4 (Photos)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "20:30\nPhotos" },
-        { id: 'timeline-5', label: 'Étape 5 (Fin)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "21:00\nFin" },
-      ];
-      case 'celebrations':
-      case 'principles': return [
-        { id: 'principles-title', label: 'Titre ("PRINCIPLES")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "PRINCIPLES" },
-        { id: 'principles-text-1', label: 'Paragraphe Principes 1', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui. Non rem sunt fugiat numquam molestiae vero dolores dolores. Dolor ut sit quos accusantium vitae aliquid ducimus" },
-        { id: 'principles-text-2', label: 'Paragraphe Principes 2', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui." },
-      ];
-      case 'rsvp': return [
-        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
-        { id: 'rsvp-attend-label', label: 'Question de Présence', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Will you attend" },
-        { id: 'rsvp-submit-btn', label: 'Bouton de Confirmation ("Send !")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Send !" },
-      ];
-      case 'footer': return [
-        { id: 'footer-infinity', label: 'Citation Calligraphie ("Untill infinity")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Untill infinity" },
-        { id: 'footer-names', label: 'Noms Monogramme', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "JONATHAN & MARRISAH" },
-      ];
-      case 'settings': return [
-        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
-        { id: 'visual-effects', label: 'Scintillements & Étoiles (Sparkles)', controls: ['petalsToggle'] },
-      ];
-      default: return [];
-    }
-  }
-
-  if (templateId === 'brezza-marina') {
-    switch (sectionId) {
-      case 'hero': return [
-        { id: 'hero-subtitle', label: 'Texte de la Citation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "L'amour n'est qu'un mot, jusqu'à ce que quelqu'un vienne lui donner un sens." },
-        { id: 'hero-names', label: 'Noms des Mariés', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Houssem\n&\nDorra" }
-      ];
-      case 'countdown': return [
-        { id: 'countdown-title', label: 'Titre (Countdown)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Countdown" },
-        { id: 'countdown-title-ar', label: 'Titre Arabe (العد التنازلي)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "العد التنازلي" }
-      ];
-      case 'location': return [
-        { id: 'location-title', label: 'Titre (Location)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Location" },
-        { id: 'location-title-ar', label: 'Titre Arabe (وين بش نتقابلو)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "وين بش نتقابلو" },
-        { id: 'location-intro', label: 'Texte d\'invitation', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The ceremony will take place at" },
-        { id: 'location-venue', label: 'Nom du Lieu', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dar Bouraoui Carthage Malaga" },
-        { id: 'location-btn', label: 'Bouton Carte ("Open in maps")', controls: ['text', 'mapAddress', 'font', 'fontSize', 'color'], defaultText: "Open in maps" }
-      ];
-      case 'our-story': return [
-        { id: 'story-title', label: 'Titre (Our Story)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Our Story" },
-        { id: 'story-title-ar', label: 'Titre Arabe (حكايتنا)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "حكايتنا" },
-        { id: 'story-photo', label: 'Photo du Couple (Cadre)', controls: ['upload'] },
-        { id: 'story-card-title', label: 'Titre Carte Postale ("Hi, it\'s Us !")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Hi, it's\nUs !" },
-        { id: 'story-card-quote', label: 'Message Carte Postale', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Placeat accusamus\n in rem a id et ad. \nAdipisci quia et eos " }
-      ];
-      case 'timeline': return [
-        { id: 'timeline-title', label: 'Titre (Timeline)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Timeline" },
-        { id: 'timeline-title-ar', label: 'Titre Arabe (البرنامج)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "البرنامج" },
-        { id: 'timeline-stage-1', label: 'Étape 1 (Accueil)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Accueil" },
-        { id: 'timeline-stage-2', label: 'Étape 2 (Contrat de mariage)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Contrat\nde mariage" },
-        { id: 'timeline-stage-3', label: 'Étape 3 (Fête)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Fête" },
-        { id: 'timeline-stage-4', label: 'Étape 4 (Photos)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Photos" },
-        { id: 'timeline-stage-5', label: 'Étape 5 (La fin)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "La fin" },
-        { id: 'timeline-instructions', label: 'Instruction Perle', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Drag the Pearl to complete the schedule" }
-      ];
-      case 'dress-code': return [
-        { id: 'dress-title', label: 'Titre (Dress Code)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Dress Code" },
-        { id: 'dress-title-ar', label: 'Titre Arabe (الهندام)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "الهندام" },
-        { id: 'dress-text', label: 'Consignes Vestimentaires', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "Nous prions nos invités d'éviter de porter du blanc et du noir" }
-      ];
-      case 'rsvp': return [
-        { id: 'rsvp-title', label: 'Titre (RSVP)', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "RSVP" },
-        { id: 'rsvp-deadline', label: 'Texte Date Limite', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "The favour of a reply is kindly requested by the fifteenth of June, 2026" }
-      ];
-      case 'footer': return [
-        { id: 'footer-title', label: 'Message Final ("See you there!")', controls: ['text', 'font', 'fontSize', 'color'], defaultText: "See you there!" }
-      ];
-      case 'settings': return [
-        { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
-        { id: 'visual-effects', label: 'Scintillements & Particules (Sparkles)', controls: ['petalsToggle'] }
-      ];
-      default: return [];
-    }
-  }
-
-  // Sidi Bou Said (default)
-  switch (sectionId) {
-    case 'hero': return [
-      { id: 'sec-hero', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'hero-bg', label: 'Arrière-plan', controls: ['upload'] },
-      { id: 'hero-initials', label: 'Cercle Initiales (Groupe)', controls: ['position', 'radius', 'color', 'font', 'fontSize'], subElements: [ { id: 'hero-initial-1', label: 'Initiale 1' }, { id: 'hero-initial-2', label: 'Initiale 2' } ] },
-      { id: 'hero-names', label: 'Noms du Couple (Groupe)', controls: ['position', 'font', 'fontSize', 'color'], subElements: [ { id: 'hero-name-1', label: 'Nom 1' }, { id: 'hero-name-2', label: 'Nom 2' } ] },
-      { id: 'hero-date', label: 'Date (Groupe)', controls: ['position', 'font', 'fontSize', 'color'], subElements: [ { id: 'hero-date-month', label: 'Mois' }, { id: 'hero-date-year', label: 'Année' } ] },
-      { id: 'hero-subtitle', label: 'Sous-titre', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'hero-btn', label: 'Bouton Scroll', controls: ['position', 'radius', 'color', 'font', 'fontSize', 'text'] }
-    ];
-    case 'reveal': return [
-      { id: 'sec-reveal', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'reveal-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'reveal-title-ar', label: 'Titre AR (النهار جاء)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'reveal-doors', label: 'Portes (Images)', controls: ['position', 'upload'] },
-      { id: 'reveal-date', label: 'Date cachée', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'reveal-hands', label: 'Mains (Image bas)', controls: ['position', 'upload'] }
-    ];
-    case 'our-story': return [
-      { id: 'sec-story', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'story-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'story-title-ar', label: 'Titre AR (حكايتنا)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'story-quote', label: 'Texte Rotatif', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'story-photo', label: 'Photo de Couple', controls: ['position', 'upload'] },
-      { id: 'story-ornaments', label: 'Ornements (Fleurs, Timbres)', controls: ['position', 'upload'] }
-    ];
-    case 'countdown': return [
-      { id: 'sec-countdown', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'countdown-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'countdown-title-ar', label: 'Titre AR (العد التنازلي)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'countdown-date', label: 'Date et Chiffres', controls: ['position', 'font', 'fontSize', 'color'] }
-    ];
-    case 'celebrations': return [
-      { id: 'sec-celeb', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'celeb-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'celeb-title-ar', label: 'Titre AR (الليالي)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'celeb-venue', label: 'Nom du Lieu', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'celeb-list', label: 'Liste des Événements (Timeline)', controls: ['eventList'] }
-    ];
-    case 'dress-code': return [
-      { id: 'sec-dress', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'dress-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'dress-title-ar', label: 'Titre AR (التبديلة)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'dress-text', label: 'Texte Instructions', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'dress-illustration', label: 'Illustration', controls: ['position', 'upload'] }
-    ];
-    case 'location': return [
-      { id: 'sec-location', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'location-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'location-title-ar', label: 'Titre AR', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'location-venue', label: 'Nom du lieu', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'location-map', label: 'Lien Google Maps', controls: ['text'] },
-      { id: 'location-btn', label: 'Bouton Voir la carte', controls: ['position', 'color', 'font', 'fontSize'] }
-    ];
-    case 'timeline': return [
-      { id: 'sec-prog', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'prog-title', label: 'Titre EN', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'prog-title-ar', label: 'Titre AR (البرنامج)', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'prog-steps', label: 'Étapes du Programme', controls: ['progStepsList', 'position', 'font', 'fontSize', 'color'] }
-    ];
-    case 'rsvp': return [
-      { id: 'sec-rsvp', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'rsvp-title', label: 'Titre RSVP', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'rsvp-form', label: 'Formulaire / Sous-titre', controls: ['position', 'font', 'fontSize', 'color', 'text'] }
-    ];
-    case 'footer': return [
-      { id: 'sec-footer', label: 'Position Globale (Y)', controls: ['positionYOnly'] },
-      { id: 'footer-initials', label: 'Cercle Final', controls: ['position', 'radius', 'color', 'font', 'fontSize'], subElements: [ { id: 'footer-initial-1', label: 'Initiale 1' }, { id: 'footer-initial-2', label: 'Initiale 2' } ] },
-      { id: 'footer-arabic', label: 'Texte de clôture', controls: ['position', 'font', 'fontSize', 'color', 'text'] },
-      { id: 'footer-names', label: 'Noms', controls: ['position', 'font', 'fontSize', 'color', 'text'] }
-    ];
-    case 'settings': return [
-      { id: 'global-music', label: 'Musique de fond (MP3)', controls: ['musicUpload'] },
-      { id: 'global-video', label: 'Vidéo d\'ouverture (MP4)', controls: ['videoUpload'] },
-      { id: 'visual-effects', label: 'Effets Particules & Scintillements (Sparkles)', controls: ['petalsToggle'] },
-      { id: 'text-animation', label: 'Apparition du texte', controls: ['animationType', 'animationDuration', 'animationDelay'] }
-    ];
-    default: return [];
-  }
-};
-
-function ElementMenu({ sectionId, expandedElement, setExpandedElement, invite, updateInvite, handleMusicUpload, uploadingMusic, handleVideoUpload, uploadingVideo, addTimelineItem, updateTimelineItem, removeTimelineItem, FiPlus, FiTrash2 }) {
-   const elements = getElementsForSection(sectionId, invite?.template);
-   
-   return (
-     <div className="space-y-2">
-       {elements.map(el => (
-         <div key={el.id} id={`editor-el-${el.id}`} className="border border-gray-200 bg-white shadow-sm overflow-hidden">
-            <button 
-              type="button" 
-              onClick={(e) => {
-                e.preventDefault();
-                setExpandedElement(expandedElement === el.id ? null : el.id);
-              }} 
-              className="w-full flex items-center justify-between px-3 py-3 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-            >
-              {el.label}
-              <FiChevronDown className={`transition-transform ${expandedElement === el.id ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {expandedElement === el.id && (
-               <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-4">
-                 
-                 
-                 {/* Position Controls */}
-                 {el.controls.includes('position') && invite && updateInvite && (
-                   <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos X (Gauche)</label>
-                        <input 
-                          type="number" 
-                          value={invite.styleOverrides?.[el.id]?.posX || 0}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value) || 0;
-                            const current = invite.styleOverrides?.[el.id] || {};
-                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, posX: val } });
-                          }}
-                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
-                          placeholder="0"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos Y (Haut)</label>
-                        <input 
-                          type="number" 
-                          value={invite.styleOverrides?.[el.id]?.posY || 0}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value) || 0;
-                            const current = invite.styleOverrides?.[el.id] || {};
-                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, posY: val } });
-                          }}
-                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
-                          placeholder="0"
-                        />
-                      </div>
-                   </div>
-                 )}
-                 {/* Sub Elements Position Controls */}
-                 {el.subElements && invite && updateInvite && (
-                   <div className="space-y-3 mt-4 pt-3 border-t border-gray-200">
-                     {el.subElements.map(subEl => (
-                       <div key={subEl.id}>
-                         <div className="text-[10px] font-bold text-gray-700 uppercase mb-2 flex items-center gap-1.5"><FiMove size={12} className="text-gray-400"/> {subEl.label}</div>
-                         <div className="grid grid-cols-2 gap-2">
-                           <div>
-                             <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos X (Gauche)</label>
-                             <input 
-                               type="number" 
-                               value={invite.styleOverrides?.[subEl.id]?.posX || 0}
-                               onChange={(e) => {
-                                 const val = parseInt(e.target.value) || 0;
-                                 const current = invite.styleOverrides?.[subEl.id] || {};
-                                 updateInvite('styleOverrides', { ...invite.styleOverrides, [subEl.id]: { ...current, posX: val } });
-                               }}
-                               className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white" 
-                             />
-                           </div>
-                           <div>
-                             <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pos Y (Haut)</label>
-                             <input 
-                               type="number" 
-                               value={invite.styleOverrides?.[subEl.id]?.posY || 0}
-                               onChange={(e) => {
-                                 const val = parseInt(e.target.value) || 0;
-                                 const current = invite.styleOverrides?.[subEl.id] || {};
-                                 updateInvite('styleOverrides', { ...invite.styleOverrides, [subEl.id]: { ...current, posY: val } });
-                               }}
-                               className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white" 
-                             />
-                           </div>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 )}
-
-                 
-                 {/* Position Y Only Controls */}
-                 {el.controls.includes('positionYOnly') && invite && updateInvite && (
-                   <div className="grid grid-cols-1 gap-2">
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Offset Global Section Y (Haut/Bas)</label>
-                        <input 
-                          type="number" 
-                          value={invite.styleOverrides?.[el.id]?.posY || 0}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value) || 0;
-                            const current = invite.styleOverrides?.[el.id] || {};
-                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, posY: val } });
-                          }}
-                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
-                          placeholder="0"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1 mt-2">Hauteur Supplémentaire (px)</label>
-                        <input 
-                          type="number" 
-                          value={invite.styleOverrides?.[el.id]?.height || 0}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value) || 0;
-                            const current = invite.styleOverrides?.[el.id] || {};
-                            updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, height: val } });
-                          }}
-                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
-                          placeholder="0"
-                        />
-                      </div>
-                   </div>
-                 )}
-
-                 {/* Text Spacing Control */}
-                 {el.controls.includes('textSpacing') && (
-                   <div>
-                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Espace (En / Ar)</label>
-                     <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="px" />
-                   </div>
-                 )}
-
-                 {/* Radius Controls */}
-                 {el.controls.includes('radius') && (
-                   <div>
-                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Border Radius</label>
-                     <input type="number" className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" placeholder="Radius (px ou %)" />
-                   </div>
-                 )}
-
-                 {/* Typography Controls */}
-                 {(el.controls.includes('font') || el.controls.includes('color') || el.controls.includes('fontSize')) && (
-                   <div className="grid grid-cols-3 gap-2">
-                      {el.controls.includes('font') && (
-                        <div className="col-span-2">
-                          <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Police (Font)</label>
-                          <select 
-                            className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black"
-                            value={invite.styleOverrides?.[el.id]?.fontFamily || "Défaut du Template"}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              const current = invite.styleOverrides?.[el.id] || {};
-                              updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, fontFamily: val } });
-                            }}
-                          >
-                            <option>Défaut du Template</option>
-                            <option>MADE Voyager PERSONAL_USE</option>
-                            <option>Black Mango</option>
-                            <option>Urbanist</option>
-                            <option>Pinyon Script</option>
-                            <option>Crimson Text</option>
-                            <option>Antic Didone</option>
-                            <option>Gulzar</option>
-                            <option>Cormorant</option>
-                            <option>Cormorant Infant</option>
-                            <option>Beau Rivage</option>
-                            <option>B Fantezy</option>
-                            <option>Bodoni Moda</option>
-                            <option>Sue Ellen Francisco</option>
-                            <option>Rosario</option>
-                            <option>Onirom</option>
-                          </select>
-                        </div>
-                      )}
-                      {el.controls.includes('fontSize') && (
-                        <div>
-                          <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Taille (px)</label>
-                          <input 
-                            type="number" 
-                            className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black" 
-                            placeholder="24"
-                            value={invite.styleOverrides?.[el.id]?.fontSize || ""}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value);
-                              const current = invite.styleOverrides?.[el.id] || {};
-                              updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, fontSize: val || undefined } });
-                            }}
-                          />
-                        </div>
-                      )}
-                   </div>
-                 )}
-
-                 {el.controls.includes('color') && (
-                   <div>
-                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Couleur</label>
-                     <div className="flex items-center gap-2">
-                       <input 
-                         type="color" 
-                         className="h-7 w-7 border-0 p-0 cursor-pointer" 
-                         value={invite.styleOverrides?.[el.id]?.color || "#08306b"}
-                         onChange={(e) => {
-                           const val = e.target.value;
-                           const current = invite.styleOverrides?.[el.id] || {};
-                           updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, color: val } });
-                         }}
-                       />
-                       <span className="text-xs text-gray-600 font-mono uppercase">{invite.styleOverrides?.[el.id]?.color || "#08306b"}</span>
-                     </div>
-                   </div>
-                 )}
-
-                 
-                 {/* Event List Array Editor */}
-                 {el.controls.includes('eventList') && invite && (
-                   <div className="space-y-4">
-                      {invite.timeline && invite.timeline.map((event, index) => (
-                        <div key={index} className="border border-gray-200 bg-white p-3 space-y-3 relative">
-                           <div className="flex items-center justify-between">
-                             <span className="text-xs font-bold text-gray-700">Événement {index + 1}</span>
-                             <button type="button" onClick={() => removeTimelineItem(index)} className="text-red-500 hover:text-red-700"><FiTrash2 size={14} /></button>
-                           </div>
-                           <div className="grid grid-cols-2 gap-2">
-                             <div>
-                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Titre (EN)</label>
-                               <input type="text" value={event.title || ''} onChange={(e) => updateTimelineItem(index, 'title', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                             </div>
-                             <div>
-                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Titre (AR)</label>
-                               <input type="text" value={event.titleAr || ''} onChange={(e) => updateTimelineItem(index, 'titleAr', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                             </div>
-                           </div>
-                           <div className="grid grid-cols-2 gap-2">
-                             <div>
-                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Date</label>
-                               <input type="date" value={event.date || ''} onChange={(e) => updateTimelineItem(index, 'date', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                             </div>
-                             <div>
-                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Heure</label>
-                               <input type="text" value={event.time || ''} onChange={(e) => updateTimelineItem(index, 'time', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                             </div>
-                           </div>
-                           <div className="grid grid-cols-2 gap-2">
-                             <div>
-                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Lieu</label>
-                               <input type="text" value={event.venue || ''} onChange={(e) => updateTimelineItem(index, 'venue', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                             </div>
-                             <div>
-                               <label className="block text-[9px] font-semibold text-gray-500 uppercase">Ville</label>
-                               <input type="text" value={event.city || ''} onChange={(e) => updateTimelineItem(index, 'city', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                             </div>
-                           </div>
-                           <div>
-                             <label className="block text-[9px] font-semibold text-gray-500 uppercase">Lien Maps</label>
-                             <input type="text" value={event.mapUrl || ''} onChange={(e) => updateTimelineItem(index, 'mapUrl', e.target.value)} className="w-full border p-1.5 text-xs outline-none focus:border-black" />
-                           </div>
-                        </div>
-                      ))}
-                      <button type="button" onClick={addTimelineItem} className="w-full py-2 border border-dashed border-gray-400 text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 hover:bg-gray-50">
-                        <FiPlus size={14} /> Ajouter un événement
-                      </button>
-                   </div>
-                 )}
-
-                 {/* Dolce Vita Timeline Steps List */}
-                 {el.controls.includes('dolceTimelineSteps') && invite && (
-                   <div className="space-y-3">
-                     {(() => {
-                       const template = getDigitalInviteTemplate(invite?.template);
-                       const fixedSteps = template?.fixedTimelineSteps || [
-                         { title: "accueil des invites", image: "accueil" },
-                         { title: "arrivee des maries", image: "arrivee" },
-                         { title: "contrat de mariage", image: "contrat" },
-                         { title: "soirée dansante", image: "soiree" },
-                         { title: "la fin", image: "fin" },
-                       ];
-                       const timelineList = invite.timeline || [];
-
-                       return (
-                         <>
-                           {timelineList.map((step, index) => {
-                             const stepKey = step.step || step.image || fixedSteps[index]?.image || "accueil";
-                             return (
-                               <div key={index} className="border border-gray-200 bg-white p-3 space-y-2 relative shadow-sm rounded-sm">
-                                 <div className="flex items-center justify-between">
-                                   <span className="text-xs font-bold text-gray-700">Étape {index + 1}</span>
-                                   <button
-                                     type="button"
-                                     onClick={() => removeTimelineItem(index)}
-                                     className="text-red-500 hover:text-red-700 p-1"
-                                     title="Supprimer cette étape"
-                                   >
-                                     <FiTrash2 size={14} />
-                                   </button>
-                                 </div>
-                                 <div className="grid grid-cols-2 gap-2">
-                                   <div>
-                                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Type d'étape</label>
-                                     <select
-                                       value={stepKey}
-                                       onChange={(e) => {
-                                         const newStep = e.target.value;
-                                         const oldFixed = fixedSteps.find((s) => s.image === stepKey);
-                                         const newFixed = fixedSteps.find((s) => s.image === newStep);
-                                         updateTimelineItem(index, "step", newStep);
-                                         if (!step.title || (oldFixed && step.title.toLowerCase() === oldFixed.title.toLowerCase())) {
-                                           updateTimelineItem(index, "title", newFixed?.title || "");
-                                         }
-                                       }}
-                                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
-                                     >
-                                       {fixedSteps.map((fStep) => (
-                                         <option key={fStep.image} value={fStep.image}>
-                                           {fStep.title}
-                                         </option>
-                                       ))}
-                                     </select>
-                                   </div>
-                                   <div>
-                                     <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Heure</label>
-                                     <input
-                                       type="text"
-                                       value={step.time || ""}
-                                       onChange={(e) => updateTimelineItem(index, "time", e.target.value)}
-                                       placeholder="Ex: 20h"
-                                       className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black"
-                                     />
-                                   </div>
-                                 </div>
-                                 <div>
-                                   <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Titre personnalisé (optionnel)</label>
-                                   <input
-                                     type="text"
-                                     value={step.title || ""}
-                                     onChange={(e) => updateTimelineItem(index, "title", e.target.value)}
-                                     placeholder={fixedSteps.find(s => s.image === stepKey)?.title || "Titre de l'étape"}
-                                     className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black"
-                                   />
-                                 </div>
-                               </div>
-                             );
-                           })}
-                           <button
-                             type="button"
-                             onClick={addTimelineItem}
-                             disabled={timelineList.length >= fixedSteps.length}
-                             className="w-full py-2.5 border border-dashed border-gray-400 text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                           >
-                             <FiPlus size={14} /> Ajouter une étape
-                           </button>
-                         </>
-                       );
-                     })()}
-                   </div>
-                 )}
-
-                  {/* Map Address / Google Maps Link Control */}
-                  {el.controls.includes('mapAddress') && invite && updateInvite && (
-                    <div className="space-y-2">
-                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                        Adresse ou Lien Google Maps
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Ex: Dar Bouraoui Carthage Malaga ou https://maps.google.com/..."
-                        value={invite.styleOverrides?.[el.id]?.address !== undefined 
-                          ? invite.styleOverrides[el.id].address 
-                          : (invite.mapAddress || invite.mapUrl || "")}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          const current = invite.styleOverrides?.[el.id] || {};
-                          updateInvite('styleOverrides', {
-                            ...invite.styleOverrides,
-                            [el.id]: { ...current, address: val }
-                          });
-                          updateInvite('mapAddress', val);
-                          if (val.startsWith("http://") || val.startsWith("https://")) {
-                            updateInvite('mapUrl', val);
-                          } else if (val) {
-                            updateInvite('mapUrl', `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val)}`);
-                          } else {
-                            updateInvite('mapUrl', '');
-                          }
-                        }}
-                        className="w-full border border-gray-300 p-2 text-xs outline-none focus:border-black bg-white"
-                      />
-                      <p className="text-[10px] text-gray-400">
-                        Entrez une adresse ou un lien Google Maps. En cliquant sur le bouton, vos invités ouvriront directement cette destination.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Music Upload Control */}
-                  {el.controls.includes('musicUpload') && invite && (
-                    <div className="space-y-2">
-                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Audio (MP3)</label>
-                      {invite.musicUrl ? (
-                        <div className="flex items-center justify-between mb-2 border border-emerald-200 bg-emerald-50 p-2">
-                          <div className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">♪ Musique active</div>
-                          <button type="button" onClick={() => updateInvite('musicUrl', '')} className="text-xs font-semibold text-red-600 hover:text-red-800 cursor-pointer">Supprimer</button>
-                        </div>
-                      ) : null}
-                      <input 
-                        type="file" 
-                        accept="audio/*" 
-                        onChange={handleMusicUpload} 
-                        disabled={uploadingMusic}
-                        className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
-                      />
-                      {uploadingMusic && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Ou URL Audio directe (.mp3)</label>
-                        <input
-                          type="text"
-                          placeholder="https://.../music.mp3"
-                          value={invite.musicUrl || ""}
-                          onChange={(e) => updateInvite('musicUrl', e.target.value)}
-                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Video Upload Control */}
-                  {el.controls.includes('videoUpload') && invite && (
-                    <div className="space-y-2">
-                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Fichier Vidéo d'ouverture (MP4)</label>
-                      {invite.videoUrl ? (
-                        <div className="flex items-center justify-between mb-2 border border-emerald-200 bg-emerald-50 p-2">
-                          <div className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">▶ Vidéo active</div>
-                          <button type="button" onClick={() => updateInvite('videoUrl', '')} className="text-xs font-semibold text-red-600 hover:text-red-800 cursor-pointer">Supprimer</button>
-                        </div>
-                      ) : null}
-                      <input 
-                        type="file" 
-                        accept="video/*" 
-                        onChange={handleVideoUpload} 
-                        disabled={uploadingVideo}
-                        className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer disabled:opacity-50" 
-                      />
-                      {uploadingVideo && <div className="text-xs text-amber-600 font-semibold">Téléchargement en cours...</div>}
-                      <div>
-                        <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Ou URL Vidéo directe (.mp4)</label>
-                        <input
-                          type="text"
-                          placeholder="https://.../intro.mp4"
-                          value={invite.videoUrl || ""}
-                          onChange={(e) => updateInvite('videoUrl', e.target.value)}
-                          className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
-                        />
-                      </div>
-                      
-                      <label className="flex items-center gap-2 mt-3 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={invite.videoIntroEnabled !== false} 
-                          onChange={(e) => updateInvite('videoIntroEnabled', e.target.checked)}
-                          className="w-4 h-4 accent-black"
-                        />
-                        <span className="text-xs font-semibold text-gray-700">Activer la vidéo d'ouverture</span>
-                      </label>
-                    </div>
-                  )}
-
-                  {/* Sparkles / Particles Toggle & Amount Controls */}
-                  {el.controls.includes('petalsToggle') && invite && updateInvite && (() => {
-                    const isCelestial = invite.template === "celestial";
-                    const isBridgerton = invite.template === "bridgerton";
-                    const isEnabled = isCelestial
-                      ? (invite.enableStars !== false && invite.enableSparkles !== false)
-                      : invite.enablePetals !== false;
-                    const currentCount = isCelestial
-                      ? (invite.starsIntensity || invite.sparklesIntensity || 250)
-                      : (invite.petalsIntensity || invite.sparklesIntensity || (isBridgerton ? 28 : 30));
-                    const currentColor = isCelestial
-                      ? (invite.starsColor || invite.sparklesColor || "#E0E7FF")
-                      : (invite.petalsColor || (isBridgerton ? "#FFFFFF" : "#E87A90"));
-                    const defaultParticleType = isCelestial ? "sparkles" : (isBridgerton ? "petals" : "mixed");
-                    const particleType = invite.particleType || defaultParticleType;
-
-                    const handleAmountChange = (num) => {
-                      const val = Math.max(5, Math.min(300, parseInt(num) || 5));
-                      if (isCelestial) {
-                        updateInvite('starsIntensity', val);
-                        updateInvite('sparklesIntensity', val);
-                      } else {
-                        updateInvite('petalsIntensity', val);
-                        updateInvite('sparklesIntensity', val);
-                      }
-                    };
-
-                    const handleColorChange = (hex) => {
-                      if (isCelestial) {
-                        updateInvite('starsColor', hex);
-                        updateInvite('sparklesColor', hex);
-                      } else {
-                        updateInvite('petalsColor', hex);
-                        updateInvite('sparklesColor', hex);
-                      }
-                    };
-
-                    return (
-                      <div className="space-y-4">
-                        {/* Toggle Checkbox */}
-                        <div className="flex items-center justify-between p-2.5 bg-gray-50 border border-gray-200 rounded">
-                          <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                            <input 
-                              type="checkbox" 
-                              checked={isEnabled} 
-                              onChange={(e) => {
-                                if (isCelestial) {
-                                  updateInvite('enableStars', e.target.checked);
-                                  updateInvite('enableSparkles', e.target.checked);
-                                }
-                                updateInvite('enablePetals', e.target.checked);
-                              }}
-                              className="w-4 h-4 accent-black rounded cursor-pointer"
-                            />
-                            <span className="text-xs font-semibold text-gray-800">
-                              {isCelestial 
-                                ? "✨ Scintillements & Poussière d'Étoiles" 
-                                : isBridgerton 
-                                ? "🌸 Chute de Pétales (Standard)" 
-                                : "✨ Chute de Particules & Scintillements"}
-                            </span>
-                          </label>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${isEnabled ? "bg-amber-100 text-amber-800 border border-amber-300" : "bg-gray-200 text-gray-500"}`}>
-                            {isEnabled ? "Actif" : "Désactivé"}
-                          </span>
-                        </div>
-
-                        {isEnabled && (
-                          <div className="space-y-4 pt-1">
-                            {/* Particle Mode Selection (for non-celestial templates) */}
-                            {!isCelestial && (
-                              <div>
-                                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                  Type d'Effet Visuel
-                                </label>
-                                <div className="grid grid-cols-3 gap-1.5 p-1 bg-gray-100 rounded border border-gray-200">
-                                  <button
-                                    type="button"
-                                    onClick={() => updateInvite('particleType', 'petals')}
-                                    className={`py-1.5 px-2 text-[11px] font-medium rounded text-center transition-all ${particleType === 'petals' ? 'bg-white text-black shadow-xs font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
-                                  >
-                                    🌸 Pétales {isBridgerton ? "(Standard)" : ""}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => updateInvite('particleType', 'mixed')}
-                                    className={`py-1.5 px-2 text-[11px] font-medium rounded text-center transition-all ${particleType === 'mixed' ? 'bg-white text-black shadow-xs font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
-                                  >
-                                    🌸+✨ Mixte
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => updateInvite('particleType', 'sparkles')}
-                                    className={`py-1.5 px-2 text-[11px] font-medium rounded text-center transition-all ${particleType === 'sparkles' ? 'bg-white text-black shadow-xs font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
-                                  >
-                                    ✨ Scintillements
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Amount / Intensity Slider & Direct Controls */}
-                            <div className="p-3 bg-white border border-gray-200 rounded space-y-2.5">
-                              <div className="flex items-center justify-between">
-                                <label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
-                                  <span>✨ Quantité de {isCelestial || particleType === 'sparkles' ? 'scintillements' : (particleType === 'petals' ? 'pétales' : 'particules')}</span>
-                                </label>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-[10px] text-gray-400 font-medium">
-                                    {currentCount < 50 ? "Léger" : currentCount < 120 ? "Équilibré" : currentCount < 200 ? "Dense" : "Galaxie Intense"}
-                                  </span>
-                                  <input
-                                    type="number"
-                                    min="5"
-                                    max="300"
-                                    value={currentCount}
-                                    onChange={(e) => handleAmountChange(e.target.value)}
-                                    className="w-14 px-1.5 py-0.5 text-center text-xs font-bold border border-gray-300 rounded focus:border-black focus:outline-none bg-gray-50"
-                                  />
-                                </div>
-                              </div>
-
-                             {/* Range Slider */}
-                             <input
-                               type="range"
-                               min="5"
-                               max="300"
-                               step="1"
-                               value={currentCount}
-                               onChange={(e) => handleAmountChange(e.target.value)}
-                               className="w-full accent-black cursor-pointer"
-                             />
-
-                             {/* Quick Increase / Presets */}
-                             <div className="flex items-center justify-between gap-1 pt-1">
-                               <div className="flex items-center gap-1">
-                                 <button
-                                   type="button"
-                                   onClick={() => handleAmountChange(currentCount - 15)}
-                                   className="px-2 py-1 text-[10px] font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
-                                   title="Diminuer de 15"
-                                 >
-                                   -15
-                                 </button>
-                                 <button
-                                   type="button"
-                                   onClick={() => handleAmountChange(currentCount + 15)}
-                                   className="px-2 py-1 text-[10px] font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
-                                   title="Augmenter de 15"
-                                 >
-                                   +15
-                                 </button>
-                                 <button
-                                   type="button"
-                                   onClick={() => handleAmountChange(currentCount + 35)}
-                                   className="px-2 py-1 text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded transition-colors"
-                                   title="Augmenter de 35 (Beaucoup de scintillements)"
-                                 >
-                                   +35 ✨
-                                 </button>
-                               </div>
-
-                               {/* Quick Preset Buttons */}
-                               <div className="flex items-center gap-1">
-                                 {[
-                                   { label: "35", val: 35, tip: "Léger" },
-                                   { label: "80", val: 80, tip: "Équilibré" },
-                                   { label: "150", val: 150, tip: "Dense" },
-                                   { label: "250", val: 250, tip: "Standard Céleste" },
-                                 ].map((preset) => (
-                                   <button
-                                     key={preset.val}
-                                     type="button"
-                                     onClick={() => handleAmountChange(preset.val)}
-                                     title={preset.tip}
-                                     className={`px-1.5 py-0.5 text-[10px] rounded transition-all ${currentCount === preset.val ? 'bg-black text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                   >
-                                     {preset.label}
-                                   </button>
-                                 ))}
-                               </div>
-                             </div>
-                           </div>
-
-                           {/* Color Picker & Presets */}
-                           <div>
-                             <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                               Couleur {isCelestial || particleType === 'sparkles' ? 'des Scintillements' : (particleType === 'petals' ? 'des Pétales' : 'des Particules')}
-                             </label>
-                             <div className="flex items-center gap-2.5 border border-gray-200 bg-white p-2 rounded">
-                               <input 
-                                 type="color" 
-                                 className="h-7 w-7 border-0 p-0 cursor-pointer rounded overflow-hidden" 
-                                 value={currentColor}
-                                 onChange={(e) => handleColorChange(e.target.value)}
-                               />
-                               <span className="text-xs text-gray-700 font-mono uppercase font-semibold">
-                                 {currentColor}
-                               </span>
-                               {/* Quick Presets */}
-                               <div className="ml-auto flex items-center gap-1.5">
-                                 {isCelestial || particleType === 'sparkles' ? (
-                                   <>
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#E0E7FF')}
-                                       className="w-5 h-5 rounded-full border border-indigo-300 bg-[#E0E7FF] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Lueur Céleste (Standard)"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#F8E4A0')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#F8E4A0] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Or Stellaire"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#FFFFFF')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-white shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Diamant Pur"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#FDE68A')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#FDE68A] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Champagne Doré"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#D48744')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#D48744] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Or Cuivré Solaire"
-                                     />
-                                   </>
-                                 ) : (
-                                   <>
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#FFFFFF')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-white shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Blanc Pur"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#FDF6EC')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#FDF6EC] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Ivoire"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#F5C2C7')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#F5C2C7] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Rose Pâle"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#722F37')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#722F37] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Mauve Bridgerton"
-                                     />
-                                     <button
-                                       type="button"
-                                       onClick={() => handleColorChange('#D4AF37')}
-                                       className="w-5 h-5 rounded-full border border-gray-300 bg-[#D4AF37] shadow-xs cursor-pointer hover:scale-115 transition-transform"
-                                       title="Or Vintage"
-                                     />
-                                   </>
-                                 )}
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                     </div>
-                   );
-                 })()}
-
-                 {/* Text Animation Controls */}
-                 {el.controls.includes('animationType') && invite && updateInvite && (
-                   <div className="space-y-4">
-                     <div>
-                       <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Type d'apparition</label>
-                       <select 
-                         value={invite.animationType || 'fade-up'} 
-                         onChange={(e) => updateInvite('animationType', e.target.value)}
-                         className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black"
-                       >
-                         <option value="none">Aucune (Désactivé)</option>
-                         <option value="fade-up">Glissement vers le haut (Fade Up)</option>
-                         <option value="fade-in">Fondu simple (Fade In)</option>
-                         <option value="zoom-in">Zoom (Zoom In)</option>
-                       </select>
-                     </div>
-                     <div>
-                       <div className="flex justify-between items-center mb-1">
-                         <label className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Durée (vitesse)</label>
-                         <span className="text-[10px] font-mono text-gray-600">{invite.animationDuration || 1.2}s</span>
-                       </div>
-                       <input 
-                         type="range" min="0.3" max="3.0" step="0.1" 
-                         value={invite.animationDuration || 1.2} 
-                         onChange={(e) => updateInvite('animationDuration', parseFloat(e.target.value))}
-                         className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black" 
-                         disabled={invite.animationType === 'none'}
-                       />
-                     </div>
-                     <div>
-                       <div className="flex justify-between items-center mb-1">
-                         <label className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Délai initial (lag)</label>
-                         <span className="text-[10px] font-mono text-gray-600">{invite.animationDelay !== undefined ? invite.animationDelay : 0.2}s</span>
-                       </div>
-                       <input 
-                         type="range" min="0.0" max="3.0" step="0.1" 
-                         value={invite.animationDelay !== undefined ? invite.animationDelay : 0.2} 
-                         onChange={(e) => updateInvite('animationDelay', parseFloat(e.target.value))}
-                         className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black" 
-                         disabled={invite.animationType === 'none'}
-                       />
-                     </div>
-                   </div>
-                 )}
-
-                 {/* Content Control */}
-                 {el.controls.includes('text') && (
-                   <div>
-                      <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Texte / Contenu</label>
-                      <textarea
-                        value={invite.styleOverrides?.[el.id]?.text !== undefined ? invite.styleOverrides[el.id].text : ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          const current = invite.styleOverrides?.[el.id] || {};
-                          updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, text: val } });
-                        }}
-                        className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-black resize-y bg-white" 
-                        rows={2} 
-                        placeholder={el.defaultText || "Valeur personnalisée..."} 
-                      />
-                   </div>
-                 )}
-
-                 {/* Programme Steps Array Editor */}
-                 {el.controls.includes('progStepsList') && invite && (
-                   <div className="space-y-3">
-                     {(invite.programmeSteps || [
-                       { time: "17:00", name: "Sdek" },
-                       { time: "18:00", name: "Reception" },
-                       { time: "20:00", name: "Dinner" },
-                       { time: "00:00", name: "Dance" }
-                     ]).map((step, sIndex) => (
-                       <div key={sIndex} className="grid grid-cols-2 gap-2 border border-gray-200 bg-white p-2">
-                         <div>
-                           <label className="block text-[9px] font-semibold text-gray-500 uppercase">Heure</label>
-                           <input
-                             type="text"
-                             value={step.time || ""}
-                             onChange={(e) => {
-                               const newSteps = [...(invite.programmeSteps || [
-                                 { time: "17:00", name: "Sdek" },
-                                 { time: "18:00", name: "Reception" },
-                                 { time: "20:00", name: "Dinner" },
-                                 { time: "00:00", name: "Dance" }
-                               ])];
-                               newSteps[sIndex] = { ...newSteps[sIndex], time: e.target.value };
-                               updateInvite('programmeSteps', newSteps);
-                             }}
-                             className="w-full border p-1 text-xs outline-none focus:border-black"
-                           />
-                         </div>
-                         <div>
-                           <label className="block text-[9px] font-semibold text-gray-500 uppercase">Étape</label>
-                           <input
-                             type="text"
-                             value={step.name || ""}
-                             onChange={(e) => {
-                               const newSteps = [...(invite.programmeSteps || [
-                                 { time: "17:00", name: "Sdek" },
-                                 { time: "18:00", name: "Reception" },
-                                 { time: "20:00", name: "Dinner" },
-                                 { time: "00:00", name: "Dance" }
-                               ])];
-                               newSteps[sIndex] = { ...newSteps[sIndex], name: e.target.value };
-                               updateInvite('programmeSteps', newSteps);
-                             }}
-                             className="w-full border p-1 text-xs outline-none focus:border-black"
-                           />
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 )}
-
-                 {/* Media Upload (Image / Video) */}
-                  {el.controls.includes('upload') && (
-                    <div className="space-y-2">
-                       <label className="block text-[9px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Remplacer l'Image / Fond (Image ou Vidéo MP4)</label>
-                       {invite.styleOverrides?.[el.id]?.image || (el.id === 'story-photo' && invite.storyPhoto) || (el.id === 'hero-photo' && invite.heroPhoto) || (el.id === 'venue-photo' && invite.venuePhoto) ? (
-                         <div className="flex items-center justify-between border border-emerald-200 bg-emerald-50 p-2">
-                           <span className="text-xs text-emerald-800 font-semibold truncate max-w-[200px]">
-                             {String(invite.styleOverrides?.[el.id]?.image || invite.storyPhoto || invite.heroPhoto || invite.venuePhoto).includes('video') || String(invite.styleOverrides?.[el.id]?.image).endsWith('.mp4') ? "▶ Vidéo active" : "🖼 Image active"}
-                           </span>
-                           <button
-                             type="button"
-                             onClick={() => {
-                               const updated = { ...invite.styleOverrides };
-                               if (updated[el.id]) {
-                                 const copy = { ...updated[el.id] };
-                                 delete copy.image;
-                                 updated[el.id] = copy;
-                               }
-                               if (el.id === 'story-photo') updateInvite('storyPhoto', '');
-                               if (el.id === 'hero-photo') updateInvite('heroPhoto', '');
-                               if (el.id === 'venue-photo') updateInvite('venuePhoto', '');
-                               updateInvite('styleOverrides', updated);
-                             }}
-                             className="text-xs text-red-600 hover:text-red-800 font-semibold cursor-pointer"
-                           >
-                             Supprimer
-                           </button>
-                         </div>
-                       ) : null}
-                       <input
-                         type="file"
-                         accept="image/*,video/*"
-                         onChange={(e) => {
-                           const file = e.target.files?.[0];
-                           if (!file) return;
-                           const reader = new FileReader();
-                           reader.onload = (uploadEv) => {
-                             const b64 = uploadEv.target.result;
-                             const current = invite.styleOverrides?.[el.id] || {};
-                             if (el.id === 'story-photo') updateInvite('storyPhoto', b64);
-                             if (el.id === 'hero-photo') updateInvite('heroPhoto', b64);
-                             if (el.id === 'venue-photo') updateInvite('venuePhoto', b64);
-                             updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, image: b64 } });
-                           };
-                           reader.readAsDataURL(file);
-                         }}
-                         className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black file:border-0 file:bg-black file:text-white file:px-3 file:py-1 file:mr-2 file:text-xs cursor-pointer"
-                       />
-                       <div>
-                         <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Ou URL directe (Image ou Vidéo MP4)</label>
-                         <input
-                           type="text"
-                           placeholder="https://.../video.mp4 ou image.png"
-                           value={invite.styleOverrides?.[el.id]?.image || ""}
-                           onChange={(e) => {
-                             const val = e.target.value;
-                             const current = invite.styleOverrides?.[el.id] || {};
-                             if (el.id === 'story-photo') updateInvite('storyPhoto', val);
-                             updateInvite('styleOverrides', { ...invite.styleOverrides, [el.id]: { ...current, image: val } });
-                           }}
-                           className="w-full border border-gray-300 p-1.5 text-xs outline-none focus:border-black bg-white"
-                         />
-                       </div>
-                    </div>
-                  )}
-
-               </div>
-            )}
-         </div>
-       ))}
-     </div>
-   )
-}
-
 function DigitalInviteEditorPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuth();
   const isEditing = Boolean(id);
-
-  const initialTemplate = useMemo(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const urlTemplateId = searchParams.get("template");
-    if (urlTemplateId) {
-      const found = getDigitalInviteTemplate(urlTemplateId);
-      if (found) return found;
-    }
-    return defaultTemplate;
-  }, [location.search]);
-
   const [invite, setInvite] = useState(() =>
-    createDigitalInviteDraft(initialTemplate.defaults)
+    createDigitalInviteDraft(defaultTemplate.defaults)
   );
   const [initialDocId, setInitialDocId] = useState(id || "");
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
-  const [saveSuccess, setSaveSuccess] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [openEvents, setOpenEvents] = useState({});
-  const [uploadingMusic, setUploadingMusic] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [uploadingMedia, setUploadingMedia] = useState({});
-
-  const handleMediaUpload = async (elementId, file) => {
-    if (!file) return;
-    setUploadingMedia((prev) => ({ ...prev, [elementId]: true }));
-    setError("");
-
-    try {
-      const inviteId = id || invite.slug || slugify(invite.coupleNames) || "temp-invite";
-      let fileUrl;
-      try {
-        fileUrl = await uploadInviteAsset(inviteId, file, elementId);
-      } catch (storageErr) {
-        console.warn("Storage upload failed or not configured, using fallback:", storageErr);
-        if (file.size < 600 * 1024) {
-          const reader = new FileReader();
-          fileUrl = await new Promise((resolve) => {
-            reader.onload = (e) => resolve(e.target.result);
-            reader.readAsDataURL(file);
-          });
-        } else {
-          throw new Error("Ce fichier est trop volumineux (>600Ko) pour Firestore. Utilisez une URL directe (https://...) ou configurez Firebase Storage.");
-        }
-      }
-
-      setInvite((currentInvite) => {
-        const currentOverrides = currentInvite.styleOverrides || {};
-        const elOverrides = currentOverrides[elementId] || {};
-        const updated = {
-          ...currentOverrides,
-          [elementId]: {
-            ...elOverrides,
-            image: fileUrl,
-          },
-        };
-        const next = {
-          ...currentInvite,
-          styleOverrides: updated,
-        };
-        if (elementId === "story-photo") {
-          next.storyPhoto = fileUrl;
-        }
-        if (elementId === "hero-photo") {
-          next.heroPhoto = fileUrl;
-        }
-        if (elementId === "venue-photo") {
-          next.venuePhoto = fileUrl;
-        }
-        return next;
-      });
-    } catch (err) {
-      setError(err.message || "Erreur lors du téléchargement du média.");
-    } finally {
-      setUploadingMedia((prev) => ({ ...prev, [elementId]: false }));
-    }
-  };
 
   const toggleEvent = (index) => {
     setOpenEvents((prev) => ({
@@ -1623,29 +177,20 @@ function DigitalInviteEditorPage() {
       setError("");
 
       try {
-        let loadedInvite = await getDigitalInviteById(id);
-        if (!loadedInvite) {
-          try {
-            const cached = localStorage.getItem("digital_invite_" + id);
-            if (cached) loadedInvite = JSON.parse(cached);
-          } catch (e) {}
-        }
+        const loadedInvite = await getDigitalInviteById(id);
 
         if (!isMounted) {
           return;
         }
 
         if (!loadedInvite) {
-          if (id === "test" || id === "demo") {
-            const sidiTpl = getDigitalInviteTemplate("sidi-bousaid") || defaultTemplate;
-            loadedInvite = {
-              ...createDigitalInviteDraft(sidiTpl.defaults),
-              slug: id,
-            };
-          } else {
-            setError("Invitation introuvable.");
-            return;
-          }
+          setError("Invitation introuvable.");
+          return;
+        }
+
+        if (user?.uid && loadedInvite.ownerId && loadedInvite.ownerId !== user.uid) {
+          setError("Tu n'as pas acces a cette invitation.");
+          return;
         }
 
         const loadedTemplate = getDigitalInviteTemplate(loadedInvite.template) || defaultTemplate;
@@ -1674,7 +219,7 @@ function DigitalInviteEditorPage() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, user?.uid]);
 
   const publicPath = useMemo(() => {
     if (!invite.slug) {
@@ -1714,14 +259,6 @@ function DigitalInviteEditorPage() {
   };
   const { wife, husband } = getNames(invite.coupleNames || "");
 
-  const handlePartnerNameChange = (partnerIndex, newName) => {
-    const current = getNames(invite.coupleNames || "");
-    const updatedWife = partnerIndex === 0 ? newName : current.wife;
-    const updatedHusband = partnerIndex === 1 ? newName : current.husband;
-    const combined = updatedWife && updatedHusband ? `${updatedWife} & ${updatedHusband}` : (updatedWife || updatedHusband || "");
-    updateInvite("coupleNames", combined);
-  };
-
   const fixedTimelineSteps = selectedTemplate.fixedTimelineSteps || [];
   const maxTimelineItems = isSidiBouSaid ? 3 : (fixedTimelineSteps.length || Infinity);
   const getTimelineStepKey = (item, index) =>
@@ -1740,58 +277,6 @@ function DigitalInviteEditorPage() {
       ...currentInvite,
       [key]: value,
     }));
-  };
-
-  const handleMusicUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const inviteId = id || invite.slug;
-    if (!inviteId) {
-      setError("Veuillez d'abord spécifier un Slug pour l'invitation.");
-      return;
-    }
-
-    setUploadingMusic(true);
-    setError("");
-
-    try {
-      const inviteId = id || invite.slug || "temp-invite";
-      const downloadUrl = await uploadInviteAsset(inviteId, file, "music");
-      updateInvite("musicUrl", downloadUrl);
-    } catch (uploadError) {
-      console.warn("Firebase upload failed, using local FileReader fallback:", uploadError);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        updateInvite("musicUrl", e.target.result);
-      };
-      reader.readAsDataURL(file);
-    } finally {
-      setUploadingMusic(false);
-    }
-  };
-
-  const handleVideoUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    setUploadingVideo(true);
-    setError("");
-
-    try {
-      const inviteId = id || invite.slug || "temp-invite";
-      const downloadUrl = await uploadInviteAsset(inviteId, file, "video");
-      updateInvite("videoUrl", downloadUrl);
-    } catch (uploadError) {
-      console.warn("Firebase video upload failed, using local FileReader fallback:", uploadError);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        updateInvite("videoUrl", e.target.result);
-      };
-      reader.readAsDataURL(file);
-    } finally {
-      setUploadingVideo(false);
-    }
   };
 
   const updateTimelineItem = (index, key, value) => {
@@ -1835,17 +320,9 @@ function DigitalInviteEditorPage() {
           mapUrl: lastItem?.mapUrl || currentInvite.mapUrl || "https://maps.google.com"
         };
       } else {
-        const nextStepKey = getNextTimelineStepKey(currentInvite.timeline);
-        const defaultTimes = {
-          accueil: "20h",
-          arrivee: "20h30",
-          contrat: "21h",
-          soiree: "21h30",
-          fin: "00h00",
-        };
         newItem = {
-          step: nextStepKey,
-          time: defaultTimes[nextStepKey] || "",
+          step: getNextTimelineStepKey(currentInvite.timeline),
+          time: "",
         };
       }
 
@@ -1869,67 +346,12 @@ function DigitalInviteEditorPage() {
 
   const handleTemplateChange = (templateId) => {
     const nextTemplate = getDigitalInviteTemplate(templateId);
-    if (!nextTemplate) return;
-    const defaults = nextTemplate.defaults || {};
 
     setInvite((currentInvite) => ({
       ...currentInvite,
-      ...defaults,
       template: templateId,
-      coupleNames: currentInvite.coupleNames || defaults.coupleNames,
-      eventDate: currentInvite.eventDate || defaults.eventDate,
-      slug: currentInvite.slug,
-      id: currentInvite.id,
-      status: currentInvite.status,
-      timeline: defaults.timeline || [],
-      activeSections: defaults.activeSections,
-      backgroundColor: defaults.backgroundColor || (templateId === "club-capri" ? "#FFFBF0" : (templateId === "majestic-white" ? "#FAF7F5" : (templateId === "bridgerton" || templateId === "dolce-vita" ? "#FFFFFF" : (templateId === "brezza-marina" ? "#DCEBF0" : "#F6F7F5")))),
-      styleOverrides: {},
+      timeline: nextTemplate.defaults.timeline,
     }));
-  };
-
-  const currentActiveSections = useMemo(() => {
-    return (
-      invite.activeSections ||
-      getDigitalInviteTemplate(invite.template)?.defaults?.activeSections ||
-      []
-    );
-  }, [invite.activeSections, invite.template]);
-
-  const templateComponents = useMemo(() => {
-    return getComponentsForTemplate(invite.template);
-  }, [invite.template]);
-
-  const handleToggleSection = (componentId) => {
-    const master = findMasterComponent(componentId);
-    const targetId = componentId;
-    const isCurrentlyActive =
-      currentActiveSections.includes(targetId) ||
-      (master?.aliasIds && master.aliasIds.some((a) => currentActiveSections.includes(a)));
-
-    let updated;
-    if (isCurrentlyActive) {
-      if (targetId === "hero") return;
-      const toRemove = [targetId, ...(master?.aliasIds || [])];
-      updated = currentActiveSections.filter((id) => !toRemove.includes(id));
-    } else {
-      updated = [...currentActiveSections, targetId];
-    }
-    updateInvite("activeSections", updated);
-  };
-
-  const handleEnableAllTemplateSections = () => {
-    const supported = templateComponents
-      .filter((c) => c.isSupported)
-      .map((c) => c.id);
-    const fullList = Array.from(new Set(["hero", ...supported, "footer"]));
-    updateInvite("activeSections", fullList);
-  };
-
-  const handleResetDefaultSections = () => {
-    const templateConfig = getDigitalInviteTemplate(invite.template);
-    const defaults = templateConfig?.defaults?.activeSections || [];
-    updateInvite("activeSections", [...defaults]);
   };
 
   const handleCoupleBlur = () => {
@@ -1939,32 +361,20 @@ function DigitalInviteEditorPage() {
   };
 
   const handleDateChange = (dateValue) => {
-    setInvite((currentInvite) => {
-      const isSidi = currentInvite.template === 'sidi-bousaid';
-      if (isSidi && currentInvite.timeline && currentInvite.timeline.length > 0) {
-        const lastIndex = currentInvite.timeline.length - 1;
-        const updatedTimeline = [...currentInvite.timeline];
-        updatedTimeline[lastIndex] = {
-          ...updatedTimeline[lastIndex],
-          date: dateValue
-        };
-        return {
-          ...currentInvite,
-          eventDate: dateValue,
-          timeline: updatedTimeline
-        };
-      }
-      return {
-        ...currentInvite,
-        eventDate: dateValue,
-      };
-    });
+    setInvite((currentInvite) => ({
+      ...currentInvite,
+      eventDate: dateValue,
+    }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
-    setSaveSuccess(false);
+
+    if (!user?.uid) {
+      setError("Connexion requise pour enregistrer.");
+      return;
+    }
 
     const normalizedSlug = slugify(invite.slug || invite.coupleNames);
 
@@ -1984,67 +394,58 @@ function DigitalInviteEditorPage() {
       delete inviteFields.introText;
       delete inviteFields.closingText;
       delete inviteFields.dateLabel;
-
-      const rawTimeline = Array.isArray(invite.timeline) ? invite.timeline : [];
-      const lastEvent = rawTimeline.length > 0 ? rawTimeline[rawTimeline.length - 1] : null;
+      const lastEvent = invite.timeline && invite.timeline.length > 0
+        ? invite.timeline[invite.timeline.length - 1]
+        : null;
 
       const cleanedInvite = {
         ...inviteFields,
+        ownerId: invite.ownerId || user.uid,
+        clientEmail: (invite.clientEmail || "").trim().toLowerCase(),
+        clientUserId: (invite.clientUserId || "").trim(),
         slug: normalizedSlug,
         template: selectedTemplate.id,
         eventDate: isSidiBouSaid && lastEvent?.date ? lastEvent.date : invite.eventDate,
         time: isSidiBouSaid && lastEvent?.time ? lastEvent.time : invite.time,
-        ...(rawTimeline.length > 0 || isSidiBouSaid || selectedTemplate.fixedTimelineSteps?.length
-          ? {
-              timeline: rawTimeline
-                .slice(0, maxTimelineItems)
-                .map((item, index) => {
-                  if (isSidiBouSaid) {
-                    return {
-                      title: item.title || "",
-                      titleAr: item.titleAr || "",
-                      date: item.date || "",
-                      time: item.time || "",
-                      venue: item.venue || "",
-                      city: item.city || "",
-                      mapUrl: item.mapUrl || "",
-                    };
-                  }
-                  return {
-                    step: getTimelineStepKey(item, index),
-                    time: item.time || "",
-                  };
-                }),
+        timeline: invite.timeline
+          .slice(0, maxTimelineItems)
+          .map((item, index) => {
+            if (isSidiBouSaid) {
+              return {
+                title: item.title || "",
+                titleAr: item.titleAr || "",
+                date: item.date || "",
+                time: item.time || "",
+                venue: item.venue || "",
+                city: item.city || "",
+                mapUrl: item.mapUrl || "",
+              };
             }
-          : {}),
+            return {
+              step: getTimelineStepKey(item, index),
+              time: item.time || "",
+            };
+          }),
       };
 
-      if (Array.isArray(invite.timelineEvents)) {
-        cleanedInvite.timelineEvents = invite.timelineEvents;
+      if (cleanedInvite.ownerId !== user.uid) {
+        setError("Tu n'as pas acces a cette invitation.");
+        setSaving(false);
+        return;
       }
 
       const docId = normalizedSlug;
 
       await saveDigitalInvite(docId, cleanedInvite);
-      try {
-        localStorage.setItem("digital_invite_" + docId, JSON.stringify(cleanedInvite));
-      } catch (lsErr) {}
 
       if (initialDocId && initialDocId !== docId) {
-        try {
-          await deleteDigitalInvite(initialDocId);
-        } catch (delErr) {
-          console.warn("Could not delete old invite document:", delErr);
-        }
+        await deleteDigitalInvite(initialDocId);
       }
 
       navigate(`/dashboard/invitations/${docId}/edit`, { replace: true });
       setInitialDocId(docId);
       setInvite(cleanedInvite);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 4000);
     } catch (saveError) {
-      console.error("Erreur lors de l'enregistrement:", saveError);
       setError("Impossible d'enregistrer cette invitation.");
     } finally {
       setSaving(false);
@@ -2100,373 +501,6 @@ function DigitalInviteEditorPage() {
     }
   };
 
-
-  // Resizable Sidebar State
-  const [isResizing, setIsResizing] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(600);
-  const [expandedSection, setExpandedSection] = useState(null);
-  const [expandedElement, setExpandedElement] = useState(null);
-
-  const iframeRef = useRef(null);
-  
-  useEffect(() => {
-    if (iframeRef.current && iframeRef.current.contentWindow) {
-      iframeRef.current.contentWindow.postMessage({ 
-        type: "UPDATE_INVITE", 
-        payload: { invite, selectedElementId: expandedElement } 
-      }, "*");
-    }
-  }, [invite, expandedElement]);
-
-  useEffect(() => {
-    const handleMessage = (e) => {
-       if (e.data && e.data.type === 'IFRAME_READY') {
-          if (iframeRef.current && iframeRef.current.contentWindow) {
-             iframeRef.current.contentWindow.postMessage({ 
-               type: "UPDATE_INVITE", 
-               payload: { invite, selectedElementId: expandedElement } 
-             }, "*");
-          }
-       }
-       if (e.data && (e.data.type === 'ELEMENT_CLICKED' || e.data.type === 'SELECT_ELEMENT')) {
-          const elementId = e.data.payload?.elementId || e.data.payload?.id || e.data.id;
-          let targetSectionId = e.data.payload?.sectionId;
-          if (!targetSectionId && elementId) {
-            const sections = ['hero', 'countdown', 'celebrations', 'location', 'our-story', 'timeline', 'dress-code', 'rsvp', 'footer', 'settings'];
-            for (const sId of sections) {
-              const els = getElementsForSection(sId, invite?.template);
-              if (els.some(el => el.id === elementId)) {
-                targetSectionId = sId;
-                break;
-              }
-            }
-          }
-          if (targetSectionId) {
-            setExpandedSection(targetSectionId);
-          }
-          setExpandedElement(elementId);
-          setTimeout(() => {
-             const el = document.getElementById(`editor-el-${elementId}`);
-             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 100);
-       }
-    };
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [invite, expandedElement]);
-
-  const startResizing = (mouseDownEvent) => {
-    mouseDownEvent.preventDefault();
-    setIsResizing(true);
-  };
-
-  useEffect(() => {
-    if (!isResizing) return;
-    const handleMouseMove = (e) => {
-      const minWidth = 320;
-      const maxWidth = window.innerWidth * 0.7;
-      const newWidth = Math.max(minWidth, Math.min(maxWidth, e.clientX));
-      setSidebarWidth(newWidth);
-    };
-    const handleMouseUp = () => setIsResizing(false);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isResizing]);
-  
-  const handleResetChanges = () => {
-    if (window.confirm("Voulez-vous réinitialiser toutes les modifications au modèle par défaut ?")) {
-      const templateObj = getDigitalInviteTemplate(invite.template) || defaultTemplate;
-      const resetInvite = {
-        ...createDigitalInviteDraft(templateObj.defaults),
-        ...templateObj.defaults,
-        id: invite.id,
-        slug: invite.slug,
-        status: invite.status,
-      };
-      setInvite(resetInvite);
-      if (iframeRef.current && iframeRef.current.contentWindow) {
-        iframeRef.current.contentWindow.postMessage({
-          type: "UPDATE_INVITE",
-          payload: { invite: resetInvite }
-        }, "*");
-      }
-    }
-  };
-
-  const handleFillDemoData = () => {
-    if (invite.template === "club-capri") {
-      const demoData = {
-        template: "club-capri",
-        status: "draft",
-        title: "Club Capri",
-        coupleNames: "Chedy & Hela",
-        groomName: "Chedy",
-        brideName: "Hela",
-        eventDate: "2026-06-15",
-        heroPostcardFrom: "POST Card",
-        heroFromSummer: "FROM Summer",
-        joinUsTitle: "Join us in",
-        joinUsMonth: "JUNE",
-        joinUsText: "We warmly invite you to celebrate our wedding day with us.",
-        theDayTitle: "The Day",
-        celebrationsTitle: "Celebrations",
-        postcard1Category: "Postcard",
-        postcard1Title: "WEDDING",
-        postcard1Address: "Dar Bouraoui Carthage\nMalaga\n18h",
-        postcard1MapUrl: "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
-        postcard2Category: "Postcard",
-        postcard2Title: "HENNA",
-        postcard2Address: "Dar Bouraoui Carthage\nMalaga\n18h",
-        postcard2MapUrl: "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
-        dressCodeCategory: "Dress Code",
-        dressCodeTitle: "CASUAL CHIC",
-        dressCodeText: "We warmly invite you to celebrate our wedding day with us.",
-        rsvpArrival: "Arrival",
-        rsvpTitle: "RSVP",
-        rsvpDeadline: "The favour of a reply is kindly requested by the fifteenth of June, 2026",
-        footerClub: "club",
-        footerCapri: "Capri",
-        backgroundColor: "#FFFBF0",
-        activeSections: [
-          "hero",
-          "join-us",
-          "the-day",
-          "celebrations",
-          "dress-code",
-          "rsvp",
-          "footer"
-        ],
-        musicUrl: "",
-        slug: "chedy-hela"
-      };
-      setInvite((prev) => ({ ...prev, ...demoData }));
-      return;
-    }
-
-    if (invite.template === "majestic-white") {
-      const demoData = {
-        template: "majestic-white",
-        status: "draft",
-        title: "Majestic White",
-        coupleNames: "Damon & Alice",
-        groomName: "Damon",
-        brideName: "Alice",
-        eventDate: "2026-09-15",
-        storyTitle: "Our Story",
-        storyText: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas\nRerum Qui. Non R Numquam Molestiae Vero\nDolores Dolores. Dolor Ut Sit Quos\nAccusantium Vitae Aliquid Ducimus",
-        countdownTitle: "Countdown",
-        formalInviteTitle: "Formal Invite",
-        celebrationsTitle: "Celebrations",
-        celebrationsSubtitle: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas",
-        celebration1Title: "Club Nautique",
-        celebration1Address: "Les Berges Du Lac 1\nÀ 18h",
-        celebration1MapUrl: "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac",
-        celebration2Subtitle: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas",
-        celebration2Title: "Club Nautique",
-        celebration2Address: "Les Berges Du Lac 1\nÀ 18h",
-        celebration2MapUrl: "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac",
-        timelineTitle: "Timeline",
-        timelineSubtitle: "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas",
-        messageTitle: "Leave A Message",
-        messageSubtitle: "Leave A Heartfelt Message To The Brides",
-        rsvpTitle: "RSVP",
-        footerCoupleNames: "Damon & Alice",
-        backgroundColor: "#FAF7F5",
-        activeSections: [
-          "hero",
-          "our-story",
-          "countdown",
-          "formal-invite",
-          "celebrations",
-          "timeline",
-          "leave-a-message",
-          "rsvp",
-          "footer"
-        ],
-        animationType: "fade-up",
-        animationDuration: 1.2,
-        enablePetals: true,
-        petalsIntensity: 30,
-        petalsColor: "#FFFFFF",
-        musicUrl: "",
-        slug: "damon-alice"
-      };
-      setInvite((prev) => ({ ...prev, ...demoData }));
-      return;
-    }
-
-    if (invite.template === "celestial") {
-      const demoData = {
-        template: "celestial",
-        status: "draft",
-        title: "Celestial",
-        coupleNames: "JONATHAN & MARRISAH",
-        groomName: "Jonathan",
-        brideName: "Marrisah",
-        eventDate: "2026-10-10",
-        storyTitle: "OUR STORY",
-        storySubtitle: "To celebrate their wedding ceremony",
-        revealTitle: "REVEAL",
-        revealSubtitle: "Join the moon  to the sun..",
-        venueTitle: "VENUE",
-        venueName: "Kobbet Ennhas Manouba",
-        eventTime: "19:00 - 21:00",
-        mapUrl: "https://maps.google.com/?q=Kobbet+Ennhas+Manouba",
-        mapAddress: "Kobbet Ennhas Manouba",
-        programmeTitle: "PROGRAMME",
-        timelineEvents: [
-          { time: "19:00", title: "Accueil" },
-          { time: "19:15", title: "Contrat" },
-          { time: "19:45", title: "Réception" },
-          { time: "20:30", title: "Photos" },
-          { time: "21:00", title: "Fin" }
-        ],
-        principlesTitle: "PRINCIPLES",
-        principlesP1: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui. Non rem sunt fugiat numquam molestiae vero dolores dolores. Dolor ut sit quos accusantium vitae aliquid ducimus",
-        principlesP2: "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui.",
-        rsvpTitle: "RSVP",
-        rsvpAttendLabel: "Will you attend",
-        footerQuote: "Untill infinity",
-        activeSections: [
-          "hero",
-          "our-story",
-          "reveal",
-          "location",
-          "timeline",
-          "celebrations",
-          "rsvp",
-          "footer"
-        ],
-        animationType: "fade-up",
-        animationDuration: 1.2,
-        enableStars: true,
-        musicUrl: "",
-        slug: "jonathan-marrisah"
-      };
-      setInvite((prev) => ({ ...prev, ...demoData }));
-      return;
-    }
-
-    if (invite.template === "dolce-vita") {
-      const demoData = {
-        template: "dolce-vita",
-        status: "draft",
-        title: "La Dolce Vita",
-        coupleNames: "Bilel & Dorra",
-        eventDate: "2026-08-12",
-        venueName: "Dar Bouraoui Carthage",
-        city: "MALAGA",
-        time: "19H00",
-        activeSections: [
-          "hero",
-          "countdown",
-          "location",
-          "timeline",
-          "menu",
-          "rsvp",
-          "footer"
-        ],
-        slug: "bilel-dorra",
-        backgroundColor: "#FFFFFF",
-      };
-      setInvite((prev) => ({ ...prev, ...demoData }));
-      return;
-    }
-
-    if (invite.template === "bridgerton") {
-      const demoData = {
-        template: "bridgerton",
-        status: "draft",
-        title: "Bridgerton",
-        coupleNames: "Karim & Azza",
-        eventDate: "2026-11-23",
-        heroQuote: "Our Happy Ever After",
-        bannerQuote: "Join Us For The \nBest Day Ever",
-        venueName: "Dar Bouraoui Carthage",
-        venueDetails: "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H",
-        city: "Carthage",
-        mapUrl: "https://maps.google.com",
-        mapAddress: "Dar Bouraoui Carthage",
-        dressCodeText: "We'd love for guests to embrace a formal look for our celebration.",
-        transportText: "Parking: On-site parking will be available at the venue.\nTaxis: We recommend booking taxis in advance.",
-        messagePrompt: "Leave a heartfelt message to the brides",
-        rsvpDeadline: "The favour of a reply is kindly requested by the 15th of June, 2026",
-        activeSections: [
-          "hero",
-          "countdown",
-          "celebrations",
-          "location",
-          "dress-code",
-          "our-story",
-          "rsvp",
-          "footer"
-        ],
-        animationType: "fade-up",
-        animationDuration: 1.2,
-        enablePetals: true,
-        petalsIntensity: 28,
-        petalsColor: "#FFFFFF",
-        musicUrl: "",
-        slug: "karim-azza"
-      };
-      setInvite((prev) => ({ ...prev, ...demoData }));
-      return;
-    }
-
-    const demoData = {
-      template: "sidi-bousaid",
-      status: "draft",
-      title: "Sidi Bou Said",
-      coupleNames: "Bilel & Dorra",
-      eventDate: "2027-08-12",
-      venueName: "Dar Sidi Bou Said",
-      city: "Sidi Bou Said",
-      locationLabel: "TUNISIE",
-      time: "19H00",
-      mapUrl: "https://maps.google.com",
-      rsvpEnabled: true,
-      videoIntroEnabled: true,
-      welcomeSubtitle: "Welcome To Our\nMediterranean Abode",
-      ourStoryQuote: "Our Happy Ever After\nstarts\nnow",
-      closingTextAr: "ان شاء الله ليلتكم زينة",
-      dressCodeText: "We Request Attending The Outeya\nWith A Traditional Attire",
-      timeline: [
-        {
-          title: "Outeya",
-          titleAr: "الوطية",
-          date: "2027-08-11",
-          time: "19:00",
-          venue: "Dar Sidi Bou Said",
-          city: "Sidi Bou Said",
-          mapUrl: "https://maps.google.com"
-        },
-        {
-          title: "Mariage",
-          titleAr: "العرس",
-          date: "2027-08-12",
-          time: "20:00",
-          venue: "Dar Sidi Bou Said",
-          city: "Sidi Bou Said",
-          mapUrl: "https://maps.google.com"
-        }
-      ],
-      programmeSteps: [
-        { time: "17:00", name: "Sdek" },
-        { time: "18:00", name: "Reception" },
-        { time: "20:00", name: "Dinner" },
-        { time: "00:00", name: "Dance" }
-      ],
-      activeSections: ["hero", "our-story", "countdown", "celebrations", "dress-code", "programme", "rsvp", "footer"],
-      enablePetals: true,
-      enableBirds: true
-    };
-    setInvite((prev) => ({ ...prev, ...demoData }));
-  };
-
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F6F4EF] font-urbanist">
@@ -2475,41 +509,38 @@ function DigitalInviteEditorPage() {
     );
   }
 
-
   return (
-    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414] overflow-hidden flex flex-col h-screen">
-      <header className="border-b border-[#D8DDE2] bg-white px-6 py-4 shrink-0">
-        <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414]">
+      <header className="border-b border-[#D8DDE2] bg-white px-5 py-4">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="font-abhaya text-2xl font-semibold sm:text-3xl">
+            <div className="flex flex-wrap gap-2 text-sm font-semibold">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600"
+              >
+                <FiArrowLeft aria-hidden="true" /> Retour
+              </button>
+              <Link to="/dashboard" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
+                <FiFileText aria-hidden="true" /> Dashboard
+              </Link>
+              <Link to="/" className="inline-flex items-center gap-2 border border-[#D8DDE2] px-3 py-2 text-gray-600">
+                <FiHome aria-hidden="true" /> Site
+              </Link>
+            </div>
+            <h1 className="mt-2 lw-page-lg">
               {isEditing ? "Modifier l'invitation" : "Nouvelle invitation"}
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Personnalisez votre invitation en temps reel.
-            </p>
           </div>
+
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={handleResetChanges}
-              className="inline-flex items-center gap-2 border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
-              title="Réinitialiser toutes les modifications"
-            >
-              <FiRotateCcw aria-hidden="true" /> Réinitialiser
-            </button>
-            <button
-              type="button"
-              onClick={handleFillDemoData}
-              className="inline-flex items-center gap-2 border border-dashed border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-            >
-              Remplir Démo
-            </button>
             {dashboardPreviewPath ? (
               <Link
                 to={dashboardPreviewPath}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold hover:bg-gray-50"
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
               >
                 <FiExternalLink aria-hidden="true" /> Apercu
               </Link>
@@ -2519,375 +550,461 @@ function DigitalInviteEditorPage() {
                 type="button"
                 onClick={handlePublish}
                 disabled={saving}
-                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:text-gray-400"
+                className="inline-flex items-center gap-2 border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
               >
                 <FiUploadCloud aria-hidden="true" /> Publier
               </button>
             ) : null}
             <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(JSON.stringify(invite, null, 2));
-                alert("JSON copié !");
-              }}
-              className="inline-flex items-center gap-2 bg-gray-200 px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gray-800 hover:bg-gray-300"
-            >
-              Dev JSON
-            </button>
-            <button
               type="submit"
               form="digital-invite-form"
               disabled={saving}
-              className={`inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white transition-all disabled:cursor-not-allowed ${
-                saveSuccess ? "bg-emerald-600 hover:bg-emerald-700" : "bg-black hover:bg-gray-800 disabled:bg-gray-400"
-              }`}
+              className="inline-flex items-center gap-2 bg-black px-5 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
             >
-              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : saveSuccess ? "Enregistré ✓" : "Enregistrer"}
+              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
             </button>
           </div>
         </div>
       </header>
 
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-89px)] w-full overflow-hidden">
-        {/* Left Column: Form Settings */}
-        <div 
-          className="w-full h-full shrink-0 border-r border-[#D8DDE2] bg-white overflow-y-auto"
-          style={{ width: sidebarWidth }}
-        >
-          <form
-            id="digital-invite-form"
-            onSubmit={handleSubmit}
-            className="p-6 pb-24"
+      <form
+        id="digital-invite-form"
+        onSubmit={handleSubmit}
+        className="mx-auto grid w-full max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[1fr_360px]"
+      >
+        <section className="space-y-6">
+          {error ? (
+            <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
+              {error}
+            </div>
+          ) : null}
+
+          <EditorSection icon={FiSettings} title="Informations">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Prénom de la mariée (Épouse)">
+                <TextInput
+                  value={wife}
+                  onChange={(event) => {
+                    const newWife = event.target.value;
+                    updateInvite("coupleNames", newWife || husband ? `${newWife} & ${husband}` : "");
+                  }}
+                  onBlur={handleCoupleBlur}
+                  placeholder="Sarah"
+                  required
+                />
+              </Field>
+              <Field label="Prénom du marié (Époux)">
+                <TextInput
+                  value={husband}
+                  onChange={(event) => {
+                    const newHusband = event.target.value;
+                    updateInvite("coupleNames", wife || newHusband ? `${wife} & ${newHusband}` : "");
+                  }}
+                  onBlur={handleCoupleBlur}
+                  placeholder="Hedi"
+                  required
+                />
+              </Field>
+              <Field label="Slug du lien">
+                <TextInput
+                  value={invite.slug}
+                  onChange={(event) => updateInvite("slug", slugify(event.target.value))}
+                  placeholder="bilel-dorra"
+                  required
+                />
+              </Field>
+              <Field label="Email client (espace RSVP)">
+                <TextInput
+                  type="email"
+                  value={invite.clientEmail || ""}
+                  onChange={(event) =>
+                    updateInvite("clientEmail", event.target.value.trim().toLowerCase())
+                  }
+                  placeholder="client@email.com"
+                />
+              </Field>
+              <Field label="UID client Firebase (optionnel)">
+                <TextInput
+                  value={invite.clientUserId || ""}
+                  onChange={(event) => updateInvite("clientUserId", event.target.value.trim())}
+                  placeholder="uid Auth du client"
+                />
+              </Field>
+              <Field label="Template">
+                <select
+                  value={invite.template}
+                  onChange={(event) => handleTemplateChange(event.target.value)}
+                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                >
+                  {digitalInviteTemplates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <div className="flex items-end">
+                <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
+                  invite.status === "published"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : "border-amber-200 bg-amber-50 text-amber-800"
+                }`}>
+                  {invite.status === "published" ? "Publiee" : "Brouillon"}
+                </div>
+              </div>
+            </div>
+          </EditorSection>
+
+          <EditorSection icon={FiEdit2} title="Contenu">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Titre">
+                <TextInput
+                  value={invite.title}
+                  onChange={(event) => updateInvite("title", event.target.value)}
+                  required
+                />
+              </Field>
+              <Field label="RSVP">
+                <select
+                  value={invite.rsvpEnabled ? "yes" : "no"}
+                  onChange={(event) => updateInvite("rsvpEnabled", event.target.value === "yes")}
+                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                >
+                  <option value="yes">Actif</option>
+                  <option value="no">Masque</option>
+                </select>
+              </Field>
+              {isSidiBouSaid && (
+                <Field label="Ouverture Vidéo">
+                  <select
+                    value={invite.videoIntroEnabled !== false ? "yes" : "no"}
+                    onChange={(event) => updateInvite("videoIntroEnabled", event.target.value === "yes")}
+                    className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                  >
+                    <option value="yes">Actif</option>
+                    <option value="no">Masque</option>
+                  </select>
+                </Field>
+              )}
+            </div>
+          </EditorSection>
+
+          {!isSidiBouSaid && (
+            <EditorSection icon={FiMapPin} title="Date et lieu">
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Date">
+                  <TextInput
+                    type="date"
+                    value={invite.eventDate}
+                    onChange={(event) => handleDateChange(event.target.value)}
+                    required
+                  />
+                </Field>
+                <Field label="Heure">
+                  <TextInput
+                    value={invite.time}
+                    onChange={(event) => updateInvite("time", event.target.value)}
+                    placeholder="19H00"
+                  />
+                </Field>
+                <Field label="Ville">
+                  <TextInput
+                    value={invite.city}
+                    onChange={(event) => updateInvite("city", event.target.value)}
+                  />
+                </Field>
+                <Field label="Nom du lieu">
+                  <TextInput
+                    value={invite.venueName}
+                    onChange={(event) => updateInvite("venueName", event.target.value)}
+                  />
+                </Field>
+                <Field label="Label lieu">
+                  <TextInput
+                    value={invite.locationLabel}
+                    onChange={(event) => updateInvite("locationLabel", event.target.value)}
+                    placeholder="MALAGA"
+                  />
+                </Field>
+                <div className="md:col-span-2">
+                  <Field label="Lien Google Maps">
+                    <TextInput
+                      value={invite.mapUrl}
+                      onChange={(event) => updateInvite("mapUrl", event.target.value)}
+                      placeholder="https://maps.google.com"
+                    />
+                  </Field>
+                </div>
+              </div>
+            </EditorSection>
+          )}
+
+          <EditorSection
+            icon={FiClock}
+            title={isSidiBouSaid ? "Celebrations" : "Timeline"}
+            action={
+              <button
+                type="button"
+                onClick={addTimelineItem}
+                disabled={invite.timeline.length >= maxTimelineItems}
+                className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+              >
+                <FiPlus aria-hidden="true" /> {isSidiBouSaid ? "Add Event" : "Ajouter une etape"}
+              </button>
+            }
           >
-                    
             <div className="space-y-6">
-              {error ? (
-                <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700 rounded">
-                  {error}
-                </div>
-              ) : null}
-              {saveSuccess ? (
-                <div className="border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 rounded flex items-center justify-between">
-                  <span>✓ Invitation enregistrée avec succès !</span>
-                </div>
-              ) : null}
-
-              <EditorSection icon={FiSettings} title="Informations">
-                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Date de l'événement</label>
-                    <input
-                      type="date"
-                      value={invite.eventDate || ""}
-                      onChange={(event) => handleDateChange(event.target.value)}
-                      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
-                    />
-                  </div>
-                  <Field label="Nom de la mariée / Partenaire 1">
-                    <TextInput
-                      value={wife}
-                      onChange={(event) => handlePartnerNameChange(0, event.target.value)}
-                      placeholder="Sarah"
-                      required
-                    />
-                  </Field>
-                  <Field label="Nom du marié / Partenaire 2">
-                    <TextInput
-                      value={husband}
-                      onChange={(event) => handlePartnerNameChange(1, event.target.value)}
-                      placeholder="Hedi"
-                      required
-                    />
-                  </Field>
-                  <Field label="Slug du lien">
-                    <TextInput
-                      value={invite.slug || ""}
-                      onChange={(event) => updateInvite("slug", slugify(event.target.value))}
-                      placeholder="sarah-hedi"
-                      required
-                    />
-                  </Field>
-                  <Field label="Template">
-                    <select
-                      value={invite.template}
-                      onChange={(event) => handleTemplateChange(event.target.value)}
-                      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+              {invite.timeline.map((item, index) => (
+                <div 
+                  key={index} 
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`border border-[#E4E8EA] bg-[#FCFCFB] p-6 space-y-4 relative transition-all ${
+                    draggedIndex === index ? "opacity-40 border-dashed border-blue-500 scale-[0.98]" : ""
+                  }`}
+                >
+                  <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <div 
+                      className="flex items-center gap-2 cursor-pointer select-none grow"
+                      onClick={() => toggleEvent(index)}
                     >
-                      {digitalInviteTemplates.map((template) => (
-                        <option key={template.id} value={template.id}>
-                          {template.label}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Couleur d'arrière-plan">
-                    <div className="flex items-center gap-3 border border-[#D8DDE2] bg-white px-3 py-2">
-                      <input
-                        type="color"
-                        value={invite.backgroundColor || "#DCEBF0"}
-                        onChange={(e) => updateInvite("backgroundColor", e.target.value)}
-                        className="h-8 w-8 cursor-pointer border-0 p-0"
-                      />
-                      <span className="font-mono text-sm font-semibold uppercase text-gray-700">
-                        {invite.backgroundColor || "#DCEBF0"}
-                      </span>
-                    </div>
-                  </Field>
-                  <div className="flex items-end">
-                    <div className={`w-full border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] ${
-                      invite.status === "published"
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                        : "border-amber-200 bg-amber-50 text-amber-800"
-                    }`}>
-                      {invite.status === "published" ? "Publiee" : "Brouillon"}
-                    </div>
-                  </div>
-
-                  {/* Master Components Selection Menu (Figma node 1637:18) */}
-                  <div className="md:col-span-2 pt-6 mt-2 border-t border-[#D8DDE2]">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <FiLayers className="text-[#130554]" size={18} />
-                          <h4 className="text-sm font-bold text-gray-900 tracking-wide uppercase">
-                            Composants & Sections du modèle
-                          </h4>
-                          <span className="px-2.5 py-0.5 text-xs font-semibold bg-[#130554]/10 text-[#130554] rounded-full border border-[#130554]/20">
-                            {templateComponents.filter(c => c.isSupported && (currentActiveSections.includes(c.id) || (c.aliasIds && c.aliasIds.some(a => currentActiveSections.includes(a))))).length} / {templateComponents.filter(c => c.isSupported).length} actives
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Activez ou désactivez les blocs modulaires pour personnaliser l'invitation. Les sections cochées apparaissent ci-dessous dans <strong>Structure & Design</strong>.
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleEnableAllTemplateSections}
-                          className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors"
-                        >
-                          Tout activer
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleResetDefaultSections}
-                          className="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded transition-colors"
-                        >
-                          Par défaut
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Supported components grid */}
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {templateComponents.filter(c => c.isSupported).map((comp) => {
-                        const IconComp = COMPONENT_ICONS[comp.iconName] || FiLayers;
-                        const isSectionActive =
-                          currentActiveSections.includes(comp.id) ||
-                          (comp.aliasIds && comp.aliasIds.some((a) => currentActiveSections.includes(a)));
-
-                        return (
-                          <div
-                            key={comp.id}
-                            onClick={() => handleToggleSection(comp.id)}
-                            className={`p-3.5 rounded-lg border transition-all cursor-pointer flex flex-col justify-between select-none ${
-                              isSectionActive
-                                ? "bg-white border-[#130554] ring-1 ring-[#130554]/20 shadow-sm"
-                                : "bg-gray-50/70 border-gray-200 hover:border-gray-300 opacity-60"
+                      <FiMove className="text-gray-400 cursor-move shrink-0 hover:text-black animate-pulse" title="Faites glisser pour réorganiser" />
+                      {openEvents[index] ? (
+                        <FiChevronDown className="text-gray-500 shrink-0" />
+                      ) : (
+                        <FiChevronRight className="text-gray-500 shrink-0" />
+                      )}
+                      <h3 className="font-semibold text-lg">
+                        {isSidiBouSaid
+                          ? `Event ${index + 1} : ${item.title || "New Event"}`
+                          : `Etape ${index + 1} : ${
+                              fixedTimelineSteps.find(
+                                (s) => s.image === getTimelineStepKey(item, index)
+                              )?.title || "Nouvelle étape"
                             }`}
-                          >
-                            <div>
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex items-center gap-2.5">
-                                  <div
-                                    className={`w-7 h-7 rounded flex items-center justify-center shrink-0 transition-colors ${
-                                      isSectionActive ? "bg-[#130554] text-white" : "bg-gray-200 text-gray-600"
-                                    }`}
-                                  >
-                                    <IconComp size={14} />
-                                  </div>
-                                  <div>
-                                    <div className="text-xs font-bold text-gray-900 leading-tight">
-                                      {comp.label}
-                                    </div>
-                                    <div className="text-[10px] text-gray-500 font-mono mt-0.5">
-                                      {comp.figmaName}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div
-                                  className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors ${
-                                    isSectionActive
-                                      ? "bg-[#130554] text-white"
-                                      : "border border-gray-300 bg-white"
-                                  }`}
-                                >
-                                  {isSectionActive && <FiCheck size={12} />}
-                                </div>
-                              </div>
-
-                              <p className="text-[11px] text-gray-600 mt-2 leading-relaxed line-clamp-2">
-                                {comp.description}
-                              </p>
-                            </div>
-
-                            <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between">
-                              <span
-                                className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                                  isSectionActive
-                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                    : "bg-gray-100 text-gray-500"
-                                }`}
-                              >
-                                {isSectionActive ? "✓ Incluse" : "Exclue"}
-                              </span>
-                              <span className="text-[10px] text-gray-400 font-mono">
-                                {comp.id}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
+                      </h3>
                     </div>
-
-                    {/* Non-supported library components collapsible */}
-                    {templateComponents.some((c) => !c.isSupported) && (
-                      <details className="mt-4 pt-3 border-t border-dashed border-gray-200 group">
-                        <summary className="text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-800 flex items-center justify-between select-none">
-                          <span>Autres composants disponibles dans la bibliothèque ({templateComponents.filter((c) => !c.isSupported).length})</span>
-                          <FiChevronDown className="transition-transform group-open:rotate-180" />
-                        </summary>
-                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mt-3">
-                          {templateComponents
-                            .filter((c) => !c.isSupported)
-                            .map((comp) => {
-                              const IconComp = COMPONENT_ICONS[comp.iconName] || FiLayers;
-                              return (
-                                <div
-                                  key={comp.id}
-                                  className="p-3 rounded-lg border border-dashed border-gray-200 bg-gray-50/50 opacity-60 flex flex-col justify-between"
-                                >
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-6 h-6 rounded flex items-center justify-center bg-gray-200 text-gray-500 shrink-0">
-                                        <IconComp size={12} />
-                                      </div>
-                                      <div>
-                                        <div className="text-xs font-medium text-gray-700">{comp.label}</div>
-                                        <div className="text-[10px] text-gray-400 font-mono">{comp.figmaName}</div>
-                                      </div>
-                                    </div>
-                                    <p className="text-[11px] text-gray-500 mt-2 line-clamp-2 leading-relaxed">
-                                      {comp.description}
-                                    </p>
-                                  </div>
-                                  <div className="mt-2 text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded w-fit border border-amber-200 font-medium">
-                                    Non inclus dans ce modèle
-                                  </div>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      </details>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => removeTimelineItem(index)}
+                      disabled={invite.timeline.length <= 1}
+                      title="Supprimer"
+                      aria-label={`Supprimer l'etape ${index + 1}`}
+                      className="inline-flex h-8 w-8 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
+                    >
+                      <FiTrash2 aria-hidden="true" className="w-4 h-4" />
+                    </button>
                   </div>
+
+                  {openEvents[index] && (
+                    isSidiBouSaid ? (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <Field label="Title (English)">
+                          <TextInput
+                            value={item.title || ""}
+                            onChange={(event) => updateTimelineItem(index, "title", event.target.value)}
+                          />
+                        </Field>
+                        <Field label="Title (Arabic)">
+                          <TextInput
+                            value={item.titleAr || ""}
+                            onChange={(event) => updateTimelineItem(index, "titleAr", event.target.value)}
+                          />
+                        </Field>
+                        <Field label="Date (YYYY-MM-DD)">
+                          <TextInput
+                            type="date"
+                            value={item.date || ""}
+                            onChange={(event) => updateTimelineItem(index, "date", event.target.value)}
+                          />
+                        </Field>
+                        <Field label="Time">
+                          <TextInput
+                            value={item.time || ""}
+                            onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
+                          />
+                        </Field>
+                        <Field label="Venue Name">
+                          <TextInput
+                            value={item.venue || ""}
+                            onChange={(event) => updateTimelineItem(index, "venue", event.target.value)}
+                          />
+                        </Field>
+                        <Field label="City">
+                          <TextInput
+                            value={item.city || ""}
+                            onChange={(event) => updateTimelineItem(index, "city", event.target.value)}
+                          />
+                        </Field>
+                        <div className="md:col-span-2">
+                          <Field label="Google Maps URL">
+                            <TextInput
+                              value={item.mapUrl || ""}
+                              onChange={(event) => updateTimelineItem(index, "mapUrl", event.target.value)}
+                              placeholder="https://maps.google.com"
+                            />
+                          </Field>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid gap-3 md:grid-cols-[1fr_0.7fr] md:items-end">
+                        <Field label="Etape">
+                          <select
+                            value={getTimelineStepKey(item, index)}
+                            onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
+                            className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                          >
+                            {fixedTimelineSteps.map((step) => (
+                              <option key={step.image} value={step.image}>
+                                {step.title}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
+                        <Field label="Heure">
+                          <TextInput
+                            value={item.time}
+                            onChange={(event) => updateTimelineItem(index, "time", event.target.value)}
+                          />
+                        </Field>
+                      </div>
+                    )
+                  )}
                 </div>
+              ))}
+            </div>
+          </EditorSection>
+
+          {isSidiBouSaid && (
+            <>
+              <EditorSection icon={FiFileText} title="Dress Code">
+                <Field label="Description Dress Code">
+                  <TextInput
+                    value={invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire"}
+                    onChange={(event) => updateInvite("dressCodeText", event.target.value)}
+                    placeholder="We Request Attending The Outeya\nWith A Traditional Attire"
+                  />
+                </Field>
               </EditorSection>
 
-              <EditorSection
-                icon={FiLayers}
-                title="Structure & Design"
-                action={
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (window.confirm("Êtes-vous sûr de vouloir vider toutes les personnalisations de Structure & Design ?")) {
-                        updateInvite("styleOverrides", {});
-                      }
-                    }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer"
-                    title="Vider tous les styles, textes et positions personnalisés"
-                  >
-                    <FiTrash2 size={13} />
-                    Vider Structure & Design
-                  </button>
-                }
-              >
-                <div className="space-y-2">
-                  {SECTION_LIST.filter(s => currentActiveSections.includes(s.id) || s.id === 'settings').map(sec => (
-                    <div key={sec.id} className="border border-[#D8DDE2] bg-white">
-                        <button 
-                          type="button" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setExpandedSection(expandedSection === sec.id ? null : sec.id);
-                          }} 
-                          className="w-full flex items-center justify-between p-4 font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
-                        >
-                          <span className="flex items-center gap-2">
-                            {sec.label}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-normal px-2 py-0.5 bg-gray-100 text-gray-600 rounded">Actif</span>
-                            <FiChevronDown className={`transition-transform ${expandedSection === sec.id ? 'rotate-180' : ''}`} />
-                          </div>
-                        </button>
-                        
-                        {expandedSection === sec.id && (
-                          <div className="p-4 border-t border-[#D8DDE2] bg-[#F9FAF8]">
-                              <ElementMenu 
-                                sectionId={sec.id} 
-                                expandedElement={expandedElement} 
-                                setExpandedElement={setExpandedElement}
-                                invite={invite}
-                                addTimelineItem={addTimelineItem}
-                                updateInvite={updateInvite}
-                                handleMusicUpload={handleMusicUpload}
-                                uploadingMusic={uploadingMusic}
-                                handleVideoUpload={handleVideoUpload}
-                                uploadingVideo={uploadingVideo}
-                                updateTimelineItem={updateTimelineItem}
-                                removeTimelineItem={removeTimelineItem}
-                                handleMediaUpload={handleMediaUpload}
-                                uploadingMedia={uploadingMedia}
-                                FiPlus={FiPlus}
-                                FiTrash2={FiTrash2}
-                              />
-                          </div>
-                        )}
+              <EditorSection icon={FiClock} title="Programme">
+                <div className="grid gap-4">
+                  {(invite.programmeSteps || [
+                    { time: "17:00", name: "Sdek" },
+                    { time: "18:00", name: "Reception" },
+                    { time: "20:00", name: "Dinner" },
+                    { time: "00:00", name: "Dance" },
+                  ]).map((step, index) => (
+                    <div key={index} className="border p-4 rounded-md grid gap-3 md:grid-cols-2 bg-gray-50/50">
+                      <span className="font-semibold text-sm md:col-span-2 text-gray-700">Etape {index + 1}</span>
+                      <Field label="Heure">
+                        <TextInput
+                          value={step.time}
+                          onChange={(event) => {
+                            const steps = [...(invite.programmeSteps || [
+                              { time: "17:00", name: "Sdek" },
+                              { time: "18:00", name: "Reception" },
+                              { time: "20:00", name: "Dinner" },
+                              { time: "00:00", name: "Dance" },
+                            ])];
+                            steps[index] = { ...steps[index], time: event.target.value };
+                            updateInvite("programmeSteps", steps);
+                          }}
+                        />
+                      </Field>
+                      <Field label="Nom">
+                        <TextInput
+                          value={step.name}
+                          onChange={(event) => {
+                            const steps = [...(invite.programmeSteps || [
+                              { time: "17:00", name: "Sdek" },
+                              { time: "18:00", name: "Reception" },
+                              { time: "20:00", name: "Dinner" },
+                              { time: "00:00", name: "Dance" },
+                            ])];
+                            steps[index] = { ...steps[index], name: event.target.value };
+                            updateInvite("programmeSteps", steps);
+                          }}
+                        />
+                      </Field>
                     </div>
                   ))}
                 </div>
               </EditorSection>
-            </div>
-          </form>
-        </div>
-        
-        {/* Resizer Handle */}
-        <div
-          className="w-[1.5px] cursor-col-resize bg-gray-200 hover:bg-blue-400 active:bg-blue-600 transition-colors shrink-0 z-10"
-          onMouseDown={startResizing}
-        />
+            </>
+          )}
+        </section>
 
-        {/* Right Column: Isolated Iframe Preview */}
-        <div className="flex-1 overflow-y-auto relative bg-[#141414] h-full flex justify-center border-t border-gray-100">
-          <iframe
-            ref={iframeRef}
-            src="/iframe-preview"
-            title="Invitation Preview"
-            className="h-full border-none shadow-2xl mx-auto bg-white"
-            style={{ width: "430px", minWidth: "430px", maxWidth: "430px" }}
-          />
-        </div>
-      </div>
+        <aside className="h-fit border border-[#D8DDE2] bg-white p-5 shadow-sm lg:sticky lg:top-6">
+          <h2 className="lw-h1">{selectedTemplate.label}</h2>
+          <p className="mt-2 lw-body">{selectedTemplate.description}</p>
+          <div className="my-5 h-px bg-[#E4E8EA]" />
+          <h3 className="inline-flex items-center gap-2 lw-h2">
+            <FiLink aria-hidden="true" /> Lien public
+          </h3>
+          <p className="mt-3 break-all lw-body">
+            {publicUrl || "Le lien apparaitra apres avoir ajoute un slug."}
+          </p>
+          <div className="mt-5 grid gap-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+            >
+              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
+            </button>
+            {publicPath ? (
+              <>
+                <Link
+                  to={dashboardPreviewPath}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
+                >
+                  <FiExternalLink aria-hidden="true" /> Ouvrir l'apercu
+                </Link>
+                {invite.status !== "published" ? (
+                  <button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={saving}
+                    className="inline-flex items-center justify-center gap-2 border border-emerald-600 px-5 py-3 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                  >
+                    <FiUploadCloud aria-hidden="true" /> Publier
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-5 py-3 text-sm font-semibold"
+                >
+                  {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+                  {copied ? "Lien copie" : "Copier le lien"}
+                </button>
+              </>
+            ) : null}
+            <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-gray-600">
+              <div className="border border-[#E4E8EA] p-3">
+                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
+                  <FiCalendar aria-hidden="true" /> Date
+                </div>
+                {formatDateLabel(invite.eventDate) || "Non definie"}
+              </div>
+              <div className="border border-[#E4E8EA] p-3">
+                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
+                  <FiMapPin aria-hidden="true" /> Lieu
+                </div>
+                {invite.city || "Non defini"}
+              </div>
+            </div>
+          </div>
+        </aside>
+      </form>
     </main>
   );
-
 }
 
 export default DigitalInviteEditorPage;
-
-

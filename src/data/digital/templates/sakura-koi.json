@@ -1,0 +1,49 @@
+{
+  "id": "sakura-koi",
+  "label": "Sakura Koi",
+  "name": "Sakura Koi E-invite",
+  "price": "80",
+  "description": "Invitation digitale thème japonais Sakura Koi — enveloppe, story, RSVP.",
+  "features": ["Lien personnalise", "RSVP", "Formal invite", "Plan d'acces"],
+  "format": "Landing page",
+  "previewPath": "/digital-invitation/sakura-koi",
+  "sample": {
+    "template": "sakura-koi",
+    "status": "published",
+    "title": "Sakura Koi",
+    "coupleNames": "Mehdi & Camilia",
+    "eventDate": "2027-09-15",
+    "venueName": "Hôtel Golden Carthage",
+    "city": "Tunisia",
+    "locationLabel": "TUNISIA",
+    "time": "21H30",
+    "mapUrl": "https://maps.google.com",
+    "musicUrl": "/assets/audio/sakura-ambient.mp3",
+    "rsvpEnabled": true
+  },
+  "fixedText": {
+    "heroEyebrow": "Celebrate with us",
+    "countdown": "Countdown",
+    "formalInvite": "Formal Invite",
+    "ourStory": "Our Story",
+    "storyText": "We warmly invite you to celebrate our wedding day with us.",
+    "venue": "Venue",
+    "rsvp": "RSVP",
+    "seeYou": "See you there",
+    "openMaps": "Open in maps"
+  },
+  "design": {
+    "colors": {
+      "pageBackground": "#ffffff",
+      "accent": "#a56c64",
+      "text": "#4e4e4e",
+      "rsvpBg": "#ecdfdf",
+      "button": "#ecdfdf"
+    },
+    "fonts": {
+      "script": "\"Gwendolyn\", cursive",
+      "serif": "\"Cormorant Garamond\", serif"
+    },
+    "card": { "maxWidth": 430 }
+  }
+}

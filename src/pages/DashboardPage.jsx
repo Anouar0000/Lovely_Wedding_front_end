@@ -13,6 +13,7 @@ import {
   FiSearch,
   FiUploadCloud,
   FiTrash2,
+  FiUsers,
 } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
 import sampleInvites from "../data/digital/instances.json";
@@ -60,30 +61,45 @@ function DashboardPage() {
   );
 
   const loadInvites = useCallback(async () => {
+    if (!user?.uid) {
+      setInvites([]);
+      setLoading(false);
+      return;
+    }
+
     setError("");
     setLoading(true);
 
     try {
-      const items = await listDigitalInvites();
+      const items = await listDigitalInvites(user.uid);
       setInvites(items);
     } catch (loadError) {
       setError("Impossible de charger les invitations depuis Firestore.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.uid]);
 
   useEffect(() => {
     loadInvites();
   }, [loadInvites]);
 
   const handleAddSample = async () => {
+    if (!user?.uid) {
+      setError("Connexion requise.");
+      return;
+    }
+
     const sampleInvite = sampleInvites[0];
     setBusyId(sampleInvite.slug);
     setError("");
 
     try {
-      await saveDigitalInvite(sampleInvite.slug, { ...sampleInvite, status: "draft" });
+      await saveDigitalInvite(sampleInvite.slug, {
+        ...sampleInvite,
+        status: "draft",
+        ownerId: user.uid,
+      });
       await loadInvites();
     } catch (saveError) {
       setError("Impossible d'ajouter l'exemple dans Firestore.");
@@ -169,29 +185,29 @@ function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F6F7F5] font-urbanist text-[#141414]">
-      <header className="border-b border-[#D8DDE2] bg-white px-5 py-4">
+    <main className="min-h-screen bg-white font-urbanist text-lw-text">
+      <header className="border-b border-lw-line bg-white px-5 py-4">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#42625B]">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-lw-accent">
               Lovely Wedding
             </p>
-            <h1 className="font-abhaya text-3xl leading-none">Dashboard</h1>
+            <h1 className="lw-page">Dashboard</h1>
           </div>
 
           <div className="flex flex-wrap justify-end gap-2">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 border border-[#D8DDE2] px-4 py-2 text-sm font-semibold"
+              className="inline-flex items-center gap-2 rounded-[5px] border border-lw-line px-4 py-2 text-sm font-semibold"
             >
               <FiHome aria-hidden="true" /> Site
             </Link>
             <button
               type="button"
               onClick={logout}
-              className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold"
+              className="inline-flex items-center gap-2 rounded-[5px] bg-lw-accent px-4 py-2 text-sm font-bold uppercase text-white hover:bg-lw-accentDark"
             >
-              <FiLogOut aria-hidden="true" /> Deconnexion
+              <FiLogOut aria-hidden="true" /> Déconnexion
             </button>
           </div>
         </div>
@@ -200,15 +216,15 @@ function DashboardPage() {
       <section className="mx-auto w-full max-w-6xl px-5 py-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-abhaya text-4xl leading-none">Invitations digitales</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Connecte en tant que {user?.email || "admin"}.
+            <h2 className="lw-page-lg">Invitations digitales</h2>
+            <p className="mt-2 lw-body">
+              Connecté en tant que {user?.email || "admin"}.
             </p>
           </div>
 
           <Link
             to="/dashboard/invitations/new"
-            className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white"
+            className="inline-flex items-center justify-center gap-2 rounded-[5px] bg-lw-accent px-5 py-3 text-sm font-bold uppercase tracking-wide text-white hover:bg-lw-accentDark"
           >
             <FiPlus aria-hidden="true" /> Nouvelle invitation
           </Link>
@@ -216,20 +232,20 @@ function DashboardPage() {
 
         <div className="mb-4 grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-center">
           <label className="relative block">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-lw-muted" aria-hidden="true" />
             <input
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Rechercher"
-              className="w-full border border-[#D8DDE2] bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-black"
+              className="w-full rounded-[5px] border border-lw-line bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-lw-accent"
             />
           </label>
 
-          <div className="flex overflow-hidden border border-[#D8DDE2] bg-white text-sm font-semibold">
+          <div className="flex overflow-hidden rounded-[5px] border border-lw-line bg-white text-sm font-semibold">
             {[
               ["all", `Tout ${statusCounts.all}`],
-              ["published", `Publiees ${statusCounts.published}`],
+              ["published", `Publiées ${statusCounts.published}`],
               ["draft", `Brouillons ${statusCounts.draft}`],
             ].map(([value, label]) => (
               <button
@@ -237,7 +253,7 @@ function DashboardPage() {
                 type="button"
                 onClick={() => setStatusFilter(value)}
                 className={`px-4 py-3 ${
-                  statusFilter === value ? "bg-black text-white" : "text-gray-600"
+                  statusFilter === value ? "bg-lw-accent text-white" : "text-lw-muted"
                 }`}
               >
                 {label}
@@ -248,14 +264,14 @@ function DashboardPage() {
           <button
             type="button"
             onClick={loadInvites}
-            className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] bg-white px-4 py-3 text-sm font-semibold"
+            className="inline-flex items-center justify-center gap-2 rounded-[5px] border border-lw-line bg-white px-4 py-3 text-sm font-semibold"
           >
             <FiRefreshCw aria-hidden="true" /> Actualiser
           </button>
         </div>
 
-        <div className="border border-[#D8DDE2] bg-white shadow-sm">
-          <div className="grid grid-cols-1 gap-4 border-b border-[#E4E8EA] bg-[#F9FAF8] px-5 py-4 text-sm font-semibold text-gray-500 md:grid-cols-[1.25fr_0.75fr_0.55fr_1fr]">
+        <div className="overflow-hidden rounded-[8px] border border-lw-line bg-white shadow-sm">
+          <div className="grid grid-cols-1 gap-4 border-b border-lw-line bg-lw-surface px-5 py-4 text-sm font-semibold text-lw-muted md:grid-cols-[1.25fr_0.75fr_0.55fr_1fr]">
             <span>Client</span>
             <span>Template</span>
             <span>Status</span>
@@ -276,8 +292,8 @@ function DashboardPage() {
 
           {!loading && invites.length === 0 ? (
             <div className="px-5 py-12 text-center">
-              <h3 className="font-abhaya text-3xl">Aucune invitation</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-600">
+              <h3 className="lw-h1">Aucune invitation</h3>
+              <p className="mx-auto mt-2 max-w-md lw-body">
                 Ajoute l'exemple Dolce Vita dans Firestore pour tester le dashboard et le lien
                 public.
               </p>
@@ -294,8 +310,8 @@ function DashboardPage() {
 
           {!loading && invites.length > 0 && filteredInvites.length === 0 ? (
             <div className="px-5 py-12 text-center">
-              <h3 className="font-abhaya text-3xl">Aucun resultat</h3>
-              <p className="mt-2 text-sm text-gray-600">Modifie la recherche ou le filtre.</p>
+              <h3 className="lw-h1">Aucun resultat</h3>
+              <p className="mt-2 lw-body">Modifie la recherche ou le filtre.</p>
             </div>
           ) : null}
 
@@ -329,6 +345,14 @@ function DashboardPage() {
                     </span>
                   </span>
                   <div className="flex flex-wrap gap-2">
+                    <Link
+                      to={`/dashboard/invitations/${invite.id}/rsvp`}
+                      title="RSVP"
+                      aria-label={`RSVP ${invite.coupleNames || invite.slug}`}
+                      className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
+                    >
+                      <FiUsers aria-hidden="true" />
+                    </Link>
                     <Link
                       to={`/dashboard/invitations/${invite.id}/edit`}
                       title="Modifier"

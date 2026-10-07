@@ -1,114 +1,121 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import PhysicalHomePage from './pages/PhysicalHomePage';
 import CanvasContainer from './pages/CanvasContainer';
 import InvitationsPhysiquePage from './pages/InvitationsPhysiquePage';
 import InvitationsDigitalPage from './pages/InvitationsDigitalPage';
 import DolceVitaInvitePage from './pages/DolceVitaInvitePage';
 import SidiBouSaidInvitePage from './pages/SidiBouSaidInvitePage';
-import SidiBouSaidFigmaMirror from './pages/SidiBouSaidFigmaMirror';
-import BrezzaMarinaInvitePage from './pages/BrezzaMarinaInvitePage';
-import BrezzaMarinaFigmaMirror from './pages/BrezzaMarinaFigmaMirror';
-import BridgertonInvitePage from './pages/BridgertonInvitePage';
-import BridgertonFigmaMirror from './pages/BridgertonFigmaMirror';
-import CelestialInvitePage from './pages/CelestialInvitePage';
-import CelestialFigmaMirror from './pages/CelestialFigmaMirror';
-import MajesticWhiteInvitePage from './pages/MajesticWhiteInvitePage';
-import MajesticWhiteFigmaMirror from './pages/MajesticWhiteFigmaMirror';
 import ClubCapriInvitePage from './pages/ClubCapriInvitePage';
-import ClubCapriFigmaMirror from './pages/ClubCapriFigmaMirror';
+import SakuraKoiInvitePage from './pages/SakuraKoiInvitePage';
+import BridgertonInvitePage from './pages/BridgertonInvitePage';
+import MajesticWhiteInvitePage from './pages/MajesticWhiteInvitePage';
 import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
+import { CartProvider } from './context/CartContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 import DashboardPage from './pages/DashboardPage';
+import DashboardRsvpPage from './pages/DashboardRsvpPage';
+import ClientEspacePage from './pages/ClientEspacePage';
 import DigitalInviteEditorPage from './pages/DigitalInviteEditorPage';
 import InvitationModelPage from "./pages/InvitationModelPage";
 import PersonalizeInvitationPage from "./pages/PersonalizeInvitationPage";
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import PaymentResultPage from './pages/PaymentResultPage';
 import TestPDFDownload from './pages/TestPDFDownload';
-import IframePreviewPage from './pages/IframePreviewPage';
-
-
-function ScrollToTop() {
-  const { pathname, search } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [pathname, search]);
-
-  return null;
-}
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/canvas" element={<CanvasContainer />} />
-          <Route path="/invitations-physique" element={<InvitationsPhysiquePage />} />
-          <Route path="/invitations-digital" element={<InvitationsDigitalPage />} />
-          <Route path="/e/:slug" element={<SharedDigitalInvitePage />} />
-          <Route path="/invitations-digital/e/:slug" element={<SharedDigitalInvitePage />} />
-          <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
-          <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
-          <Route path="/digital-invitation/brezza-marina" element={<BrezzaMarinaInvitePage />} />
-          <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
-          <Route path="/digital-invitation/celestial" element={<CelestialInvitePage />} />
-          <Route path="/digital-invitation/majestic-white" element={<MajesticWhiteInvitePage />} />
-          <Route path="/digital-invitation/club-capri" element={<ClubCapriInvitePage />} />
-          <Route path="/sidi-bou-said-mirror" element={<SidiBouSaidFigmaMirror />} />
-          <Route path="/brezza-marina-mirror" element={<BrezzaMarinaFigmaMirror />} />
-          <Route path="/bridgerton-mirror" element={<BridgertonFigmaMirror />} />
-          <Route path="/celestial-mirror" element={<CelestialFigmaMirror />} />
-          <Route path="/digital-invitation/mirror/celestial" element={<CelestialFigmaMirror />} />
-          <Route path="/majestic-white-mirror" element={<MajesticWhiteFigmaMirror />} />
-          <Route path="/digital-invitation/mirror/majestic-white" element={<MajesticWhiteFigmaMirror />} />
-          <Route path="/club-capri-mirror" element={<ClubCapriFigmaMirror />} />
-          <Route path="/digital-invitation/mirror/club-capri" element={<ClubCapriFigmaMirror />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/invitations/new"
-            element={
-              <ProtectedRoute>
-                <DigitalInviteEditorPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/invitations/:id/edit"
-            element={
-              <ProtectedRoute>
-                <DigitalInviteEditorPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/invitations/:id/preview"
-            element={
-              <ProtectedRoute>
-                <SharedDigitalInvitePage allowDraft previewMode lookupById />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/iframe-preview"
-            element={<IframePreviewPage />}
-          />
-          <Route path="/invitation-model/:modelName" element={<InvitationModelPage />} />
-          <Route path="/personalize" element={<PersonalizeInvitationPage />} />
-          <Route path="/pdf-test" element={<TestPDFDownload />} />
-          <Route path="/:slug" element={<SharedDigitalInvitePage />} />
-        </Routes>
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/imprimee" element={<PhysicalHomePage />} />
+            <Route path="/canvas" element={<CanvasContainer />} />
+            <Route path="/invitations-physique" element={<InvitationsPhysiquePage />} />
+            <Route path="/invitations-digital" element={<InvitationsDigitalPage />} />
+            <Route path="/e/:slug" element={<SharedDigitalInvitePage />} />
+            <Route path="/invitations-digital/e/:slug" element={<SharedDigitalInvitePage />} />
+            <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
+            <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
+            <Route path="/digital-invitation/club-capri" element={<ClubCapriInvitePage />} />
+            <Route path="/digital-invitation/sakura-koi" element={<SakuraKoiInvitePage />} />
+            <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
+            <Route path="/digital-invitation/majestic-white" element={<MajesticWhiteInvitePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment/result" element={<PaymentResultPage />} />
+            <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+            <Route
+              path="/espace-client"
+              element={
+                <ProtectedRoute>
+                  <ClientEspacePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/espace-client/invitations/:id/rsvp"
+              element={
+                <ProtectedRoute>
+                  <DashboardRsvpPage clientMode />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/invitations/new"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <DigitalInviteEditorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/invitations/:id/edit"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <DigitalInviteEditorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/invitations/:id/rsvp"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <DashboardRsvpPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/invitations/:id/preview"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <SharedDigitalInvitePage allowDraft previewMode lookupById />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/invitation-model/:modelName" element={<InvitationModelPage />} />
+            <Route path="/personalize" element={<PersonalizeInvitationPage />} />
+            <Route path="/pdf-test" element={<TestPDFDownload />} />
+            <Route path="/:slug" element={<SharedDigitalInvitePage />} />
+          </Routes>
+        </CartProvider>
       </AuthProvider>
     </Router>
   );

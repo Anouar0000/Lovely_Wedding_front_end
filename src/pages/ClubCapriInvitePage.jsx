@@ -1,2019 +1,659 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import templateConfig from "../data/digital/templates/club-capri.json";
+import { submitRsvpResponse } from "../services/rsvp";
+import { isFirebaseConfigured } from "../lib/firebase";
 
-// Assets for Club Capri Template
-import heroBg from "../assets/digital/club-capri/hero-bg.png";
-import cassetteImg from "../assets/digital/club-capri/cassette.png";
-import arrowDownSvg from "../assets/digital/club-capri/arrow-down.svg";
-import boatImg from "../assets/digital/club-capri/boat.png";
-import stripesLeft from "../assets/digital/club-capri/stripes-left.svg";
-import stripesRight from "../assets/digital/club-capri/stripes-right.svg";
-import stripesBottom from "../assets/digital/club-capri/stripes-bottom.svg";
-import postcardPhoto1Default from "../assets/digital/club-capri/postcard-photo-1.png";
-import postcardPhoto2Default from "../assets/digital/club-capri/postcard-photo-2.png";
+import heroSea from "../assets/digital/club-capri/hero-sea.png";
+import cassette from "../assets/digital/club-capri/cassette-cut.png";
+import boat from "../assets/digital/club-capri/boat-cut.png";
+import photoWedding from "../assets/digital/club-capri/postcard-photo-1.png";
+import photoHenna from "../assets/digital/club-capri/postcard-photo-2.png";
+import stampFrame from "../assets/digital/club-capri/stamp-frame.svg";
 import postmark1Svg from "../assets/digital/club-capri/postmark-1.svg";
 import postmark2Svg from "../assets/digital/club-capri/postmark-2.svg";
 import stampSunImg from "../assets/digital/club-capri/stamp-sun.png";
 import stampCapriImg from "../assets/digital/club-capri/stamp-capri.png";
 import stampCocktailImg from "../assets/digital/club-capri/stamp-cocktail.png";
-import dressCodeFamilyDefault from "../assets/digital/club-capri/dress-code-family.png";
-import rsvpBgImg from "../assets/digital/club-capri/rsvp-bg.png";
-import stampFrameSvg from "../assets/digital/club-capri/stamp-frame.svg";
-import maskingTapeImg from "../assets/digital/club-capri/masking-tape.png";
-import lifebuoyImg from "../assets/digital/club-capri/lifebuoy.png";
-
-// Exact 1:1 Vector Text from Figma
+import rsvpBg from "../assets/digital/club-capri/rsvp-bg.png";
+import lifebuoy from "../assets/digital/club-capri/lifebuoy.png";
+import tape from "../assets/digital/club-capri/tape.png";
+import family from "../assets/digital/club-capri/family.png";
 import heroTitleSvg from "../assets/digital/club-capri/svg_text/hero-title.svg";
+import chedySvg from "../assets/digital/club-capri/svg_text/chedy.svg";
+import helaSvg from "../assets/digital/club-capri/svg_text/hela.svg";
 import joinUsTitleSvg from "../assets/digital/club-capri/svg_text/join-us-title.svg";
 import juneTitleSvg from "../assets/digital/club-capri/svg_text/june-title.svg";
 import theDayTitleSvg from "../assets/digital/club-capri/svg_text/the-day-title.svg";
 import celebrationsTitleSvg from "../assets/digital/club-capri/svg_text/celebrations-title.svg";
-import dressCodeTitleSvg from "../assets/digital/club-capri/svg_text/dress-code-title.svg";
-import casualChicTitleSvg from "../assets/digital/club-capri/svg_text/casual-chic-title.svg";
-import arrivalTitleSvg from "../assets/digital/club-capri/svg_text/arrival-title.svg";
-import rsvpTitleSvg from "../assets/digital/club-capri/svg_text/rsvp-title.svg";
-import clubCapriTitleSvg from "../assets/digital/club-capri/svg_text/club-capri-title.svg";
-import chedySvg from "../assets/digital/club-capri/svg_text/chedy.svg";
-import helaSvg from "../assets/digital/club-capri/svg_text/hela.svg";
 import postcardTitle1Svg from "../assets/digital/club-capri/svg_text/postcard-title-1.svg";
-import weddingTitleSvg from "../assets/digital/club-capri/svg_text/wedding-title.svg";
-import postcardWeddingTextSvg from "../assets/digital/club-capri/svg_text/postcard-wedding-text.svg";
 import postcardTitle2Svg from "../assets/digital/club-capri/svg_text/postcard-title-2.svg";
+import weddingTitleSvg from "../assets/digital/club-capri/svg_text/wedding-title.svg";
 import hennaTitleSvg from "../assets/digital/club-capri/svg_text/henna-title.svg";
-import postcardHennaTextSvg from "../assets/digital/club-capri/svg_text/postcard-henna-text.svg";
+import stripesLeft from "../assets/digital/club-capri/stripes-left.svg";
+import stripesRight from "../assets/digital/club-capri/stripes-right.svg";
+import arrowDownSvg from "../assets/digital/club-capri/arrow-down.svg";
+import DigitalInviteEntrance from "../components/digital/DigitalInviteEntrance";
+import AudioPlayer from "../components/audio/AudioPlayer";
 
-const CANVAS_WIDTH = 430;
-const CANVAS_HEIGHT = 3454;
+const ENTRANCE_VIDEO = "/assets/digital/club-capri/entrance.mp4";
 
-// Colors
-const COLOR_WHITE = "#FFFFFF";
-const COLOR_CREAM = "#FFFBF0";
-const COLOR_NAVY = "#083B50";
-const COLOR_MUTED_GOLD = "#F7EDBC";
-const COLOR_TAPE_TEXT = "#E5E2DD";
-const COLOR_LIGHT_BLUE = "#C0D5D8";
-const COLOR_TEAL = "#427D8D";
+const defaultInvite = templateConfig.sample;
+const fixedText = templateConfig.fixedText;
+const C = {
+  page: "#fffbf0",
+  ink: "#083b50",
+  cream: "#f7edbc",
+  soft: "#e5e2dd",
+  stripe: "#c0d5d8",
+  button: "#c0d5d8",
+  brand: "#427d8d",
+};
+const F = {
+  script: '"Great Vibes", cursive',
+  serif: '"Cinzel", serif',
+  mono: '"Roboto Mono", monospace',
+};
+const PAGE_W = 430;
 
-// Typography
-const FONT_PERPETUA = "'Perpetua Titling MT', 'Perpetua', 'Cinzel', serif";
-const FONT_IMPERIAL = "'Imperial Script', cursive";
-const FONT_ROBOTO_MONO = "'Roboto Mono', monospace";
-
-const figmaBox = ({ x, y, width, height, zIndex = 2, extra = {} }) => ({
-  position: "absolute",
-  left: `${x}px`,
-  top: `${y}px`,
-  width: width !== undefined ? `${width}px` : "auto",
-  height: height !== undefined ? `${height}px` : "auto",
-  maxWidth: "none",
-  zIndex,
-  boxSizing: "border-box",
-  ...extra,
-});
-
-export default function ClubCapriInvitePage({
-  invite,
-  editable = false,
-  activeSection = null,
-  onSelectElement = null,
-  selectedElementId = null,
-}) {
-  const currentInvite = invite || templateConfig.sample;
-  const overrides = currentInvite.styleOverrides || {};
-
-  const getText = (id, fallback) => {
-    const custom = overrides[id]?.text;
-    if (custom !== undefined && custom !== null && custom !== "") {
-      return custom;
-    }
-    return fallback;
+const getCountdown = (dateString) => {
+  if (!dateString) return { days: "00", hours: "00", minutes: "00" };
+  const target = new Date(`${dateString}T00:00:00`);
+  const diff = Math.max(target.getTime() - Date.now(), 0);
+  return {
+    days: String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, "0"),
+    hours: String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, "0"),
+    minutes: String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, "0"),
   };
+};
 
-  // Responsive scale for mobile
-  const [scale, setScale] = useState(1);
+const getMonthLabel = (dateString) => {
+  if (!dateString) return "June";
+  const d = new Date(`${dateString}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? "June" : d.toLocaleString("en", { month: "long" });
+};
+
+const splitNames = (coupleNames) => {
+  const [left = "Chedy", right = "Hela"] = (coupleNames || "Chedy & Hela").split(/\s*&\s*|\s+et\s+/i);
+  return { left: left.trim(), right: right.trim() };
+};
+
+function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [guestCount, setGuestCount] = useState("1");
+  const [attending, setAttending] = useState(true);
+  const [rsvpStatus, setRsvpStatus] = useState("");
+  const [rsvpError, setRsvpError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [entered, setEntered] = useState(false);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const musicPlayerRef = useRef(null);
   const canvasRef = useRef(null);
+  const musicUrl = invite.musicUrl || defaultInvite.musicUrl || "";
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window !== "undefined") {
-        const availableWidth = window.innerWidth;
-        if (!editable && availableWidth < CANVAS_WIDTH) {
-          setScale(availableWidth / CANVAS_WIDTH);
-        } else {
-          setScale(1);
-        }
-      }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [editable]);
-
-  // Style getter with user overrides
-  const getStyle = (id, baseStyle) => {
-    const user = overrides[id] || {};
-    const computed = { ...baseStyle };
-
-    if (user.color) computed.color = user.color;
-    if (user.fontSize) computed.fontSize = `${user.fontSize}px`;
-    if (user.fontFamily) computed.fontFamily = user.fontFamily;
-    if (user.textAlign) computed.textAlign = user.textAlign;
-    if (user.fontWeight) computed.fontWeight = user.fontWeight;
-    if (user.letterSpacing) computed.letterSpacing = user.letterSpacing;
-    if (user.lineHeight) computed.lineHeight = user.lineHeight;
-
-    return computed;
-  };
-
-  // Click handler for editable elements
-  const handleElementClick = (elementId, sectionId) => {
-    if (editable && onSelectElement) {
-      onSelectElement(elementId, sectionId);
-    }
-  };
-
-  const getElementHighlightStyle = (elementId) => {
-    if (!editable) return {};
-    const isSelected = selectedElementId === elementId;
-    return {
-      outline: isSelected ? "2px solid #083B50" : "1px dashed rgba(8, 59, 80, 0.4)",
-      outlineOffset: "2px",
-      cursor: "pointer",
-      transition: "outline 0.15s ease",
-    };
-  };
-
-  // Dynamic values
-  const groomName = currentInvite.groomName || "Chedy";
-  const brideName = currentInvite.brideName || "HELA";
-  const eventDate = currentInvite.eventDate || "2026-06-15";
-
-  // Real-time Countdown state
-  const [timeLeft, setTimeLeft] = useState({
-    days: "60",
-    hours: "05",
-    minutes: "32",
+  // Scale canvas 430px → largeur téléphone (évite overflow / inclinaison)
+  const [scale, setScale] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
+    return w > 0 && w < PAGE_W ? w / PAGE_W : 1;
   });
+  const [contentH, setContentH] = useState(3200);
+
+  const inviteId = invite.id || invite.slug || "";
+  const canSubmitRsvp = Boolean(invite.ownerId && inviteId && isFirebaseConfigured && !previewMode);
+  const countdown = getCountdown(invite.eventDate);
+  const month = getMonthLabel(invite.eventDate);
+  const names = useMemo(() => splitNames(invite.coupleNames || defaultInvite.coupleNames), [invite.coupleNames]);
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const target = new Date(eventDate).getTime();
-      const now = new Date().getTime();
-      const difference = target - now;
-
-      if (difference > 0) {
-        const d = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const h = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((difference / 1000 / 60) % 60);
-        setTimeLeft({
-          days: String(d).padStart(2, "0"),
-          hours: String(h).padStart(2, "0"),
-          minutes: String(m).padStart(2, "0"),
-        });
-      } else {
-        setTimeLeft({ days: "00", hours: "00", minutes: "00" });
-      }
+    const html = document.documentElement;
+    const body = document.body;
+    const root = document.getElementById("root");
+    html.classList.add("hide-scrollbar");
+    body.classList.add("hide-scrollbar");
+    root?.classList.add("hide-scrollbar");
+    const prev = {
+      htmlOverflowX: html.style.overflowX,
+      bodyOverflowX: body.style.overflowX,
     };
+    html.style.overflowX = "hidden";
+    body.style.overflowX = "hidden";
+    window.scrollTo(0, 0);
+    return () => {
+      html.classList.remove("hide-scrollbar");
+      body.classList.remove("hide-scrollbar");
+      root?.classList.remove("hide-scrollbar");
+      html.style.overflowX = prev.htmlOverflowX;
+      body.style.overflowX = prev.bodyOverflowX;
+    };
+  }, []);
 
-    calculateTimeLeft();
-    const interval = setInterval(calculateTimeLeft, 1000 * 60);
-    return () => clearInterval(interval);
-  }, [eventDate]);
+  useLayoutEffect(() => {
+    const updateScale = () => {
+      const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
+      setScale(w > 0 && w < PAGE_W ? w / PAGE_W : 1);
+    };
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    window.addEventListener("orientationchange", updateScale);
+    return () => {
+      window.removeEventListener("resize", updateScale);
+      window.removeEventListener("orientationchange", updateScale);
+    };
+  }, []);
 
-  // Audio Cassette state
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null);
+  useLayoutEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return undefined;
+    const measure = () => setContentH(el.scrollHeight || el.offsetHeight || 3200);
+    measure();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    return () => ro?.disconnect();
+  }, [entered]);
 
-  const toggleCassetteAudio = () => {
-    if (currentInvite.musicUrl && audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioRef.current.play();
-        setIsPlaying(true);
-      }
-    } else {
-      setIsPlaying(!isPlaying);
+  useEffect(() => {
+    if (!entered) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      window.scrollTo(0, 0);
+      return () => {
+        document.body.style.overflow = prev;
+      };
     }
-  };
+    window.scrollTo(0, 0);
+    return undefined;
+  }, [entered]);
 
-  // RSVP Form State
-  const [guestAttendance, setGuestAttendance] = useState("yes"); // 'yes' or 'no'
-  const [guestName, setGuestName] = useState("");
-  const [guestPassword, setGuestPassword] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
-  const [guestCount, setGuestCount] = useState("");
-  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
-  const [rsvpSuccess, setRsvpSuccess] = useState(false);
+  const celebrations = [
+    {
+      label: "wedding",
+      postcardTitle: postcardTitle1Svg,
+      labelSvg: weddingTitleSvg,
+      labelW: 110,
+      addressLines: ["Dar Bouraoui Carthage", "Malaga", "18h"],
+      image: photoWedding,
+      postmark: postmark1Svg,
+      stampA: stampSunImg,
+      stampB: stampCapriImg,
+    },
+    {
+      label: "henna",
+      postcardTitle: postcardTitle2Svg,
+      labelSvg: hennaTitleSvg,
+      labelW: 79,
+      addressLines: ["Dar Bouraoui Carthage", "Malaga", "18h"],
+      image: photoHenna,
+      postmark: postmark2Svg,
+      stampA: stampCocktailImg,
+      stampB: stampCapriImg,
+    },
+  ];
 
-  const handleRsvpSubmit = (e) => {
-    e?.preventDefault?.();
-    if (!guestName.trim()) {
-      alert("Veuillez indiquer votre nom.");
+  const handleRsvpSubmit = async (event) => {
+    event.preventDefault();
+    setRsvpError("");
+    setRsvpStatus("");
+    if (!canSubmitRsvp) {
+      setRsvpError("RSVP disponible sur le lien publié de l'invitation (dashboard).");
       return;
     }
-    setRsvpSubmitting(true);
-    setTimeout(() => {
-      setRsvpSubmitting(false);
-      setRsvpSuccess(true);
-      setTimeout(() => setRsvpSuccess(false), 5000);
-    }, 700);
+    setSubmitting(true);
+    try {
+      await submitRsvpResponse({
+        inviteId,
+        ownerId: invite.ownerId,
+        clientUserId: invite.clientUserId || "",
+        clientEmail: invite.clientEmail || "",
+        inviteSlug: invite.slug || inviteId,
+        fullName,
+        email,
+        phone,
+        guestCount,
+        attending,
+      });
+      setRsvpStatus("Merci ! Votre réponse a bien été enregistrée.");
+      setFullName("");
+      setEmail("");
+      setPhone("");
+      setGuestCount("1");
+      setAttending(true);
+    } catch (error) {
+      setRsvpError(error.message || "Impossible d'enregistrer le RSVP.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  // Images with overrides
-  const boatImgSrc = overrides["boat-photo"]?.image || overrides["boat-photo"]?.url || currentInvite.boatPhoto || boatImg;
-  const photo1Src = overrides["postcard-photo-1"]?.image || overrides["postcard-photo-1"]?.url || currentInvite.postcard1Photo || postcardPhoto1Default;
-  const photo2Src = overrides["postcard-photo-2"]?.image || overrides["postcard-photo-2"]?.url || currentInvite.postcard2Photo || postcardPhoto2Default;
-  const dressCodeFamilySrc = overrides["dress-code-photo"]?.image || overrides["dress-code-photo"]?.url || currentInvite.dressCodePhoto || dressCodeFamilyDefault;
-
-  // Volume indicator ticks
-  const volumeTicks = [183, 193, 203, 213, 223, 233, 243, 253, 263, 273, 283];
-
   return (
+    <>
+      {!entered ? (
+        <DigitalInviteEntrance
+          video={`${ENTRANCE_VIDEO}?v=1`}
+          alt="Club Capri invitation entrance"
+          openLabel="Ouvrir l'invitation"
+          background="#0a0a0a"
+          autoOpenAfterMs={4000}
+          onOpen={() => {
+            window.scrollTo(0, 0);
+            setEntered(true);
+          }}
+        />
+      ) : null}
+      <AudioPlayer
+        ref={musicPlayerRef}
+        src={musicUrl}
+        active={entered && Boolean(musicUrl)}
+        themeColor={C.brand}
+        onPlayingChange={setMusicPlaying}
+      />
     <div
+      className="mx-auto overflow-hidden hide-scrollbar"
       style={{
         position: "relative",
-        width: "100%",
-        minHeight: "100vh",
-        backgroundColor: editable ? "transparent" : "#F4F0E8",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        overflowX: "hidden",
+        width: PAGE_W * scale,
+        height: contentH * scale,
+        background: C.page,
       }}
     >
-      {/* Audio Element if configured */}
-      {currentInvite.musicUrl && (
-        <audio
-          ref={audioRef}
-          src={currentInvite.musicUrl}
-          loop
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-        />
-      )}
-
-      {/* Outer Scaled Wrapper for responsive viewports */}
-      <div
-        style={{
-          width: editable ? `${CANVAS_WIDTH}px` : `${CANVAS_WIDTH * scale}px`,
-          height: editable ? `${CANVAS_HEIGHT}px` : `${CANVAS_HEIGHT * scale}px`,
-          position: "relative",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+    <main
+      ref={canvasRef}
+      className="relative hide-scrollbar"
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: PAGE_W,
+        background: C.page,
+        color: C.ink,
+        fontFamily: F.mono,
+        transform: `scale(${scale})`,
+        transformOrigin: "top left",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
+      }}
+    >
+      {/* Hero — Figma 1519:5 (430×601) — positions d'origine */}
+      <section className="relative h-[601px] overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src={heroSea}
+            alt=""
+            className="absolute left-0 top-0 h-[601px] w-[430px] max-w-none object-cover"
+            draggable={false}
+          />
+        </div>
         <div
-          id="club-capri-canvas-root"
-          ref={canvasRef}
-          style={{
-            position: "relative",
-            width: `${CANVAS_WIDTH}px`,
-            height: `${CANVAS_HEIGHT}px`,
-            backgroundColor: COLOR_WHITE,
-            overflow: "hidden",
-            boxShadow: editable ? "none" : "0 25px 60px rgba(0,0,0,0.12)",
-            transform: editable ? "none" : `scale(${scale})`,
-            transformOrigin: "top center",
-          }}
+          className="pointer-events-none absolute left-[-1px] top-[517px] z-[2] h-[95px] w-[432px]"
+          style={{ background: "linear-gradient(180deg, rgba(255,255,255,0) 0%, #fffbf0 89%)" }}
+        />
+
+        {/* Cassette x:78 y:116 w:274 h:490 */}
+        <button
+          type="button"
+          className={`lw-capri-cassette absolute left-[78px] top-[116px] z-[3] h-[490px] w-[274px] cursor-pointer border-0 bg-transparent p-0 ${
+            musicPlaying ? "" : "opacity-95"
+          }`}
+          aria-label={musicPlaying ? "Pause musique" : "Lecture musique"}
+          onClick={() => musicPlayerRef.current?.toggle()}
         >
-          {/* =========================================================================
-              LAYER 0: GLOBAL BACKGROUNDS & GRADIENTS
-              ========================================================================= */}
-          {/* Cream Main Background (y: 508 to 3454, 430 x 2946) */}
-          <div
-            style={figmaBox({
-              x: 0,
-              y: 508,
-              width: 430,
-              height: 2946,
-              zIndex: 1,
-              extra: { backgroundColor: COLOR_CREAM },
-            })}
-          />
-
-          {/* Top Hero Sea Photo (y: 0, x: 0, 432 x 601) */}
           <img
-            src={heroBg}
+            src={cassette}
             alt=""
-            style={figmaBox({
-              x: 0,
-              y: 0,
-              width: 432,
-              height: 601,
-              zIndex: 1,
-              extra: { objectFit: "cover", pointerEvents: "none" },
-            })}
+            className="pointer-events-none h-full w-full object-cover"
+            draggable={false}
           />
+        </button>
 
-          {/* Hero to Cream Soft Gradient Transition (y: 517, x: -1, 432 x 95) */}
-          <div
-            style={figmaBox({
-              x: -1,
-              y: 517,
-              width: 432,
-              height: 95,
-              zIndex: 1,
-              extra: {
-                background: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 251, 240, 1) 89%)",
-                pointerEvents: "none",
-              },
-            })}
+        {/* Title — Figma SVG x:93 y:131 */}
+        <div className="absolute left-[93px] top-[131px] z-[4] flex h-[83px] w-[245px] items-start justify-center">
+          <img
+            src={heroTitleSvg}
+            alt="POST Card FROM Summer"
+            className="block h-[74px] w-[227px] max-w-none"
+            draggable={false}
           />
+        </div>
 
-          {/* =========================================================================
-              SECTION 1: HERO & CASSETTE (y: 0 - 601)
-              ========================================================================= */}
-          {/* Header Title: "POST Card \n FROM Summer" (y: 131, x: 93, 245 x 83) */}
-          <div
-            id="preview-el-hero-title"
-            data-element-id="hero-title"
-            onClick={() => handleElementClick("hero-title", "hero")}
-            style={figmaBox({
-              x: 93,
-              y: 131,
-              width: 245,
-              height: 83,
-              zIndex: 4,
-              extra: {
-                cursor: "pointer",
-                ...getElementHighlightStyle("hero-title"),
-              },
-            })}
-          >
-            {!overrides["hero-title"]?.text && !overrides["hero-title"]?.fontFamily ? (
-              <img src={heroTitleSvg} alt="POST Card FROM Summer" style={{ width: 227, height: 74, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("hero-title", {
-                  fontFamily: FONT_PERPETUA,
-                  fontWeight: 300,
-                  fontSize: "30px",
-                  lineHeight: "36px",
-                  color: COLOR_MUTED_GOLD,
-                  textAlign: "center",
-                })}
-              >
-                {getText("hero-title", "POST Card\nFROM Summer")}
-              </div>
-            )}
-          </div>
+        {/* Names — Figma x:125 / x:219 y:201 */}
+        <div className="absolute left-[125px] top-[201px] z-[4] flex h-[40px] w-[73px] items-center justify-center">
+          {names.left.toLowerCase() === "chedy" ? (
+            <img src={chedySvg} alt={names.left} className="block h-[12px] w-[47px] max-w-none" draggable={false} />
+          ) : (
+            <span className="text-[14px] uppercase leading-none tracking-[0.05em]" style={{ color: C.soft }}>
+              {names.left}
+            </span>
+          )}
+        </div>
+        <div className="absolute left-[219px] top-[201px] z-[4] flex h-[40px] w-[73px] items-center justify-center">
+          {names.right.toLowerCase() === "hela" ? (
+            <img src={helaSvg} alt={names.right} className="block h-[12px] w-[37px] max-w-none" draggable={false} />
+          ) : (
+            <span className="text-[14px] uppercase leading-none tracking-[0.05em]" style={{ color: C.soft }}>
+              {names.right}
+            </span>
+          )}
+        </div>
 
-          {/* Chedy Label on Cassette Header (y: 201, x: 125, 73 x 40) */}
-          <div
-            id="preview-el-groom-name"
-            data-element-id="groom-name"
-            onClick={() => handleElementClick("groom-name", "hero")}
-            style={figmaBox({
-              x: 125,
-              y: 201,
-              width: 73,
-              height: 40,
-              zIndex: 4,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("groom-name"),
-              },
-            })}
-          >
-            {!overrides["groom-name"]?.text && (!currentInvite.groomName || currentInvite.groomName.toLowerCase() === "chedy") ? (
-              <img src={chedySvg} alt={groomName} style={{ width: 47, height: 12, display: "block" }} />
-            ) : (
-              <span
-                style={getStyle("groom-name", {
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "14px",
-                  color: COLOR_TAPE_TEXT,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                })}
-              >
-                {getText("groom-name", groomName)}
-              </span>
-            )}
-          </div>
+        {/* VOLUME x:102 y:427 */}
+        <p
+          className="absolute left-[102px] top-[427px] z-[4] flex h-[40px] w-[73px] items-center justify-center text-[16px] uppercase leading-5 tracking-[0.05em]"
+          style={{ color: C.soft }}
+        >
+          Volume
+        </p>
+        {[183, 193, 203, 213, 223, 233, 243, 253, 263, 273, 283].map((x, i) => (
+          <span
+            key={x}
+            className={`absolute z-[4] w-[2px] bg-current ${musicPlaying ? "lw-capri-volume-bar" : ""}`}
+            style={{ left: x, top: 436, height: 21, color: C.soft, animationDelay: `${i * 0.07}s` }}
+            aria-hidden
+          />
+        ))}
+      </section>
 
-          {/* HELA Label on Cassette Header (y: 201, x: 219, 73 x 40) */}
-          <div
-            id="preview-el-bride-name"
-            data-element-id="bride-name"
-            onClick={() => handleElementClick("bride-name", "hero")}
-            style={figmaBox({
-              x: 219,
-              y: 201,
-              width: 73,
-              height: 40,
-              zIndex: 4,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("bride-name"),
-              },
-            })}
-          >
-            {!overrides["bride-name"]?.text && (!currentInvite.brideName || currentInvite.brideName.toLowerCase() === "hela") ? (
-              <img src={helaSvg} alt={brideName} style={{ width: 37, height: 12, display: "block" }} />
-            ) : (
-              <span
-                style={getStyle("bride-name", {
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "14px",
-                  color: COLOR_TAPE_TEXT,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                })}
-              >
-                {getText("bride-name", brideName)}
-              </span>
-            )}
-          </div>
+      {/* Join us + The Day — Figma absolute (offset from hero end y:601) */}
+      <section className="relative z-10 overflow-hidden" style={{ height: 744 }}>
+        {/* Join us in — y:626 → top:25, box 148×46, SVG 78×22 */}
+        <div className="absolute left-[141px] top-[25px] z-[2] flex h-[46px] w-[148px] items-center justify-center">
+          <img src={joinUsTitleSvg} alt="Join us in" className="block h-[22px] w-[78px]" draggable={false} />
+        </div>
 
-          {/* Interactive Cassette Tape (y: 116, x: 78, 274 x 490) */}
-          <div
-            id="preview-el-cassette"
-            data-element-id="cassette"
-            onClick={toggleCassetteAudio}
-            title={isPlaying ? "Cliquez pour mettre en pause" : "Cliquez pour écouter"}
-            style={figmaBox({
-              x: 78,
-              y: 116,
-              width: 274,
-              height: 490,
-              zIndex: 3,
-              extra: {
-                cursor: "pointer",
-                ...getElementHighlightStyle("cassette"),
-              },
-            })}
-          >
-            <img
-              src={cassetteImg}
-              alt="Vintage Audio Cassette"
-              style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
-            />
-            {/* Spinning Spool Reels indicator when playing */}
-            {isPlaying && (
-              <>
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "70px",
-                    top: "167px",
-                    width: "28px",
-                    height: "28px",
-                    borderRadius: "50%",
-                    border: "2px dashed #427D8D",
-                    animation: "spin 3s linear infinite",
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "176px",
-                    top: "167px",
-                    width: "28px",
-                    height: "28px",
-                    borderRadius: "50%",
-                    border: "2px dashed #427D8D",
-                    animation: "spin 3s linear infinite",
-                  }}
-                />
-              </>
-            )}
-          </div>
+        {/* JUNE — y:667 → top:66, box 239×42, SVG 89×31 */}
+        <div className="absolute left-[96px] top-[66px] z-[2] flex h-[42px] w-[239px] items-center justify-center">
+          {month.toLowerCase() === "june" ? (
+            <img src={juneTitleSvg} alt="JUNE" className="block h-[31px] w-[89px]" draggable={false} />
+          ) : (
+            <h2 className="text-[36px] uppercase leading-[40px]" style={{ fontFamily: F.serif, fontWeight: 300 }}>
+              {month}
+            </h2>
+          )}
+        </div>
 
-          {/* VOLUME Text (y: 427, x: 102, 73 x 40) */}
-          <div
-            id="preview-el-volume-label"
-            data-element-id="volume-label"
-            onClick={() => handleElementClick("volume-label", "hero")}
-            style={figmaBox({
-              x: 102,
-              y: 427,
-              width: 73,
-              height: 40,
-              zIndex: 4,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "16px",
-                lineHeight: "20px",
-                color: COLOR_TAPE_TEXT,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                ...getElementHighlightStyle("volume-label"),
-              },
-            })}
-          >
-            {getText("volume-label", "VOLUME")}
-          </div>
+        {/* Invite text — y:715 → top:114, 226×57 */}
+        <p className="absolute left-[102px] top-[114px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]">
+          {fixedText.inviteText}
+        </p>
 
-          {/* Volume Gauge Ticks (11 ticks, y: 436, h: 21) */}
-          {volumeTicks.map((tickX, idx) => (
-            <div
-              key={idx}
-              style={figmaBox({
-                x: tickX,
-                y: 436,
-                width: 0,
-                height: 21,
-                zIndex: 4,
-                extra: {
-                  borderLeft: `2px solid ${idx < (isPlaying ? 9 : 6) ? COLOR_TAPE_TEXT : "rgba(229, 226, 221, 0.4)"}`,
-                  transition: "border-color 0.2s ease",
-                },
-              })}
-            />
+        {/* Arrow — y:787 → top:186 */}
+        <img
+          src={arrowDownSvg}
+          alt=""
+          className="lw-capri-arrow pointer-events-none absolute left-[212px] top-[186px] z-[2] h-[19px] w-[6px]"
+          draggable={false}
+          aria-hidden
+        />
+
+        {/* The Day — y:838 → top:237, box 148×46, SVG 110×32 */}
+        <div className="absolute left-[141px] top-[237px] z-[2] flex h-[46px] w-[148px] items-center justify-center">
+          <img src={theDayTitleSvg} alt="The Day" className="block h-[32px] w-[110px]" draggable={false} />
+        </div>
+
+        {/* Countdown — y:913 → top:312, 307×64; cols x:0 / 127 / 253 */}
+        <div className="absolute left-[62px] top-[312px] z-[3] h-[64px] w-[307px]">
+          {[
+            [countdown.days, "Days", 0],
+            [countdown.hours, "Hours", 127],
+            [countdown.minutes, "Minutes", 253],
+          ].map(([value, label, left]) => (
+            <div key={label} className="absolute top-0 h-[64px] w-[44px] text-center" style={{ left }}>
+              <p className="h-[35px] text-[30px] leading-[40px]" style={{ fontFamily: F.serif, fontWeight: 300 }}>
+                {value}
+              </p>
+              <p className="mt-[5px] flex h-[24px] items-center justify-center text-[12px] uppercase leading-[18px]">
+                {label}
+              </p>
+            </div>
           ))}
+        </div>
 
-          {/* =========================================================================
-              SECTION 2: JOIN US IN JUNE (y: 626 - 810)
-              ========================================================================= */}
-          {/* "Join us in" (y: 626, x: 141, 148 x 46) */}
-          <div
-            id="preview-el-join-us-title"
-            data-element-id="join-us-title"
-            onClick={() => handleElementClick("join-us-title", "join-us")}
-            style={figmaBox({
-              x: 141,
-              y: 626,
-              width: 148,
-              height: 46,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("join-us-title"),
-              },
-            })}
-          >
-            {!overrides["join-us-title"]?.text &&
-            (!currentInvite.joinUsTitle || currentInvite.joinUsTitle.toLowerCase() === "join us in") &&
-            !overrides["join-us-title"]?.fontFamily ? (
-              <img src={joinUsTitleSvg} alt="Join us in" style={{ width: 78, height: 22, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("join-us-title", {
-                  fontFamily: FONT_IMPERIAL,
-                  fontWeight: 400,
-                  fontSize: "26px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                })}
-              >
-                {getText("join-us-title", currentInvite.joinUsTitle || "Join us in")}
-              </div>
-            )}
-          </div>
+        {/* Boat — y:867 → top:266, x:162 w:269 h:478 */}
+        <img
+          src={boat}
+          alt=""
+          className="pointer-events-none absolute left-[162px] top-[266px] z-0 h-[478px] w-[269px] object-cover"
+          draggable={false}
+        />
+      </section>
 
-          {/* "JUNE" (y: 667, x: 96, 239 x 42) */}
-          <div
-            id="preview-el-join-us-month"
-            data-element-id="join-us-month"
-            onClick={() => handleElementClick("join-us-month", "join-us")}
-            style={figmaBox({
-              x: 96,
-              y: 667,
-              width: 239,
-              height: 42,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("join-us-month"),
-              },
-            })}
-          >
-            {!overrides["join-us-month"]?.text &&
-            (!currentInvite.joinUsMonth || currentInvite.joinUsMonth.toLowerCase() === "june") &&
-            !overrides["join-us-month"]?.fontFamily ? (
-              <img src={juneTitleSvg} alt="JUNE" style={{ width: 89, height: 31, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("join-us-month", {
-                  fontFamily: FONT_PERPETUA,
-                  fontWeight: 300,
-                  fontSize: "36px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                  textTransform: "uppercase",
-                })}
-              >
-                {getText("join-us-month", currentInvite.joinUsMonth || "JUNE")}
-              </div>
-            )}
-          </div>
+      {/* Celebrations — Figma y:1246 (overlap bateau : -99px after section y:1345) */}
+      <section className="relative z-10 overflow-hidden pb-16" style={{ marginTop: -99 }}>
+        {/* Rayures gauches — Figma y:1396 → top:150, x:-324 */}
+        <img
+          src={stripesLeft}
+          alt=""
+          className="pointer-events-none absolute z-[1] h-[314px] w-[499px] max-w-none"
+          style={{ left: -324, top: 150 }}
+          draggable={false}
+          aria-hidden
+        />
+        {/* Rayures droites — Figma y:1790 → top:544, x:281 */}
+        <img
+          src={stripesRight}
+          alt=""
+          className="pointer-events-none absolute left-[281px] top-[544px] z-[1] h-[164px] w-[499px] max-w-none"
+          draggable={false}
+          aria-hidden
+        />
 
-          {/* Invitation Text (y: 715, x: 102, 226 x 57) */}
-          <div
-            id="preview-el-join-us-text"
-            data-element-id="join-us-text"
-            onClick={() => handleElementClick("join-us-text", "join-us")}
-            style={figmaBox({
-              x: 102,
-              y: 715,
-              width: 226,
-              height: 57,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getStyle("join-us-text", {
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  textAlign: "center",
-                }),
-                ...getElementHighlightStyle("join-us-text"),
-              },
-            })}
-          >
-            {getText(
-              "join-us-text",
-              currentInvite.joinUsText || "We warmly invite you to celebrate our wedding day with us."
-            )}
-          </div>
-
-          {/* Arrow Down SVG (y: 787, x: 215, 0 x 15) */}
+        <div className="relative z-10 mx-auto flex h-[46px] w-[148px] items-center justify-center">
           <img
-            src={arrowDownSvg}
-            alt=""
-            style={figmaBox({
-              x: 212,
-              y: 787,
-              width: 6,
-              height: 19,
-              zIndex: 2,
-            })}
+            src={celebrationsTitleSvg}
+            alt="Celebrations"
+            className="block h-[26px] w-[132px]"
+            draggable={false}
           />
+        </div>
 
-          {/* =========================================================================
-              SECTION 3: THE DAY & COUNTDOWN (y: 838 - 1345)
-              ========================================================================= */}
-          {/* "The Day" (y: 838, x: 141, 148 x 46) */}
-          <div
-            id="preview-el-the-day-title"
-            data-element-id="the-day-title"
-            onClick={() => handleElementClick("the-day-title", "the-day")}
-            style={figmaBox({
-              x: 141,
-              y: 838,
-              width: 148,
-              height: 46,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("the-day-title"),
-              },
-            })}
-          >
-            {!overrides["the-day-title"]?.text &&
-            (!currentInvite.theDayTitle || currentInvite.theDayTitle.toLowerCase() === "the day") &&
-            !overrides["the-day-title"]?.fontFamily ? (
-              <img src={theDayTitleSvg} alt="The Day" style={{ width: 110, height: 32, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("the-day-title", {
-                  fontFamily: FONT_IMPERIAL,
-                  fontWeight: 400,
-                  fontSize: "36px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                })}
-              >
-                {getText("the-day-title", currentInvite.theDayTitle || "The Day")}
-              </div>
-            )}
-          </div>
-
-          {/* Countdown Group (y: 913, x: 62, 307 x 64) */}
-          <div
-            id="preview-el-countdown"
-            data-element-id="countdown"
-            onClick={() => handleElementClick("countdown", "the-day")}
-            style={figmaBox({
-              x: 62,
-              y: 913,
-              width: 307,
-              height: 64,
-              zIndex: 3,
-              extra: {
-                cursor: "pointer",
-                ...getElementHighlightStyle("countdown"),
-              },
-            })}
-          >
-            {/* Days Number (x: 0, y: 0, 44 x 35) */}
-            <div
-              style={{
-                position: "absolute",
-                left: "0px",
-                top: "0px",
-                width: "44px",
-                height: "35px",
-                fontFamily: FONT_PERPETUA,
-                fontWeight: 300,
-                fontSize: "30px",
-                lineHeight: "40px",
-                textAlign: "center",
-                color: COLOR_NAVY,
-              }}
+        {/* Postcards — Figma x:26 y:1335 / 1631, gap 41 */}
+        <div className="relative z-10 mx-auto mt-[43px] flex w-[377px] flex-col gap-[41px]">
+          {celebrations.map((item) => (
+            <article
+              key={item.label}
+              className="relative h-[255px] w-[377px] overflow-hidden rounded-[5px] bg-white shadow-[0px_1px_15px_0px_rgba(0,0,0,0.25)]"
             >
-              {timeLeft.days}
-            </div>
-            {/* Days Label (x: 0, y: 40, 44 x 24) */}
-            <div
-              style={{
-                position: "absolute",
-                left: "0px",
-                top: "40px",
-                width: "44px",
-                height: "24px",
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "12px",
-                lineHeight: "18px",
-                textAlign: "center",
-                color: COLOR_NAVY,
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              Days
-            </div>
-
-            {/* Hours Number (x: 127, y: 0, 44 x 35) */}
-            <div
-              style={{
-                position: "absolute",
-                left: "127px",
-                top: "0px",
-                width: "44px",
-                height: "35px",
-                fontFamily: FONT_PERPETUA,
-                fontWeight: 300,
-                fontSize: "30px",
-                lineHeight: "40px",
-                textAlign: "center",
-                color: COLOR_NAVY,
-              }}
-            >
-              {timeLeft.hours}
-            </div>
-            {/* Hours Label (x: 127, y: 40, 44 x 24) */}
-            <div
-              style={{
-                position: "absolute",
-                left: "127px",
-                top: "40px",
-                width: "44px",
-                height: "24px",
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "12px",
-                lineHeight: "18px",
-                textAlign: "center",
-                color: COLOR_NAVY,
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              Hours
-            </div>
-
-            {/* Minutes Number (x: 253, y: 0, 44 x 35) */}
-            <div
-              style={{
-                position: "absolute",
-                left: "253px",
-                top: "0px",
-                width: "44px",
-                height: "35px",
-                fontFamily: FONT_PERPETUA,
-                fontWeight: 300,
-                fontSize: "30px",
-                lineHeight: "40px",
-                textAlign: "center",
-                color: COLOR_NAVY,
-              }}
-            >
-              {timeLeft.minutes}
-            </div>
-            {/* Minutes Label (x: 242, y: 40, 65 x 24) */}
-            <div
-              style={{
-                position: "absolute",
-                left: "242px",
-                top: "40px",
-                width: "65px",
-                height: "24px",
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "12px",
-                lineHeight: "18px",
-                textAlign: "center",
-                color: COLOR_NAVY,
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              Minutes
-            </div>
-          </div>
-
-          {/* Yacht / Boat Aerial Photo (y: 867, x: 162, 269 x 478) */}
-          <div
-            id="preview-el-boat-photo"
-            data-element-id="boat-photo"
-            onClick={() => handleElementClick("boat-photo", "the-day")}
-            style={figmaBox({
-              x: 162,
-              y: 867,
-              width: 269,
-              height: 478,
-              zIndex: 2,
-              extra: {
-                cursor: "pointer",
-                ...getElementHighlightStyle("boat-photo"),
-              },
-            })}
-          >
-            <img
-              src={boatImgSrc}
-              alt="Luxury Yacht"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-
-          {/* =========================================================================
-              SECTION 4: CELEBRATIONS & POSTCARDS (y: 1246 - 1950)
-              ========================================================================= */}
-          {/* "Celebrations" (y: 1246, x: 141, 148 x 46) */}
-          <div
-            id="preview-el-celebrations-title"
-            data-element-id="celebrations-title"
-            onClick={() => handleElementClick("celebrations-title", "celebrations")}
-            style={figmaBox({
-              x: 141,
-              y: 1246,
-              width: 148,
-              height: 46,
-              zIndex: 3,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("celebrations-title"),
-              },
-            })}
-          >
-            {!overrides["celebrations-title"]?.text &&
-            (!currentInvite.celebrationsTitle || currentInvite.celebrationsTitle.toLowerCase() === "celebrations") &&
-            !overrides["celebrations-title"]?.fontFamily ? (
-              <img src={celebrationsTitleSvg} alt="Celebrations" style={{ width: 132, height: 26, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("celebrations-title", {
-                  fontFamily: FONT_IMPERIAL,
-                  fontWeight: 400,
-                  fontSize: "36px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                })}
-              >
-                {getText("celebrations-title", currentInvite.celebrationsTitle || "Celebrations")}
-              </div>
-            )}
-          </div>
-
-          {/* Blue Nautical Stripes - Left (y: 1396, x: -324, 499 x 314) */}
-          <img
-            src={stripesLeft}
-            alt=""
-            style={figmaBox({
-              x: -324,
-              y: 1396,
-              width: 499,
-              height: 314,
-              zIndex: 1,
-              extra: { pointerEvents: "none" },
-            })}
-          />
-
-          {/* Blue Nautical Stripes - Right (y: 1790, x: 281, 499 x 164) */}
-          <img
-            src={stripesRight}
-            alt=""
-            style={figmaBox({
-              x: 281,
-              y: 1790,
-              width: 499,
-              height: 164,
-              zIndex: 1,
-              extra: { pointerEvents: "none" },
-            })}
-          />
-
-          {/* -------------------------------------------------------------------------
-              POSTCARD 1: WEDDING (y: 1335, x: 26, 377 x 255)
-              ------------------------------------------------------------------------- */}
-          <div
-            id="preview-el-postcard-1"
-            data-element-id="postcard-1"
-            onClick={() => handleElementClick("postcard-1", "celebrations")}
-            style={figmaBox({
-              x: 26,
-              y: 1335,
-              width: 377,
-              height: 255,
-              zIndex: 3,
-              extra: {
-                backgroundColor: COLOR_WHITE,
-                borderRadius: "5px",
-                boxShadow: "0px 1px 15px 0px rgba(0, 0, 0, 0.25)",
-                ...getElementHighlightStyle("postcard-1"),
-              },
-            })}
-          >
-            {/* "Postcard" */}
-            <div
-              style={{
-                position: "absolute",
-                left: "26px",
-                top: "29px",
-                width: "148px",
-                height: "39px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img src={postcardTitle1Svg} alt="Postcard" style={{ width: 65, height: 16, display: "block" }} />
-            </div>
-
-            {/* "wedding" */}
-            <div
-              id="preview-el-postcard1-title"
-              data-element-id="postcard1-title"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleElementClick("postcard1-title", "celebrations");
-              }}
-              style={{
-                position: "absolute",
-                left: "-20px",
-                top: "59px",
-                width: "239px",
-                height: "42px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("postcard1-title"),
-              }}
-            >
-              {!overrides["postcard1-title"]?.text &&
-              (!currentInvite.postcard1Title || currentInvite.postcard1Title.toLowerCase() === "wedding") ? (
-                <img src={weddingTitleSvg} alt="wedding" style={{ width: 110, height: 17, display: "block" }} />
-              ) : (
-                <span
-                  style={getStyle("postcard1-title", {
-                    fontFamily: FONT_PERPETUA,
-                    fontWeight: 300,
-                    fontSize: "22px",
-                    color: COLOR_NAVY,
-                    textTransform: "uppercase",
-                  })}
-                >
-                  {getText("postcard1-title", currentInvite.postcard1Title || "wedding")}
-                </span>
-              )}
-            </div>
-
-            {/* Photo 1 */}
-            <div
-              id="preview-el-postcard-photo-1"
-              data-element-id="postcard-photo-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleElementClick("postcard-photo-1", "celebrations");
-              }}
-              style={{
-                position: "absolute",
-                left: "42px",
-                top: "103px",
-                width: "115px",
-                height: "115px",
-                cursor: "pointer",
-                ...getElementHighlightStyle("postcard-photo-1"),
-              }}
-            >
-              <img
-                src={photo1Src}
-                alt="Wedding Celebration Aperitif"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-
-            {/* Vertical Divider Line */}
-            <div
-              style={{
-                position: "absolute",
-                left: "187px",
-                top: "29px",
-                width: "0px",
-                height: "202px",
-                borderLeft: `0.25px solid ${COLOR_NAVY}`,
-              }}
-            />
-
-            {/* Circular Postmark Stamp SVG */}
-            <img
-              src={postmark1Svg}
-              alt=""
-              style={{
-                position: "absolute",
-                left: "250px",
-                top: "18px",
-                width: "95.72px",
-                height: "95.72px",
-                pointerEvents: "none",
-              }}
-            />
-
-            {/* Stamp 1 - Sun */}
-            <img
-              src={stampSunImg}
-              alt="Sun Stamp"
-              style={{
-                position: "absolute",
-                left: "276.71px",
-                top: "56px",
-                width: "39px",
-                height: "53px",
-                objectFit: "cover",
-              }}
-            />
-
-            {/* Stamp 2 - Capri */}
-            <img
-              src={stampCapriImg}
-              alt="Capri Stamp"
-              style={{
-                position: "absolute",
-                left: "311.71px",
-                top: "22px",
-                width: "39px",
-                height: "53px",
-                objectFit: "cover",
-              }}
-            />
-
-            {/* "To:" Label */}
-            <div
-              style={{
-                position: "absolute",
-                left: "210px",
-                top: "125px",
-                width: "26px",
-                height: "25px",
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "10px",
-                lineHeight: "18px",
-                color: COLOR_NAVY,
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              To:
-            </div>
-
-            {/* Underlines */}
-            <div style={{ position: "absolute", left: "214px", top: "142px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-            <div style={{ position: "absolute", left: "214px", top: "165px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-            <div style={{ position: "absolute", left: "214px", top: "188px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-            <div style={{ position: "absolute", left: "214px", top: "211px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-
-            {/* Address Text & Map Link */}
-            <a
-              id="preview-el-postcard1-address"
-              data-element-id="postcard1-address"
-              href={currentInvite.postcard1MapUrl || "https://maps.google.com/?q=Dar+Bouraoui+Carthage"}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                if (editable) {
-                  e.preventDefault();
-                  handleElementClick("postcard1-address", "celebrations");
-                }
-              }}
-              style={{
-                position: "absolute",
-                left: "206px",
-                top: "146px",
-                width: "148px",
-                height: "117px",
-                textDecoration: "none",
-                cursor: "pointer",
-                ...getElementHighlightStyle("postcard1-address"),
-              }}
-            >
-              {!overrides["postcard1-address"]?.text &&
-              (!currentInvite.postcard1Address || currentInvite.postcard1Address.includes("Dar Bouraoui")) ? (
-                <img src={postcardWeddingTextSvg} alt="Dar Bouraoui Carthage Malaga 18h" style={{ width: 120, height: 59, display: "block" }} />
-              ) : (
-                <div
-                  style={getStyle("postcard1-address", {
-                    fontFamily: FONT_IMPERIAL,
-                    fontWeight: 400,
-                    fontSize: "16px",
-                    lineHeight: "23px",
-                    color: COLOR_NAVY,
-                    whiteSpace: "pre-line",
-                  })}
-                >
-                  {getText("postcard1-address", currentInvite.postcard1Address || "Dar Bouraoui Carthage\nMalaga\n18h")}
-                </div>
-              )}
-            </a>
-          </div>
-
-          {/* -------------------------------------------------------------------------
-              POSTCARD 2: HENNA (y: 1631, x: 26, 377 x 255)
-              ------------------------------------------------------------------------- */}
-          <div
-            id="preview-el-postcard-2"
-            data-element-id="postcard-2"
-            onClick={() => handleElementClick("postcard-2", "celebrations")}
-            style={figmaBox({
-              x: 26,
-              y: 1631,
-              width: 377,
-              height: 255,
-              zIndex: 3,
-              extra: {
-                backgroundColor: COLOR_WHITE,
-                borderRadius: "5px",
-                boxShadow: "0px 1px 15px 0px rgba(0, 0, 0, 0.25)",
-                ...getElementHighlightStyle("postcard-2"),
-              },
-            })}
-          >
-            {/* "Postcard" */}
-            <div
-              style={{
-                position: "absolute",
-                left: "26px",
-                top: "29px",
-                width: "148px",
-                height: "39px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img src={postcardTitle2Svg} alt="Postcard" style={{ width: 65, height: 16, display: "block" }} />
-            </div>
-
-            {/* "henna" */}
-            <div
-              id="preview-el-postcard2-title"
-              data-element-id="postcard2-title"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleElementClick("postcard2-title", "celebrations");
-              }}
-              style={{
-                position: "absolute",
-                left: "-20px",
-                top: "59px",
-                width: "239px",
-                height: "42px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("postcard2-title"),
-              }}
-            >
-              {!overrides["postcard2-title"]?.text &&
-              (!currentInvite.postcard2Title || currentInvite.postcard2Title.toLowerCase() === "henna") ? (
-                <img src={hennaTitleSvg} alt="henna" style={{ width: 79, height: 17, display: "block" }} />
-              ) : (
-                <span
-                  style={getStyle("postcard2-title", {
-                    fontFamily: FONT_PERPETUA,
-                    fontWeight: 300,
-                    fontSize: "22px",
-                    color: COLOR_NAVY,
-                    textTransform: "uppercase",
-                  })}
-                >
-                  {getText("postcard2-title", currentInvite.postcard2Title || "henna")}
-                </span>
-              )}
-            </div>
-
-            {/* Photo 2 */}
-            <div
-              id="preview-el-postcard-photo-2"
-              data-element-id="postcard-photo-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleElementClick("postcard-photo-2", "celebrations");
-              }}
-              style={{
-                position: "absolute",
-                left: "42px",
-                top: "103px",
-                width: "115px",
-                height: "115px",
-                cursor: "pointer",
-                ...getElementHighlightStyle("postcard-photo-2"),
-              }}
-            >
-              <img
-                src={photo2Src}
-                alt="Henna Celebration"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-
-            {/* Vertical Divider Line */}
-            <div
-              style={{
-                position: "absolute",
-                left: "187px",
-                top: "29px",
-                width: "0px",
-                height: "202px",
-                borderLeft: `0.25px solid ${COLOR_NAVY}`,
-              }}
-            />
-
-            {/* Circular Postmark Stamp SVG */}
-            <img
-              src={postmark2Svg}
-              alt=""
-              style={{
-                position: "absolute",
-                left: "250px",
-                top: "18px",
-                width: "95.72px",
-                height: "95.72px",
-                pointerEvents: "none",
-              }}
-            />
-
-            {/* Stamp 1 - Cocktail */}
-            <img
-              src={stampCocktailImg}
-              alt="Cocktail Stamp"
-              style={{
-                position: "absolute",
-                left: "276.71px",
-                top: "56px",
-                width: "39px",
-                height: "53px",
-                objectFit: "cover",
-              }}
-            />
-
-            {/* Stamp 2 - Capri */}
-            <img
-              src={stampCapriImg}
-              alt="Capri Stamp"
-              style={{
-                position: "absolute",
-                left: "311.71px",
-                top: "22px",
-                width: "39px",
-                height: "53px",
-                objectFit: "cover",
-              }}
-            />
-
-            {/* "To:" Label */}
-            <div
-              style={{
-                position: "absolute",
-                left: "210px",
-                top: "125px",
-                width: "26px",
-                height: "25px",
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "10px",
-                lineHeight: "18px",
-                color: COLOR_NAVY,
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              To:
-            </div>
-
-            {/* Underlines */}
-            <div style={{ position: "absolute", left: "214px", top: "142px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-            <div style={{ position: "absolute", left: "214px", top: "165px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-            <div style={{ position: "absolute", left: "214px", top: "188px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-            <div style={{ position: "absolute", left: "214px", top: "211px", width: "137px", borderTop: `0.25px solid ${COLOR_NAVY}` }} />
-
-            {/* Address Text & Map Link */}
-            <a
-              id="preview-el-postcard2-address"
-              data-element-id="postcard2-address"
-              href={currentInvite.postcard2MapUrl || "https://maps.google.com/?q=Dar+Bouraoui+Carthage"}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                if (editable) {
-                  e.preventDefault();
-                  handleElementClick("postcard2-address", "celebrations");
-                }
-              }}
-              style={{
-                position: "absolute",
-                left: "206px",
-                top: "146px",
-                width: "148px",
-                height: "117px",
-                textDecoration: "none",
-                cursor: "pointer",
-                ...getElementHighlightStyle("postcard2-address"),
-              }}
-            >
-              {!overrides["postcard2-address"]?.text &&
-              (!currentInvite.postcard2Address || currentInvite.postcard2Address.includes("Dar Bouraoui")) ? (
-                <img src={postcardHennaTextSvg} alt="Dar Bouraoui Carthage Malaga 18h" style={{ width: 120, height: 59, display: "block" }} />
-              ) : (
-                <div
-                  style={getStyle("postcard2-address", {
-                    fontFamily: FONT_IMPERIAL,
-                    fontWeight: 400,
-                    fontSize: "16px",
-                    lineHeight: "23px",
-                    color: COLOR_NAVY,
-                    whiteSpace: "pre-line",
-                  })}
-                >
-                  {getText("postcard2-address", currentInvite.postcard2Address || "Dar Bouraoui Carthage\nMalaga\n18h")}
-                </div>
-              )}
-            </a>
-          </div>
-
-          {/* =========================================================================
-              SECTION 5: DRESS CODE (y: 2005 - 2416)
-              ========================================================================= */}
-          {/* "Dress Code" (y: 2005, x: 141, 148 x 46) */}
-          <div
-            id="preview-el-dress-code-title"
-            data-element-id="dress-code-title"
-            onClick={() => handleElementClick("dress-code-title", "dress-code")}
-            style={figmaBox({
-              x: 141,
-              y: 2005,
-              width: 148,
-              height: 46,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("dress-code-title"),
-              },
-            })}
-          >
-            {!overrides["dress-code-title"]?.text &&
-            (!currentInvite.dressCodeCategory || currentInvite.dressCodeCategory.toLowerCase() === "dress code") &&
-            !overrides["dress-code-title"]?.fontFamily ? (
-              <img src={dressCodeTitleSvg} alt="Dress Code" style={{ width: 94, height: 19, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("dress-code-title", {
-                  fontFamily: FONT_IMPERIAL,
-                  fontWeight: 400,
-                  fontSize: "26px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                })}
-              >
-                {getText("dress-code-title", currentInvite.dressCodeCategory || "Dress Code")}
-              </div>
-            )}
-          </div>
-
-          {/* "casual chic" (y: 2046, x: 89, 253 x 42) */}
-          <div
-            id="preview-el-dress-code-chic"
-            data-element-id="dress-code-chic"
-            onClick={() => handleElementClick("dress-code-chic", "dress-code")}
-            style={figmaBox({
-              x: 89,
-              y: 2046,
-              width: 253,
-              height: 42,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("dress-code-chic"),
-              },
-            })}
-          >
-            {!overrides["dress-code-chic"]?.text &&
-            (!currentInvite.dressCodeTitle || currentInvite.dressCodeTitle.toLowerCase() === "casual chic") &&
-            !overrides["dress-code-chic"]?.fontFamily ? (
-              <img src={casualChicTitleSvg} alt="casual chic" style={{ width: 239, height: 28, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("dress-code-chic", {
-                  fontFamily: FONT_PERPETUA,
-                  fontWeight: 300,
-                  fontSize: "36px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                  textTransform: "uppercase",
-                })}
-              >
-                {getText("dress-code-chic", currentInvite.dressCodeTitle || "CASUAL CHIC")}
-              </div>
-            )}
-          </div>
-
-          {/* Dress Code Instruction Copy (y: 2094, x: 102, 226 x 57) */}
-          <div
-            id="preview-el-dress-code-text"
-            data-element-id="dress-code-text"
-            onClick={() => handleElementClick("dress-code-text", "dress-code")}
-            style={figmaBox({
-              x: 102,
-              y: 2094,
-              width: 226,
-              height: 57,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getStyle("dress-code-text", {
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  textAlign: "center",
-                }),
-                ...getElementHighlightStyle("dress-code-text"),
-              },
-            })}
-          >
-            {getText(
-              "dress-code-text",
-              currentInvite.dressCodeText || "We warmly invite you to celebrate our wedding day with us."
-            )}
-          </div>
-
-          {/* Dress Code Attire Photo (Family) (y: 2138, x: 80, 270 x 278) */}
-          <div
-            id="preview-el-dress-code-photo"
-            data-element-id="dress-code-photo"
-            onClick={() => handleElementClick("dress-code-photo", "dress-code")}
-            style={figmaBox({
-              x: 80,
-              y: 2138,
-              width: 270,
-              height: 278,
-              zIndex: 2,
-              extra: {
-                cursor: "pointer",
-                ...getElementHighlightStyle("dress-code-photo"),
-              },
-            })}
-          >
-            <img
-              src={dressCodeFamilySrc}
-              alt="Casual Chic Attire"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-
-          {/* =========================================================================
-              SECTION 6: ARRIVAL & RSVP (y: 2422 - 3227)
-              ========================================================================= */}
-          {/* "Arrival" (y: 2422, x: 141, 148 x 46) */}
-          <div
-            id="preview-el-arrival-title"
-            data-element-id="arrival-title"
-            onClick={() => handleElementClick("arrival-title", "rsvp")}
-            style={figmaBox({
-              x: 141,
-              y: 2422,
-              width: 148,
-              height: 46,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("arrival-title"),
-              },
-            })}
-          >
-            {!overrides["arrival-title"]?.text &&
-            (!currentInvite.rsvpArrival || currentInvite.rsvpArrival.toLowerCase() === "arrival") &&
-            !overrides["arrival-title"]?.fontFamily ? (
-              <img src={arrivalTitleSvg} alt="Arrival" style={{ width: 71, height: 19, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("arrival-title", {
-                  fontFamily: FONT_IMPERIAL,
-                  fontWeight: 400,
-                  fontSize: "26px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                })}
-              >
-                {getText("arrival-title", currentInvite.rsvpArrival || "Arrival")}
-              </div>
-            )}
-          </div>
-
-          {/* "RSVP" (y: 2463, x: 89, 253 x 42) */}
-          <div
-            id="preview-el-rsvp-title"
-            data-element-id="rsvp-title"
-            onClick={() => handleElementClick("rsvp-title", "rsvp")}
-            style={figmaBox({
-              x: 89,
-              y: 2463,
-              width: 253,
-              height: 42,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("rsvp-title"),
-              },
-            })}
-          >
-            {!overrides["rsvp-title"]?.text &&
-            (!currentInvite.rsvpTitle || currentInvite.rsvpTitle.toLowerCase() === "rsvp") &&
-            !overrides["rsvp-title"]?.fontFamily ? (
-              <img src={rsvpTitleSvg} alt="RSVP" style={{ width: 83, height: 28, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("rsvp-title", {
-                  fontFamily: FONT_PERPETUA,
-                  fontWeight: 300,
-                  fontSize: "36px",
-                  lineHeight: "40px",
-                  color: COLOR_NAVY,
-                  textAlign: "center",
-                  textTransform: "uppercase",
-                })}
-              >
-                {getText("rsvp-title", currentInvite.rsvpTitle || "RSVP")}
-              </div>
-            )}
-          </div>
-
-          {/* RSVP Deadline (y: 2511, x: 102, 226 x 57) */}
-          <div
-            id="preview-el-rsvp-deadline"
-            data-element-id="rsvp-deadline"
-            onClick={() => handleElementClick("rsvp-deadline", "rsvp")}
-            style={figmaBox({
-              x: 102,
-              y: 2511,
-              width: 226,
-              height: 57,
-              zIndex: 2,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getStyle("rsvp-deadline", {
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  textAlign: "center",
-                }),
-                ...getElementHighlightStyle("rsvp-deadline"),
-              },
-            })}
-          >
-            {getText(
-              "rsvp-deadline",
-              currentInvite.rsvpDeadline || "The favour of a reply is kindly requested by the fifteenth of June, 2026"
-            )}
-          </div>
-
-          {/* RSVP Background Photo & Masking Tape (y: 2619, x: 0, 430 x 608) */}
-          <img
-            src={rsvpBgImg}
-            alt=""
-            style={figmaBox({
-              x: 0,
-              y: 2619,
-              width: 430,
-              height: 608,
-              zIndex: 2,
-              extra: { objectFit: "cover", pointerEvents: "none" },
-            })}
-          />
-
-          {/* Stamp Frame Card SVG (y: 2664, x: 24, 382 x 517) */}
-          <img
-            src={stampFrameSvg}
-            alt=""
-            style={figmaBox({
-              x: 24,
-              y: 2664,
-              width: 382,
-              height: 517,
-              zIndex: 3,
-              extra: { pointerEvents: "none" },
-            })}
-          />
-
-          {/* Masking Tape (y: 2652, x: 153, 124 x 37) */}
-          <img
-            src={maskingTapeImg}
-            alt=""
-            style={figmaBox({
-              x: 153,
-              y: 2652,
-              width: 124,
-              height: 37,
-              zIndex: 5,
-              extra: { pointerEvents: "none" },
-            })}
-          />
-
-          {/* RSVP Form Content (Over Stamp Card) */}
-          <form
-            id="preview-el-rsvp-form"
-            data-element-id="rsvp-form"
-            onSubmit={handleRsvpSubmit}
-            style={figmaBox({
-              x: 55,
-              y: 2732,
-              width: 320,
-              height: 410,
-              zIndex: 4,
-              extra: {
-                ...getElementHighlightStyle("rsvp-form"),
-              },
-            })}
-          >
-            {/* "WILL YOU ATTEND" */}
-            <div
-              style={{
-                fontFamily: FONT_ROBOTO_MONO,
-                fontWeight: 400,
-                fontSize: "12px",
-                lineHeight: "18px",
-                color: COLOR_NAVY,
-                textTransform: "uppercase",
-                marginBottom: "20px",
-              }}
-            >
-              Will you attend
-            </div>
-
-            {/* Attendance Radio Options */}
-            <div style={{ display: "flex", gap: "24px", marginBottom: "26px", alignItems: "center" }}>
-              {/* Option 1: Yes */}
-              <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-                <input
-                  type="radio"
-                  name="attendance"
-                  value="yes"
-                  checked={guestAttendance === "yes"}
-                  onChange={() => setGuestAttendance("yes")}
-                  style={{ display: "none" }}
+              {/* Postcard — Figma relative x:26 y:29 */}
+              <div className="absolute left-[26px] top-[29px] z-[2] flex h-[39px] w-[148px] items-center justify-center">
+                <img
+                  src={item.postcardTitle}
+                  alt="Postcard"
+                  className="block h-[16px] w-[65px]"
+                  draggable={false}
                 />
-                <div
-                  style={{
-                    width: "14px",
-                    height: "14px",
-                    borderRadius: "50%",
-                    backgroundColor: guestAttendance === "yes" ? COLOR_LIGHT_BLUE : "transparent",
-                    border: `1px solid ${COLOR_LIGHT_BLUE}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+              </div>
+              {/* wedding / henna — Figma x:-20 y:59 */}
+              <div className="absolute left-[-20px] top-[59px] z-[2] flex h-[42px] w-[239px] items-center justify-center">
+                <img
+                  src={item.labelSvg}
+                  alt={item.label}
+                  className="block h-[17px]"
+                  style={{ width: item.labelW }}
+                  draggable={false}
                 />
-                <span
-                  style={{
-                    fontFamily: FONT_ROBOTO_MONO,
-                    fontWeight: 400,
-                    fontSize: "12px",
-                    lineHeight: "18px",
-                    color: COLOR_NAVY,
-                    textTransform: "uppercase",
-                  }}
-                >
+              </div>
+              <img
+                src={item.image}
+                alt=""
+                className="absolute left-[42px] top-[103px] z-[2] size-[115px] object-cover"
+                draggable={false}
+              />
+              <div
+                className="absolute left-[187px] top-[29px] z-[2] h-[202px] w-0 border-l-[0.25px] border-[#083b50]"
+                aria-hidden
+              />
+
+              {/* Cachet (cercles) sous timbres — Figma x:250 y:18 95.72² */}
+              <img
+                src={item.postmark}
+                alt=""
+                className="pointer-events-none absolute left-[250px] top-[18px] z-[2] h-[95.72px] w-[95.72px]"
+                draggable={false}
+              />
+              <img
+                src={item.stampA}
+                alt=""
+                className="absolute z-[3] h-[53px] w-[39px] object-cover"
+                style={{ left: 276.71, top: 56 }}
+                draggable={false}
+              />
+              <img
+                src={item.stampB}
+                alt=""
+                className="absolute z-[3] h-[53px] w-[39px] object-cover"
+                style={{ left: 311.71, top: 22 }}
+                draggable={false}
+              />
+
+              {/* To: + adresse sous le tampon — Figma */}
+              <p className="absolute left-[210px] top-[125px] z-[2] flex h-[25px] w-[26px] items-center justify-center text-[10px] uppercase leading-[18px]">
+                To:
+              </p>
+              <div className="absolute left-[214px] top-[142px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
+              <div className="absolute left-[214px] top-[165px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
+              <div className="absolute left-[214px] top-[188px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
+              <div className="absolute left-[214px] top-[211px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
+              <div
+                className="absolute left-[206px] top-[146px] z-[2] w-[148px] text-center text-[16px] leading-[23px]"
+                style={{ fontFamily: F.script }}
+              >
+                {item.addressLines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Dress code */}
+      <section className="px-8 pb-6 pt-4 text-center">
+        <p className="text-[26px] leading-[40px]" style={{ fontFamily: F.script }}>
+          Dress Code
+        </p>
+        <h2 className="text-[36px] lowercase leading-[40px]" style={{ fontFamily: F.serif }}>
+          {invite.dressCode || defaultInvite.dressCode}
+        </h2>
+        <p className="mx-auto mt-4 max-w-[226px] text-[12px] uppercase leading-[18px]">{fixedText.inviteText}</p>
+        <div className="relative mx-auto mt-4 h-[278px] w-[270px] overflow-hidden">
+          <img
+            src={family}
+            alt=""
+            className="absolute left-[12.61%] top-[-30.95%] h-[130.81%] w-[75.14%] max-w-none object-cover"
+            draggable={false}
+          />
+        </div>
+      </section>
+
+      {/* Arrival RSVP intro (cream) */}
+      <section className="px-8 pb-8 pt-6 text-center">
+        <p className="text-[26px] leading-[40px]" style={{ fontFamily: F.script }}>
+          Arrival
+        </p>
+        <h2 className="text-[36px] uppercase leading-[40px] tracking-[0.04em]" style={{ fontFamily: F.serif }}>
+          RSVP
+        </h2>
+        <p className="mx-auto mt-4 max-w-[226px] text-[12px] uppercase leading-[18px]">{fixedText.rsvpDeadline}</p>
+      </section>
+
+      {/* RSVP form on water bg */}
+      <section className="relative min-h-[640px] px-6 pb-14 pt-10">
+        <img
+          src={rsvpBg}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          draggable={false}
+        />
+        <div className="relative mx-auto w-full max-w-[382px] pt-6">
+          <img
+            src={tape}
+            alt=""
+            className="absolute left-1/2 top-[-6px] z-20 h-[37px] w-[124px] -translate-x-1/2 object-cover"
+            draggable={false}
+          />
+          <div
+            className="relative overflow-hidden"
+            style={{
+              WebkitMaskImage: `url(${stampFrame})`,
+              maskImage: `url(${stampFrame})`,
+              WebkitMaskSize: "100% 100%",
+              maskSize: "100% 100%",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+            }}
+          >
+            <form onSubmit={handleRsvpSubmit} className="relative bg-white px-7 pb-10 pt-14 text-left">
+              <p className="text-[12px] uppercase leading-[18px]">Will you attend</p>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[12px] uppercase leading-[18px]">
+                <label className="flex items-center gap-2">
+                  <input type="radio" checked={attending} onChange={() => setAttending(true)} />
                   Yes, I will be there
-                </span>
-              </label>
-
-              {/* Option 2: No */}
-              <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-                <input
-                  type="radio"
-                  name="attendance"
-                  value="no"
-                  checked={guestAttendance === "no"}
-                  onChange={() => setGuestAttendance("no")}
-                  style={{ display: "none" }}
-                />
-                <div
-                  style={{
-                    width: "14px",
-                    height: "14px",
-                    borderRadius: "50%",
-                    backgroundColor: guestAttendance === "no" ? COLOR_LIGHT_BLUE : "transparent",
-                    border: `1px solid ${COLOR_LIGHT_BLUE}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: FONT_ROBOTO_MONO,
-                    fontWeight: 400,
-                    fontSize: "12px",
-                    lineHeight: "18px",
-                    color: COLOR_NAVY,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Sorry, I can’t make it
-                </span>
-              </label>
-            </div>
-
-            {/* Input Field 1: Name */}
-            <div style={{ position: "relative", marginBottom: "26px", borderBottom: "1px solid #000000" }}>
-              <input
-                type="text"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                placeholder="NAME"
-                required
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  paddingBottom: "8px",
-                }}
-              />
-            </div>
-
-            {/* Input Field 2: Password / Code */}
-            <div style={{ position: "relative", marginBottom: "26px", borderBottom: "1px solid #000000" }}>
-              <input
-                type="text"
-                value={guestPassword}
-                onChange={(e) => setGuestPassword(e.target.value)}
-                placeholder="PASSWORD"
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  paddingBottom: "8px",
-                }}
-              />
-            </div>
-
-            {/* Input Field 3: Phone Number */}
-            <div style={{ position: "relative", marginBottom: "26px", borderBottom: "1px solid #000000" }}>
-              <input
-                type="tel"
-                value={guestPhone}
-                onChange={(e) => setGuestPhone(e.target.value)}
-                placeholder="PHONE NUMBER"
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  paddingBottom: "8px",
-                }}
-              />
-            </div>
-
-            {/* Input Field 4: Number of Guests */}
-            <div style={{ position: "relative", marginBottom: "26px", borderBottom: "1px solid #000000" }}>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={guestCount}
-                onChange={(e) => setGuestCount(e.target.value)}
-                placeholder="NUMBER OF GUESTS"
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_NAVY,
-                  textTransform: "uppercase",
-                  paddingBottom: "8px",
-                }}
-              />
-            </div>
-
-            {/* Submit Confirmation Button */}
-            <button
-              type="submit"
-              disabled={rsvpSubmitting}
-              style={{
-                width: "100%",
-                height: "40px",
-                backgroundColor: COLOR_LIGHT_BLUE,
-                borderRadius: "7px",
-                border: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "opacity 0.2s",
-                opacity: rsvpSubmitting ? 0.7 : 1,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: FONT_ROBOTO_MONO,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  color: COLOR_WHITE,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {rsvpSuccess ? "✓ Réponse enregistrée" : rsvpSubmitting ? "Envoi..." : "Send Confirmation"}
-              </span>
-            </button>
-          </form>
-
-          {/* =========================================================================
-              SECTION 7: FOOTER & LIFEBUOY (y: 3239 - 3454)
-              ========================================================================= */}
-          {/* Nautical Lifebuoy Ring (y: 3239, x: 160, 111 x 200) */}
-          <img
-            src={lifebuoyImg}
-            alt="Nautical Lifebuoy"
-            style={figmaBox({
-              x: 160,
-              y: 3239,
-              width: 111,
-              height: 200,
-              zIndex: 2,
-              extra: { objectFit: "cover", pointerEvents: "none" },
-            })}
-          />
-
-          {/* Blue Nautical Stripes - Bottom (y: 3339, x: -10, 499 x 164) */}
-          <img
-            src={stripesBottom}
-            alt=""
-            style={figmaBox({
-              x: -10,
-              y: 3339,
-              width: 499,
-              height: 164,
-              zIndex: 1,
-              extra: { pointerEvents: "none" },
-            })}
-          />
-
-          {/* Signature: "club Capri" (y: 3320, x: 103, 221 x 41) */}
-          <div
-            id="preview-el-footer-title"
-            data-element-id="footer-title"
-            onClick={() => handleElementClick("footer-title", "footer")}
-            style={figmaBox({
-              x: 103,
-              y: 3320,
-              width: 221,
-              height: 41,
-              zIndex: 3,
-              extra: {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                ...getElementHighlightStyle("footer-title"),
-              },
-            })}
-          >
-            {!overrides["footer-title"]?.text && !overrides["footer-title"]?.fontFamily ? (
-              <img src={clubCapriTitleSvg} alt="club Capri" style={{ width: 187, height: 44, display: "block" }} />
-            ) : (
-              <div
-                style={getStyle("footer-title", {
-                  fontFamily: FONT_PERPETUA,
-                  fontWeight: 300,
-                  fontSize: "36px",
-                  lineHeight: "40px",
-                  color: COLOR_TEAL,
-                  textAlign: "center",
-                  textTransform: "lowercase",
-                })}
-              >
-                {getText("footer-title", "club Capri")}
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="radio" checked={!attending} onChange={() => setAttending(false)} />
+                  Sorry, I can&apos;t make it
+                </label>
               </div>
-            )}
+
+              {[
+                ["Name", fullName, setFullName, "text", true],
+                ["Email", email, setEmail, "email", false],
+                ["Phone Number", phone, setPhone, "tel", false],
+                ["Number of Guests", guestCount, setGuestCount, "number", false],
+              ].map(([label, value, setter, type, required]) => (
+                <label key={label} className="mt-7 block">
+                  <span className="text-[12px] uppercase leading-[18px]">{label}</span>
+                  <input
+                    type={type}
+                    value={value}
+                    onChange={(e) => setter(e.target.value)}
+                    required={required}
+                    className="mt-1 w-full border-0 border-b border-black bg-transparent py-2 text-[13px] outline-none"
+                  />
+                </label>
+              ))}
+
+              {rsvpError ? <p className="mt-4 text-center text-sm text-red-600">{rsvpError}</p> : null}
+              {rsvpStatus ? <p className="mt-4 text-center text-sm text-emerald-700">{rsvpStatus}</p> : null}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-8 w-full rounded-[7px] py-3 text-[12px] uppercase tracking-[0.04em] text-white disabled:opacity-60"
+                style={{ background: C.button }}
+              >
+                {submitting ? "Sending…" : "Send Confirmation"}
+              </button>
+            </form>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative flex flex-col items-center overflow-hidden pb-16 pt-10">
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 top-8"
+          style={{
+            backgroundImage: `repeating-linear-gradient(180deg, ${C.stripe} 0 14px, transparent 14px 30px)`,
+          }}
+          aria-hidden
+        />
+        <div className="relative z-10 flex flex-col items-center">
+          <img src={lifebuoy} alt="" className="h-[200px] w-[111px] object-cover" draggable={false} />
+          <div className="absolute left-1/2 top-[88px] flex -translate-x-1/2 items-baseline gap-1" style={{ color: C.brand }}>
+            <p className="text-[36px] lowercase leading-[40px]" style={{ fontFamily: F.serif }}>
+              club
+            </p>
+            <p className="text-[48px] leading-[40px]" style={{ fontFamily: F.script }}>
+              Capri
+            </p>
+          </div>
+        </div>
+      </footer>
+    </main>
     </div>
+    </>
   );
 }
+
+export default ClubCapriInvitePage;

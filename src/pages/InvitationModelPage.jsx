@@ -1,253 +1,335 @@
-import React, { useState, useEffect, useRef, useMemo  } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/header/Header";
-import Footer from "../components/footer/Footer";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiChevronDown, FiX } from "react-icons/fi";
-import ExpandableSections from "../components/webcontent/ExpandableSections";
-import data from "../data/physical/categories.json";
+import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
+import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import { useCart } from "../context/CartContext";
 
+const FIGMA = "/assets/home-physical/figma";
+
+const ACCORDIONS = [
+  { title: "Comment ça marche", body: "" },
+  { title: "Délai de livraison", body: "" },
+  { title: "Option accompagnement", body: "" },
+];
+
+const RECOS = [
+  {
+    name: "Versailles",
+    img: `${FIGMA}/catalog-4.png`,
+    price: "à partir de 1.5dt/pcs",
+    filled: false,
+  },
+  {
+    name: "Sacré cœur",
+    img: `${FIGMA}/catalog-1.png`,
+    price: "à partir de 1.5dt/pcs",
+    filled: true,
+  },
+];
+
+/** Product overview physique — Figma 169:618 */
 function InvitationModelPage() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const model = location.state?.model;
-    const selectedCategory = location.state?.selectedCategory || model.name.split(" ")[1];
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  const model = location.state?.model;
+  const selectedCategory = location.state?.selectedCategory || "Rustique";
 
-    const [popup, setPopup] = useState(null);
-    const popupRef = useRef(null);
+  const [popup, setPopup] = useState(null);
+  const popupRef = useRef(null);
+  const [qté, setQté] = useState("");
+  const [format, setFormat] = useState("Page plié (9,5 x 21 cm)");
+  const [motif, setMotif] = useState("Bagues Doré");
+  const [openAcc, setOpenAcc] = useState(-1);
+  const [added, setAdded] = useState(false);
 
-    // State for selections
-    const [qté, setQté] = useState("");
-    const [format, setFormat] = useState("");
-    const [motif, setMotif] = useState("");
+  const imageSrc = useMemo(() => {
+    if (!model) return `${FIGMA}/catalog-6.png`;
+    if (model.image) return model.image;
+    if (model.thumbnail) {
+      try {
+        return require(`../${model.thumbnail}`);
+      } catch {
+        return `${FIGMA}/catalog-6.png`;
+      }
+    }
+    return `${FIGMA}/catalog-6.png`;
+  }, [model]);
 
-     // --- NEW: LOGIC TO GET RECOMMENDED MODELS ---
-    const recommendedModels = useMemo(() => {
-        // Ensure we have a category and that it exists in our data
-        if (!selectedCategory || !data.models[selectedCategory]) {
-            return [];
-        }
-        // 1. Get all models from the same category
-        const allModelsInCategory = data.models[selectedCategory];
+  const openPopup = (label) => {
+    setPopup(label);
+    document.body.style.overflow = "hidden";
+  };
 
-        // 2. Filter out the current model to get the recommendations
-        return allModelsInCategory.filter(m => m.name !== model.name);
+  const closePopup = () => {
+    setPopup(null);
+    document.body.style.overflow = "auto";
+  };
 
-    }, [model.name, selectedCategory]);
-
-    const openPopup = (label) => {
-        setPopup(label);
-        document.body.style.overflow = "hidden"; // Disable scrolling
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        closePopup();
+      }
     };
+    if (popup) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [popup]);
 
-    const closePopup = () => {
-        setPopup(null);
-        document.body.style.overflow = "auto"; // Re-enable scrolling
-    };
+  const quantityOptions = [100, 120, 150, 170, 200, 220, 250, 270];
+  const formatOptions = [
+    "Page plié (9,5 x 21 cm)",
+    "Page simple (10 x 15 cm)",
+    "Carré (14 x 14 cm)",
+  ];
+  const motifOptions = ["Bagues Doré", "Fleurs Blanches", "Motif Classique"];
+  const isFormValid = Boolean(qté && format && motif);
 
-    // Close popup when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (popupRef.current && !popupRef.current.contains(event.target)) {
-                closePopup();
-            }
-        };
+  const handlePersonalize = () => {
+    if (!isFormValid) return;
+    navigate("/personalize", { state: { model, qté, format, motif } });
+  };
 
-        if (popup) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
+  const handleAddToCart = () => {
+    if (!isFormValid || !model) return;
+    addItem({
+      productType: "physical",
+      productId: model.templateId || model.name,
+      title: model.name,
+      qty: Number(String(qté).match(/\d+/)?.[0]) || 1,
+      unitPrice: Number(model.price) || 1.5,
+      format,
+      motif,
+      meta: { category: selectedCategory },
+    });
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1600);
+  };
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [popup]);
-
-    // Options for each dropdown
-    const quantityOptions = [100, 120, 150, 170, 200, 220, 250, 270];
-    const formatOptions = ["Page plié (9.5 x 21 cm)", "Page simple (10 x 15 cm)", "Carré (14 x 14 cm)"];
-    const motifOptions = ["Bagues Doré", "Fleurs Blanches", "Motif Classique"];
-
-    // Check if all required fields are filled
-    const isFormValid = qté && format && motif;
-
-    // Handle personalization navigation
-    const handlePersonalize = () => {
-        if (isFormValid) {
-            navigate("/personalize", {
-                state: {
-                    model,
-                    qté,
-                    format,
-                    motif
-                }
-            });
-        }
-    };
-
-    if (!model) return <div className="text-center p-6">No model selected.</div>;
-
+  if (!model) {
     return (
-        <div className="font-sans flex flex-col min-h-screen bg-gray-100">
-            <Header />
-
-            {/* Breadcrumb Navigation */}
-            <div className="mx-auto w-full max-w-6xl text-xs font-urbanist px-6 pt-10 flex items-center space-x-2 overflow-hidden whitespace-nowrap">
-                <span className="cursor-pointer hover:underline" onClick={() => navigate("/")}>
-                    Accueil
-                </span>
-                <span>{">"}</span>
-                <span className="cursor-pointer hover:underline" onClick={() => navigate("/invitations-physique")}>
-                    Invitations Physique
-                </span>
-                <span>{">"}</span>
-                <span className="cursor-pointer hover:underline" 
-                onClick={() => navigate(`/invitations-physique`,
-                {state: {selectedCategory },})}>
-                    {selectedCategory}
-                </span>
-                <span>{">"}</span>
-                <span className="truncate flex-1 font-bold">{model.name}</span>
-                </div>
-
-            <main className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)] lg:items-start lg:px-6">
-            {/* Model Image */}
-            <div className="bg-white p-4 lg:sticky lg:top-6">
-                <img src={require(`../${model.thumbnail}`)} alt={model.name} className="h-[450px] w-full lg:mx-auto lg:h-[640px] lg:object-contain" />
-            </div>
-
-            {/* Model Details */}
-            <div className="px-0 lg:bg-white lg:p-6">
-                <h1 className="text-xl font-bold lg:text-3xl">{model.name}</h1>
-                <h2 className="text-gray-500">{selectedCategory || "Invitations Physique"}</h2>
-
-                {/* Dropdown Selections */}
-                <div className="mt-10 space-y-4 border-t border-gray-400">
-                    {[
-                        { label: "Quantité", value: qté },
-                        { label: "Format", value: format },
-                        { label: "Motif", value: motif },
-                    ].map(({ label, value }) => (
-                        <div
-                            key={label}
-                            className="flex justify-between items-center border-b mt-4 -mx-2 px-2 py-3 border-gray-400 cursor-pointer transition-colors hover:bg-gray-50"
-                            onClick={() => openPopup(label)}
-                        >
-                            <span>{label} :</span>
-                            <span className={`text-gray-500 ${value ? "text-black" : ""}`}>
-                                {value || "Sélectionner"}
-                            </span>
-                            <FiChevronDown />
-                        </div>
-                    ))}
-                </div>
-
-                {/* Pricing and Personalization */}
-                <div className="px-0 mt-10 text-center">
-                    <p className="text-lg font-bold">À partir de {model.price}DT la pièce</p>
-                    <button
-                        className={`px-6 py-4 mt-2 w-full font-urbanist ${
-                            isFormValid ? "bg-black text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                        }`}
-                        onClick={handlePersonalize}
-                        disabled={!isFormValid}
-                    >
-                        PERSONNALISER
-                    </button>
-                </div>
-
-                <ExpandableSections className="mt-10" />
-            </div>
-            </main>
-
-            {recommendedModels.length > 0 && (
-                <section className="mx-auto w-full max-w-6xl p-2">
-                    <h2 className="text-center text-xl font-abhaya mb-6">Autres Recommendation</h2>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 px-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
-                        {/* Map over the NEW recommendedModels array */}
-                        {recommendedModels.map((recModel) => (
-                            <div
-                                key={recModel.name} // Use a unique key like the name
-                                className="flex flex-col items-center cursor-pointer"
-                                onClick={() =>
-                                    // Navigate to the new model's page
-                                    navigate(`/invitation-model/${encodeURIComponent(recModel.name)}`, {
-                                        state: { model: recModel, selectedCategory }, // Pass the new model's data
-                                    })
-                                }
-                            >
-                                <div className="bg-gray-200 h-44 w-full flex items-center justify-center overflow-hidden md:h-auto md:aspect-[3/4]">
-                                    <img
-                                        src={require(`../${recModel.thumbnail}`)}
-                                        alt={recModel.name}
-                                        className="h-full w-full object-cover"
-                                    />
-                                </div>
-                                <h1 className="mt-2 text-sm font-bold text-left w-full font-urbanist">{recModel.name}</h1>
-                                <p className="text-sm text-left w-full font-urbanist">à partir de {recModel.price}DT</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-            {/* Popup Modal for Selection */}
-            {popup && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center sm:items-center">
-                    <div ref={popupRef} className="max-h-[75vh] w-full overflow-hidden rounded-t-lg bg-white p-4 sm:max-w-md sm:rounded-lg">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold">{popup}</h2>
-                            <FiX className="text-xl cursor-pointer" onClick={closePopup} />
-                        </div>
-
-                        <div className="max-h-[58vh] space-y-2 overflow-y-auto pr-1">
-                            {popup === "Quantité" &&
-                                quantityOptions.map((option, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex justify-between items-center border-b px-3 py-3 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100"
-                                        onClick={() => {
-                                            setQté(`${option} (à 1.5DT l’unité)`);
-                                            closePopup();
-                                        }}
-                                    >
-                                        <span>{option} (à 1.5DT l’unité)</span>
-                                        <span className="font-bold">{option * 1.5}DT</span>
-                                    </div>
-                                ))}
-
-                            {popup === "Format" &&
-                                formatOptions.map((option, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex justify-between items-center border-b px-3 py-3 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100"
-                                        onClick={() => {
-                                            setFormat(option);
-                                            closePopup();
-                                        }}
-                                    >
-                                        <span>{option}</span>
-                                    </div>
-                                ))}
-
-                            {popup === "Motif" &&
-                                motifOptions.map((option, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex justify-between items-center border-b px-3 py-3 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100"
-                                        onClick={() => {
-                                            setMotif(option);
-                                            closePopup();
-                                        }}
-                                    >
-                                        <span>{option}</span>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <Footer />
-        </div>
+      <div className="flex min-h-screen flex-col bg-white font-urbanist text-lw-text">
+        <DigitalHomeHeader mode="imprimee" />
+        <p className="flex-1 p-10 text-center text-lw-muted">Aucun modèle sélectionné.</p>
+        <DigitalHomeFooter />
+      </div>
     );
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+      <DigitalHomeHeader mode="imprimee" />
+
+      <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:px-8 lg:pt-10">
+        <Link to="/" className="hover:text-lw-accent">
+          Accueil
+        </Link>
+        <span>›</span>
+        <Link to="/invitations-physique" className="hover:text-lw-accent">
+          Invitations Physique
+        </Link>
+        <span>›</span>
+        <span>Invitations {selectedCategory}</span>
+        <span>›</span>
+        <span className="font-bold">{model.name}</span>
+      </nav>
+
+      {/* Mobile : image full-bleed · Desktop : 2 colonnes image | détails */}
+      <div className="mt-6 w-full lg:mx-auto lg:mt-10 lg:grid lg:max-w-6xl lg:grid-cols-2 lg:items-start lg:gap-12 lg:px-8">
+        <div className="w-full">
+          <img
+            src={imageSrc}
+            alt={model.name}
+            className="h-[537px] w-full object-cover lg:h-auto lg:min-h-[560px] lg:rounded-[5px] lg:object-cover"
+          />
+        </div>
+
+        <section className="bg-[#fffaed] px-4 pb-10 pt-8 lg:rounded-[5px] lg:px-8 lg:pb-12 lg:pt-10">
+          <div className="mx-auto w-full lg:mx-0">
+            <h1 className="lw-h1 lg:text-[40px] lg:leading-tight">
+              {model.name}
+            </h1>
+            <p className="mt-3 max-w-[398px] lw-sub lg:mt-4 lg:leading-7">
+              Une invitation imprimée soignée — papier premium, finitions raffinées pour votre grand
+              jour.
+            </p>
+            <p className="mt-4 font-abhaya text-[16px] text-[#1a1612]">350 gsm</p>
+
+            <div className="mt-8 border-t border-lw-line">
+              {[
+                {
+                  label: "Quantité :",
+                  value: qté || "Choisissez votre quantité",
+                  key: "Quantité",
+                },
+                { label: "Format :", value: format, key: "Format" },
+                { label: "Motif :", value: motif, key: "Motif" },
+              ].map((row) => (
+                <button
+                  key={row.key}
+                  type="button"
+                  className="flex w-full items-center justify-between border-b border-lw-line py-4 text-left"
+                  onClick={() => openPopup(row.key)}
+                >
+                  <span className="font-urbanist text-[14px] font-bold capitalize text-lw-text">
+                    {row.label}
+                  </span>
+                  <span className="flex items-center gap-2 font-urbanist text-[14px] text-lw-muted">
+                    {row.value}
+                    <FiChevronDown />
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <p className="mt-6 text-center font-urbanist text-[14px] font-bold uppercase text-lw-text lg:text-left">
+              À partir de 1.5DT la pièce
+            </p>
+            <button
+              type="button"
+              disabled={!isFormValid}
+              onClick={handlePersonalize}
+              className={`mt-3 flex h-[42px] w-[163px] items-center justify-center rounded-[5px] font-urbanist text-[14px] font-bold uppercase tracking-[0.7px] text-white mx-auto lg:mx-0 ${
+                isFormValid ? "bg-lw-accent hover:bg-lw-accentDark" : "cursor-not-allowed bg-lw-line"
+              }`}
+            >
+              Personnaliser
+            </button>
+            <button
+              type="button"
+              disabled={!isFormValid}
+              onClick={handleAddToCart}
+              className="mx-auto mt-3 block text-center font-urbanist text-sm font-semibold text-lw-accent underline underline-offset-4 disabled:cursor-not-allowed disabled:no-underline disabled:opacity-40 lg:mx-0 lg:text-left"
+            >
+              {added ? "Ajouté au panier" : "Ajouter au panier"}
+            </button>
+
+            <div className="mt-10 border-t border-lw-line">
+              {ACCORDIONS.map((item, i) => (
+                <button
+                  key={item.title}
+                  type="button"
+                  className="flex w-full items-center gap-3 border-b border-lw-line py-4 text-left"
+                  onClick={() => setOpenAcc(openAcc === i ? -1 : i)}
+                >
+                  <span className="text-lg leading-none">{openAcc === i ? "−" : "+"}</span>
+                  <span className="font-urbanist text-[14px] font-bold capitalize text-lw-text">
+                    {item.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section className="bg-white px-4 py-12 lg:px-8 lg:py-20">
+        <div className="mx-auto w-full max-w-6xl">
+          <h2 className="text-center lw-h1 lg:text-[36px]">
+            Autres recommandations
+          </h2>
+          <div className="mt-8 grid grid-cols-2 gap-4 lg:mx-auto lg:max-w-3xl lg:gap-10">
+            {RECOS.map((r) => (
+              <button
+                key={r.name}
+                type="button"
+                className="text-left"
+                onClick={() =>
+                  navigate(`/invitation-model/${encodeURIComponent(r.name)}`, {
+                    state: {
+                      model: { name: r.name, price: 1.5, image: r.img, templateId: r.name },
+                      selectedCategory,
+                    },
+                  })
+                }
+              >
+                <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] lg:aspect-[189/224] lg:h-auto">
+                  <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
+                  <span
+                    className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none ${
+                      r.filled
+                        ? "bg-lw-accent text-white"
+                        : "border border-lw-accent bg-white/90 text-lw-accent"
+                    }`}
+                  >
+                    {r.price}
+                  </span>
+                </div>
+                <h3 className="mt-4 lw-h3 lg:text-[24px]">{r.name}</h3>
+                <p className="mt-1 lw-caption">
+                  Includes music, animations & guestbook
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {popup ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
+          <div
+            ref={popupRef}
+            className="max-h-[75vh] w-full overflow-hidden rounded-t-[12px] bg-white p-4 sm:max-w-md sm:rounded-[12px]"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="lw-h2">{popup}</h2>
+              <button type="button" onClick={closePopup} aria-label="Fermer">
+                <FiX className="text-xl" />
+              </button>
+            </div>
+            <div className="max-h-[58vh] space-y-1 overflow-y-auto pr-1">
+              {popup === "Quantité" &&
+                quantityOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className="flex w-full items-center justify-between border-b border-lw-line px-3 py-3 text-left hover:bg-lw-surface"
+                    onClick={() => {
+                      setQté(`${option} (à 1.5DT l'unité)`);
+                      closePopup();
+                    }}
+                  >
+                    <span>{option} (à 1.5DT l&apos;unité)</span>
+                    <span className="font-bold">{option * 1.5} DT</span>
+                  </button>
+                ))}
+              {popup === "Format" &&
+                formatOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className="flex w-full border-b border-lw-line px-3 py-3 text-left hover:bg-lw-surface"
+                    onClick={() => {
+                      setFormat(option);
+                      closePopup();
+                    }}
+                  >
+                    {option}
+                  </button>
+                ))}
+              {popup === "Motif" &&
+                motifOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className="flex w-full border-b border-lw-line px-3 py-3 text-left hover:bg-lw-surface"
+                    onClick={() => {
+                      setMotif(option);
+                      closePopup();
+                    }}
+                  >
+                    {option}
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <DigitalHomeFooter />
+    </div>
+  );
 }
 
 export default InvitationModelPage;

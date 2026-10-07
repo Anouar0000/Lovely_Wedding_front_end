@@ -7,9 +7,9 @@ import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
 function InviteMessage({ title, children }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F4F4F4] px-6 text-center font-urbanist">
+    <main className="flex min-h-screen items-center justify-center bg-lw-surface px-6 text-center font-urbanist text-lw-text">
       <div>
-        <h1 className="font-abhaya text-3xl">{title}</h1>
+        <h1 className="lw-h1">{title}</h1>
         {children}
       </div>
     </main>
@@ -64,7 +64,7 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
   if (loading) {
     return (
       <InviteMessage title="Chargement">
-        <p className="mt-3 text-sm text-gray-600">Nous preparons votre invitation.</p>
+        <p className="mt-3 lw-body">Nous preparons votre invitation.</p>
       </InviteMessage>
     );
   }
@@ -72,7 +72,7 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
   if (error) {
     return (
       <InviteMessage title="Erreur">
-        <p className="mt-3 text-sm text-gray-600">{error}</p>
+        <p className="mt-3 lw-body">{error}</p>
       </InviteMessage>
     );
   }
@@ -80,10 +80,10 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
   if (!invite) {
     return (
       <InviteMessage title="Invitation introuvable">
-        <p className="mt-3 text-sm text-gray-600">
+        <p className="mt-3 lw-body">
           Le lien est incorrect ou l'invitation n'est pas encore publiee.
         </p>
-        <Link to="/invitations-digital" className="mt-6 inline-block border-b-2 border-black pb-1 text-sm">
+        <Link to="/invitations-digital" className="mt-6 inline-block border-b-2 border-lw-text pb-1 lw-body font-semibold text-lw-text">
           Voir les invitations digitales
         </Link>
       </InviteMessage>
@@ -101,14 +101,14 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
             Apercu dashboard / {invite.status === "published" ? "publiee" : "brouillon"}
           </div>
         ) : null}
-        <TemplateComponent invite={invite} />
+        <TemplateComponent invite={invite} previewMode={previewMode} />
       </>
     );
   }
 
   return (
     <InviteMessage title="Modele indisponible">
-      <p className="mt-3 text-sm text-gray-600">
+      <p className="mt-3 lw-body">
         Cette invitation existe, mais son modele n'est pas encore connecte.
       </p>
     </InviteMessage>

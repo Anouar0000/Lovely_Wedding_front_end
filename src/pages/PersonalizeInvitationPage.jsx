@@ -17,6 +17,7 @@ import { fontOptions } from '../config/fontConfig';
 import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
 import ApparenceMenu from '../components/canvas/ApparenceMenu';
 import data from '../data/physical/categories.json';
+import { useCart } from '../context/CartContext';
 
 const DEFAULT_CARD_SIZE_MM = { width: 100, height: 141.4 };
 
@@ -87,7 +88,9 @@ function PersonalizeInvitationPage() {
   
   const navigate = useNavigate();
   const location = useLocation();
+  const { addItem } = useCart();
   const { model, format, motif } = location.state || {};
+  const quantityValue = Object.entries(location.state || {}).find(([key]) => key.startsWith('qt'))?.[1];
   const selectedCardSize = useMemo(() => getCardSizeFromFormat(format), [format]);
   const [designAspectRatio, setDesignAspectRatio] = useState(DEFAULT_CARD_SIZE_MM.width / DEFAULT_CARD_SIZE_MM.height);
   const [unsafeZoneEditorOpen, setUnsafeZoneEditorOpen] = useState(false);
@@ -278,15 +281,34 @@ useEffect(() => {
 
   const handleCanvasClick = (e) => { if (e.target === e.currentTarget) { setSelectedTextId(null); } };
   
+  const handleAddToCartAndCheckout = () => {
+    if (!model) {
+      alert("Modele introuvable.");
+      return;
+    }
+
+    addItem({
+      productType: "physical",
+      productId: model.templateId || model.name,
+      title: model.name,
+      qty: Number(quantityValue) || 1,
+      unitPrice: Number(model.price) || 0,
+      format: format || "",
+      motif: motif || "",
+      meta: { personalized: true },
+    });
+    navigate("/cart");
+  };
+
   const handleDownloadExact = async () => {
-    if (!contentContainerRef.current) { alert("Erreur : La zone de personnalisation n'a pas pu etre trouvee."); return; }
+    const canvas = contentContainerRef.current;
+    if (!canvas) { alert("Erreur : La zone de personnalisation n'a pas pu etre trouvee."); return; }
 
     try {
         if (document.fonts?.ready) {
           await document.fonts.ready;
         }
 
-        const quantityValue = Object.entries(location.state || {}).find(([key]) => key.startsWith('qt'))?.[1];
         const cardSize = {
           width: selectedCardSize.width,
           height: selectedCardSize.width / designAspectRatio,
@@ -529,7 +551,7 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gray-100">
+    <div className="relative min-h-screen bg-lw-surface font-urbanist text-lw-text">
       <div
         aria-hidden="true"
         className="fixed pointer-events-none"
@@ -539,26 +561,28 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
         {model?.modelImagep2 && renderExportCard('back', model?.modelImagep2, exportBackRef)}
       </div>
 
-      <div ref={headerRef} className="fixed top-0 left-0 w-full bg-white z-50 py-6 shadow-sm">
+      <div ref={headerRef} className="fixed top-0 left-0 z-50 w-full border-b border-lw-line bg-white/95 py-4 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4">
             <div className="flex space-x-2">
-                <button onClick={() => navigate('/invitations-physique')} className="border border-black p-1 rounded">✕</button>
-                <button onClick={undo} disabled={!canUndo} className="border border-black p-1 rounded disabled:opacity-50 disabled:cursor-not-allowed"><FiCornerDownLeft /></button>
-                <button onClick={redo} disabled={!canRedo} className="border border-black p-1 rounded disabled:opacity-50 disabled:cursor-not-allowed"><FiCornerUpRight /></button>
+                <button type="button" onClick={() => navigate('/invitations-physique')} className="rounded-[5px] border border-lw-line p-1.5" aria-label="Fermer">✕</button>
+                <button type="button" onClick={undo} disabled={!canUndo} className="rounded-[5px] border border-lw-line p-1.5 disabled:cursor-not-allowed disabled:opacity-50"><FiCornerDownLeft /></button>
+                <button type="button" onClick={redo} disabled={!canRedo} className="rounded-[5px] border border-lw-line p-1.5 disabled:cursor-not-allowed disabled:opacity-50"><FiCornerUpRight /></button>
             </div>
-            <h1 className="text-base font-urbanist font-medium flex-1 text-center">{model?.name?.replace(/^Modèle\s/, '') || 'Personnalisation'}</h1>
+            <h1 className="flex-1 text-center lw-logo text-[16px] sm:text-[18px]">{model?.name?.replace(/^Modèle\s/, '') || 'Personnalisation'}</h1>
             <div className="flex items-center gap-2">
               {unsafeZoneEditorEnabled && (
                 <button
+                  type="button"
                   onClick={() => setUnsafeZoneEditorOpen((isOpen) => !isOpen)}
-                  className={`border border-black px-3 py-2 font-urbanist text-sm ${
-                    unsafeZoneEditorOpen ? 'bg-black text-white' : 'bg-white text-black'
+                  className={`rounded-[5px] border px-3 py-2 font-urbanist text-sm ${
+                    unsafeZoneEditorOpen ? 'border-lw-accent bg-lw-accent text-white' : 'border-lw-line bg-white text-lw-text'
                   }`}
                 >
                   Zones
                 </button>
               )}
-              <button onClick={handleDownloadExact} className="bg-black text-white px-4 py-2 font-urbanist text-sm">Commander</button>
+              <button type="button" onClick={handleAddToCartAndCheckout} className="rounded-[5px] bg-lw-accent px-4 py-2 font-urbanist text-sm font-bold uppercase text-white hover:bg-lw-accentDark">Commander</button>
+              <button type="button" onClick={handleDownloadExact} className="rounded-[5px] border border-lw-line bg-white px-3 py-2 font-urbanist text-sm font-semibold">PDF</button>
             </div>
         </div>
       </div>

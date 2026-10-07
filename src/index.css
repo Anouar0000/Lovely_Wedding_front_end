@@ -1,49 +1,4 @@
-@font-face {
-  font-family: 'B Fantezy';
-  src: url('./assets/fonts/B%20Fantezy%20Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'MADE Voyager PERSONAL_USE';
-  src: url('./assets/fonts/MADEVoyagerPERSONAL_USE-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'MADE Voyager PERSONAL_USE';
-  src: url('./assets/fonts/MADEVoyagerPERSONAL_USE-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Black Mango';
-  src: url('./assets/fonts/black-mango-regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Pinyon Script';
-  src: url('./assets/fonts/PinyonScript-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Onirom';
-  src: local('Onirom'),
-       local('Onirom Regular'),
-       local('Onirom-Regular');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Antic+Didone&family=Beau+Rivage&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Italiana&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Rosario:ital,wght@0,300..700;1,300..700&family=Taprom&family=Urbanist:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700&family=Allura&family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Gwendolyn:wght@400;700&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;500&family=Special+Elite&family=Taprom&family=Urbanist:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -51,9 +6,10 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: "Urbanist", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  color: #4b4242;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -63,20 +19,443 @@ code {
     monospace;
 }
 
+/* ─── Lovely Figma type scale (Main Digital tokens) ─── */
+@layer components {
+  /* headline 1 — Abhaya SemiBold 26 / 30 */
+  .lw-h1 {
+    @apply font-abhaya text-[26px] font-semibold capitalize leading-[30px] text-lw-text;
+  }
+  /* headline 2 — Abhaya Medium 24 */
+  .lw-h2 {
+    @apply font-abhaya text-[24px] font-medium capitalize leading-none text-lw-text;
+  }
+  /* headline 3 — Abhaya Medium 20 */
+  .lw-h3 {
+    @apply font-abhaya text-[20px] font-medium capitalize leading-none text-lw-text;
+  }
+  /* hero title — Abhaya 24 / 30 */
+  .lw-hero {
+    @apply font-abhaya text-[24px] font-semibold capitalize leading-[30px] text-lw-text;
+  }
+  /* Delicate Beige etc. — Abhaya Medium 28 / 31 */
+  .lw-feature {
+    @apply font-abhaya text-[28px] font-medium leading-[31px] text-lw-text;
+  }
+  /* subtext — Urbanist Medium 18 / 24 */
+  .lw-sub {
+    @apply font-urbanist text-[18px] font-medium leading-6 text-lw-muted;
+  }
+  /* subtext 2 — Urbanist Regular 14 / 20 */
+  .lw-body {
+    @apply font-urbanist text-[14px] font-normal leading-5 text-lw-muted;
+  }
+  /* subtext 3 — Urbanist Regular 13 */
+  .lw-caption {
+    @apply font-urbanist text-[13px] font-normal leading-4 text-lw-muted;
+  }
+  /* Button — Urbanist Bold 14 uppercase */
+  .lw-btn {
+    @apply inline-flex h-[42px] items-center justify-center rounded-[5px] bg-lw-accent font-urbanist text-[14px] font-bold uppercase tracking-[0.7px] text-white hover:bg-lw-accentDark;
+  }
+  /* Button 2 — price pill Urbanist Bold 10 */
+  .lw-pill {
+    @apply inline-flex h-[19px] items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none;
+  }
+  /* Logo — Antic Didone */
+  .lw-logo {
+    @apply whitespace-nowrap font-antic text-[20px] leading-none text-black lg:text-[28px];
+  }
+  /* Page title (auth / dashboard) — Abhaya SemiBold 36 */
+  .lw-page {
+    @apply font-abhaya text-[36px] font-semibold leading-none text-lw-text;
+  }
+  /* Section title large — Abhaya SemiBold 40 */
+  .lw-page-lg {
+    @apply font-abhaya text-[40px] font-semibold leading-none text-lw-text;
+  }
+}
+
 /* Hide scrollbar across all browsers */
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
 }
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none;    /* Firefox */
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
+html.hide-scrollbar,
+body.hide-scrollbar,
+#root.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+html.hide-scrollbar::-webkit-scrollbar,
+body.hide-scrollbar::-webkit-scrollbar,
+#root.hide-scrollbar::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Sakura invite — no motion (static Figma layout) */
+.lw-sakura-page {
+  background: #ffffff;
+}
+
+/* Disable leftover sakura motion (koi swim is enabled below) */
+.lw-sakura-seal,
+.lw-sakura-silk,
+.lw-sakura-card,
+.lw-sakura-flap {
+  animation: none !important;
+  transition: none !important;
+}
+
+@keyframes hero-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Rail du hero : 6 invitations + copie de la 1re pour boucle invisible.
+   Cadre iPhone fixe au centre ; le rail glisse les thèmes dessous. */
+.lw-hero-rail {
+  --lw-step: 197px; /* largeur carte + gouttière */
+  --lw-half: 91px; /* demi-carte */
+  animation: lw-hero-rail 30s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (min-width: 1024px) {
+  .lw-hero-rail {
+    --lw-step: 244px;
+    --lw-half: 112px;
+  }
+}
+
+@keyframes lw-hero-rail {
+  0%,
+  11% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 0 * var(--lw-step))));
+  }
+  16.66%,
+  27.66% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
+  }
+  33.33%,
+  44.33% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 2 * var(--lw-step))));
+  }
+  50%,
+  61% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 3 * var(--lw-step))));
+  }
+  66.66%,
+  77.66% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 4 * var(--lw-step))));
+  }
+  83.33%,
+  94.33% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 5 * var(--lw-step))));
+  }
+  100% {
+    transform: translateX(calc(-1 * (var(--lw-half) + 6 * var(--lw-step))));
+  }
+}
+
+/* Défilement vertical synchronisé avec le passage sous le cadre (slot 0..5). */
+.lw-invite-scroll {
+  will-change: transform;
+}
+.lw-invite-s0 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: 0s; }
+.lw-invite-s1 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -5s; }
+.lw-invite-s2 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -10s; }
+.lw-invite-s3 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -15s; }
+.lw-invite-s4 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -20s; }
+.lw-invite-s5 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -25s; }
+/* Copie de la 1re carte (index 6) = même rythme que s0 */
+.lw-invite-s6 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: 0s; }
+
+@keyframes lw-invite-slot {
+  /* Pendant ~5s sous le cadre : scroll 3 écrans, sinon reste en haut */
+  0%,
+  2% {
+    transform: translateY(0);
+  }
+  5%,
+  8% {
+    transform: translateY(-25%);
+  }
+  11%,
+  14% {
+    transform: translateY(-50%);
+  }
+  16.5%,
+  100% {
+    transform: translateY(-75%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-marquee {
+    animation: none !important;
+    transform: none !important;
+  }
+  .lw-invite-scroll,
+  .lw-invite-s0,
+  .lw-invite-s1,
+  .lw-invite-s2,
+  .lw-invite-s3,
+  .lw-invite-s4,
+  .lw-invite-s5,
+  .lw-invite-s6,
+  .lw-invite-a,
+  .lw-invite-b {
+    animation: none !important;
+    transform: none !important;
+  }
+  .lw-hero-rail {
+    animation: none !important;
+    transform: translateX(calc(-1 * var(--lw-half))) !important;
+  }
+  .lw-capri-cassette,
+  .lw-capri-volume-bar,
+  .lw-capri-arrow,
+  .lw-capri-fade,
+  .lw-sakura-koi,
+  .lw-sakura-seal,
+  .lw-sakura-card,
+  .lw-sakura-silk,
+  .lw-sakura-reveal {
+    animation: none !important;
+  }
+}
+
+/* ——— Club Capri ——— */
+.lw-capri-cassette {
+  animation: lw-capri-float 4.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lw-capri-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.lw-capri-volume-bar {
+  display: inline-block;
+  transform-origin: bottom center;
+  animation: lw-capri-volume 1.05s ease-in-out infinite;
+}
+
+.lw-capri-volume-bar:nth-child(2n) {
+  animation-duration: 0.9s;
+}
+.lw-capri-volume-bar:nth-child(3n) {
+  animation-duration: 1.25s;
+}
+.lw-capri-volume-bar:nth-child(4n) {
+  animation-duration: 0.8s;
+}
+
+@keyframes lw-capri-volume {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.lw-capri-arrow {
+  animation: lw-capri-bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes lw-capri-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(7px);
+    opacity: 1;
+  }
+}
+
+.lw-capri-fade {
+  animation: lw-capri-fade-up 0.9s ease-out both;
+}
+
+@keyframes lw-capri-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ——— Sakura: soft koi swim; other elements stay still ——— */
+.lw-sakura-seal,
+.lw-sakura-silk,
+.lw-sakura-card,
+.lw-sakura-flap {
+  animation: none !important;
+  transition: none !important;
+}
+
+.lw-sakura-envelope {
+  perspective: none;
+}
+
+/* Scroll reveal — words enter once when first visible */
+.lw-sakura-reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.9s ease-out,
+    transform 0.9s ease-out;
+  transition-delay: var(--lw-reveal-delay, 0s);
+}
+
+.lw-sakura-reveal.lw-sakura-cx {
+  transform: translate3d(-50%, 22px, 0);
+}
+
+.lw-sakura-reveal.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.lw-sakura-reveal.lw-sakura-cx.is-in {
+  transform: translate3d(-50%, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lw-sakura-reveal,
+  .lw-sakura-reveal.lw-sakura-cx {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .lw-sakura-reveal.lw-sakura-cx {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.lw-invite-entrance-img {
+  animation: none !important;
+}
+
+.lw-sakura-koi {
+  /* video handles swimming — no CSS rotate/path */
+}
+
+.lw-sakura-koi-video {
+  display: block;
+  background: transparent;
+}
+
+.lw-sakura-koi-flip {
+  /* Separate flip from page scale to avoid GPU shear on first paint */
+  transform: scaleX(-1);
+  backface-visibility: hidden;
+}
+
+.lw-sakura-koi,
+.lw-sakura-koi-video {
+  backface-visibility: hidden;
+}
+
+/* Expanding water-drop effect — 3 staggered rings only */
+.lw-sakura-ripple {
+  border-radius: 50%;
+  overflow: visible;
+}
+
+.lw-sakura-ripple-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.25px solid rgba(168, 199, 212, 0.65);
+  opacity: 0;
+  transform: scale(0.2);
+  animation: lw-sakura-ripple 3.4s cubic-bezier(0.12, 0.55, 0.2, 1) infinite;
+  animation-delay: var(--lw-ripple-delay, 0s);
+}
+
+.lw-sakura-ripple-ring:nth-child(2) {
+  animation-delay: calc(var(--lw-ripple-delay, 0s) + 1.1s);
+  border-color: rgba(168, 199, 212, 0.5);
+}
+
+.lw-sakura-ripple-ring:nth-child(3) {
+  animation-delay: calc(var(--lw-ripple-delay, 0s) + 2.2s);
+  border-color: rgba(168, 199, 212, 0.35);
+}
+
+@keyframes lw-sakura-ripple {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  12% {
+    opacity: 0.85;
+  }
+  55% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lw-sakura-ripple-ring {
+    animation: none !important;
+    opacity: 0.35;
+  }
+  .lw-sakura-ripple-ring:nth-child(1) {
+    transform: scale(0.45);
+  }
+  .lw-sakura-ripple-ring:nth-child(2) {
+    transform: scale(0.7);
+  }
+  .lw-sakura-ripple-ring:nth-child(3) {
+    transform: scale(0.95);
+  }
+}
+
 .hashed-background {
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(239, 68, 68, 0.2),  /* A light red */
+    rgba(239, 68, 68, 0.2),
     rgba(239, 68, 68, 0.2) 5px,
-    rgba(239, 68, 68, 0.3) 5px, /* A slightly darker red */
+    rgba(239, 68, 68, 0.3) 5px,
     rgba(239, 68, 68, 0.3) 10px
   );
 }

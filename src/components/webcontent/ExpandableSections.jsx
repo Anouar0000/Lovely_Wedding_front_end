@@ -9,9 +9,9 @@ function ExpandableSections({ className = "px-4 mt-16 mb-8" }) {
   };
 
   const sections = [
-    { title: "Description", content: "Voici les détails de la description." },
-    { title: "Délai de livraison", content: "La livraison prend généralement 5 à 7 jours ouvrables." },
-    { title: "Option accompagnement", content: "Choisissez des options supplémentaires pour accompagner votre commande." },
+    { title: "Comment ça marche", content: "" },
+    { title: "Délai de livraison", content: "" },
+    { title: "Option accompagnement", content: "" },
   ];
 
   return (

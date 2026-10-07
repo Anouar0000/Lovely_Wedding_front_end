@@ -1,1933 +1,551 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useState } from "react";
+import columns from "../assets/digital/dolce-vita/figma-layer-01.png";
+import flourishLeft from "../assets/digital/dolce-vita/figma-layer-02.png";
+import flourishRight from "../assets/digital/dolce-vita/figma-layer-03.png";
+import divider from "../assets/digital/dolce-vita/figma-layer-04.png";
+import sun from "../assets/digital/dolce-vita/figma-layer-05.png";
+import venueSoft from "../assets/digital/dolce-vita/figma-layer-06.png";
+import venue from "../assets/digital/dolce-vita/figma-layer-07.png";
+import portrait from "../assets/digital/dolce-vita/figma-layer-08.png";
+import lemons from "../assets/digital/dolce-vita/figma-layer-09.png";
+import noteCard from "../assets/digital/dolce-vita/figma-layer-10.png";
+import accueilTimeline from "../assets/digital/dolce-vita/accueil-des-invites.png";
+import arriveeTimeline from "../assets/digital/dolce-vita/arrivee-des-maries.png";
+import contratTimeline from "../assets/digital/dolce-vita/contrat-de-mariage.png";
+import soireeTimeline from "../assets/digital/dolce-vita/soiree-dansante.png";
+import finTimeline from "../assets/digital/dolce-vita/la-fin.png";
+import timelineArrow1 from "../assets/digital/dolce-vita/arrow1.png";
+import timelineArrow2 from "../assets/digital/dolce-vita/arrow2.png";
+import timelineArrow3 from "../assets/digital/dolce-vita/arrow3.png";
+import timelineArrow4 from "../assets/digital/dolce-vita/arrow4.png";
+import locationLineLeft from "../assets/digital/dolce-vita/figma-vector-38.svg";
+import locationLineLowerLeft from "../assets/digital/dolce-vita/figma-vector-02.svg";
+import locationLineRight from "../assets/digital/dolce-vita/figma-vector-37.svg";
+import locationLineLowerRight from "../assets/digital/dolce-vita/figma-vector-39.svg";
+import topArrow from "../assets/digital/dolce-vita/figma-vector-01.svg";
+import menuPlate from "../assets/digital/dolce-vita/export-update/figma-image-49.png";
+import menuLemons from "../assets/digital/dolce-vita/export-update/figma-image-50.png";
+import menuPortrait from "../assets/digital/dolce-vita/export-update/figma-image-51.png";
 import templateConfig from "../data/digital/templates/dolce-vita.json";
-
-// Fresh 1:1 Figma Assets
-import heroColumns from "../assets/digital/dolce-vita/hero_columns.png";
-import heroFlourishLeft from "../assets/digital/dolce-vita/hero_flourish_left.png";
-import heroFlourishCenter from "../assets/digital/dolce-vita/hero_flourish_center.png";
-import heroFlourishRight from "../assets/digital/dolce-vita/hero_flourish_right.png";
-import heroArrow from "../assets/digital/dolce-vita/hero_arrow.svg";
-import countdownSun from "../assets/digital/dolce-vita/countdown_sun.png";
-import locLineLeft from "../assets/digital/dolce-vita/loc_line_left.svg";
-import locLineRight from "../assets/digital/dolce-vita/loc_line_right.svg";
-import locLineLowerLeft from "../assets/digital/dolce-vita/loc_line_lower_left.svg";
-import locLineLowerRight from "../assets/digital/dolce-vita/loc_line_lower_right.svg";
-import locationPortrait from "../assets/digital/dolce-vita/location_portrait.png";
-import locationLemons from "../assets/digital/dolce-vita/location_lemons.png";
-import locationVenue from "../assets/digital/dolce-vita/location_venue.png";
-import tomatoesDish from "../assets/digital/dolce-vita/tomatoes_dish.png";
-import menuFrame from "../assets/digital/dolce-vita/menu_frame.png";
-import pastaDish from "../assets/digital/dolce-vita/pasta_dish.png";
-import footerFrame from "../assets/digital/dolce-vita/footer_frame.png";
-
-// Individual Timeline Assets
-import accueilIcon from "../assets/digital/dolce-vita/accueil-des-invites.png";
-import arriveeIcon from "../assets/digital/dolce-vita/arrivee-des-maries.png";
-import contratIcon from "../assets/digital/dolce-vita/contrat-de-mariage.png";
-import soireeIcon from "../assets/digital/dolce-vita/soiree-dansante.png";
-import finIcon from "../assets/digital/dolce-vita/la-fin.png";
-import arrow1 from "../assets/digital/dolce-vita/arrow1.png";
-import arrow2 from "../assets/digital/dolce-vita/arrow2.png";
-import arrow3 from "../assets/digital/dolce-vita/arrow3.png";
-import arrow4 from "../assets/digital/dolce-vita/arrow4.png";
-
-const CANVAS_WIDTH = 430;
-const CANVAS_HEIGHT = 3050;
-
-// Colors
-const COLOR_WHITE = "#FFFFFF";
-const COLOR_NAVY = "#130554";
-const COLOR_GOLD = "#E8CC33";
-const COLOR_DARK_BLUE = "#23224C";
-
-// Fonts
-const FONT_TAPROM = "'Taprom', 'Pinyon Script', cursive";
-const FONT_CRIMSON = "'Crimson Text', serif";
-const FONT_HOMEMADE = "'Homemade Apple', 'Pinyon Script', cursive";
-
-const TIMELINE_SLOTS = [
-  {
-    iconPos: { left: 64, top: 6, width: 38, height: 57 },
-    textPos: { left: 0, top: 6, width: 66, textAlign: "right", timeMarginTop: "0px" },
-    titleLineHeight: "13px",
-    arrow: arrow1,
-    arrowPos: { left: 89, top: 71, width: 26, height: 24 },
-  },
-  {
-    iconPos: { left: 136, top: 89, width: 57, height: 46 },
-    textPos: { left: 120, top: 51, width: 62, textAlign: "right", timeMarginTop: "3px" },
-    titleLineHeight: "13px",
-    arrow: arrow2,
-    arrowPos: { left: 92, top: 146, width: 42, height: 27 },
-  },
-  {
-    iconPos: { left: 44, top: 162, width: 54, height: 39 },
-    textPos: { left: 2, top: 134, width: 65, textAlign: "left", timeMarginTop: "6px" },
-    titleLineHeight: "13px",
-    arrow: arrow3,
-    arrowPos: { left: 82, top: 216, width: 38, height: 29 },
-  },
-  {
-    iconPos: { left: 139, top: 240, width: 50, height: 45 },
-    textPos: { left: 82, top: 195, width: 80, textAlign: "center", timeMarginTop: "5px" },
-    titleLineHeight: "14px",
-    arrow: arrow4,
-    arrowPos: { left: 95, top: 296, width: 45, height: 27 },
-  },
-  {
-    iconPos: { left: 8, top: 319, width: 79, height: 46 },
-    textPos: { left: 15, top: 299, width: 55, textAlign: "center", timeMarginTop: "7px" },
-    titleLineHeight: "13px",
-    arrow: null,
-    arrowPos: null,
-  },
-];
-
-const STEP_ICONS = {
-  accueil: accueilIcon,
-  arrivee: arriveeIcon,
-  contrat: contratIcon,
-  soiree: soireeIcon,
-  fin: finIcon,
-};
-
-const DEFAULT_TITLES = {
-  accueil: "Accueil\ndes invités",
-  arrivee: "Arrivée\ndes mariés",
-  contrat: "contrat\nde mariage",
-  soiree: "Soirée\ndansante",
-  fin: "La Fin",
-};
-
-const DEFAULT_TIMES = {
-  accueil: "20h",
-  arrivee: "20h30",
-  contrat: "21h",
-  soiree: "21h30",
-  fin: "00h00",
-};
-
-const STEP_ORDER = ["accueil", "arrivee", "contrat", "soiree", "fin"];
-
-const SECTION_METRICS = [
-  { id: "hero", defaultStart: 0, height: 337 },
-  { id: "countdown", defaultStart: 337, height: 258 },
-  { id: "location", defaultStart: 595, height: 351 },
-  { id: "timeline", defaultStart: 946, height: 512 },
-  { id: "menu", defaultStart: 1458, height: 705 },
-  { id: "rsvp", defaultStart: 2163, height: 633 },
-  { id: "footer", defaultStart: 2796, height: 254 },
-];
+import { boxStyle, textStyle, toCssSize } from "../utils/digitalTemplateDesign";
+import { submitRsvpResponse } from "../services/rsvp";
+import { isFirebaseConfigured } from "../lib/firebase";
 
 const defaultInvite = templateConfig.sample;
+const design = templateConfig.design;
+const fixedText = templateConfig.fixedText;
+const fixedTimelineSteps = templateConfig.fixedTimelineSteps || [];
+const fonts = design.fonts;
+const colors = design.colors;
+const timelineImages = {
+  accueil: accueilTimeline,
+  arrivee: arriveeTimeline,
+  contrat: contratTimeline,
+  soiree: soireeTimeline,
+  fin: finTimeline,
+};
+const timelineArrows = [timelineArrow1, timelineArrow2, timelineArrow3, timelineArrow4];
+const menuItems = [
+  {
+    course: "Starter",
+    title: "Insalata Caprese",
+    description:
+      "Layers of creamy buffalo mozzarella, ripe slices of tomato, and fragrant basil leaves are elegantly arranged on a plate.",
+  },
+  {
+    course: "Main Course",
+    title: "Spaghetti alla Carbonara",
+    description: "Al dente spaghetti, lovingly coated in a velvety sauce, awaits your palate.",
+  },
+  {
+    course: "Dessert",
+    title: "Tiramisu",
+    description: "Savor the finale of your Italian journey with the epitome of dolce perfection - Tiramisu.",
+  },
+];
+const getTimelineStep = (item, index) => {
+  const stepKey = item.step || item.image || fixedTimelineSteps[index]?.image;
+  return fixedTimelineSteps.find((step) => step.image === stepKey) || fixedTimelineSteps[index] || {};
+};
 
-export default function DolceVitaInvitePage({
-  invite = defaultInvite,
-  editable = false,
-  selectedElementId = null,
-  onSelectElement = null,
-  onUpdateInvite = null,
-}) {
-  const currentInvite = invite || defaultInvite;
-  const overrides = currentInvite.elementOverrides || {};
-  const containerRef = useRef(null);
-  const [scale, setScale] = useState(1);
+const getCountdown = (dateString) => {
+  if (!dateString) {
+    return [];
+  }
 
-  // Active modular sections handling
-  const { totalCanvasHeight, sectionShifts } = useMemo(() => {
-    const activeSections = currentInvite.activeSections || templateConfig.defaults.activeSections || [
-      "hero",
-      "countdown",
-      "location",
-      "timeline",
-      "menu",
-      "rsvp",
-      "footer",
-    ];
-    let currentY = 0;
-    const shifts = {};
-    SECTION_METRICS.forEach(({ id, defaultStart, height }) => {
-      const isAct = id === "hero" || activeSections.includes(id);
-      if (isAct) {
-        shifts[id] = currentY - defaultStart;
-        currentY += height;
-      } else {
-        shifts[id] = null;
-      }
-    });
-    return { totalCanvasHeight: currentY || CANVAS_HEIGHT, sectionShifts: shifts };
-  }, [currentInvite.activeSections]);
+  const target = new Date(`${dateString}T00:00:00`);
+  const diff = Math.max(target.getTime() - Date.now(), 0);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-  const isSectionActive = (id) =>
-    id === "hero" || (sectionShifts[id] !== null && sectionShifts[id] !== undefined);
+  return [
+    [String(days), "Days"],
+    [String(hours), "Hours"],
+    [String(minutes), "Minutes"],
+  ];
+};
 
-  const getSectionStyle = (id) => {
-    const shift = sectionShifts[id] || 0;
-    if (shift === 0) return undefined;
-    return { transform: `translateY(${shift}px)` };
-  };
-
-  // Form state for RSVP
-  const [attendance, setAttendance] = useState("yes");
+function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [guestCount, setGuestCount] = useState("1");
-  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const [attending, setAttending] = useState(true);
+  const [rsvpStatus, setRsvpStatus] = useState("");
+  const [rsvpError, setRsvpError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  // Responsive scale handling
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        const availableWidth = window.innerWidth;
-        if (!editable && availableWidth < CANVAS_WIDTH) {
-          setScale(availableWidth / CANVAS_WIDTH);
-        } else {
-          setScale(1);
-        }
-      }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [editable]);
+  const inviteId = invite.id || invite.slug || "";
+  const canSubmitRsvp = Boolean(invite.ownerId && inviteId && isFirebaseConfigured && !previewMode);
 
-  // Style getter with user overrides
-  const getStyle = (id, baseStyle) => {
-    const user = overrides[id] || {};
-    const computed = { ...baseStyle };
+  const handleRsvpSubmit = async (event) => {
+    event.preventDefault();
+    setRsvpError("");
+    setRsvpStatus("");
 
-    if (user.color) computed.color = user.color;
-    if (user.fontSize) computed.fontSize = `${user.fontSize}px`;
-    if (user.fontFamily) computed.fontFamily = user.fontFamily;
-    if (user.textAlign) computed.textAlign = user.textAlign;
-    if (user.fontWeight) computed.fontWeight = user.fontWeight;
-    if (user.letterSpacing) computed.letterSpacing = user.letterSpacing;
-    if (user.lineHeight) computed.lineHeight = user.lineHeight;
+    if (!canSubmitRsvp) {
+      setRsvpError("RSVP disponible sur le lien publie de l'invitation (dashboard).");
+      return;
+    }
 
-    return computed;
-  };
-
-  const getText = (id, defaultText) => {
-    return overrides[id]?.text !== undefined ? overrides[id].text : defaultText;
-  };
-
-  const handleElementClick = (elementId, sectionId) => {
-    if (editable && onSelectElement) {
-      onSelectElement(elementId, sectionId);
+    setSubmitting(true);
+    try {
+      await submitRsvpResponse({
+        inviteId,
+        ownerId: invite.ownerId,
+        clientUserId: invite.clientUserId || "",
+        clientEmail: invite.clientEmail || "",
+        inviteSlug: invite.slug || inviteId,
+        fullName,
+        email,
+        phone,
+        guestCount,
+        attending,
+      });
+      setRsvpStatus("Merci ! Votre réponse a bien été enregistrée.");
+      setFullName("");
+      setEmail("");
+      setPhone("");
+      setGuestCount("1");
+      setAttending(true);
+    } catch (error) {
+      setRsvpError(error.message || "Impossible d'enregistrer le RSVP.");
+    } finally {
+      setSubmitting(false);
     }
   };
+  const countdown = getCountdown(invite.eventDate);
+  const timelineEntries = (invite.timeline || [])
+    .map((item, index) => {
+      const timelineStep = getTimelineStep(item, index);
 
-  const getElementHighlightStyle = (elementId) => {
-    if (!editable) return {};
-    const isSelected = selectedElementId === elementId;
-    return {
-      outline: isSelected ? "2px solid #130554" : "1px dashed rgba(19, 5, 84, 0.35)",
-      outlineOffset: "2px",
-      cursor: "pointer",
-      transition: "outline 0.15s ease",
+      return {
+        ...item,
+        title: timelineStep.title || item.title || "",
+        image: timelineStep.image || item.image || "",
+        imageWidth: timelineStep.imageWidth || item.imageWidth,
+      };
+    })
+    .filter((item) => item.time || item.title);
+  const timelineGap = design.sections.timeline.itemGap || 110;
+  const getTimelineItemLayout = (index) => {
+    const configuredLayout = design.timelineItems[index];
+
+    if (configuredLayout) {
+      return configuredLayout;
+    }
+
+    const lastConfiguredLayout = design.timelineItems[design.timelineItems.length - 1] || {
+      top: 0,
+      left: 0,
+      width: 112,
+      textAlign: "left",
     };
-  };
-
-  // Dynamic values
-  const coupleNames = currentInvite.coupleNames || "Bilel & Dorra";
-  const inviteTitle = currentInvite.title || "La Dolce Vita";
-  const eventDate = currentInvite.eventDate || "2026-08-12";
-  const venueName = currentInvite.venueName || "Dar Bouraoui Carthage";
-  const city = currentInvite.locationLabel || currentInvite.city || "MALAGA";
-  const eventTime = currentInvite.time || "19H00";
-
-  // Dynamic Timeline Entries (positioned along the sequential winding path slots)
-  const rawTimeline = Array.isArray(currentInvite.timeline) && currentInvite.timeline.length > 0
-    ? currentInvite.timeline
-    : templateConfig.sample?.timeline || [];
-
-  const timelineEntries = rawTimeline.map((item, index) => {
-    const slot = TIMELINE_SLOTS[Math.min(index, TIMELINE_SLOTS.length - 1)];
-    const stepKey = item.step || item.image || STEP_ORDER[index % 5];
-    const icon = STEP_ICONS[stepKey] || STEP_ICONS[STEP_ORDER[index % 5]];
-    const title = item.title || DEFAULT_TITLES[stepKey] || DEFAULT_TITLES[STEP_ORDER[index % 5]] || "";
-    const time = item.time !== undefined && item.time !== "" 
-      ? item.time 
-      : (DEFAULT_TIMES[stepKey] || DEFAULT_TIMES[STEP_ORDER[index % 5]] || "");
+    const extraIndex = index - design.timelineItems.length + 1;
+    const isRight = index % 2 === 1;
 
     return {
-      stepKey,
-      icon,
-      title,
-      time,
-      slot,
-      index,
+      top: Number(lastConfiguredLayout.top || 0) + timelineGap * extraIndex,
+      left: isRight ? undefined : 0,
+      right: isRight ? 0 : undefined,
+      width: lastConfiguredLayout.width || 112,
+      textAlign: isRight ? "right" : "left",
+      timeTextAlign: isRight ? "right" : "left",
     };
-  });
-
-  // Real-time Countdown
-  const [timeLeft, setTimeLeft] = useState({
-    days: "100",
-    hours: "13",
-    minutes: "42",
-  });
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const target = new Date(eventDate).getTime();
-      const now = new Date().getTime();
-      const diff = target - now;
-
-      if (diff <= 0) {
-        setTimeLeft({ days: "100", hours: "13", minutes: "42" });
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-      setTimeLeft({
-        days: String(days).padStart(2, "0"),
-        hours: String(hours).padStart(2, "0"),
-        minutes: String(minutes).padStart(2, "0"),
-      });
-    };
-
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 60000);
-    return () => clearInterval(timer);
-  }, [eventDate]);
-
-  const handleRsvpSubmit = (e) => {
-    e.preventDefault();
-    if (!fullName.trim()) return;
-    setRsvpSubmitted(true);
   };
+  const timelineStageHeight = Math.max(
+    120,
+    ...timelineEntries.map((item, index) => {
+      const itemLayout = getTimelineItemLayout(index);
+      const imageLayout = design.timelineImages?.[index] || {
+        top: Number(itemLayout.top || 0),
+        width: 64,
+      };
+      const arrowLayout = design.timelineArrows?.[index] || {
+        top: Number(itemLayout.top || 0) + 56,
+        width: 48,
+      };
+
+      return Math.max(
+        Number(itemLayout.top || 0) + 112,
+        Number(imageLayout.top || 0) + Number(item.imageWidth || imageLayout.width || 64),
+        index < timelineEntries.length - 1
+          ? Number(arrowLayout.top || 0) + Number(arrowLayout.width || 48)
+          : 0
+      );
+    })
+  );
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        backgroundColor: COLOR_WHITE,
-        overflow: "hidden",
-      }}
+    <main
+      className="min-h-screen py-6"
+      style={{ backgroundColor: colors.pageBackground, color: colors.primaryText, fontFamily: fonts.body }}
     >
       <div
-        style={{
-          width: CANVAS_WIDTH,
-          minWidth: CANVAS_WIDTH,
-          maxWidth: CANVAS_WIDTH,
-          height: totalCanvasHeight,
-          position: "relative",
-          backgroundColor: COLOR_WHITE,
-          transform: scale !== 1 ? `scale(${scale})` : undefined,
-          transformOrigin: "top center",
-          overflow: "hidden",
-        }}
+        className="mx-auto w-full overflow-hidden shadow-2xl"
+        style={{ maxWidth: toCssSize(design.card.maxWidth), backgroundColor: colors.cardBackground }}
       >
-        {/* ============================================================
-            HERO SECTION (y: 0 to ~337)
-        ============================================================ */}
-        {/* Columns & Orange Tree Pots */}
-        <img
-          src={heroColumns}
-          alt=""
+        <section
+          className="relative text-center"
           style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: 430,
-            height: 363,
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        />
-
-        {/* Top Flourishes */}
-        <img
-          src={heroFlourishLeft}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 70,
-            top: 0,
-            width: 50,
-            height: 83,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <img
-          src={heroFlourishCenter}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 186,
-            top: 12,
-            width: 58,
-            height: 17,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <img
-          src={heroFlourishRight}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 310,
-            top: 0,
-            width: 50,
-            height: 83,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-
-        {/* WE ARE GETTING MARRIED */}
-        <div
-          id="preview-el-hero-intro"
-          data-element-id="hero-intro"
-          onClick={() => handleElementClick("hero-intro", "hero")}
-          style={{
-            ...getElementHighlightStyle("hero-intro"),
-            ...getStyle("hero-intro", {
-              position: "absolute",
-              left: 43,
-              top: 104,
-              width: 348,
-              height: 13,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "8px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              textTransform: "uppercase",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
+            minHeight: toCssSize(design.hero.minHeight),
+            paddingLeft: toCssSize(design.hero.paddingX),
+            paddingRight: toCssSize(design.hero.paddingX),
+            paddingTop: toCssSize(design.hero.paddingTop),
           }}
         >
-          {getText("hero-intro", templateConfig.fixedText?.introLabel || "WE ARE GETTING MARRIED")}
-        </div>
+          <img src={columns} alt="" className="absolute" style={boxStyle(design.hero.assets.columns)} />
+          <img src={flourishLeft} alt="" className="absolute" style={boxStyle(design.hero.assets.flourishLeft)} />
+          <img src={flourishRight} alt="" className="absolute" style={boxStyle(design.hero.assets.flourishRight)} />
+          <img src={divider} alt="" className="absolute" style={boxStyle(design.hero.assets.divider)} />
 
-        {/* La Dolce Vita */}
-        <h1
-          id="preview-el-hero-title"
-          data-element-id="hero-title"
-          onClick={() => handleElementClick("hero-title", "hero")}
-          style={{
-            ...getElementHighlightStyle("hero-title"),
-            ...getStyle("hero-title", {
-              position: "absolute",
-              left: 0,
-              top: 121,
-              width: 430,
-              height: 58,
-              margin: 0,
-              padding: 0,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("hero-title", inviteTitle)}
-        </h1>
-
-        {/* Bilel & Dorra */}
-        <div
-          id="preview-el-hero-names"
-          data-element-id="hero-names"
-          onClick={() => handleElementClick("hero-names", "hero")}
-          style={{
-            ...getElementHighlightStyle("hero-names"),
-            ...getStyle("hero-names", {
-              position: "absolute",
-              left: 0,
-              top: 189,
-              width: 430,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("hero-names", coupleNames)}
-        </div>
-
-        {/* Hero Down Arrow */}
-        <img
-          src={heroArrow}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 215,
-            top: 274,
-            width: 6,
-            height: 19,
-            transform: "translateX(-50%)",
-            pointerEvents: "none",
-            zIndex: 2,
-          }}
-        />
-
-        {/* ============================================================
-            COUNTDOWN SECTION (y: 337 to ~595)
-        ============================================================ */}
-        {isSectionActive("countdown") && (
-          <div
+          <p className="relative z-10" style={textStyle(design.hero.intro)}>
+            {fixedText.introLabel}
+          </p>
+          <h1
+            className="relative z-10"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: CANVAS_WIDTH,
-              ...getSectionStyle("countdown"),
+              ...textStyle(design.hero.title),
+              marginTop: toCssSize(design.hero.title.marginTop),
             }}
           >
-            {/* Sun Illustration */}
-        <img
-          src={countdownSun}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 159,
-            top: 337,
-            width: 112,
-            height: 112,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-
-        {/* Countdown Title */}
-        <div
-          id="preview-el-countdown-title"
-          data-element-id="countdown-title"
-          onClick={() => handleElementClick("countdown-title", "countdown")}
-          style={{
-            ...getElementHighlightStyle("countdown-title"),
-            ...getStyle("countdown-title", {
-              position: "absolute",
-              left: 0,
-              top: 411,
-              width: 430,
-              height: 58,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("countdown-title", "Countdown")}
-        </div>
-
-        {/* Invite Quote */}
-        <div
-          id="preview-el-countdown-text"
-          data-element-id="countdown-text"
-          onClick={() => handleElementClick("countdown-text", "countdown")}
-          style={{
-            ...getElementHighlightStyle("countdown-text"),
-            ...getStyle("countdown-text", {
-              position: "absolute",
-              left: 103,
-              top: 464,
-              width: 224,
-              height: 25,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "8px",
-              lineHeight: "12px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              textTransform: "uppercase",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText(
-            "countdown-text",
-            templateConfig.fixedText?.introText ||
-              "WE WOULD LIKE TO INVITE YOU TO CELEBRATE WITH US THE MOST SPECIAL DAY OF OUR LIVES"
-          )}
-        </div>
-
-        {/* Timer Numbers */}
-        {/* Days */}
-        <div
-          style={{
-            position: "absolute",
-            left: 23,
-            top: 511,
-            width: 168,
-            height: 18,
-            fontFamily: FONT_CRIMSON,
-            fontWeight: 400,
-            fontSize: "14px",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-          }}
-        >
-          {timeLeft.days}
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 65,
-            top: 532,
-            width: 83,
-            height: 10,
-            fontFamily: FONT_CRIMSON,
-            fontWeight: 400,
-            fontSize: "8px",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-          }}
-        >
-          Days
-        </div>
-
-        {/* Hours */}
-        <div
-          style={{
-            position: "absolute",
-            left: 131,
-            top: 511,
-            width: 168,
-            height: 18,
-            fontFamily: FONT_CRIMSON,
-            fontWeight: 400,
-            fontSize: "14px",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-          }}
-        >
-          {timeLeft.hours}
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 173,
-            top: 532,
-            width: 83,
-            height: 10,
-            fontFamily: FONT_CRIMSON,
-            fontWeight: 400,
-            fontSize: "8px",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-          }}
-        >
-          Hours
-        </div>
-
-        {/* Minutes */}
-        <div
-          style={{
-            position: "absolute",
-            left: 239,
-            top: 511,
-            width: 168,
-            height: 18,
-            fontFamily: FONT_CRIMSON,
-            fontWeight: 400,
-            fontSize: "14px",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-          }}
-        >
-          {timeLeft.minutes}
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 281,
-            top: 532,
-            width: 83,
-            height: 10,
-            fontFamily: FONT_CRIMSON,
-            fontWeight: 400,
-            fontSize: "8px",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-          }}
-        >
-          Minutes
-        </div>
-      </div>
-    )}
-
-        {/* ============================================================
-            LOCATION SECTION (y: 595 to ~946)
-        ============================================================ */}
-        {isSectionActive("location") && (
-          <div
+            {invite.title}
+          </h1>
+          <p
+            className="relative z-10"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: CANVAS_WIDTH,
-              ...getSectionStyle("location"),
+              ...textStyle(design.hero.coupleNames),
+              marginTop: toCssSize(design.hero.coupleNames.marginTop),
             }}
           >
-            {/* Curved decorative lines */}
-        <img
-          src={locLineLeft}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 1.69,
-            top: 661.36,
-            width: 146.93,
-            height: 90.86,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <img
-          src={locLineRight}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 284.65,
-            top: 646.82,
-            width: 143.82,
-            height: 226.86,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <img
-          src={locLineLowerLeft}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 1.17,
-            top: 744.74,
-            width: 149.53,
-            height: 139.88,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <img
-          src={locLineLowerRight}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 278.42,
-            top: 738.72,
-            width: 155.24,
-            height: 118.89,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-
-        {/* Location Portrait & Lemons */}
-        <img
-          src={locationPortrait}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 51,
-            top: 752,
-            width: 104,
-            height: 104,
-            zIndex: 2,
-          }}
-        />
-        <img
-          src={locationLemons}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 306.26,
-            top: 711.86,
-            width: 94.3,
-            height: 94.3,
-            zIndex: 2,
-          }}
-        />
-
-        {/* Location Title */}
-        <div
-          id="preview-el-location-title"
-          data-element-id="location-title"
-          onClick={() => handleElementClick("location-title", "location")}
-          style={{
-            ...getElementHighlightStyle("location-title"),
-            ...getStyle("location-title", {
-              position: "absolute",
-              left: 0,
-              top: 595,
-              width: 430,
-              height: 58,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("location-title", "Location")}
-        </div>
-
-        {/* Ceremony Intro */}
-        <div
-          id="preview-el-location-intro"
-          data-element-id="location-intro"
-          onClick={() => handleElementClick("location-intro", "location")}
-          style={{
-            ...getElementHighlightStyle("location-intro"),
-            ...getStyle("location-intro", {
-              position: "absolute",
-              left: 41,
-              top: 648,
-              width: 348,
-              height: 15,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "8px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              textTransform: "uppercase",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText(
-            "location-intro",
-            templateConfig.fixedText?.locationIntro || "THE CEREMONY WILL TAKE PLACE AT"
-          )}
-        </div>
-
-        {/* Venue Image (with soft blur backer) */}
-        <img
-          src={locationVenue}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 148,
-            top: 677,
-            width: 135,
-            height: 184,
-            filter: "blur(2px)",
-            opacity: 0.8,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <img
-          id="preview-el-location-photo"
-          data-element-id="location-photo"
-          onClick={() => handleElementClick("location-photo", "location")}
-          src={locationVenue}
-          alt="Venue"
-          style={{
-            ...getElementHighlightStyle("location-photo"),
-            position: "absolute",
-            left: 152,
-            top: 683,
-            width: 126,
-            height: 173,
-            objectFit: "cover",
-            zIndex: 2,
-          }}
-        />
-
-        {/* Venue Name */}
-        <div
-          id="preview-el-location-venue"
-          data-element-id="location-venue"
-          onClick={() => handleElementClick("location-venue", "location")}
-          style={{
-            ...getElementHighlightStyle("location-venue"),
-            ...getStyle("location-venue", {
-              position: "absolute",
-              left: 0,
-              top: 872,
-              width: 430,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("location-venue", venueName)}
-        </div>
-
-        {/* City / Malaga */}
-        <div
-          id="preview-el-location-city"
-          data-element-id="location-city"
-          onClick={() => handleElementClick("location-city", "location")}
-          style={{
-            ...getElementHighlightStyle("location-city"),
-            ...getStyle("location-city", {
-              position: "absolute",
-              left: 0,
-              top: 893,
-              width: 430,
-              height: 13,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "8px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              textTransform: "uppercase",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("location-city", city)}
-        </div>
-
-        {/* Time */}
-        <div
-          id="preview-el-location-time"
-          data-element-id="location-time"
-          onClick={() => handleElementClick("location-time", "location")}
-          style={{
-            ...getElementHighlightStyle("location-time"),
-            ...getStyle("location-time", {
-              position: "absolute",
-              left: 0,
-              top: 906,
-              width: 430,
-              height: 13,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "8px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              textTransform: "uppercase",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("location-time", eventTime)}
-        </div>
-      </div>
-    )}
-
-        {/* ============================================================
-            TIMELINE SECTION (y: 946 to ~1458)
-        ============================================================ */}
-        {isSectionActive("timeline") && (
-          <div
+            {invite.coupleNames}
+          </p>
+          <img
+            src={topArrow}
+            alt=""
+            className="relative z-10 mx-auto"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: CANVAS_WIDTH,
-              ...getSectionStyle("timeline"),
+              width: toCssSize(design.hero.arrow.width),
+              height: toCssSize(design.hero.arrow.height),
+              marginTop: toCssSize(design.hero.arrow.marginTop),
+            }}
+          />
+        </section>
+
+        <section
+          className="relative px-10 text-center"
+          style={{ paddingBottom: toCssSize(design.sections.countdown.paddingBottom) }}
+        >
+          <img src={sun} alt="" className="mx-auto" style={{ width: toCssSize(design.sections.countdown.sunWidth) }} />
+          <h2
+            style={{
+              ...textStyle(design.sections.heading),
+              marginTop: toCssSize(design.sections.countdown.headingMarginTop),
             }}
           >
-            {/* Timeline Title */}
-        <div
-          id="preview-el-timeline-title"
-          data-element-id="timeline-title"
-          onClick={() => handleElementClick("timeline-title", "timeline")}
-          style={{
-            ...getElementHighlightStyle("timeline-title"),
-            ...getStyle("timeline-title", {
-              position: "absolute",
-              left: 0,
-              top: 946,
-              width: 430,
-              height: 58,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("timeline-title", "Timeline")}
-        </div>
+            Countdown
+          </h2>
+          <p
+            className="mx-auto"
+            style={{
+              ...textStyle(design.sections.smallText),
+              marginTop: toCssSize(design.sections.countdown.textMarginTop),
+              maxWidth: toCssSize(design.sections.countdown.textMaxWidth),
+            }}
+          >
+            {fixedText.introText}
+          </p>
 
-        {/* Dynamic Timeline Graphic Block */}
-        <div
-          id="preview-el-timeline-steps"
-          data-element-id="timeline-steps"
-          onClick={() => handleElementClick("timeline-steps", "timeline")}
-          style={{
-            position: "absolute",
-            left: 119,
-            top: 1030,
-            width: 196.8,
-            height: 365.82,
-            zIndex: 2,
-            cursor: editable ? "pointer" : "default",
-            ...getElementHighlightStyle("timeline-steps"),
-          }}
-        >
-          {timelineEntries.map((item, index) => {
-            const hasNext = index < timelineEntries.length - 1;
-            return (
-              <React.Fragment key={`${item.stepKey}-${index}`}>
-                {/* Step Illustration (positioned at this sequential slot) */}
-                {item.icon && (
-                  <img
-                    src={item.icon}
-                    alt=""
-                    style={{
-                      position: "absolute",
-                      left: item.slot.iconPos.left,
-                      top: item.slot.iconPos.top,
-                      width: item.slot.iconPos.width,
-                      height: item.slot.iconPos.height,
-                      objectFit: "contain",
-                      pointerEvents: "none",
-                    }}
-                  />
-                )}
-
-                {/* Connecting Arrow to Next Step Slot */}
-                {hasNext && item.slot.arrow && (
-                  <img
-                    src={item.slot.arrow}
-                    alt=""
-                    style={{
-                      position: "absolute",
-                      left: item.slot.arrowPos.left,
-                      top: item.slot.arrowPos.top,
-                      width: item.slot.arrowPos.width,
-                      height: item.slot.arrowPos.height,
-                      objectFit: "contain",
-                      pointerEvents: "none",
-                    }}
-                  />
-                )}
-
-                {/* Step Text (Title & Time positioned at this sequential slot) */}
-                <div
-                  style={{
-                    position: "absolute",
-                    left: item.slot.textPos.left,
-                    top: item.slot.textPos.top,
-                    width: item.slot.textPos.width,
-                    textAlign: item.slot.textPos.textAlign,
-                    pointerEvents: "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: FONT_HOMEMADE,
-                      fontSize: "10px",
-                      lineHeight: item.slot.titleLineHeight || "13px",
-                      color: COLOR_DARK_BLUE,
-                      whiteSpace: "pre-line",
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: FONT_HOMEMADE,
-                      fontSize: "10px",
-                      lineHeight: "13px",
-                      color: COLOR_GOLD,
-                      marginTop: item.slot.textPos.timeMarginTop || "1px",
-                    }}
-                  >
-                    {item.time}
-                  </div>
+          {countdown.length ? (
+            <div className="grid grid-cols-3 gap-4" style={{ marginTop: toCssSize(design.sections.countdown.gridMarginTop) }}>
+              {countdown.map(([value, label]) => (
+                <div key={label}>
+                  <div style={textStyle(design.sections.countdownValue)}>{value}</div>
+                  <div className="mt-2" style={textStyle(design.sections.countdownLabel)}>{label}</div>
                 </div>
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
-    )}
+              ))}
+            </div>
+          ) : null}
+        </section>
 
-        {/* ============================================================
-            MENU SECTION (y: 1458 to ~2163)
-        ============================================================ */}
-        {isSectionActive("menu") && (
+        <section className="relative px-10 text-center" style={{ paddingBottom: toCssSize(design.sections.location.paddingBottom) }}>
+          <h2 style={textStyle(design.sections.heading)}>Location</h2>
+          <p style={{ ...textStyle(design.sections.smallText), marginTop: toCssSize(design.sections.location.copyMarginTop) }}>
+            {fixedText.locationIntro}
+          </p>
+
           <div
+            className="relative mx-auto w-full"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: CANVAS_WIDTH,
-              ...getSectionStyle("menu"),
+              marginTop: toCssSize(design.sections.location.stageMarginTop),
+              height: toCssSize(design.sections.location.stageHeight),
+              maxWidth: toCssSize(design.sections.location.stageMaxWidth),
             }}
           >
-            {/* Menu Title */}
-        <div
-          id="preview-el-menu-title"
-          data-element-id="menu-title"
-          onClick={() => handleElementClick("menu-title", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-title"),
-            ...getStyle("menu-title", {
-              position: "absolute",
-              left: 0,
-              top: 1458,
-              width: 430,
-              height: 58,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("menu-title", "Menu")}
-        </div>
-
-        {/* Culinary Travel Subtitle */}
-        <div
-          id="preview-el-menu-subtitle"
-          data-element-id="menu-subtitle"
-          onClick={() => handleElementClick("menu-subtitle", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-subtitle"),
-            ...getStyle("menu-subtitle", {
-              position: "absolute",
-              left: 19,
-              top: 1511,
-              width: 392,
-              height: 16,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "12px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("menu-subtitle", "Culinary Travel")}
-        </div>
-
-        {/* Tomatoes Plate Asset */}
-        <img
-          src={tomatoesDish}
-          alt=""
-          style={{
-            position: "absolute",
-            left: -53,
-            top: 1552,
-            width: 250,
-            height: 250,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-
-        {/* Ornate Vintage Menu Frame */}
-        <img
-          src={menuFrame}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 26,
-            top: 1577,
-            width: 377,
-            height: 528,
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        />
-
-        {/* Pasta Plate Asset */}
-        <img
-          src={pastaDish}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 270,
-            top: 1929,
-            width: 209,
-            height: 209,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-
-        {/* Course 1: Starter */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 1633,
-            width: 430,
-            height: 51,
-            fontFamily: FONT_TAPROM,
-            fontWeight: 400,
-            fontSize: "28px",
-            lineHeight: 1,
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          Starter
-        </div>
-        <div
-          id="preview-el-menu-starter-title"
-          data-element-id="menu-starter-title"
-          onClick={() => handleElementClick("menu-starter-title", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-starter-title"),
-            ...getStyle("menu-starter-title", {
-              position: "absolute",
-              left: 0,
-              top: 1684,
-              width: 430,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 600,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("menu-starter-title", "Insalata Caprese")}
-        </div>
-        <div
-          id="preview-el-menu-starter-desc"
-          data-element-id="menu-starter-desc"
-          onClick={() => handleElementClick("menu-starter-desc", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-starter-desc"),
-            ...getStyle("menu-starter-desc", {
-              position: "absolute",
-              left: 19,
-              top: 1711,
-              width: 392,
-              height: 48,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "16px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              whiteSpace: "pre-line",
-            }),
-          }}
-        >
-          {getText(
-            "menu-starter-desc",
-            "Layers of creamy buffalo mozzarella,\nripe slices of tomato, and fragrant\nbasil leaves are elegantly arranged on a plate."
-          )}
-        </div>
-
-        {/* Course 2: Main Course */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 1776,
-            width: 430,
-            height: 51,
-            fontFamily: FONT_TAPROM,
-            fontWeight: 400,
-            fontSize: "28px",
-            lineHeight: 1,
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          Main Course
-        </div>
-        <div
-          id="preview-el-menu-main-title"
-          data-element-id="menu-main-title"
-          onClick={() => handleElementClick("menu-main-title", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-main-title"),
-            ...getStyle("menu-main-title", {
-              position: "absolute",
-              left: 0,
-              top: 1827,
-              width: 430,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 600,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("menu-main-title", "Spaghetti alla Carbonara")}
-        </div>
-        <div
-          id="preview-el-menu-main-desc"
-          data-element-id="menu-main-desc"
-          onClick={() => handleElementClick("menu-main-desc", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-main-desc"),
-            ...getStyle("menu-main-desc", {
-              position: "absolute",
-              left: 19,
-              top: 1854,
-              width: 392,
-              height: 32,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "16px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              whiteSpace: "pre-line",
-            }),
-          }}
-        >
-          {getText(
-            "menu-main-desc",
-            "Al dente spaghetti, lovingly coated\nin a velvety sauce, awaits your palate."
-          )}
-        </div>
-
-        {/* Course 3: Dessert */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 1919,
-            width: 430,
-            height: 51,
-            fontFamily: FONT_TAPROM,
-            fontWeight: 400,
-            fontSize: "28px",
-            lineHeight: 1,
-            textAlign: "center",
-            color: COLOR_NAVY,
-            zIndex: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          Desert
-        </div>
-        <div
-          id="preview-el-menu-dessert-title"
-          data-element-id="menu-dessert-title"
-          onClick={() => handleElementClick("menu-dessert-title", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-dessert-title"),
-            ...getStyle("menu-dessert-title", {
-              position: "absolute",
-              left: 0,
-              top: 1970,
-              width: 430,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 600,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("menu-dessert-title", "Tiramisu")}
-        </div>
-        <div
-          id="preview-el-menu-dessert-desc"
-          data-element-id="menu-dessert-desc"
-          onClick={() => handleElementClick("menu-dessert-desc", "menu")}
-          style={{
-            ...getElementHighlightStyle("menu-dessert-desc"),
-            ...getStyle("menu-dessert-desc", {
-              position: "absolute",
-              left: 19,
-              top: 1997,
-              width: 392,
-              height: 48,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "16px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              whiteSpace: "pre-line",
-            }),
-          }}
-        >
-          {getText(
-            "menu-dessert-desc",
-            "Savor the finale of your Italian journey\nwith the epitome\nof dolce perfection – Tiramisu."
-          )}
-        </div>
-      </div>
-    )}
-
-        {/* ============================================================
-            RSVP SECTION (y: 2163 to ~2796)
-        ============================================================ */}
-        {isSectionActive("rsvp") && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: CANVAS_WIDTH,
-              ...getSectionStyle("rsvp"),
-            }}
-          >
-            {/* RSVP Title */}
-        <div
-          id="preview-el-rsvp-title"
-          data-element-id="rsvp-title"
-          onClick={() => handleElementClick("rsvp-title", "rsvp")}
-          style={{
-            ...getElementHighlightStyle("rsvp-title"),
-            ...getStyle("rsvp-title", {
-              position: "absolute",
-              left: 0,
-              top: 2163,
-              width: 430,
-              height: 58,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("rsvp-title", "RSVP")}
-        </div>
-
-        {/* Form Container */}
-        <form onSubmit={handleRsvpSubmit}>
-          {/* Will you attend */}
-          <div
-            id="preview-el-rsvp-attend-label"
-            data-element-id="rsvp-attend-label"
-            onClick={() => handleElementClick("rsvp-attend-label", "rsvp")}
-            style={{
-              ...getElementHighlightStyle("rsvp-attend-label"),
-              ...getStyle("rsvp-attend-label", {
-                position: "absolute",
-                left: 16,
-                top: 2268,
-                width: 200,
-                height: 18,
-                fontFamily: FONT_CRIMSON,
-                fontWeight: 400,
-                fontSize: "14px",
-                letterSpacing: "0.1em",
-                color: COLOR_NAVY,
-                zIndex: 2,
-              }),
-            }}
-          >
-            {getText("rsvp-attend-label", "Will you attend")}
+            <img src={locationLineLeft} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLeft)} />
+            <img src={locationLineRight} alt="" className="absolute" style={boxStyle(design.locationAssets.lineRight)} />
+            <img src={locationLineLowerLeft} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLowerLeft)} />
+            <img src={locationLineLowerRight} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLowerRight)} />
+            <img src={venueSoft} alt="" className="absolute" style={boxStyle(design.locationAssets.venueSoft)} />
+            <img src={venue} alt="Wedding venue" className="absolute" style={boxStyle(design.locationAssets.venue)} />
+            <img src={portrait} alt="" className="absolute" style={boxStyle(design.locationAssets.portrait)} />
+            <img src={lemons} alt="" className="absolute" style={boxStyle(design.locationAssets.lemons)} />
           </div>
 
-          {/* Option 1: Yes */}
-          <div
-            onClick={() => setAttendance("yes")}
+          <h3
             style={{
-              position: "absolute",
-              left: 16,
-              top: 2298,
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-              zIndex: 2,
+              ...textStyle(design.sections.locationName),
+              marginTop: toCssSize(design.sections.location.venueNameMarginTop),
             }}
           >
-            <div
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                border: `1px solid ${COLOR_GOLD}`,
-                backgroundColor: attendance === "yes" ? COLOR_NAVY : "transparent",
-                boxSizing: "border-box",
-                marginRight: 10,
-                transition: "background-color 0.2s ease",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: FONT_CRIMSON,
-                fontWeight: 400,
-                fontSize: "14px",
-                letterSpacing: "0.1em",
-                color: COLOR_NAVY,
-              }}
+            {invite.venueName}
+          </h3>
+          <p className="mt-2 text-[8px] tracking-[0.1em]">{invite.locationLabel}</p>
+          <p className="mt-1 text-[8px] tracking-[0.1em]">{invite.time}</p>
+        </section>
+
+        <section className="relative px-8 text-center" style={{ paddingBottom: toCssSize(design.sections.timeline.paddingBottom) }}>
+          <h2 style={textStyle(design.sections.heading)}>Timeline</h2>
+          <div
+            className="relative mx-auto"
+            style={{
+              marginTop: toCssSize(design.sections.timeline.stageMarginTop),
+              height: toCssSize(timelineStageHeight),
+              maxWidth: toCssSize(design.sections.timeline.stageMaxWidth),
+            }}
+          >
+            {timelineEntries.map((item, index) => {
+              const itemLayout = getTimelineItemLayout(index);
+              const imageLayout = design.timelineImages?.[index] || {
+                top: Number(itemLayout.top || 0),
+                left: "50%",
+                width: 64,
+                transform: "translateX(-50%)",
+              };
+              const arrowLayout = design.timelineArrows?.[index] || {
+                top: Number(itemLayout.top || 0) + 56,
+                left: "50%",
+                width: 48,
+                transform: "translateX(-50%)",
+              };
+              const stepImage = timelineImages[item.image];
+              const arrowImage = timelineArrows[index % timelineArrows.length];
+
+              return (
+                <React.Fragment key={`${item.time}-${item.title}-${index}`}>
+                  {stepImage ? (
+                    <img
+                      src={stepImage}
+                      alt=""
+                      className="absolute"
+                      style={{
+                        ...boxStyle({
+                          ...imageLayout,
+                          width: item.imageWidth || imageLayout.width,
+                        }),
+                        pointerEvents: "none",
+                      }}
+                    />
+                  ) : null}
+                  {index < timelineEntries.length - 1 && arrowImage ? (
+                    <img
+                      src={arrowImage}
+                      alt=""
+                      className="absolute"
+                      style={{ ...boxStyle(arrowLayout), pointerEvents: "none" }}
+                    />
+                  ) : null}
+                  <div className="absolute" style={boxStyle(itemLayout)}>
+                    <p style={textStyle(design.sections.timelineTitle)}>{item.title}</p>
+                    <div
+                      style={{
+                        ...textStyle(design.sections.timelineTime),
+                        color: colors.accent,
+                        textAlign: itemLayout.timeTextAlign || itemLayout.textAlign,
+                      }}
+                    >
+                      {item.time}
+                    </div>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="relative px-5 text-center" style={{ paddingBottom: 86 }}>
+          <h2 style={textStyle(design.sections.heading)}>Menu</h2>
+          <p className="mt-4" style={{ ...textStyle(design.sections.smallText), fontSize: 10 }}>
+            Culinary Travel
+          </p>
+          <div className="relative mx-auto mt-10 min-h-[520px] max-w-[392px]">
+            <img src={menuPortrait} alt="" className="absolute left-[-20px] top-[-24px] w-[181px]" />
+            <img src={menuPlate} alt="" className="absolute left-1/2 top-0 w-[377px] -translate-x-1/2" />
+            <img src={menuLemons} alt="" className="absolute right-[-20px] top-[352px] w-[149px]" />
+            <div className="relative z-10 mx-auto pt-14">
+              {menuItems.map((item) => (
+                <div key={item.course} className="mx-auto mb-10 max-w-[392px] px-1">
+                  <p style={{ ...textStyle(design.sections.heading), fontSize: 24 }}>{item.course}</p>
+                  <p className="mt-4" style={{ ...textStyle(design.sections.locationName), fontSize: 12 }}>
+                    {item.title}
+                  </p>
+                  <p className="mx-auto mt-3 max-w-[392px]" style={{ ...textStyle(design.sections.smallText), lineHeight: 1.45 }}>
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {invite.rsvpEnabled ? (
+          <section className="px-7 text-center" style={{ paddingBottom: 64 }}>
+            <h2 style={textStyle(design.sections.heading)}>RSVP</h2>
+            <form
+              className="mt-16 space-y-5 text-left"
+              onSubmit={handleRsvpSubmit}
+              style={{ color: colors.primaryText }}
             >
-              Yes, I will be there
-            </span>
-          </div>
+              <fieldset>
+                <legend className="mb-4 text-[14px]" style={textStyle(design.sections.locationName)}>
+                  Serez-vous présents ?
+                </legend>
+                <div className="grid grid-cols-2 gap-5 text-[12px]" style={textStyle(design.sections.smallText)}>
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="dolce-rsvp-attending"
+                      checked={attending}
+                      onChange={() => setAttending(true)}
+                    />
+                    Oui, avec plaisir
+                  </label>
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="dolce-rsvp-attending"
+                      checked={!attending}
+                      onChange={() => setAttending(false)}
+                    />
+                    Non, désolé
+                  </label>
+                </div>
+              </fieldset>
 
-          {/* Option 2: No */}
-          <div
-            onClick={() => setAttendance("no")}
-            style={{
-              position: "absolute",
-              left: 198,
-              top: 2298,
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                border: `1px solid ${COLOR_GOLD}`,
-                backgroundColor: attendance === "no" ? COLOR_NAVY : "transparent",
-                boxSizing: "border-box",
-                marginRight: 10,
-                transition: "background-color 0.2s ease",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: FONT_CRIMSON,
-                fontWeight: 400,
-                fontSize: "14px",
-                letterSpacing: "0.1em",
-                color: COLOR_NAVY,
-              }}
-            >
-              Sorry, I can’t make it
-            </span>
-          </div>
+              <label className="block">
+                <span className="mb-3 block" style={{ ...textStyle(design.sections.locationName), fontSize: 14 }}>
+                  Nom complet
+                </span>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Nom et prénom"
+                  className="w-full rounded-[7px] border bg-transparent px-4 py-3 text-sm outline-none"
+                  style={{ borderColor: colors.primaryText }}
+                />
+              </label>
 
-          {/* Field 1: Full Name */}
-          <label
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2341,
-              width: 200,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              zIndex: 2,
-            }}
-          >
-            Full Name
-          </label>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Full Name"
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2371,
-              width: 398,
-              height: 47,
-              boxSizing: "border-box",
-              border: `1px solid ${COLOR_GOLD}`,
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              paddingLeft: 12,
-              paddingRight: 12,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              outline: "none",
-              zIndex: 2,
-            }}
-          />
+              <label className="block">
+                <span className="mb-3 block" style={{ ...textStyle(design.sections.locationName), fontSize: 14 }}>
+                  Email
+                </span>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@email.com"
+                  className="w-full rounded-[7px] border bg-transparent px-4 py-3 text-sm outline-none"
+                  style={{ borderColor: colors.primaryText }}
+                />
+              </label>
 
-          {/* Field 2: Email */}
-          <label
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2443,
-              width: 200,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              zIndex: 2,
-            }}
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="abc.xyz@contact.com"
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2473,
-              width: 398,
-              height: 47,
-              boxSizing: "border-box",
-              border: `1px solid ${COLOR_GOLD}`,
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              paddingLeft: 12,
-              paddingRight: 12,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              outline: "none",
-              zIndex: 2,
-            }}
-          />
+              <label className="block">
+                <span className="mb-3 block" style={{ ...textStyle(design.sections.locationName), fontSize: 14 }}>
+                  Téléphone
+                </span>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+216 …"
+                  className="w-full rounded-[7px] border bg-transparent px-4 py-3 text-sm outline-none"
+                  style={{ borderColor: colors.primaryText }}
+                />
+              </label>
 
-          {/* Field 3: Phone Number */}
-          <label
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2545,
-              width: 200,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              zIndex: 2,
-            }}
-          >
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+216000111"
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2575,
-              width: 398,
-              height: 47,
-              boxSizing: "border-box",
-              border: `1px solid ${COLOR_GOLD}`,
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              paddingLeft: 12,
-              paddingRight: 12,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              outline: "none",
-              zIndex: 2,
-            }}
-          />
+              <label className="block">
+                <span className="mb-3 block" style={{ ...textStyle(design.sections.locationName), fontSize: 14 }}>
+                  Nombre d&apos;invités
+                </span>
+                <input
+                  type="number"
+                  min="1"
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(e.target.value)}
+                  placeholder="2"
+                  className="w-full rounded-[7px] border bg-transparent px-4 py-3 text-sm outline-none"
+                  style={{ borderColor: colors.primaryText }}
+                />
+              </label>
 
-          {/* Field 4: Number of guests */}
-          <label
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2647,
-              width: 200,
-              height: 18,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              zIndex: 2,
-            }}
-          >
-            Number of guests
-          </label>
-          <input
-            type="number"
-            min="1"
-            max="10"
-            value={guestCount}
-            onChange={(e) => setGuestCount(e.target.value)}
-            placeholder="3"
-            style={{
-              position: "absolute",
-              left: 16,
-              top: 2677,
-              width: 398,
-              height: 47,
-              boxSizing: "border-box",
-              border: `1px solid ${COLOR_GOLD}`,
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              paddingLeft: 12,
-              paddingRight: 12,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
-              color: COLOR_NAVY,
-              outline: "none",
-              zIndex: 2,
-            }}
-          />
+              {rsvpError ? (
+                <p className="text-sm font-semibold text-red-700">{rsvpError}</p>
+              ) : null}
+              {rsvpStatus ? (
+                <p className="text-sm font-semibold text-emerald-700">{rsvpStatus}</p>
+              ) : null}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            id="preview-el-rsvp-btn"
-            data-element-id="rsvp-btn"
-            onClick={() => handleElementClick("rsvp-btn", "rsvp")}
-            style={{
-              ...getElementHighlightStyle("rsvp-btn"),
-              ...getStyle("rsvp-btn", {
-                position: "absolute",
-                left: 16,
-                top: 2755,
-                width: 398,
-                height: 40,
-                boxSizing: "border-box",
-                backgroundColor: COLOR_NAVY,
-                borderRadius: "7px",
-                border: "none",
-                fontFamily: FONT_CRIMSON,
-                fontWeight: 400,
-                fontSize: "14px",
-                color: COLOR_WHITE,
-                cursor: "pointer",
-                zIndex: 2,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }),
-            }}
-          >
-            {rsvpSubmitted
-              ? "Confirmation reçue !"
-              : getText("rsvp-btn", "Send Confirmation")}
-          </button>
-        </form>
-      </div>
-    )}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-5 w-full rounded-[7px] px-5 py-3 text-center text-sm text-white disabled:opacity-60"
+                style={{ backgroundColor: colors.primaryText }}
+              >
+                {submitting ? "Envoi…" : "Confirmer ma présence"}
+              </button>
+            </form>
+          </section>
+        ) : null}
 
-        {/* ============================================================
-            CLOSING / FOOTER SECTION (y: 2796 to 3050)
-        ============================================================ */}
-        {isSectionActive("footer") && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: CANVAS_WIDTH,
-              ...getSectionStyle("footer"),
-            }}
-          >
-            {/* Footer Vintage Frame Card */}
-        <img
-          src={footerFrame}
-          alt=""
+        <section
+          className="relative px-10 text-center"
           style={{
-            position: "absolute",
-            left: 34,
-            top: 2796,
-            width: 352,
-            height: 251,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-
-        {/* We hope you can make it */}
-        <div
-          id="preview-el-footer-closing-text"
-          data-element-id="footer-closing-text"
-          onClick={() => handleElementClick("footer-closing-text", "footer")}
-          style={{
-            ...getElementHighlightStyle("footer-closing-text"),
-            ...getStyle("footer-closing-text", {
-              position: "absolute",
-              left: 36,
-              top: 2897,
-              width: 348,
-              height: 25,
-              fontFamily: FONT_CRIMSON,
-              fontWeight: 400,
-              fontSize: "14px",
-              lineHeight: "12px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
+            paddingTop: toCssSize(design.sections.closing.paddingTop),
+            paddingBottom: toCssSize(design.sections.closing.paddingBottom),
           }}
         >
-          {getText(
-            "footer-closing-text",
-            templateConfig.fixedText?.closingText || "We hope you can make it"
-          )}
-        </div>
-
-        {/* Bilel & Dorra Footer */}
-        <div
-          id="preview-el-footer-names"
-          data-element-id="footer-names"
-          onClick={() => handleElementClick("footer-names", "footer")}
-          style={{
-            ...getElementHighlightStyle("footer-names"),
-            ...getStyle("footer-names", {
-              position: "absolute",
-              left: 34,
-              top: 2910,
-              width: 352,
-              height: 58,
-              fontFamily: FONT_TAPROM,
-              fontWeight: 400,
-              fontSize: "22px",
-              lineHeight: 1,
-              textAlign: "center",
-              color: COLOR_NAVY,
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }),
-          }}
-        >
-          {getText("footer-names", coupleNames)}
-        </div>
+          <img src={noteCard} alt="" className="mx-auto w-full" />
+          <div className="absolute inset-x-10" style={{ top: toCssSize(design.sections.closing.textTop) }}>
+            <p style={textStyle(design.sections.closingText)}>{fixedText.closingText}</p>
+            <p className="mt-2" style={textStyle(design.sections.closingNames)}>{invite.coupleNames}</p>
+          </div>
+        </section>
       </div>
-    )}
-      </div>
-    </div>
+    </main>
   );
 }
+
+export default DolceVitaInvitePage;

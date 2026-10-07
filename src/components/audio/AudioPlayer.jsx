@@ -1,41 +1,52 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { FiVolume2, FiVolumeX } from "react-icons/fi";
 
-const AudioPlayer = ({ src, active = true }) => {
+const AudioPlayer = forwardRef(function AudioPlayer(
+  { src, musicUrl, active = true, themeColor, onPlayingChange },
+  ref
+) {
+  const track = src || musicUrl;
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
 
+  const setPlaying = (next) => {
+    setIsPlaying(next);
+    onPlayingChange?.(next);
+  };
+
   useEffect(() => {
-    if (!active || !src) {
+    if (!active || !track) {
       if (audioRef.current) {
         audioRef.current.pause();
-        setIsPlaying(false);
+        setPlaying(false);
       }
-      return;
+      return undefined;
     }
 
-    const audio = new Audio(src);
+    const audio = new Audio(track);
     audio.loop = true;
+    audio.volume = 0.45;
     audioRef.current = audio;
+
+    const startPlayOnInteraction = async () => {
+      try {
+        if (audioRef.current) {
+          await audioRef.current.play();
+          setPlaying(true);
+        }
+      } catch (e) {
+        console.error("Interactive play failed", e);
+      } finally {
+        document.removeEventListener("click", startPlayOnInteraction);
+        document.removeEventListener("touchstart", startPlayOnInteraction);
+      }
+    };
 
     const playAudio = async () => {
       try {
         await audio.play();
-        setIsPlaying(true);
+        setPlaying(true);
       } catch (err) {
-        // Autoplay blocked, wait for user interaction to trigger play
-        const startPlayOnInteraction = async () => {
-          try {
-            if (audioRef.current) {
-              await audioRef.current.play();
-              setIsPlaying(true);
-            }
-            document.removeEventListener("click", startPlayOnInteraction);
-            document.removeEventListener("touchstart", startPlayOnInteraction);
-          } catch (e) {
-            console.error("Interactive play failed", e);
-          }
-        };
         document.addEventListener("click", startPlayOnInteraction);
         document.addEventListener("touchstart", startPlayOnInteraction);
       }
@@ -44,31 +55,48 @@ const AudioPlayer = ({ src, active = true }) => {
     playAudio();
 
     return () => {
+      document.removeEventListener("click", startPlayOnInteraction);
+      document.removeEventListener("touchstart", startPlayOnInteraction);
       audio.pause();
       audioRef.current = null;
     };
-  }, [src, active]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setPlaying is stable enough for mount cycle
+  }, [track, active]);
 
   const togglePlayback = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
       audio.pause();
-      setIsPlaying(false);
+      setPlaying(false);
     } else {
-      audio.play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(err => {
-          console.error("Playback toggle failed", err);
-        });
+      audio
+        .play()
+        .then(() => setPlaying(true))
+        .catch((err) => console.error("Playback toggle failed", err));
     }
   };
 
-  if (!active || !src) return null;
+  useImperativeHandle(ref, () => ({
+    toggle: () => togglePlayback(),
+    play: async () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      await audio.play();
+      setPlaying(true);
+    },
+    pause: () => {
+      audioRef.current?.pause();
+      setPlaying(false);
+    },
+    isPlaying: () => isPlaying,
+  }));
+
+  if (!active || !track) return null;
+
+  const accent = themeColor || "#ffffff";
 
   return (
     <button
@@ -77,18 +105,15 @@ const AudioPlayer = ({ src, active = true }) => {
       className={`fixed bottom-6 right-6 z-[9999] flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/60 shadow-lg backdrop-blur-md transition-transform duration-300 hover:scale-110 active:scale-95 ${
         isPlaying ? "animate-pulse" : ""
       }`}
-      aria-label={isPlaying ? "Mute music" : "Play music"}
+      aria-label={isPlaying ? "Couper la musique" : "Lancer la musique"}
     >
       {isPlaying ? (
-        <FiVolume2 
-          className="h-5 w-5 text-white" 
-          style={{ animation: "spin 8s linear infinite" }}
-        />
+        <FiVolume2 className="h-5 w-5" style={{ color: accent, animation: "spin 8s linear infinite" }} />
       ) : (
-        <FiVolumeX className="h-5 w-5 text-white" />
+        <FiVolumeX className="h-5 w-5" style={{ color: accent }} />
       )}
     </button>
   );
-};
+});
 
 export default AudioPlayer;

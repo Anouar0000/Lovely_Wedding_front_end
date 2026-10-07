@@ -2,8 +2,8 @@ import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 
-function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
+function ProtectedRoute({ children, requireAdmin = false }) {
+  const { user, loading, isAdmin } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -16,6 +16,10 @@ function ProtectedRoute({ children }) {
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/espace-client" replace />;
   }
 
   return children;

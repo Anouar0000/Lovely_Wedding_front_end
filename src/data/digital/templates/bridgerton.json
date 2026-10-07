@@ -19,7 +19,7 @@
     "status": "draft",
     "title": "Bridgerton",
     "coupleNames": "Karim & Azza",
-    "eventDate": "2026-11-23",
+    "eventDate": "2027-11-23",
     "heroQuote": "Our Happy Ever After",
     "bannerQuote": "Join Us For The \nBest Day Ever",
     "venueName": "Dar Bouraoui Carthage",
@@ -53,7 +53,7 @@
   "defaults": {
     "template": "bridgerton",
     "coupleNames": "Karim & Azza",
-    "eventDate": "2026-11-23",
+    "eventDate": "2027-11-23",
     "heroQuote": "Our Happy Ever After",
     "bannerQuote": "Join Us For The \nBest Day Ever",
     "venueName": "Dar Bouraoui Carthage",

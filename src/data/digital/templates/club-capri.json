@@ -2,104 +2,55 @@
   "id": "club-capri",
   "label": "Club Capri",
   "name": "Club Capri E-invite",
-  "price": "90",
-  "thumbnail": "assets/digital/club-capri/boat.png",
-  "description": "Une invitation digitale estivale et vintage inspirée de la Dolce Vita italienne et des clubs côtiers de Capri : cassette audio rétro, cartes postales postées d'été, photos de yacht et timbres aérospatiaux.",
-  "features": [
-    "Lecteur cassette audio rétro interactif",
-    "Bandeau vintage 'Postcard from Summer'",
-    "Compte à rebours élégant & vue aérienne yacht",
-    "Cartes postales timbrées pour chaque événement",
-    "Section Dress Code 'Casual Chic' avec photo",
-    "Formulaire RSVP façon enveloppe timbrée scotchée",
-    "Signature maritime Club Capri & bouée nautique"
-  ],
+  "price": "80",
+  "description": "Invitation digitale thème Postcard from Summer — Club Capri.",
+  "features": ["Lien personnalise", "RSVP", "Celebrations", "Plan d'acces"],
   "format": "Landing page",
   "previewPath": "/digital-invitation/club-capri",
   "sample": {
     "template": "club-capri",
-    "status": "draft",
+    "status": "published",
     "title": "Club Capri",
     "coupleNames": "Chedy & Hela",
-    "groomName": "Chedy",
-    "brideName": "Hela",
-    "eventDate": "2026-06-15",
-    "heroPostcardFrom": "POST Card",
-    "heroFromSummer": "FROM Summer",
-    "joinUsTitle": "Join us in",
-    "joinUsMonth": "JUNE",
-    "joinUsText": "We warmly invite you to celebrate our wedding day with us.",
-    "theDayTitle": "The Day",
-    "celebrationsTitle": "Celebrations",
-    "postcard1Category": "Postcard",
-    "postcard1Title": "WEDDING",
-    "postcard1Address": "Dar Bouraoui Carthage\nMalaga\n18h",
-    "postcard1MapUrl": "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
-    "postcard2Category": "Postcard",
-    "postcard2Title": "HENNA",
-    "postcard2Address": "Dar Bouraoui Carthage\nMalaga\n18h",
-    "postcard2MapUrl": "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
-    "dressCodeCategory": "Dress Code",
-    "dressCodeTitle": "CASUAL CHIC",
-    "dressCodeText": "We warmly invite you to celebrate our wedding day with us.",
-    "rsvpArrival": "Arrival",
-    "rsvpTitle": "RSVP",
-    "rsvpDeadline": "The favour of a reply is kindly requested by the fifteenth of June, 2026",
-    "footerClub": "club",
-    "footerCapri": "Capri",
-    "backgroundColor": "#FFFBF0",
-    "activeSections": [
-      "hero",
-      "join-us",
-      "the-day",
-      "celebrations",
-      "dress-code",
-      "rsvp",
-      "footer"
-    ],
-    "musicUrl": "",
-    "slug": "chedy-hela"
+    "eventDate": "2027-06-15",
+    "venueName": "Club Capri",
+    "city": "Capri",
+    "locationLabel": "CAPRI",
+    "time": "18H00",
+    "mapUrl": "https://maps.google.com",
+    "musicUrl": "/assets/audio/capri-summer.mp3",
+    "rsvpEnabled": true,
+    "dressCode": "casual chic",
+    "celebrations": [
+      {
+        "label": "WEDDING",
+        "to": "Our Dearmost family & friends everywhere"
+      },
+      {
+        "label": "HENNA",
+        "to": "Our Dearmost family & friends everywhere"
+      }
+    ]
   },
-  "defaults": {
-    "template": "club-capri",
-    "backgroundColor": "#FFFBF0",
-    "coupleNames": "Chedy & Hela",
-    "groomName": "Chedy",
-    "brideName": "Hela",
-    "eventDate": "2026-06-15",
-    "heroPostcardFrom": "POST Card",
-    "heroFromSummer": "FROM Summer",
-    "joinUsTitle": "Join us in",
-    "joinUsMonth": "JUNE",
-    "joinUsText": "We warmly invite you to celebrate our wedding day with us.",
-    "theDayTitle": "The Day",
-    "celebrationsTitle": "Celebrations",
-    "postcard1Category": "Postcard",
-    "postcard1Title": "WEDDING",
-    "postcard1Address": "Dar Bouraoui Carthage\nMalaga\n18h",
-    "postcard1MapUrl": "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
-    "postcard2Category": "Postcard",
-    "postcard2Title": "HENNA",
-    "postcard2Address": "Dar Bouraoui Carthage\nMalaga\n18h",
-    "postcard2MapUrl": "https://maps.google.com/?q=Dar+Bouraoui+Carthage",
-    "dressCodeCategory": "Dress Code",
-    "dressCodeTitle": "CASUAL CHIC",
-    "dressCodeText": "We warmly invite you to celebrate our wedding day with us.",
-    "rsvpArrival": "Arrival",
-    "rsvpTitle": "RSVP",
-    "rsvpDeadline": "The favour of a reply is kindly requested by the fifteenth of June, 2026",
-    "footerClub": "club",
-    "footerCapri": "Capri",
-    "activeSections": [
-      "hero",
-      "join-us",
-      "the-day",
-      "celebrations",
-      "dress-code",
-      "rsvp",
-      "footer"
-    ],
-    "musicUrl": ""
+  "fixedText": {
+    "inviteText": "We warmly invite you to celebrate our wedding day with us.",
+    "rsvpDeadline": "The favour of a reply is kindly requested by the fifteenth of June, 2027",
+    "footerBrand": "Club Capri"
   },
-  "fixedTimelineSteps": []
+  "design": {
+    "colors": {
+      "pageBackground": "#fffbf0",
+      "stripe": "#c0d5d8",
+      "ink": "#083b50",
+      "cream": "#f7edbc",
+      "heroText": "#e5e2dd",
+      "button": "#b8d4d8"
+    },
+    "fonts": {
+      "script": "\"Great Vibes\", cursive",
+      "serif": "\"Cinzel\", serif",
+      "mono": "\"Roboto Mono\", monospace"
+    },
+    "card": { "maxWidth": 430 }
+  }
 }

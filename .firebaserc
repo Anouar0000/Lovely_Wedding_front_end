@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "lovely-wedding-website"
-  }
+  },
+  "targets": {
+    "lovely-wedding-website": {
+      "hosting": {
+        "legacy": [
+          "lovely-wedding-website"
+        ],
+        "v2": [
+          "lovely-wedding-v2"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

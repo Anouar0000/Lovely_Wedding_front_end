@@ -48,8 +48,8 @@ function BaseSection({ title, description, setSelectedCategory }) {
 
       {/* Title and Description */}
       <div className="max-w-3xl pt-12 text-center">
-        <h1 className="text-2xl font-abhaya mb-4">Invitations Physique {title}</h1>
-        <p className="mb-8 font-urbanist">{description}</p>
+        <h1 className="mb-4 lw-h1">Invitations Physique {title}</h1>
+        <p className="mb-8 lw-sub">{description}</p>
       </div>
     </section>
   );

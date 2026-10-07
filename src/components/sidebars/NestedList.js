@@ -10,7 +10,6 @@ const NestedList = ({ items, resetKey, onClose }) => {
     setOpenItems({});
   }, [resetKey]);
 
-  // This function now uses the uniqueKey to toggle state
   const toggleItem = (uniqueKey) => {
     setOpenItems((prev) => ({
       ...prev,
@@ -18,22 +17,22 @@ const NestedList = ({ items, resetKey, onClose }) => {
     }));
   };
 
-  // This handler is for clicking the text label
   const handleLabelClick = (item, uniqueKey) => {
     if (item.children && item.children.length > 0) {
-      toggleItem(uniqueKey); // If it has children, toggle it
-    } else {
-      navigate('/invitations-physique', { // If not, navigate
-        state: { selectedCategory: item.name },
-      });
-      onClose();
+      toggleItem(uniqueKey);
+      return;
     }
+
+    const targetPath = item.path || '/invitations-physique';
+    navigate(targetPath, {
+      state: item.category ? { selectedCategory: item.category } : undefined,
+    });
+    onClose();
   };
 
   return (
     <ul className="list-none m-0 p-0">
       {items.map((item, index) => {
-        // FIX: We create a truly unique key for each item for both rendering and state
         const uniqueKey = `${item.name}-${index}`;
         const isOpen = openItems[uniqueKey];
         const hasChildren = item.children && item.children.length > 0;
@@ -41,7 +40,6 @@ const NestedList = ({ items, resetKey, onClose }) => {
         return (
           <li key={uniqueKey} className={hasChildren ? 'border-b border-gray-400' : ''}>
             <div className="flex justify-between items-center p-4 hover:bg-gray-50">
-              {/* The text span is now the primary clickable element for toggling OR navigating */}
               <span
                 className="flex-grow cursor-pointer"
                 onClick={() => handleLabelClick(item, uniqueKey)}
@@ -49,12 +47,12 @@ const NestedList = ({ items, resetKey, onClose }) => {
                 {item.name}
               </span>
 
-              {/* The +/- icon is a dedicated button that ONLY toggles the submenu */}
               {hasChildren && (
                 <button
+                  type="button"
                   className="p-1 ml-2 text-gray-600 focus:outline-none"
-                  // It uses the uniqueKey to prevent conflicts
                   onClick={() => toggleItem(uniqueKey)}
+                  aria-label={isOpen ? 'Replier' : 'Déplier'}
                 >
                   {isOpen ? <FiMinus /> : <FiPlus />}
                 </button>
