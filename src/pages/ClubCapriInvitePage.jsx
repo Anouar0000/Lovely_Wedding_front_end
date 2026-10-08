@@ -544,7 +544,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
         <img
           src={boat}
           alt=""
-          className="lw-capri-boat pointer-events-none absolute left-[162px] top-[266px] z-0 h-[478px] w-[269px] object-cover"
+          className="pointer-events-none absolute left-[162px] top-[266px] z-0 h-[478px] w-[269px] object-cover"
           draggable={false}
         />
       </section>
