@@ -228,6 +228,8 @@ body.hide-scrollbar::-webkit-scrollbar,
   .lw-capri-volume-bar,
   .lw-capri-arrow,
   .lw-capri-fade,
+  .lw-capri-reveal,
+  .lw-capri-boat,
   .lw-sakura-koi,
   .lw-sakura-seal,
   .lw-sakura-card,
@@ -315,6 +317,46 @@ body.hide-scrollbar::-webkit-scrollbar,
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Scroll reveal — like Sakura: enter once when first visible */
+.lw-capri-reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.9s ease-out,
+    transform 0.9s ease-out;
+  transition-delay: var(--lw-reveal-delay, 0s);
+}
+
+.lw-capri-reveal.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.lw-capri-boat {
+  animation: lw-capri-boat-drift 7s ease-in-out infinite;
+}
+
+@keyframes lw-capri-boat-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-6px, 10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lw-capri-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .lw-capri-boat {
+    animation: none !important;
   }
 }
 

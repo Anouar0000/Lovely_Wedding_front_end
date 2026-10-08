@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 
 /**
  * Full-screen invitation entrance (Figma splash above the invite frame).
- * Image: tap to open. Video: tap or auto-open after autoOpenAfterMs / video end.
+ * Image: tap to open (unless autoOnly). Video: auto-open after video end / autoOpenAfterMs.
  */
 function DigitalInviteEntrance({
   image,
@@ -11,6 +11,7 @@ function DigitalInviteEntrance({
   openLabel = "Ouvrir l'invitation",
   background = "#000",
   autoOpenAfterMs,
+  autoOnly = false,
   onOpen,
 }) {
   const videoRef = useRef(null);
@@ -33,7 +34,7 @@ function DigitalInviteEntrance({
     const playPromise = el.play?.();
     if (playPromise?.catch) {
       playPromise.catch(() => {
-        /* autoplay blocked — user can still tap */
+        /* autoplay blocked — fallback timeout still opens if autoOnly */
       });
     }
 
@@ -41,7 +42,7 @@ function DigitalInviteEntrance({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [video]);
 
-  // Auto-dismiss after N ms (e.g. Sakura entrance video)
+  // Auto-dismiss after N ms
   useEffect(() => {
     if (!autoOpenAfterMs || autoOpenAfterMs <= 0) return undefined;
     const id = window.setTimeout(() => handleOpen(), autoOpenAfterMs);
@@ -50,6 +51,36 @@ function DigitalInviteEntrance({
   }, [autoOpenAfterMs, video, image]);
 
   if (!image && !video) return null;
+
+  if (autoOnly) {
+    return (
+      <div
+        className="fixed inset-0 z-[10000] flex items-center justify-center"
+        style={{ background }}
+        aria-hidden
+      >
+        {video ? (
+          <video
+            ref={videoRef}
+            className="lw-invite-entrance-img h-full w-full max-w-[430px] object-cover"
+            src={video}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            aria-label={alt}
+          />
+        ) : (
+          <img
+            src={image}
+            alt={alt}
+            className="lw-invite-entrance-img h-full w-full max-w-[430px] object-cover"
+            draggable={false}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div

@@ -361,8 +361,8 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
         <DigitalInviteEntrance
           video={`${ENTRANCE_VIDEO}?v=1`}
           alt="Sakura Koi invitation"
-          openLabel="Ouvrir l'invitation"
           background="#f7ebe8"
+          autoOnly
           autoOpenAfterMs={4000}
           onOpen={() => {
             window.scrollTo(0, 0);
