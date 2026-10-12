@@ -1,4 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700&family=Allura&family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Gwendolyn:wght@400;700&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;500&family=Special+Elite&family=Taprom&family=Urbanist:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700&family=Allura&family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Gwendolyn:wght@400;700&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;500&family=Special+Elite&family=Taprom&family=Urbanist:wght@400;500;600;700;800&display=swap');
+
+/* Figma Main Digital — sous-titre hero */
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('./fonts/GlacialIndifference-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -6,6 +15,7 @@
 
 body {
   margin: 0;
+  background: #f7f2ec;
   font-family: "Urbanist", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
     'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -33,9 +43,13 @@ code {
   .lw-h3 {
     @apply font-abhaya text-[20px] font-medium capitalize leading-none text-lw-text;
   }
-  /* hero title — Abhaya 24 / 30 */
+  /* hero title — Figma: Lora Medium 30 / 36, tracking -1%, box 397×72 */
   .lw-hero {
-    @apply font-abhaya text-[24px] font-semibold capitalize leading-[30px] text-lw-text;
+    @apply font-lora text-[30px] font-medium leading-[36px] tracking-[-0.01em] text-lw-text;
+  }
+  /* hero sub — Figma: Glacial Indifference Regular 20/24, box 338×48 */
+  .lw-hero-sub {
+    @apply font-glacial text-[20px] font-normal leading-6 tracking-normal text-lw-muted;
   }
   /* Delicate Beige etc. — Abhaya Medium 28 / 31 */
   .lw-feature {
@@ -123,11 +137,12 @@ body.hide-scrollbar::-webkit-scrollbar,
   }
 }
 
-/* Rail du hero : 6 invitations + copie de la 1re pour boucle invisible.
-   Cadre iPhone fixe au centre ; le rail glisse les thèmes dessous. */
+/* Rail du hero : démarre à l'étape 1 (carte centrale + aperçus gauche ET droite). */
 .lw-hero-rail {
   --lw-step: 197px; /* largeur carte + gouttière */
   --lw-half: 91px; /* demi-carte */
+  /* Position initiale avant anim : même que 0% (étape 1) */
+  transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
   animation: lw-hero-rail 30s ease-in-out infinite;
   will-change: transform;
 }
@@ -140,65 +155,33 @@ body.hide-scrollbar::-webkit-scrollbar,
 }
 
 @keyframes lw-hero-rail {
+  /* Étapes 1→7 : gauche jamais vide ; 7 = même visuel que 1 pour la boucle */
   0%,
   11% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 0 * var(--lw-step))));
+    transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
   }
   16.66%,
   27.66% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
+    transform: translateX(calc(-1 * (var(--lw-half) + 2 * var(--lw-step))));
   }
   33.33%,
   44.33% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 2 * var(--lw-step))));
+    transform: translateX(calc(-1 * (var(--lw-half) + 3 * var(--lw-step))));
   }
   50%,
   61% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 3 * var(--lw-step))));
+    transform: translateX(calc(-1 * (var(--lw-half) + 4 * var(--lw-step))));
   }
   66.66%,
   77.66% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 4 * var(--lw-step))));
+    transform: translateX(calc(-1 * (var(--lw-half) + 5 * var(--lw-step))));
   }
   83.33%,
   94.33% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 5 * var(--lw-step))));
-  }
-  100% {
     transform: translateX(calc(-1 * (var(--lw-half) + 6 * var(--lw-step))));
   }
-}
-
-/* Défilement vertical synchronisé avec le passage sous le cadre (slot 0..5). */
-.lw-invite-scroll {
-  will-change: transform;
-}
-.lw-invite-s0 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: 0s; }
-.lw-invite-s1 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -5s; }
-.lw-invite-s2 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -10s; }
-.lw-invite-s3 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -15s; }
-.lw-invite-s4 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -20s; }
-.lw-invite-s5 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: -25s; }
-/* Copie de la 1re carte (index 6) = même rythme que s0 */
-.lw-invite-s6 { animation: lw-invite-slot 30s ease-in-out infinite; animation-delay: 0s; }
-
-@keyframes lw-invite-slot {
-  /* Pendant ~5s sous le cadre : scroll 3 écrans, sinon reste en haut */
-  0%,
-  2% {
-    transform: translateY(0);
-  }
-  5%,
-  8% {
-    transform: translateY(-25%);
-  }
-  11%,
-  14% {
-    transform: translateY(-50%);
-  }
-  16.5%,
   100% {
-    transform: translateY(-75%);
+    transform: translateX(calc(-1 * (var(--lw-half) + 7 * var(--lw-step))));
   }
 }
 
@@ -207,22 +190,9 @@ body.hide-scrollbar::-webkit-scrollbar,
     animation: none !important;
     transform: none !important;
   }
-  .lw-invite-scroll,
-  .lw-invite-s0,
-  .lw-invite-s1,
-  .lw-invite-s2,
-  .lw-invite-s3,
-  .lw-invite-s4,
-  .lw-invite-s5,
-  .lw-invite-s6,
-  .lw-invite-a,
-  .lw-invite-b {
-    animation: none !important;
-    transform: none !important;
-  }
   .lw-hero-rail {
     animation: none !important;
-    transform: translateX(calc(-1 * var(--lw-half))) !important;
+    transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step)))) !important;
   }
   .lw-capri-cassette,
   .lw-capri-volume-bar,

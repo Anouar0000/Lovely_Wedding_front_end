@@ -1,37 +1,89 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
-/** L'expérience — Figma exact 280×408 */
-function ExperienceSection() {
-  return (
-    <section className="bg-[#f4f4f4] px-0 py-10 lg:px-8 lg:py-24">
-      <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
-        <h2 className="px-4 text-center lw-h1 lg:text-[40px]">
-          L&apos;expérience
-        </h2>
-        <p className="mx-auto mt-3 max-w-[241px] px-4 text-center lw-sub lg:max-w-xl lg:text-[18px]">
-          Découvrez tout ce qui rend votre invitation unique.
-        </p>
+const CARDS = [
+  { title: "Enveloppe animée", image: a.webCard1 },
+  { title: "Thèmes exclusifs", image: a.webCard2 },
+  { title: "Accompagnement", image: a.webCard3 },
+  { title: "Espace Client", image: a.webCard4 },
+];
 
-        <div className="mt-8 flex gap-[30px] overflow-x-auto hide-scrollbar px-4 pb-1 lg:mt-14 lg:grid lg:grid-cols-2 lg:gap-10 lg:overflow-visible lg:px-0">
-          <article className="relative h-[408px] w-[280px] shrink-0 overflow-hidden rounded-[5px] lg:h-[480px] lg:w-auto lg:max-w-none">
-            <img src={a.webCard1} alt="" className="h-full w-full object-cover transition-transform duration-500 lg:hover:scale-[1.03]" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 pb-5 text-white lg:p-8">
-              <h3 className="lw-h2 leading-7 lg:text-[32px]">Enveloppe animée</h3>
-              <p className="mt-1 max-w-[228px] font-urbanist text-[14px] leading-5 lg:max-w-[320px] lg:text-[16px]">
-                Une ouverture animée pour créer une première impression mémorable.
-              </p>
-            </div>
-          </article>
-          <article className="relative h-[408px] w-[280px] shrink-0 overflow-hidden rounded-[5px] lg:h-[480px] lg:w-auto lg:max-w-none">
-            <img src={a.webCard2} alt="" className="h-full w-full object-cover transition-transform duration-500 lg:hover:scale-[1.03]" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 pb-5 text-white lg:p-8">
-              <h3 className="lw-h2 leading-7 lg:text-[32px]">Thèmes exclusifs</h3>
-              <p className="mt-1 max-w-[176px] font-urbanist text-[14px] leading-5 lg:max-w-[280px] lg:text-[16px]">
-                Choisissez le thème qui vous ressemble.
-              </p>
-            </div>
-          </article>
+/** L'expérience — mobile scroll · desktop grille 4 cols */
+function ExperienceSection() {
+  const scrollerRef = useRef(null);
+  const [progress, setProgress] = useState({ left: 0, width: 0.35 });
+
+  const updateProgress = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    if (max <= 0) {
+      setProgress({ left: 0, width: 1 });
+      return;
+    }
+    const ratio = el.clientWidth / el.scrollWidth;
+    const thumb = Math.max(0.22, Math.min(0.5, ratio));
+    const left = (el.scrollLeft / max) * (1 - thumb);
+    setProgress({ left, width: thumb });
+  }, []);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return undefined;
+    updateProgress();
+    el.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    return () => {
+      el.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+    };
+  }, [updateProgress]);
+
+  return (
+    <section className="bg-[#F7F2EC] px-0 pb-10 pt-8 lg:px-8 lg:pb-24 lg:pt-16">
+      <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
+        <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
+          <h2 className="mt-[5px] font-abhaya text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
+            L&apos;expérience
+          </h2>
+          <p className="font-urbanist text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+            Découvrez tout ce qui rend
+            <br className="lg:hidden" />
+            <span className="hidden lg:inline"> </span>
+            votre invitation unique.
+          </p>
+        </div>
+
+        <div
+          ref={scrollerRef}
+          className="mt-8 flex gap-[30px] overflow-x-auto hide-scrollbar px-4 pb-1 lg:mt-14 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0"
+        >
+          {CARDS.map((card) => (
+            <article
+              key={card.title}
+              className="relative h-[408px] w-[280px] shrink-0 overflow-hidden rounded-[5px] lg:h-auto lg:w-auto lg:aspect-[280/408]"
+            >
+              <img
+                src={card.image}
+                alt={card.title}
+                className="h-full w-full object-cover transition-transform duration-500 lg:hover:scale-[1.03]"
+                draggable={false}
+              />
+            </article>
+          ))}
+        </div>
+
+        <div
+          className="relative mx-auto mt-6 h-[2px] w-[calc(100%-32px)] max-w-[360px] bg-[#D9D2CB] lg:hidden"
+          aria-hidden
+        >
+          <div
+            className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left,width] duration-150 ease-out"
+            style={{
+              width: `${progress.width * 100}%`,
+              left: `${progress.left * 100}%`,
+            }}
+          />
         </div>
       </div>
     </section>

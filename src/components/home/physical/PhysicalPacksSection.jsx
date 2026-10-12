@@ -11,9 +11,7 @@ function PhysicalPacksSection() {
   return (
     <section className="bg-[#f4f4f4] px-4 py-12 lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-3xl">
-        <h2 className="text-center lw-h1 lg:text-[40px]">
-          Trouvez votre forfait
-        </h2>
+        <h2 className="text-center lw-h1 lg:text-[40px]">Trouvez votre forfait</h2>
         <p className="mx-auto mt-3 max-w-[241px] text-center lw-sub lg:max-w-xl lg:text-[18px]">
           Choisissez le forfait qui correspond à vos envies.
         </p>
@@ -45,9 +43,12 @@ function PhysicalPacksSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-physique")}
-            className="inline-flex h-[42px] w-[163px] items-center justify-center rounded-[5px] bg-lw-accent font-urbanist text-[14px] font-bold uppercase text-white hover:bg-lw-accentDark"
+            className="inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-urbanist text-[14px] font-medium leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white"
           >
-            crée maintenant
+            Créer mon invitation
+            <span aria-hidden className="text-[16px] leading-none">
+              →
+            </span>
           </button>
         </div>
       </div>

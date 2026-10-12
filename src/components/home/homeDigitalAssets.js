@@ -15,34 +15,27 @@ export const homeDigitalAssets = {
   heroSideRight: `${FIGMA}/hero-side-right.png`,
   heroMask: `${FIGMA}/hero-mask.png`,
 
-  // Hero — écrans réels des invitations (rail animé)
-  heroInvite1: `${FIGMA}/hero-invite-1.jpg`,
-  heroInvite2: `${FIGMA}/hero-invite-2.jpg`,
-  heroInvite3: `${FIGMA}/hero-invite-3.jpg`,
-  heroSidi1: `${FIGMA}/hero-sidi-1.jpg`,
-  heroSidi2: `${FIGMA}/hero-sidi-2.jpg`,
-  heroSidi3: `${FIGMA}/hero-sidi-3.jpg`,
-  heroCapri1: `${FIGMA}/hero-capri-1.jpg`,
-  heroCapri2: `${FIGMA}/hero-capri-2.jpg`,
-  heroCapri3: `${FIGMA}/hero-capri-3.jpg`,
-  heroSakura1: `${FIGMA}/hero-sakura-1.jpg`,
-  heroSakura2: `${FIGMA}/hero-sakura-2.jpg`,
-  heroSakura3: `${FIGMA}/hero-sakura-3.jpg`,
-  heroBridgerton1: `${FIGMA}/hero-bridgerton-1.jpg`,
-  heroBridgerton2: `${FIGMA}/hero-bridgerton-2.jpg`,
-  heroBridgerton3: `${FIGMA}/hero-bridgerton-3.jpg`,
-  heroMajestic1: `${FIGMA}/hero-majestic-1.jpg`,
-  heroMajestic2: `${FIGMA}/hero-majestic-2.jpg`,
-  heroMajestic3: `${FIGMA}/hero-majestic-3.jpg`,
+  // Hero — covers Figma (dossier hero invi / Group 24–29)
+  heroCoverSidi: `${FIGMA}/hero-cover-sidi.png`,
+  heroCoverDolce: `${FIGMA}/hero-cover-dolce.png`,
+  heroCoverCapri: `${FIGMA}/hero-cover-capri.png`,
+  heroCoverSakura: `${FIGMA}/hero-cover-sakura.png`,
+  heroCoverBridgerton: `${FIGMA}/hero-cover-bridgerton.png`,
+  heroCoverMajestic: `${FIGMA}/hero-cover-majestic.png`,
 
   // Best-sellers — Figma Rectangle 53/54/55
   bestsellerCenter: `${FIGMA}/bs-center.png`,
   bestsellerLeft: `${FIGMA}/bs-left.png`,
   bestsellerRight: `${FIGMA}/bs-right.png`,
 
-  // Expérience
-  webCard1: `${FIGMA}/exp-env.png`,
-  webCard2: `${FIGMA}/exp-themes.png`,
+  // Expérience — hero invi / expr 1–4 (titre + texte dans l’image)
+  webCard1: `${FIGMA}/exp-1.png`,
+  webCard2: `${FIGMA}/exp-2.png`,
+  webCard3: `${FIGMA}/exp-3.png`,
+  webCard4: `${FIGMA}/exp-4.png`,
+  // legacy aliases
+  expEnv: `${FIGMA}/exp-env.png`,
+  expThemes: `${FIGMA}/exp-themes.png`,
 
   // Save The Dates
   std1: `${FIGMA}/std-sidi.png`,
@@ -70,6 +63,11 @@ export const homeDigitalAssets = {
   etapePhone2: `${FIGMA}/etape-phone-2.png`,
   etapePhone3: `${FIGMA}/etape-phone-3.png`,
   etapePhone4: `${FIGMA}/etape-phone-4.png`,
+
+  // Steps Digital — exports Figma (dossier hero invi)
+  stepDigital1: `${FIGMA}/step-digital-1.png`,
+  stepDigital2: `${FIGMA}/step-digital-2.png`,
+  stepDigital3: `${FIGMA}/step-digital-3.png`,
 
   avatar1: `${BASE}/avatar-1.jpg`,
   avatar2: `${BASE}/avatar-2.jpg`,

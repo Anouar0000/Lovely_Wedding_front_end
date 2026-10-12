@@ -11,6 +11,15 @@ jest.mock("../context/CartContext", () => ({
   useCart: () => ({ itemCount: 0 }),
 }));
 
+jest.mock("../context/FavoritesContext", () => ({
+  useFavorites: () => ({
+    ids: [],
+    isFavorite: () => false,
+    toggleFavorite: () => {},
+    count: 0,
+  }),
+}));
+
 function LocationDisplay() {
   const location = useLocation();
   return <div data-testid="location">{location.pathname}</div>;

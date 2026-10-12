@@ -1,5 +1,7 @@
 import React from "react";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useFavorites } from "../../../context/FavoritesContext";
 import { homePhysicalAssets as a } from "../homePhysicalAssets";
 
 const products = [
@@ -7,84 +9,103 @@ const products = [
     name: "Versailles",
     img: a.productVersailles,
     price: "à partir de 1.5dt/pcs",
-    filled: false,
   },
   {
     name: "Sacré cœur",
     img: a.productSacreCoeur,
     price: "à partir de 1.5dt/pcs",
-    filled: true,
   },
   {
     name: "Aimé",
     img: a.productAime,
     price: "à partir de 1.5dt/pcs",
-    filled: false,
   },
   {
     name: "Passeport rosé",
     img: a.productPasseport,
     price: "à partir de 1.5dt/pcs",
-    filled: false,
   },
 ];
 
-/** Invitations physiques — Figma cards exactes 189×224 */
+/** Invitations physiques — parity Digitale (grid, favoris, prix bold) */
 function PhysicalBestsellersSection() {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   return (
-    <section className="bg-white px-0 py-10 lg:px-8 lg:py-24">
-      <div className="mx-auto w-full max-w-[428px] px-4 lg:max-w-6xl lg:px-0">
-        <h2 className="text-center lw-h1 lg:text-[40px]">
-          Invitations physiques
-        </h2>
-        <p className="mx-auto mt-3 max-w-[318px] text-center lw-sub lg:max-w-xl lg:text-[18px]">
-          Une invitation personnalisée, imprimée avec soin pour votre grand jour.
-        </p>
-
-        <div className="mt-[35px] grid grid-cols-2 gap-4 lg:mt-14 lg:grid-cols-4 lg:gap-8">
-          {products.map((p) => (
-            <article key={p.name} className="group flex flex-col">
-              <button
-                type="button"
-                className="w-full text-left"
-                onClick={() => navigate("/invitations-physique")}
-              >
-                <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] transition-shadow lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
-                  <img
-                    src={p.img}
-                    alt={p.name}
-                    className="h-full w-full object-cover transition-transform duration-300 lg:group-hover:scale-105"
-                  />
-                  <span
-                    className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none ${
-                      p.filled
-                        ? "bg-lw-accent text-white"
-                        : "border border-lw-accent bg-white/90 text-lw-accent"
-                    }`}
-                  >
-                    {p.price}
-                  </span>
-                </div>
-                <h3 className="mt-4 lw-h3 leading-6 lg:text-[24px]">
-                  {p.name}
-                </h3>
-                <p className="mt-1 lw-caption lg:text-[14px]">
-                  Impression soignée · papier premium
-                </p>
-              </button>
-            </article>
-          ))}
+    <section className="bg-white px-0 py-8 lg:px-8 lg:py-24">
+      <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
+        <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
+          <h2 className="font-abhaya text-[26px] font-semibold leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
+            Invitations physiques
+          </h2>
+          <p className="font-urbanist text-[16px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+            Une invitation personnalisée, imprimée
+            <br className="lg:hidden" />
+            <span className="hidden lg:inline"> </span>
+            avec soin pour votre grand jour.
+          </p>
         </div>
 
-        <div className="mt-[42px] flex justify-center lg:mt-14">
+        <div className="mt-[35px] grid grid-cols-2 gap-4 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-8 lg:px-0">
+          {products.map((p) => {
+            const liked = isFavorite(p.name);
+            return (
+              <article key={p.name} className="group flex flex-col">
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    aria-pressed={liked}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleFavorite(p.name);
+                    }}
+                    className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
+                  >
+                    {liked ? (
+                      <FaHeart className="text-[16px] lg:text-[18px]" aria-hidden />
+                    ) : (
+                      <FaRegHeart className="text-[16px] lg:text-[18px]" aria-hidden />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full text-left"
+                    onClick={() => navigate("/invitations-physique")}
+                  >
+                    <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/260] lg:h-auto lg:min-h-[280px] lg:group-hover:shadow-md">
+                      <img
+                        src={p.img}
+                        alt={p.name}
+                        className="h-full w-full object-cover transition-transform duration-300 lg:group-hover:scale-105"
+                      />
+                    </div>
+                    <h3 className="mt-4 lw-h3 leading-6 lg:mt-5 lg:text-[24px]">{p.name}</h3>
+                    <p className="mt-1 lw-caption lg:mt-2 lg:text-[14px] lg:leading-5">
+                      Impression soignée · papier premium
+                    </p>
+                    <p className="mt-2 font-urbanist text-[14px] font-bold leading-5 text-lw-text lg:mt-3 lg:text-[15px]">
+                      {p.price}
+                    </p>
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-[42px] flex justify-center lg:mt-16">
           <button
             type="button"
             onClick={() => navigate("/invitations-physique")}
-            className="h-[42px] w-[281px] rounded-[5px] bg-lw-accent font-urbanist text-[14px] font-bold uppercase tracking-[0.7px] text-white hover:bg-lw-accentDark"
+            className="inline-flex items-center gap-1.5 font-urbanist text-[14px] font-medium leading-none text-[#A97C72] underline-offset-4 hover:underline lg:text-[16px]"
           >
-            découvrir toute la collection
+            Découvrir toute la collection
+            <span aria-hidden className="text-[16px] leading-none lg:text-[18px]">
+              →
+            </span>
           </button>
         </div>
       </div>

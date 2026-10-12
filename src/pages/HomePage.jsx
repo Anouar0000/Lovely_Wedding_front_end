@@ -4,6 +4,7 @@ import HeroSection from "../components/home/HeroSection";
 import BestsellersSection from "../components/home/BestsellersSection";
 import DigitalEtapeSection from "../components/home/DigitalEtapeSection";
 import InvitationsWebSection from "../components/home/InvitationsWebSection";
+import FeaturesMarquee from "../components/home/FeaturesMarquee";
 import ExperienceSection from "../components/home/ExperienceSection";
 import SaveTheDatesSection from "../components/home/SaveTheDatesSection";
 import PacksSection from "../components/home/PacksSection";
@@ -15,13 +16,18 @@ import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 /** Main Page Digital — mobile + desktop responsive (no phone shell) */
 function HomePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white font-urbanist text-lw-text">
-      <DigitalHomeHeader mode="digitale" />
-      <main>
+    <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-urbanist text-lw-text">
+      {/* Premier écran Figma : header + hero = une seule composition plein viewport */}
+      <div className="flex min-h-[100dvh] flex-col bg-[#F7F2EC]">
+        <DigitalHomeHeader mode="digitale" />
         <HeroSection />
+      </div>
+      <main>
         <BestsellersSection />
         <DigitalEtapeSection />
         <InvitationsWebSection />
+        <FeaturesMarquee />
+        <div className="h-10 bg-white lg:h-14" aria-hidden />
         <ExperienceSection />
         <SaveTheDatesSection />
         <PacksSection />

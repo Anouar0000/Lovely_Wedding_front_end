@@ -1,70 +1,126 @@
 import React from "react";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useFavorites } from "../../context/FavoritesContext";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
-/** Invitations Web — Figma cards exactes 189×224 · mockup ~86×162 */
+/** Invitations Web — design hero (cover + cadre iPhone) */
 const cards = [
-  { title: "Club Capri", image: a.cardCapri, to: "/digital-invitation/club-capri", filled: true },
-  { title: "Sakura Koi", image: a.cardSakura, to: "/digital-invitation/sakura-koi", filled: false },
-  { title: "Bridgerton", image: a.themeBridgeton, to: "/digital-invitation/bridgerton", filled: false },
-  { title: "Majestic White", image: a.themeMajesticWhite, to: "/digital-invitation/majestic-white", filled: true },
+  {
+    title: "Sidi Bou Said",
+    image: a.heroCoverSidi,
+    to: "/digital-invitation/sidi-bousaid",
+  },
+  {
+    title: "Celestial",
+    image: a.heroCoverSakura,
+    to: "/digital-invitation/sakura-koi",
+  },
+  {
+    title: "Bridgeton",
+    image: a.heroCoverBridgerton,
+    to: "/digital-invitation/bridgerton",
+  },
+  {
+    title: "Majestic White",
+    image: a.heroCoverMajestic,
+    to: "/digital-invitation/majestic-white",
+  },
 ];
 
-const pricePill =
-  "absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none";
+/** Figma phone — 78×168 mobile · un peu plus grand desktop */
+function PhonePreview({ src, title }) {
+  return (
+    <div className="relative mx-auto h-[168px] w-[78px] lg:h-[200px] lg:w-[94px]">
+      <div className="absolute inset-[4px] overflow-hidden rounded-[14px] bg-[#F7F2EC] lg:inset-[5px] lg:rounded-[16px]">
+        <img
+          src={src}
+          alt={title}
+          className="h-full w-full object-cover object-center"
+          draggable={false}
+        />
+      </div>
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[16px] border-[4px] border-[#131313] shadow-[0_12px_28px_-12px_rgba(75,66,66,0.45)] lg:rounded-[18px] lg:border-[5px]"
+        aria-hidden
+      >
+        <span className="absolute left-1/2 top-[5px] h-[8px] w-[28px] -translate-x-1/2 rounded-full bg-[#131313] lg:top-[6px] lg:h-[10px] lg:w-[34px]" />
+      </div>
+    </div>
+  );
+}
 
 function InvitationsWebSection() {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   return (
-    <section className="bg-white px-0 py-10 lg:px-8 lg:py-24">
-      <div className="mx-auto w-full max-w-[428px] px-4 lg:max-w-6xl lg:px-0">
-        <h2 className="text-center lw-h1 lg:text-[40px]">
-          Invitations Web
-        </h2>
-        <p className="mx-auto mt-3 max-w-[287px] text-center lw-sub lg:max-w-xl lg:text-[18px]">
-          Un site personnalisé pour partager tous les détails de votre mariage.
-        </p>
-
-        <div className="mt-[35px] grid grid-cols-2 gap-4 lg:mt-14 lg:grid-cols-4 lg:gap-8">
-          {cards.map((c) => (
-            <article key={c.title} className="group flex flex-col">
-              <button type="button" className="w-full text-left" onClick={() => navigate(c.to)}>
-                <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
-                  <img
-                    src={c.image}
-                    alt={c.title}
-                    className="h-[162px] w-[86px] object-contain transition-transform duration-300 lg:h-[75%] lg:w-auto lg:max-w-[42%] lg:group-hover:scale-105"
-                  />
-                  <span
-                    className={`${pricePill} ${
-                      c.filled
-                        ? "bg-lw-accent text-white"
-                        : "border border-lw-accent bg-white/90 text-lw-accent"
-                    }`}
-                  >
-                    à partir de 99dt
-                  </span>
-                </div>
-                <h3 className="mt-4 lw-h3 leading-6 lg:text-[24px]">
-                  {c.title}
-                </h3>
-                <p className="mt-1 lw-caption lg:text-[14px]">
-                  Musique, animations
-                  <br />& livre d&apos;or
-                </p>
-              </button>
-            </article>
-          ))}
+    <section className="bg-white px-0 py-8 lg:px-8 lg:py-24">
+      <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
+        <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
+          <h2 className="font-abhaya text-[26px] font-semibold leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
+            Invitations Web
+          </h2>
+          <p className="font-urbanist text-[16px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+            Un site personnalisé pour partager
+            <br className="lg:hidden" />
+            <span className="hidden lg:inline"> </span>
+            tous les détails de votre mariage.
+          </p>
         </div>
 
-        <div className="mt-[42px] flex justify-center lg:mt-14">
+        <div className="mt-[35px] grid grid-cols-2 gap-4 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-8 lg:px-0">
+          {cards.map((c) => {
+            const liked = isFavorite(c.title);
+            return (
+              <article key={c.title} className="group flex flex-col">
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    aria-pressed={liked}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleFavorite(c.title);
+                    }}
+                    className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
+                  >
+                    {liked ? (
+                      <FaHeart className="text-[16px] lg:text-[18px]" aria-hidden />
+                    ) : (
+                      <FaRegHeart className="text-[16px] lg:text-[18px]" aria-hidden />
+                    )}
+                  </button>
+                  <button type="button" className="w-full text-left" onClick={() => navigate(c.to)}>
+                    <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/260] lg:h-auto lg:min-h-[280px] lg:group-hover:shadow-md">
+                      <PhonePreview src={c.image} title={c.title} />
+                    </div>
+                    <h3 className="mt-4 lw-h3 leading-6 lg:mt-5 lg:text-[24px]">{c.title}</h3>
+                    <p className="mt-1 lw-caption lg:mt-2 lg:text-[14px] lg:leading-5">
+                      Includes music, animations
+                      <br />& guestbook
+                    </p>
+                    <p className="mt-2 font-urbanist text-[14px] font-bold leading-5 text-lw-text lg:mt-3 lg:text-[15px]">
+                      Start at 49$
+                    </p>
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-[42px] flex justify-center lg:mt-16">
           <button
             type="button"
             onClick={() => navigate("/invitations-digital")}
-            className="h-[42px] w-[281px] rounded-[5px] bg-lw-accent font-urbanist text-[14px] font-bold uppercase tracking-[0.7px] text-white hover:bg-lw-accentDark"
+            className="inline-flex items-center gap-1.5 font-urbanist text-[14px] font-medium leading-none text-[#A97C72] underline-offset-4 hover:underline lg:text-[16px]"
           >
-            découvrir toute la collection
+            Découvrir toute la collection
+            <span aria-hidden className="text-[16px] leading-none lg:text-[18px]">
+              →
+            </span>
           </button>
         </div>
       </div>

@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { FiFilter } from "react-icons/fi";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
+import { useFavorites } from "../context/FavoritesContext";
 
 /** Catalogue Figma 1102:344 — mobile Figma · desktop grille 3–4 cols */
 const FILTERS = ["Tous", "Romantique", "Moderne", "Arabesque"];
@@ -20,6 +22,7 @@ const PRODUCTS = [
 function InvitationsDigitalPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("Tous");
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const products = useMemo(
     () => (filter === "Tous" ? PRODUCTS : PRODUCTS.filter((p) => p.category === filter)),
@@ -66,33 +69,53 @@ function InvitationsDigitalPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
-          {products.map((p) => (
-            <article key={p.key || p.name + p.to} className="group">
-              <button type="button" className="w-full text-left" onClick={() => navigate(p.to)}>
-                <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
-                  <img
-                    src={p.img}
-                    alt={p.name}
-                    className="h-[162px] w-[86px] object-contain transition-transform duration-300 lg:h-[75%] lg:w-auto lg:max-w-[42%] lg:group-hover:scale-105"
-                  />
-                  <span
-                    className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none ${
-                      p.filled
-                        ? "bg-lw-accent text-white"
-                        : "border border-lw-accent bg-white/90 text-lw-accent"
-                    }`}
-                  >
-                    à partir de 99dt
-                  </span>
-                </div>
-                <h2 className="mt-4 lw-h3 leading-6 lg:text-[24px]">{p.name}</h2>
-                <p className="mt-1 text-[13px] leading-4 text-lw-muted lg:text-[14px]">
-                  Musique, animations
-                  <br />& livre d&apos;or
-                </p>
-              </button>
-            </article>
-          ))}
+          {products.map((p) => {
+            const liked = isFavorite(p.name);
+            return (
+              <article key={p.name + p.to} className="group relative">
+                <button
+                  type="button"
+                  aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  aria-pressed={liked}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleFavorite(p.name);
+                  }}
+                  className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90"
+                >
+                  {liked ? (
+                    <FaHeart className="text-[16px]" aria-hidden />
+                  ) : (
+                    <FaRegHeart className="text-[16px]" aria-hidden />
+                  )}
+                </button>
+                <button type="button" className="w-full text-left" onClick={() => navigate(p.to)}>
+                  <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="h-[162px] w-[86px] object-contain transition-transform duration-300 lg:h-[75%] lg:w-auto lg:max-w-[42%] lg:group-hover:scale-105"
+                    />
+                    <span
+                      className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none ${
+                        p.filled
+                          ? "bg-lw-accent text-white"
+                          : "border border-lw-accent bg-white/90 text-lw-accent"
+                      }`}
+                    >
+                      à partir de 99dt
+                    </span>
+                  </div>
+                  <h2 className="mt-4 lw-h3 leading-6 lg:text-[24px]">{p.name}</h2>
+                  <p className="mt-1 text-[13px] leading-4 text-lw-muted lg:text-[14px]">
+                    Musique, animations
+                    <br />& livre d&apos;or
+                  </p>
+                </button>
+              </article>
+            );
+          })}
         </div>
 
         {products.length === 0 ? (

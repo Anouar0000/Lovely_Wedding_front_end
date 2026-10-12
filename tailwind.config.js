@@ -9,7 +9,7 @@ module.exports = {
         accent: '#e3342f',
         customGreen: '#10B981',
         lw: {
-          bg: "#FFFFFF",
+          bg: "#F7F2EC",
           surface: "#F4F4F4",
           accent: "#C4A69C",
           accentDark: "#B39288",
@@ -50,6 +50,7 @@ module.exports = {
         roboto: ['"Roboto"', 'sans-serif'],
         montserrat: ['"Montserrat"', 'sans-serif'],
         lora: ['"Lora"', 'serif'],
+        glacial: ['"Glacial Indifference"', 'system-ui', 'sans-serif'],
         raleway: ['"Raleway"', 'sans-serif'],
         opensans: ['"Open Sans"', 'sans-serif'],
         crimson: ['"Crimson Text"', 'serif'],

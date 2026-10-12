@@ -5,6 +5,7 @@ import PhysicalHeroSection from "../components/home/physical/PhysicalHeroSection
 import PhysicalCollectionSection from "../components/home/physical/PhysicalCollectionSection";
 import PhysicalLivraisonSection from "../components/home/physical/PhysicalLivraisonSection";
 import PhysicalBestsellersSection from "../components/home/physical/PhysicalBestsellersSection";
+import FeaturesMarquee from "../components/home/FeaturesMarquee";
 import PhysicalExperienceSection from "../components/home/physical/PhysicalExperienceSection";
 import PhysicalDrageesSection from "../components/home/physical/PhysicalDrageesSection";
 import PhysicalPacksSection from "../components/home/physical/PhysicalPacksSection";
@@ -12,16 +13,29 @@ import PhysicalSocialSection from "../components/home/physical/PhysicalSocialSec
 import PhysicalReviewsSection from "../components/home/physical/PhysicalReviewsSection";
 import PhysicalFaqSection from "../components/home/physical/PhysicalFaqSection";
 
-/** Main Page physical — Figma 155:169 */
+/** Main Page physical — Figma 155:169 · parity mobile/desktop avec Digitale */
 function PhysicalHomePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white font-urbanist text-lw-text">
-      <DigitalHomeHeader mode="imprimee" />
-      <main>
+    <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-urbanist text-lw-text">
+      <div className="flex min-h-[100dvh] flex-col bg-[#F7F2EC]">
+        <DigitalHomeHeader mode="imprimee" />
         <PhysicalHeroSection />
+      </div>
+      <main>
         <PhysicalCollectionSection />
         <PhysicalLivraisonSection />
         <PhysicalBestsellersSection />
+        <FeaturesMarquee
+          items={[
+            "Papier Premium",
+            "Enveloppes",
+            "Cachets de cire",
+            "Finitions",
+            "Livraison",
+            "Sur-mesure",
+          ]}
+        />
+        <div className="h-10 bg-white lg:h-14" aria-hidden />
         <PhysicalExperienceSection />
         <PhysicalDrageesSection />
         <PhysicalPacksSection />

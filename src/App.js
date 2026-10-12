@@ -14,6 +14,7 @@ import MajesticWhiteInvitePage from './pages/MajesticWhiteInvitePage';
 import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
 import { CartProvider } from './context/CartContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -34,6 +35,7 @@ function App() {
     <Router>
       <AuthProvider>
         <CartProvider>
+          <FavoritesProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/imprimee" element={<PhysicalHomePage />} />
@@ -115,6 +117,7 @@ function App() {
             <Route path="/pdf-test" element={<TestPDFDownload />} />
             <Route path="/:slug" element={<SharedDigitalInvitePage />} />
           </Routes>
+          </FavoritesProvider>
         </CartProvider>
       </AuthProvider>
     </Router>
