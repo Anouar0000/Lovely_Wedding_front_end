@@ -118,7 +118,7 @@ function BestsellersSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-digital")}
-            className="mt-5 inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-urbanist text-[14px] font-medium leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white lg:mt-6"
+            className="mt-5 inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-urbanist text-[14px] font-bold leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white lg:mt-6"
           >
             Créer mon invitation
             <span aria-hidden className="text-[16px] leading-none">

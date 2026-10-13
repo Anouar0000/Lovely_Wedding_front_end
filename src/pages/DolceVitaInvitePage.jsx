@@ -28,6 +28,9 @@ import menuLemons from "../assets/digital/dolce-vita/export-update/figma-image-5
 import menuPortrait from "../assets/digital/dolce-vita/export-update/figma-image-51.png";
 import templateConfig from "../data/digital/templates/dolce-vita.json";
 import { boxStyle, textStyle, toCssSize } from "../utils/digitalTemplateDesign";
+import { isSectionActive } from "../templates/digitalInviteSections";
+import { getInviteText } from "../templates/digitalInviteTexts";
+import { getInviteMedia } from "../templates/digitalInviteMedia";
 import { submitRsvpResponse } from "../services/rsvp";
 import { isFirebaseConfigured } from "../lib/firebase";
 
@@ -87,6 +90,10 @@ const getCountdown = (dateString) => {
 };
 
 function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
+  const sectionInvite = {
+    ...invite,
+    template: invite?.template || templateConfig.id,
+  };
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -221,7 +228,7 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
           <img src={divider} alt="" className="absolute" style={boxStyle(design.hero.assets.divider)} />
 
           <p className="relative z-10" style={textStyle(design.hero.intro)}>
-            {fixedText.introLabel}
+            {getInviteText(invite, "introLabel", fixedText.introLabel)}
           </p>
           <h1
             className="relative z-10"
@@ -253,6 +260,7 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
           />
         </section>
 
+        {isSectionActive(sectionInvite, "countdown") ? (
         <section
           className="relative px-10 text-center"
           style={{ paddingBottom: toCssSize(design.sections.countdown.paddingBottom) }}
@@ -274,7 +282,7 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
               maxWidth: toCssSize(design.sections.countdown.textMaxWidth),
             }}
           >
-            {fixedText.introText}
+            {getInviteText(invite, "introText", fixedText.introText)}
           </p>
 
           {countdown.length ? (
@@ -288,11 +296,13 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
             </div>
           ) : null}
         </section>
+        ) : null}
 
+        {isSectionActive(sectionInvite, "location") ? (
         <section className="relative px-10 text-center" style={{ paddingBottom: toCssSize(design.sections.location.paddingBottom) }}>
           <h2 style={textStyle(design.sections.heading)}>Location</h2>
           <p style={{ ...textStyle(design.sections.smallText), marginTop: toCssSize(design.sections.location.copyMarginTop) }}>
-            {fixedText.locationIntro}
+            {getInviteText(invite, "locationIntro", fixedText.locationIntro)}
           </p>
 
           <div
@@ -308,8 +318,8 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
             <img src={locationLineLowerLeft} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLowerLeft)} />
             <img src={locationLineLowerRight} alt="" className="absolute" style={boxStyle(design.locationAssets.lineLowerRight)} />
             <img src={venueSoft} alt="" className="absolute" style={boxStyle(design.locationAssets.venueSoft)} />
-            <img src={venue} alt="Wedding venue" className="absolute" style={boxStyle(design.locationAssets.venue)} />
-            <img src={portrait} alt="" className="absolute" style={boxStyle(design.locationAssets.portrait)} />
+            <img src={getInviteMedia(invite, "venuePhoto", venue)} alt="Wedding venue" className="absolute" style={boxStyle(design.locationAssets.venue)} />
+            <img src={getInviteMedia(invite, "portraitPhoto", portrait)} alt="" className="absolute" style={boxStyle(design.locationAssets.portrait)} />
             <img src={lemons} alt="" className="absolute" style={boxStyle(design.locationAssets.lemons)} />
           </div>
 
@@ -324,7 +334,9 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
           <p className="mt-2 text-[8px] tracking-[0.1em]">{invite.locationLabel}</p>
           <p className="mt-1 text-[8px] tracking-[0.1em]">{invite.time}</p>
         </section>
+        ) : null}
 
+        {isSectionActive(sectionInvite, "timeline") ? (
         <section className="relative px-8 text-center" style={{ paddingBottom: toCssSize(design.sections.timeline.paddingBottom) }}>
           <h2 style={textStyle(design.sections.heading)}>Timeline</h2>
           <div
@@ -393,7 +405,9 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
             })}
           </div>
         </section>
+        ) : null}
 
+        {isSectionActive(sectionInvite, "menu") ? (
         <section className="relative px-5 text-center" style={{ paddingBottom: 86 }}>
           <h2 style={textStyle(design.sections.heading)}>Menu</h2>
           <p className="mt-4" style={{ ...textStyle(design.sections.smallText), fontSize: 10 }}>
@@ -418,8 +432,9 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
             </div>
           </div>
         </section>
+        ) : null}
 
-        {invite.rsvpEnabled ? (
+        {isSectionActive(sectionInvite, "rsvp") ? (
           <section className="px-7 text-center" style={{ paddingBottom: 64 }}>
             <h2 style={textStyle(design.sections.heading)}>RSVP</h2>
             <form
@@ -530,6 +545,7 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
           </section>
         ) : null}
 
+        {isSectionActive(sectionInvite, "closing") ? (
         <section
           className="relative px-10 text-center"
           style={{
@@ -539,10 +555,13 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
         >
           <img src={noteCard} alt="" className="mx-auto w-full" />
           <div className="absolute inset-x-10" style={{ top: toCssSize(design.sections.closing.textTop) }}>
-            <p style={textStyle(design.sections.closingText)}>{fixedText.closingText}</p>
+            <p style={textStyle(design.sections.closingText)}>
+              {getInviteText(invite, "closingText", fixedText.closingText)}
+            </p>
             <p className="mt-2" style={textStyle(design.sections.closingNames)}>{invite.coupleNames}</p>
           </div>
         </section>
+        ) : null}
       </div>
     </main>
   );

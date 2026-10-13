@@ -2,6 +2,14 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import templateConfig from "../data/digital/templates/sakura-koi.json";
 import { submitRsvpResponse } from "../services/rsvp";
 import { isFirebaseConfigured } from "../lib/firebase";
+import {
+  absolutePackLayerStyle,
+  getAbsoluteSectionPacking,
+  getPackShiftForY,
+  isSectionActive,
+} from "../templates/digitalInviteSections";
+import { getInviteText } from "../templates/digitalInviteTexts";
+import { getInviteMedia } from "../templates/digitalInviteMedia";
 
 import heroPoster from "../assets/digital/sakura-koi/hero.png";
 import seal from "../assets/digital/sakura-koi/seal.png";
@@ -40,6 +48,17 @@ const F = {
 };
 const PAGE_W = 430;
 const PAGE_H = 3645;
+
+/** Contiguous absolute Y ranges — used to collapse holes when Blocs are off */
+const SAKURA_PACK_RANGES = [
+  { id: "hero", y0: 0, y1: 601 },
+  { id: "countdown", y0: 601, y1: 1040 },
+  { id: "formal-invite", y0: 1040, y1: 1586 },
+  { id: "our-story", y0: 1586, y1: 2149 },
+  { id: "venue", y0: 2149, y1: 2697 },
+  { id: "rsvp", y0: 2697, y1: 3499 },
+  { id: "footer", y0: 3499, y1: PAGE_H },
+];
 
 const parseEventTime = (time) => {
   if (!time) return { hours: 0, minutes: 0 };
@@ -133,6 +152,15 @@ function Ripple({ left, top, size = 176, delay = 0 }) {
 }
 
 function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
+  const sectionInvite = {
+    ...invite,
+    template: invite?.template || templateConfig.id,
+  };
+  const { shifts: packShifts, packedHeight } = getAbsoluteSectionPacking(
+    sectionInvite,
+    SAKURA_PACK_RANGES
+  );
+  const packY = (y) => getPackShiftForY(y, SAKURA_PACK_RANGES, packShifts);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -141,10 +169,11 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
   const [rsvpStatus, setRsvpStatus] = useState("");
   const [rsvpError, setRsvpError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(Boolean(previewMode));
   // Compute scale on first paint — avoids skewed/overflow layout until refresh
+  // En previewMode le parent (éditeur) gère déjà le scale — rester à 1.
   const [scale, setScale] = useState(() => {
-    if (typeof window === "undefined") return 1;
+    if (previewMode || typeof window === "undefined") return 1;
     const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
     return w > 0 && w < PAGE_W ? w / PAGE_W : 1;
   });
@@ -159,6 +188,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
 
   // Same concept as Capri / other invites: document scroll, hide native bar
   useEffect(() => {
+    if (previewMode) return undefined;
     const html = document.documentElement;
     const body = document.body;
     const root = document.getElementById("root");
@@ -185,10 +215,14 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
       html.style.scrollbarWidth = prev.htmlScrollbar;
       body.style.scrollbarWidth = prev.bodyScrollbar;
     };
-  }, []);
+  }, [previewMode]);
 
   // Fit Figma 430px canvas to phone width (no horizontal overflow)
   useLayoutEffect(() => {
+    if (previewMode) {
+      setScale(1);
+      return undefined;
+    }
     const updateScale = () => {
       const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
       setScale(w > 0 && w < PAGE_W ? w / PAGE_W : 1);
@@ -200,10 +234,11 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
       window.removeEventListener("resize", updateScale);
       window.removeEventListener("orientationchange", updateScale);
     };
-  }, []);
+  }, [previewMode]);
 
   // Lock scroll on entrance; reset to top when opening
   useEffect(() => {
+    if (previewMode) return undefined;
     if (!entered) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
@@ -220,15 +255,26 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     return undefined;
-  }, [entered]);
+  }, [entered, previewMode]);
 
   // First-time scroll: words fade/slide in when they enter the viewport
+  // En previewMode : tout visible (le scroll est dans le mockup, pas la fenêtre).
+  const activeSectionsKey = Array.isArray(invite?.activeSections)
+    ? invite.activeSections.join("|")
+    : "";
+
   useEffect(() => {
     if (!entered) return undefined;
     const nodes = document.querySelectorAll(".lw-sakura-reveal");
     if (!nodes.length) return undefined;
 
     const reveal = (el) => el.classList.add("is-in");
+
+    if (previewMode) {
+      nodes.forEach(reveal);
+      return undefined;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -252,7 +298,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
     });
 
     return () => observer.disconnect();
-  }, [entered]);
+  }, [entered, previewMode, activeSectionsKey]);
 
   // Live date countdown (updates every minute)
   useEffect(() => {
@@ -312,7 +358,14 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
     if (countdownAnimated.current) setDisplayCountdown(countdown);
   }, [countdown]);
 
-  const musicUrl = invite.musicUrl || defaultInvite.musicUrl || "";
+  const musicUrl =
+    getInviteMedia(invite, "musicUrl", "") ||
+    invite.musicUrl ||
+    defaultInvite.musicUrl ||
+    "";
+  const storyLeftSrc = getInviteMedia(invite, "storyPhotoLeft", storyLeft);
+  const storyRightSrc = getInviteMedia(invite, "storyPhotoRight", storyRight);
+  const venuePhotoSrc = getInviteMedia(invite, "venuePhoto", venueCircle);
   const inviteId = invite.id || invite.slug || "";
   const canSubmitRsvp = Boolean(invite.ownerId && inviteId && isFirebaseConfigured && !previewMode);
   const dateParts = formatInviteDate(invite.eventDate, invite.time);
@@ -378,7 +431,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
         style={{
           position: "relative",
           width: PAGE_W * scale,
-          height: PAGE_H * scale,
+          height: packedHeight * scale,
         }}
       >
         <main
@@ -403,6 +456,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
           src={silkTop}
           alt=""
           className="pointer-events-none absolute left-0 top-[601px] z-0 h-[420px] w-[430px] max-w-none"
+          style={{ transform: packY(601) ? `translateY(-${packY(601)}px)` : undefined }}
           draggable={false}
           aria-hidden
         />
@@ -410,6 +464,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
           src={silkMid}
           alt=""
           className="pointer-events-none absolute left-[-10px] top-[2561px] z-0 h-[420px] w-[430px] max-w-none"
+          style={{ transform: packY(2561) ? `translateY(-${packY(2561)}px)` : undefined }}
           draggable={false}
           aria-hidden
         />
@@ -417,19 +472,20 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
           src={silkBot}
           alt=""
           className="pointer-events-none absolute left-[102px] top-[3091px] z-0 h-[420px] w-[328px] max-w-none"
+          style={{ transform: packY(3091) ? `translateY(-${packY(3091)}px)` : undefined }}
           draggable={false}
           aria-hidden
         />
 
         {/* Water ripples — Figma Calques, behind content */}
-        <Ripple left={319} top={626} delay={0} />
-        <Ripple left={-80} top={814} delay={0.4} />
-        <Ripple left={314} top={1118} delay={0.2} />
-        <Ripple left={-80} top={1397} delay={0.8} />
-        <Ripple left={314} top={1707} delay={0.6} />
-        <Ripple left={-80} top={2086} delay={1} />
-        <Ripple left={314} top={2610} delay={0.7} />
-        <Ripple left={-56} top={3356} delay={0.5} />
+        <Ripple left={319} top={626 - packY(626)} delay={0} />
+        <Ripple left={-80} top={814 - packY(814)} delay={0.4} />
+        <Ripple left={314} top={1118 - packY(1118)} delay={0.2} />
+        <Ripple left={-80} top={1397 - packY(1397)} delay={0.8} />
+        <Ripple left={314} top={1707 - packY(1707)} delay={0.6} />
+        <Ripple left={-80} top={2086 - packY(2086)} delay={1} />
+        <Ripple left={314} top={2610 - packY(2610)} delay={0.7} />
+        <Ripple left={-56} top={3356 - packY(3356)} delay={0.5} />
 
         {/* Hero — vidéo boucle (sakura koi inside) */}
         <div className="absolute left-0 top-0 z-[2] h-[601px] w-[430px] overflow-hidden bg-white">
@@ -472,7 +528,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
           className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[262px] z-[3] w-[188px] text-center text-[16px] capitalize leading-4 tracking-[0.1em] text-white"
           style={{ textShadow: "0 1px 8px rgba(0,0,0,0.35)", ["--lw-reveal-delay"]: "0.1s" }}
         >
-          {fixedText.heroEyebrow}
+          {getInviteText(invite, "heroEyebrow", fixedText.heroEyebrow)}
         </p>
         <h1
           className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[282px] z-[3] w-[338px] text-center text-[38px] leading-[40px] text-white"
@@ -494,212 +550,233 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
         </div>
 
         {/* Countdown */}
-        <h2
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[723px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
-          style={{ fontFamily: F.script, color: C.accent }}
-        >
-          {fixedText.countdown}
-        </h2>
-        <div
-          ref={countdownRef}
-          className="lw-sakura-reveal absolute left-[104px] top-[790px] z-[2] flex h-[72px] w-[223px] justify-between text-center"
-          style={{ ["--lw-reveal-delay"]: "0.15s" }}
-        >
-          {[
-            [displayCountdown.days, "Days"],
-            [displayCountdown.hours, "Hours"],
-            [displayCountdown.minutes, "Minutes"],
-          ].map(([value, label]) => (
-            <div key={label} className="min-w-[44px]">
-              <p className="text-[30px] leading-[22px] tracking-[0.1em]" style={{ color: C.accent }}>
-                {value}
-              </p>
-              <p className="mt-2 text-[14px] leading-[22px] tracking-[0.1em]">{label}</p>
+        {isSectionActive(sectionInvite, "countdown") ? (
+          <div style={absolutePackLayerStyle(packShifts.countdown, PAGE_W, PAGE_H)}>
+            <h2
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[723px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
+              style={{ fontFamily: F.script, color: C.accent }}
+            >
+              {getInviteText(invite, "countdown", fixedText.countdown)}
+            </h2>
+            <div
+              ref={countdownRef}
+              className="lw-sakura-reveal absolute left-[104px] top-[790px] z-[2] flex h-[72px] w-[223px] justify-between text-center"
+              style={{ ["--lw-reveal-delay"]: "0.15s" }}
+            >
+              {[
+                [displayCountdown.days, "Days"],
+                [displayCountdown.hours, "Hours"],
+                [displayCountdown.minutes, "Minutes"],
+              ].map(([value, label]) => (
+                <div key={label} className="min-w-[44px]">
+                  <p className="text-[30px] leading-[22px] tracking-[0.1em]" style={{ color: C.accent }}>
+                    {value}
+                  </p>
+                  <p className="mt-2 text-[14px] leading-[22px] tracking-[0.1em]">{label}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <KoiFish left={317} top={909} />
+            <KoiFish left={317} top={909} />
+          </div>
+        ) : null}
 
         {/* Formal Invite */}
-        <h2
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[1040px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
-          style={{ fontFamily: F.script, color: C.accent }}
-        >
-          {fixedText.formalInvite}
-        </h2>
-        <KoiFish left={8} top={1165} width={52} height={85} flip style={{ zIndex: 5 }} />
-        <img
-          src={envelope}
-          alt=""
-          className="pointer-events-none absolute left-[54px] top-[1099px] z-[2] h-[579px] w-[323px] object-contain"
-          draggable={false}
-        />
-        <img
-          src={invitePaper}
-          alt=""
-          className="pointer-events-none absolute left-[103px] top-[1138px] z-[3] h-[336px] w-[224px] object-cover"
-          style={{ filter: "drop-shadow(2px 3px 8px rgba(0,0,0,0.18))" }}
-          draggable={false}
-        />
-        <img
-          src={letterImg}
-          alt="Formal invitation letter"
-          className="pointer-events-none absolute left-[128px] top-[1167px] z-[4] h-[288px] w-[175px] object-contain"
-          draggable={false}
-        />
+        {isSectionActive(sectionInvite, "formal-invite") ? (
+          <div style={absolutePackLayerStyle(packShifts["formal-invite"], PAGE_W, PAGE_H)}>
+            <h2
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[1040px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
+              style={{ fontFamily: F.script, color: C.accent }}
+            >
+              {getInviteText(invite, "formalInvite", fixedText.formalInvite)}
+            </h2>
+            <KoiFish left={8} top={1165} width={52} height={85} flip style={{ zIndex: 5 }} />
+            <img
+              src={envelope}
+              alt=""
+              className="pointer-events-none absolute left-[54px] top-[1099px] z-[2] h-[579px] w-[323px] object-contain"
+              draggable={false}
+            />
+            <img
+              src={invitePaper}
+              alt=""
+              className="pointer-events-none absolute left-[103px] top-[1138px] z-[3] h-[336px] w-[224px] object-cover"
+              style={{ filter: "drop-shadow(2px 3px 8px rgba(0,0,0,0.18))" }}
+              draggable={false}
+            />
+            <img
+              src={letterImg}
+              alt="Formal invitation letter"
+              className="pointer-events-none absolute left-[128px] top-[1167px] z-[4] h-[288px] w-[175px] object-contain"
+              draggable={false}
+            />
+          </div>
+        ) : null}
 
         {/* Our Story */}
-        <KoiFish left={338} top={1586} />
-        <h2
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[1620px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
-          style={{ fontFamily: F.script, color: C.accent }}
-        >
-          {fixedText.ourStory}
-        </h2>
-        <p
-          className="lw-sakura-reveal absolute left-[104px] top-[1674px] z-[2] w-[226px] text-center text-[14px] capitalize leading-[18px] tracking-[0.1em]"
-          style={{ ["--lw-reveal-delay"]: "0.12s" }}
-        >
-          {fixedText.storyText}
-        </p>
-        <img
-          src={storyLeft}
-          alt=""
-          className="absolute left-[-31px] top-[1807px] z-[2] h-[342px] w-[246px] object-cover"
-          draggable={false}
-        />
-        <img
-          src={storyRight}
-          alt=""
-          className="absolute left-[227px] top-[1807px] z-[2] h-[342px] w-[246px] object-cover"
-          draggable={false}
-        />
+        {isSectionActive(sectionInvite, "our-story") ? (
+          <div style={absolutePackLayerStyle(packShifts["our-story"], PAGE_W, PAGE_H)}>
+            <KoiFish left={338} top={1586} />
+            <h2
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[1620px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
+              style={{ fontFamily: F.script, color: C.accent }}
+            >
+              {getInviteText(invite, "ourStory", fixedText.ourStory)}
+            </h2>
+            <p
+              className="lw-sakura-reveal absolute left-[104px] top-[1674px] z-[2] w-[226px] text-center text-[14px] capitalize leading-[18px] tracking-[0.1em]"
+              style={{ ["--lw-reveal-delay"]: "0.12s" }}
+            >
+              {getInviteText(invite, "storyText", fixedText.storyText)}
+            </p>
+            <img
+              src={storyLeftSrc}
+              alt=""
+              className="absolute left-[-31px] top-[1807px] z-[2] h-[342px] w-[246px] object-cover"
+              draggable={false}
+            />
+            <img
+              src={storyRightSrc}
+              alt=""
+              className="absolute left-[227px] top-[1807px] z-[2] h-[342px] w-[246px] object-cover"
+              draggable={false}
+            />
+          </div>
+        ) : null}
 
         {/* Venue */}
-        <KoiFish left={14} top={2149} flip />
-        <h2
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2204px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
-          style={{ fontFamily: F.script, color: C.accent }}
-        >
-          {fixedText.venue}
-        </h2>
-        <p
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2257px] z-[2] w-[222px] text-center text-[16px] capitalize tracking-[0.1em]"
-          style={{ ["--lw-reveal-delay"]: "0.12s" }}
-        >
-          {venue}
-        </p>
-        <div className="absolute left-[147px] top-[2343px] z-[2] size-[132px]">
-          {/* Rings centered on venue photo */}
-          <div
-            className="lw-sakura-ripple pointer-events-none absolute left-1/2 top-1/2 z-0 size-[240px] -translate-x-1/2 -translate-y-1/2"
-            style={{ ["--lw-ripple-delay"]: "0.3s" }}
-            aria-hidden
-          >
-            <span className="lw-sakura-ripple-ring" />
-            <span className="lw-sakura-ripple-ring" />
-            <span className="lw-sakura-ripple-ring" />
+        {isSectionActive(sectionInvite, "venue") ? (
+          <div style={absolutePackLayerStyle(packShifts.venue, PAGE_W, PAGE_H)}>
+            <KoiFish left={14} top={2149} flip />
+            <h2
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2204px] z-[3] w-[338px] text-center text-[38px] leading-[40px]"
+              style={{ fontFamily: F.script, color: C.accent }}
+            >
+              {getInviteText(invite, "venue", fixedText.venue)}
+            </h2>
+            <p
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2257px] z-[2] w-[222px] text-center text-[16px] capitalize tracking-[0.1em]"
+              style={{ ["--lw-reveal-delay"]: "0.12s" }}
+            >
+              {venue}
+            </p>
+            <div className="absolute left-[147px] top-[2343px] z-[2] size-[132px]">
+              <div
+                className="lw-sakura-ripple pointer-events-none absolute left-1/2 top-1/2 z-0 size-[240px] -translate-x-1/2 -translate-y-1/2"
+                style={{ ["--lw-ripple-delay"]: "0.3s" }}
+                aria-hidden
+              >
+                <span className="lw-sakura-ripple-ring" />
+                <span className="lw-sakura-ripple-ring" />
+                <span className="lw-sakura-ripple-ring" />
+              </div>
+              <img
+                src={venuePhotoSrc}
+                alt=""
+                className="relative z-[1] size-full rounded-full object-cover"
+                draggable={false}
+              />
+            </div>
+            <a
+              href={toSafeHttpUrl(invite.mapUrl || defaultInvite.mapUrl, "https://maps.google.com")}
+              target="_blank"
+              rel="noreferrer"
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2541px] z-[2] flex h-[45px] w-[158px] items-center justify-center rounded-full text-[14px] tracking-[0.1em]"
+              style={{ background: C.rsvp, color: C.text, ["--lw-reveal-delay"]: "0.1s" }}
+            >
+              {getInviteText(invite, "openMaps", fixedText.openMaps)}
+            </a>
+            <KoiFish left={338} top={2580} />
           </div>
+        ) : null}
+
+        {/* RSVP capsule */}
+        {isSectionActive(sectionInvite, "rsvp") ? (
+          <div style={absolutePackLayerStyle(packShifts.rsvp, PAGE_W, PAGE_H)}>
+            <div
+              className="absolute left-[-4px] top-[2697px] z-[2] h-[709px] w-[434px] rounded-[217px]"
+              style={{ background: C.rsvp }}
+            />
+            <h2
+              className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2774px] z-10 w-[338px] text-center text-[38px] leading-[40px]"
+              style={{ fontFamily: F.script, color: C.accent }}
+            >
+              {getInviteText(invite, "rsvp", fixedText.rsvp)}
+            </h2>
+
+            <form onSubmit={handleRsvpSubmit} className="lw-sakura-reveal absolute left-[53px] top-[2878px] z-10 w-[320px]" style={{ ["--lw-reveal-delay"]: "0.12s" }}>
+              <p className="text-[14px] tracking-[0.1em]">Will you attend</p>
+              <div className="mt-4 grid grid-cols-2 gap-x-3 text-[12px] leading-[16px] tracking-[0.08em]">
+                <label className="flex items-start gap-2">
+                  <input
+                    type="radio"
+                    className="mt-0.5 size-[14px] shrink-0 accent-[#a56c64]"
+                    checked={attending}
+                    onChange={() => setAttending(true)}
+                  />
+                  <span>Yes, I will be there</span>
+                </label>
+                <label className="flex items-start gap-2">
+                  <input
+                    type="radio"
+                    className="mt-0.5 size-[14px] shrink-0 accent-[#a56c64]"
+                    checked={!attending}
+                    onChange={() => setAttending(false)}
+                  />
+                  <span>Sorry, I can&apos;t make it</span>
+                </label>
+              </div>
+
+              {[
+                ["Name", fullName, setFullName, "text", true],
+                ["Email", email, setEmail, "email", false],
+                ["Phone Number", phone, setPhone, "tel", false],
+                ["Number of Guests", guestCount, setGuestCount, "number", false],
+              ].map(([label, value, setter, type, required], i) => (
+                <label key={label} className={`block ${i === 0 ? "mt-6" : "mt-4"}`}>
+                  <span className="text-[14px] tracking-[0.1em]">{label}</span>
+                  <input
+                    type={type}
+                    required={required}
+                    value={value}
+                    onChange={(e) => setter(e.target.value)}
+                    min={type === "number" ? "1" : undefined}
+                    className="mt-1 w-full border-0 border-b border-black bg-transparent pb-2 text-[14px] outline-none"
+                  />
+                </label>
+              ))}
+
+              {rsvpError ? <p className="mt-3 text-center text-sm text-red-600">{rsvpError}</p> : null}
+              {rsvpStatus ? <p className="mt-3 text-center text-sm text-emerald-700">{rsvpStatus}</p> : null}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mx-auto mt-8 flex h-[45px] w-[158px] items-center justify-center rounded-full bg-white text-[14px] tracking-[0.1em] disabled:opacity-60"
+              >
+                {submitting ? "…" : "Send !"}
+              </button>
+            </form>
+
+            <KoiFish left={14} top={3360} flip />
+          </div>
+        ) : null}
+
+        {/* Footer */}
+        <div style={absolutePackLayerStyle(packShifts.footer, PAGE_W, PAGE_H)}>
+          <h2
+            className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[3499px] z-10 w-[338px] text-center text-[38px] leading-[40px]"
+            style={{ fontFamily: F.script, color: C.accent }}
+          >
+            {getInviteText(invite, "seeYou", fixedText.seeYou)}
+          </h2>
           <img
-            src={venueCircle}
+            src={blossom}
             alt=""
-            className="relative z-[1] size-full rounded-full object-cover"
+            className="lw-sakura-reveal pointer-events-none absolute left-[185px] top-[3555px] z-[2] h-[80px] w-[60px] object-contain"
+            style={{ ["--lw-reveal-delay"]: "0.15s" }}
             draggable={false}
           />
         </div>
-        <a
-          href={toSafeHttpUrl(invite.mapUrl || defaultInvite.mapUrl, "https://maps.google.com")}
-          target="_blank"
-          rel="noreferrer"
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2541px] z-[2] flex h-[45px] w-[158px] items-center justify-center rounded-full text-[14px] tracking-[0.1em]"
-          style={{ background: C.rsvp, color: C.text, ["--lw-reveal-delay"]: "0.1s" }}
-        >
-          {fixedText.openMaps}
-        </a>
-        <KoiFish left={338} top={2580} />
-
-        {/* RSVP capsule */}
-        <div
-          className="absolute left-[-4px] top-[2697px] z-[2] h-[709px] w-[434px] rounded-[217px]"
-          style={{ background: C.rsvp }}
-        />
-        <h2
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[2774px] z-10 w-[338px] text-center text-[38px] leading-[40px]"
-          style={{ fontFamily: F.script, color: C.accent }}
-        >
-          {fixedText.rsvp}
-        </h2>
-
-        <form onSubmit={handleRsvpSubmit} className="lw-sakura-reveal absolute left-[53px] top-[2878px] z-10 w-[320px]" style={{ ["--lw-reveal-delay"]: "0.12s" }}>
-          <p className="text-[14px] tracking-[0.1em]">Will you attend</p>
-          <div className="mt-4 grid grid-cols-2 gap-x-3 text-[12px] leading-[16px] tracking-[0.08em]">
-            <label className="flex items-start gap-2">
-              <input
-                type="radio"
-                className="mt-0.5 size-[14px] shrink-0 accent-[#a56c64]"
-                checked={attending}
-                onChange={() => setAttending(true)}
-              />
-              <span>Yes, I will be there</span>
-            </label>
-            <label className="flex items-start gap-2">
-              <input
-                type="radio"
-                className="mt-0.5 size-[14px] shrink-0 accent-[#a56c64]"
-                checked={!attending}
-                onChange={() => setAttending(false)}
-              />
-              <span>Sorry, I can&apos;t make it</span>
-            </label>
-          </div>
-
-          {[
-            ["Name", fullName, setFullName, "text", true],
-            ["Email", email, setEmail, "email", false],
-            ["Phone Number", phone, setPhone, "tel", false],
-            ["Number of Guests", guestCount, setGuestCount, "number", false],
-          ].map(([label, value, setter, type, required], i) => (
-            <label key={label} className={`block ${i === 0 ? "mt-6" : "mt-4"}`}>
-              <span className="text-[14px] tracking-[0.1em]">{label}</span>
-              <input
-                type={type}
-                required={required}
-                value={value}
-                onChange={(e) => setter(e.target.value)}
-                min={type === "number" ? "1" : undefined}
-                className="mt-1 w-full border-0 border-b border-black bg-transparent pb-2 text-[14px] outline-none"
-              />
-            </label>
-          ))}
-
-          {rsvpError ? <p className="mt-3 text-center text-sm text-red-600">{rsvpError}</p> : null}
-          {rsvpStatus ? <p className="mt-3 text-center text-sm text-emerald-700">{rsvpStatus}</p> : null}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mx-auto mt-8 flex h-[45px] w-[158px] items-center justify-center rounded-full bg-white text-[14px] tracking-[0.1em] disabled:opacity-60"
-          >
-            {submitting ? "…" : "Send !"}
-          </button>
-        </form>
-
-        <KoiFish left={14} top={3360} flip />
-
-        {/* Footer */}
-        <h2
-          className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[3499px] z-10 w-[338px] text-center text-[38px] leading-[40px]"
-          style={{ fontFamily: F.script, color: C.accent }}
-        >
-          {fixedText.seeYou}
-        </h2>
-        <img
-          src={blossom}
-          alt=""
-          className="lw-sakura-reveal pointer-events-none absolute left-[185px] top-[3555px] z-[2] h-[80px] w-[60px] object-contain"
-          style={{ ["--lw-reveal-delay"]: "0.15s" }}
-          draggable={false}
-        />
       </main>
       </div>
     </>

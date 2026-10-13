@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, isFirebaseConfigured } from "../../lib/firebase";
+import { auth, isAbortError, isFirebaseConfigured } from "../../lib/firebase";
 import { ensureUserProfile, isAdminEmail, USER_ROLES } from "../../services/users";
 
 const AuthContext = createContext(null);
@@ -16,7 +16,11 @@ export function AuthProvider({ children }) {
       return undefined;
     }
 
-    return onAuthStateChanged(auth, async (currentUser) => {
+    let active = true;
+
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!active) return;
+
       setLoading(true);
       setUser(currentUser);
 
@@ -28,8 +32,10 @@ export function AuthProvider({ children }) {
 
       try {
         const userProfile = await ensureUserProfile(currentUser);
-        setProfile(userProfile);
-      } catch {
+        if (active) setProfile(userProfile);
+      } catch (error) {
+        if (isAbortError(error)) return;
+        if (!active) return;
         const admin = isAdminEmail(currentUser.email);
         setProfile({
           id: currentUser.uid,
@@ -37,9 +43,14 @@ export function AuthProvider({ children }) {
           role: admin ? USER_ROLES.ADMIN : USER_ROLES.CLIENT,
         });
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     });
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   // Admin UI only for allowlisted + verified email (matches firestore.rules)

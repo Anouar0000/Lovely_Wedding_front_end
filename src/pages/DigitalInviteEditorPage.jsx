@@ -20,6 +20,9 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiMove,
+  FiLayers,
+  FiImage,
+  FiMusic,
 } from "react-icons/fi";
 import {
   createDigitalInviteDraft,
@@ -30,12 +33,32 @@ import {
 } from "../services/digitalInvites";
 import {
   digitalInviteTemplates,
+  getDefaultActiveSections,
   getDefaultDigitalInviteTemplate,
   getDigitalInviteTemplate,
+  getTemplateSections,
+  isSectionActive,
+  toggleInviteSection,
 } from "../templates/digitalInviteTemplates";
+import {
+  getDefaultInviteTexts,
+  getTemplateTextFields,
+} from "../templates/digitalInviteTexts";
+import {
+  getDefaultInviteMedia,
+  getTemplateMediaFields,
+} from "../templates/digitalInviteMedia";
+import { uploadInviteMediaFile } from "../services/inviteMediaUpload";
 import { useAuth } from "../components/auth/AuthProvider";
 
 const defaultTemplate = getDefaultDigitalInviteTemplate();
+
+/** iPhone Pro Max ratio (440×956), scaled down for editor sidebar. */
+const PREVIEW_PHONE_W = 270;
+const PREVIEW_PHONE_H = Math.round(270 * (956 / 440)); // ≈587
+const PREVIEW_DESIGN_W = 430;
+const PREVIEW_SCALE = PREVIEW_PHONE_W / PREVIEW_DESIGN_W;
+const PREVIEW_FRAME_BORDER = 4;
 
 function slugify(value) {
   return value
@@ -64,7 +87,7 @@ function formatDateLabel(dateValue) {
 function Field({ label, children }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-gray-700">{label}</span>
+      <span className="mb-1.5 block text-xs font-semibold text-gray-700">{label}</span>
       {children}
     </label>
   );
@@ -74,16 +97,16 @@ function TextInput(props) {
   return (
     <input
       {...props}
-      className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+      className="w-full border border-[#D8DDE2] bg-white px-3 py-2 text-sm outline-none focus:border-black"
     />
   );
 }
 
 function SectionHeader({ icon: Icon, title, action }) {
   return (
-    <div className="flex flex-col gap-3 border-b border-[#E4E8EA] bg-[#F9FAF8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="inline-flex items-center gap-3 lw-h1">
-        <span className="inline-flex h-9 w-9 items-center justify-center border border-[#D8DDE2] bg-white text-base">
+    <div className="flex flex-col gap-2 border-b border-[#E4E8EA] bg-[#F9FAF8] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <h2 className="inline-flex items-center gap-2 text-base font-semibold">
+        <span className="inline-flex h-7 w-7 items-center justify-center border border-[#D8DDE2] bg-white text-sm">
           <Icon aria-hidden="true" />
         </span>
         {title}
@@ -97,7 +120,7 @@ function EditorSection({ icon, title, children, action }) {
   return (
     <div className="border border-[#D8DDE2] bg-white shadow-sm">
       <SectionHeader icon={icon} title={title} action={action} />
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }
@@ -107,14 +130,24 @@ function DigitalInviteEditorPage() {
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
   const isEditing = Boolean(id);
-  const [invite, setInvite] = useState(() =>
-    createDigitalInviteDraft(defaultTemplate.defaults)
-  );
+  const [invite, setInvite] = useState(() => {
+    const draft = createDigitalInviteDraft(defaultTemplate.defaults);
+    const templateId = draft.template || defaultTemplate.id;
+    return {
+      ...draft,
+      activeSections: Array.isArray(draft.activeSections)
+        ? draft.activeSections
+        : getDefaultActiveSections(templateId),
+      texts: getDefaultInviteTexts(templateId),
+      media: getDefaultInviteMedia(templateId),
+    };
+  });
   const [initialDocId, setInitialDocId] = useState(id || "");
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [uploadingKey, setUploadingKey] = useState("");
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [openEvents, setOpenEvents] = useState({});
 
@@ -124,6 +157,8 @@ function DigitalInviteEditorPage() {
       [index]: !prev[index],
     }));
   };
+
+  const timelineItems = Array.isArray(invite.timeline) ? invite.timeline : [];
 
   const handleDragStart = (event, index) => {
     setDraggedIndex(index);
@@ -139,14 +174,17 @@ function DigitalInviteEditorPage() {
     if (draggedIndex === null || draggedIndex === index) return;
 
     setInvite((currentInvite) => {
-      const updatedTimeline = [...currentInvite.timeline];
+      const currentTimeline = Array.isArray(currentInvite.timeline)
+        ? currentInvite.timeline
+        : [];
+      const updatedTimeline = [...currentTimeline];
       const [removed] = updatedTimeline.splice(draggedIndex, 1);
       updatedTimeline.splice(index, 0, removed);
 
       setOpenEvents((prev) => {
         const nextOpen = {};
         updatedTimeline.forEach((item, idx) => {
-          const oldIdx = currentInvite.timeline.indexOf(item);
+          const oldIdx = currentTimeline.indexOf(item);
           nextOpen[idx] = prev[oldIdx] || false;
         });
         return nextOpen;
@@ -200,12 +238,40 @@ function DigitalInviteEditorPage() {
 
         const loadedTemplate = getDigitalInviteTemplate(loadedInvite.template) || defaultTemplate;
 
+        const loadedTimeline = Array.isArray(loadedInvite.timeline)
+          ? loadedInvite.timeline
+          : Array.isArray(loadedTemplate.defaults?.timeline)
+            ? loadedTemplate.defaults.timeline
+            : [];
+
+        const loadedSections = Array.isArray(loadedInvite.activeSections)
+          ? loadedInvite.activeSections
+          : Array.isArray(loadedTemplate.defaults?.activeSections)
+            ? loadedTemplate.defaults.activeSections
+            : getDefaultActiveSections(loadedInvite.template || loadedTemplate.id);
+
+        const templateId = loadedInvite.template || loadedTemplate.id;
+        const defaultTexts = getDefaultInviteTexts(templateId);
+        const loadedTexts =
+          loadedInvite.texts && typeof loadedInvite.texts === "object"
+            ? { ...defaultTexts, ...loadedInvite.texts }
+            : defaultTexts;
+        const defaultMedia = getDefaultInviteMedia(templateId);
+        const loadedMedia =
+          loadedInvite.media && typeof loadedInvite.media === "object"
+            ? { ...defaultMedia, ...loadedInvite.media }
+            : defaultMedia;
+        if (loadedInvite.musicUrl && !loadedMedia.musicUrl) {
+          loadedMedia.musicUrl = loadedInvite.musicUrl;
+        }
+
         setInvite({
           ...createDigitalInviteDraft(loadedTemplate.defaults),
           ...loadedInvite,
-          timeline: loadedInvite.timeline?.length
-            ? loadedInvite.timeline
-            : loadedTemplate.defaults.timeline,
+          timeline: loadedTimeline,
+          activeSections: loadedSections,
+          texts: loadedTexts,
+          media: loadedMedia,
         });
         setInitialDocId(loadedInvite.id);
       } catch (loadError) {
@@ -253,7 +319,34 @@ function DigitalInviteEditorPage() {
   }, [publicPath]);
 
   const selectedTemplate = getDigitalInviteTemplate(invite.template) || defaultTemplate;
+  const templateSections = getTemplateSections(invite.template || selectedTemplate.id);
+  const templateTextFields = getTemplateTextFields(invite.template || selectedTemplate.id);
+  const templateMediaFields = getTemplateMediaFields(invite.template || selectedTemplate.id);
+  const PreviewComponent = selectedTemplate.Component;
   const isSidiBouSaid = invite.template === "sidi-bousaid";
+  const previewInvite = useMemo(
+    () => ({
+      ...invite,
+      id: invite.id || invite.slug || "preview",
+      status: invite.status || "draft",
+      activeSections: Array.isArray(invite.activeSections)
+        ? invite.activeSections
+        : getDefaultActiveSections(invite.template || selectedTemplate.id),
+      texts: {
+        ...getDefaultInviteTexts(invite.template || selectedTemplate.id),
+        ...(invite.texts && typeof invite.texts === "object" ? invite.texts : {}),
+      },
+      media: {
+        ...getDefaultInviteMedia(invite.template || selectedTemplate.id),
+        ...(invite.media && typeof invite.media === "object" ? invite.media : {}),
+      },
+      musicUrl:
+        (invite.media && invite.media.musicUrl) ||
+        invite.musicUrl ||
+        "",
+    }),
+    [invite, selectedTemplate.id]
+  );
   const getNames = (coupleNames) => {
     if (!coupleNames) return { wife: "", husband: "" };
     const parts = coupleNames.split("&");
@@ -284,22 +377,93 @@ function DigitalInviteEditorPage() {
     }));
   };
 
-  const updateTimelineItem = (index, key, value) => {
+  const updateInviteText = (key, value) => {
     setInvite((currentInvite) => ({
       ...currentInvite,
-      timeline: currentInvite.timeline.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, [key]: value } : item
-      ),
+      texts: {
+        ...(currentInvite.texts && typeof currentInvite.texts === "object"
+          ? currentInvite.texts
+          : getDefaultInviteTexts(currentInvite.template || selectedTemplate.id)),
+        [key]: value,
+      },
     }));
+  };
+
+  const updateInviteMedia = (key, value) => {
+    setInvite((currentInvite) => {
+      const nextMedia = {
+        ...(currentInvite.media && typeof currentInvite.media === "object"
+          ? currentInvite.media
+          : getDefaultInviteMedia(currentInvite.template || selectedTemplate.id)),
+        [key]: value,
+      };
+      return {
+        ...currentInvite,
+        media: nextMedia,
+        ...(key === "musicUrl" ? { musicUrl: value } : {}),
+        ...(key === "heroPhoto" ? { heroPhoto: value } : {}),
+        ...(key === "venuePhoto" ? { venuePhoto: value } : {}),
+        ...(key === "storyPhoto" ? { storyPhoto: value } : {}),
+      };
+    });
+  };
+
+  const handleMediaUpload = async (field, file) => {
+    if (!file) return;
+    if (!user?.uid) {
+      setError("Connexion requise pour uploader un fichier.");
+      return;
+    }
+    setError("");
+    setUploadingKey(field.key);
+    try {
+      const url = await uploadInviteMediaFile({
+        file,
+        ownerId: invite.ownerId || user.uid,
+        inviteId: invite.id || invite.slug || "draft",
+        fieldKey: field.key,
+        kind: field.kind,
+      });
+      updateInviteMedia(field.key, url);
+    } catch (uploadError) {
+      const code = uploadError?.code || "";
+      const msg = String(uploadError?.message || "");
+      if (code.includes("unauthorized") || msg.includes("permission") || msg.includes("unauthorized")) {
+        setError(
+          "Upload Storage refusé (règles Firebase). Colle une URL d’image/audio pour l’instant, ou déploie storage.rules."
+        );
+      } else {
+        setError(uploadError.message || "Upload impossible. Tu peux coller une URL.");
+      }
+    } finally {
+      setUploadingKey("");
+    }
+  };
+
+  const updateTimelineItem = (index, key, value) => {
+    setInvite((currentInvite) => {
+      const currentTimeline = Array.isArray(currentInvite.timeline)
+        ? currentInvite.timeline
+        : [];
+      return {
+        ...currentInvite,
+        timeline: currentTimeline.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, [key]: value } : item
+        ),
+      };
+    });
   };
 
   const addTimelineItem = () => {
     setInvite((currentInvite) => {
+      const currentTimeline = Array.isArray(currentInvite.timeline)
+        ? currentInvite.timeline
+        : [];
       const isSidi = currentInvite.template === "sidi-bousaid";
       let newItem;
 
       if (isSidi) {
-        const count = currentInvite.timeline.length;
+        const count = currentTimeline.length;
         let title = "New Event";
         let titleAr = "حدث جديد";
 
@@ -314,7 +478,7 @@ function DigitalInviteEditorPage() {
           titleAr = "عشاء";
         }
 
-        const lastItem = currentInvite.timeline[count - 1];
+        const lastItem = currentTimeline[count - 1];
         newItem = {
           title,
           titleAr,
@@ -322,11 +486,11 @@ function DigitalInviteEditorPage() {
           time: lastItem?.time || "19:00",
           venue: lastItem?.venue || currentInvite.venueName || "Dar Sidi Bou Said",
           city: lastItem?.city || currentInvite.city || "Sidi Bou Said",
-          mapUrl: lastItem?.mapUrl || currentInvite.mapUrl || "https://maps.google.com"
+          mapUrl: lastItem?.mapUrl || currentInvite.mapUrl || "https://maps.google.com",
         };
       } else {
         newItem = {
-          step: getNextTimelineStepKey(currentInvite.timeline),
+          step: getNextTimelineStepKey(currentTimeline),
           time: "",
         };
       }
@@ -335,28 +499,57 @@ function DigitalInviteEditorPage() {
       return {
         ...currentInvite,
         timeline:
-          currentInvite.timeline.length >= maxLimit
-            ? currentInvite.timeline
-            : [...currentInvite.timeline, newItem],
+          currentTimeline.length >= maxLimit
+            ? currentTimeline
+            : [...currentTimeline, newItem],
       };
     });
   };
 
   const removeTimelineItem = (index) => {
-    setInvite((currentInvite) => ({
-      ...currentInvite,
-      timeline: currentInvite.timeline.filter((item, itemIndex) => itemIndex !== index),
-    }));
+    setInvite((currentInvite) => {
+      const currentTimeline = Array.isArray(currentInvite.timeline)
+        ? currentInvite.timeline
+        : [];
+      return {
+        ...currentInvite,
+        timeline: currentTimeline.filter((item, itemIndex) => itemIndex !== index),
+      };
+    });
   };
 
   const handleTemplateChange = (templateId) => {
     const nextTemplate = getDigitalInviteTemplate(templateId);
+    if (!nextTemplate) return;
+
+    const defaults = nextTemplate.defaults || {};
+    const nextTimeline = Array.isArray(defaults.timeline) ? defaults.timeline : [];
+    const nextSections = Array.isArray(defaults.activeSections)
+      ? defaults.activeSections
+      : getDefaultActiveSections(templateId);
 
     setInvite((currentInvite) => ({
       ...currentInvite,
       template: templateId,
-      timeline: nextTemplate.defaults.timeline,
+      title: defaults.title || nextTemplate.label || currentInvite.title,
+      timeline: nextTimeline,
+      activeSections: nextSections,
+      texts: getDefaultInviteTexts(templateId),
+      media: getDefaultInviteMedia(templateId),
+      musicUrl: "",
     }));
+  };
+
+  const handleSectionToggle = (sectionId, enabled) => {
+    setInvite((currentInvite) => ({
+      ...currentInvite,
+      activeSections: toggleInviteSection(currentInvite, sectionId, enabled),
+    }));
+    // Remet le mockup en haut pour éviter un aperçu « décalé »
+    window.requestAnimationFrame(() => {
+      const scroller = document.querySelector("[data-invite-preview-scroll]");
+      if (scroller) scroller.scrollTop = 0;
+    });
   };
 
   const handleCoupleBlur = () => {
@@ -399,9 +592,8 @@ function DigitalInviteEditorPage() {
       delete inviteFields.introText;
       delete inviteFields.closingText;
       delete inviteFields.dateLabel;
-      const lastEvent = invite.timeline && invite.timeline.length > 0
-        ? invite.timeline[invite.timeline.length - 1]
-        : null;
+      const safeTimeline = Array.isArray(invite.timeline) ? invite.timeline : [];
+      const lastEvent = safeTimeline.length > 0 ? safeTimeline[safeTimeline.length - 1] : null;
 
       const cleanedInvite = {
         ...inviteFields,
@@ -410,9 +602,24 @@ function DigitalInviteEditorPage() {
         clientUserId: (invite.clientUserId || "").trim(),
         slug: normalizedSlug,
         template: selectedTemplate.id,
+        activeSections: Array.isArray(invite.activeSections)
+          ? invite.activeSections
+          : getDefaultActiveSections(selectedTemplate.id),
+        texts: {
+          ...getDefaultInviteTexts(selectedTemplate.id),
+          ...(invite.texts && typeof invite.texts === "object" ? invite.texts : {}),
+        },
+        media: {
+          ...getDefaultInviteMedia(selectedTemplate.id),
+          ...(invite.media && typeof invite.media === "object" ? invite.media : {}),
+        },
+        musicUrl:
+          (invite.media && invite.media.musicUrl) ||
+          invite.musicUrl ||
+          "",
         eventDate: isSidiBouSaid && lastEvent?.date ? lastEvent.date : invite.eventDate,
         time: isSidiBouSaid && lastEvent?.time ? lastEvent.time : invite.time,
-        timeline: invite.timeline
+        timeline: safeTimeline
           .slice(0, maxTimelineItems)
           .map((item, index) => {
             if (isSidiBouSaid) {
@@ -575,9 +782,9 @@ function DigitalInviteEditorPage() {
       <form
         id="digital-invite-form"
         onSubmit={handleSubmit}
-        className="mx-auto grid w-full max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[1fr_360px]"
+        className="mx-auto grid w-full max-w-6xl gap-4 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_310px]"
       >
-        <section className="space-y-6">
+        <section className="space-y-4">
           {error ? (
             <div className="border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
               {error}
@@ -585,7 +792,7 @@ function DigitalInviteEditorPage() {
           ) : null}
 
           <EditorSection icon={FiSettings} title="Informations">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2">
               <Field label="Prénom de la mariée (Épouse)">
                 <TextInput
                   value={wife}
@@ -639,7 +846,7 @@ function DigitalInviteEditorPage() {
                 <select
                   value={invite.template}
                   onChange={(event) => handleTemplateChange(event.target.value)}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                  className="w-full border border-[#D8DDE2] bg-white px-3 py-2 text-sm outline-none focus:border-black"
                 >
                   {digitalInviteTemplates.map((template) => (
                     <option key={template.id} value={template.id}>
@@ -660,8 +867,47 @@ function DigitalInviteEditorPage() {
             </div>
           </EditorSection>
 
+          <EditorSection icon={FiLayers} title="Blocs (choix client)">
+            <p className="mb-3 text-xs text-gray-600">
+              Active ou désactive les sections. L&apos;aperçu se met à jour tout de suite.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {templateSections.map((section) => {
+                const enabled = isSectionActive(previewInvite, section.id);
+                return (
+                  <label
+                    key={section.id}
+                    className={`flex items-center justify-between gap-2 border px-3 py-2 ${
+                      section.required
+                        ? "border-[#E4E8EA] bg-[#F9FAF8] opacity-80"
+                        : "border-[#D8DDE2] bg-white"
+                    }`}
+                  >
+                    <span className="text-xs font-semibold text-gray-800">
+                      {section.label}
+                      {section.required ? (
+                        <span className="ml-1.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                          requis
+                        </span>
+                      ) : null}
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={enabled}
+                      disabled={section.required}
+                      onChange={(event) =>
+                        handleSectionToggle(section.id, event.target.checked)
+                      }
+                      className="h-4 w-4 accent-black"
+                    />
+                  </label>
+                );
+              })}
+            </div>
+          </EditorSection>
+
           <EditorSection icon={FiEdit2} title="Contenu">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2">
               <Field label="Titre">
                 <TextInput
                   value={invite.title}
@@ -673,7 +919,7 @@ function DigitalInviteEditorPage() {
                 <select
                   value={invite.rsvpEnabled ? "yes" : "no"}
                   onChange={(event) => updateInvite("rsvpEnabled", event.target.value === "yes")}
-                  className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                  className="w-full border border-[#D8DDE2] bg-white px-3 py-2 text-sm outline-none focus:border-black"
                 >
                   <option value="yes">Actif</option>
                   <option value="no">Masque</option>
@@ -684,7 +930,7 @@ function DigitalInviteEditorPage() {
                   <select
                     value={invite.videoIntroEnabled !== false ? "yes" : "no"}
                     onChange={(event) => updateInvite("videoIntroEnabled", event.target.value === "yes")}
-                    className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                    className="w-full border border-[#D8DDE2] bg-white px-3 py-2 text-sm outline-none focus:border-black"
                   >
                     <option value="yes">Actif</option>
                     <option value="no">Masque</option>
@@ -694,9 +940,108 @@ function DigitalInviteEditorPage() {
             </div>
           </EditorSection>
 
+          {templateTextFields.length > 0 ? (
+            <EditorSection icon={FiFileText} title="Textes de l'invitation">
+              <p className="mb-3 text-xs text-gray-600">
+                Modifie les libellés de ce template. Laisse un champ vide pour garder le texte d&apos;origine.
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                {templateTextFields.map((field) => {
+                  const value =
+                    invite.texts && typeof invite.texts === "object"
+                      ? invite.texts[field.key] ?? ""
+                      : "";
+                  return (
+                    <Field key={field.key} label={field.label}>
+                      {field.multiline ? (
+                        <textarea
+                          value={value}
+                          onChange={(event) => updateInviteText(field.key, event.target.value)}
+                          rows={3}
+                          className="w-full border border-[#D8DDE2] bg-white px-3 py-2 text-sm outline-none focus:border-black"
+                        />
+                      ) : (
+                        <TextInput
+                          value={value}
+                          onChange={(event) => updateInviteText(field.key, event.target.value)}
+                        />
+                      )}
+                    </Field>
+                  );
+                })}
+              </div>
+            </EditorSection>
+          ) : null}
+
+          {templateMediaFields.length > 0 ? (
+            <EditorSection icon={FiImage} title="Images & son">
+              <p className="mb-3 text-xs text-gray-600">
+                Colle une URL ou uploade un fichier. Champ vide = média d&apos;origine du template.
+              </p>
+              <div className="grid gap-4">
+                {templateMediaFields.map((field) => {
+                  const value =
+                    invite.media && typeof invite.media === "object"
+                      ? invite.media[field.key] ?? ""
+                      : "";
+                  const isAudio = field.kind === "audio";
+                  const busy = uploadingKey === field.key;
+                  return (
+                    <div
+                      key={field.key}
+                      className="grid gap-2 border border-[#E4E8EA] bg-[#FCFCFB] p-3 md:grid-cols-[1fr_auto] md:items-end"
+                    >
+                      <Field label={field.label}>
+                        <div className="flex items-center gap-2">
+                          {isAudio ? (
+                            <FiMusic className="shrink-0 text-gray-400" aria-hidden />
+                          ) : (
+                            <FiImage className="shrink-0 text-gray-400" aria-hidden />
+                          )}
+                          <TextInput
+                            value={value}
+                            placeholder={isAudio ? "https://…/musique.mp3" : "https://…/photo.jpg"}
+                            onChange={(event) => updateInviteMedia(field.key, event.target.value)}
+                          />
+                        </div>
+                      </Field>
+                      <label className="inline-flex cursor-pointer items-center justify-center gap-2 border border-[#D8DDE2] bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-black">
+                        <FiUploadCloud aria-hidden />
+                        {busy ? "Upload…" : "Fichier"}
+                        <input
+                          type="file"
+                          accept={isAudio ? "audio/*" : "image/*"}
+                          className="hidden"
+                          disabled={busy}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            handleMediaUpload(field, file);
+                            event.target.value = "";
+                          }}
+                        />
+                      </label>
+                      {!isAudio && value ? (
+                        <div className="md:col-span-2">
+                          <img
+                            src={value}
+                            alt=""
+                            className="mt-1 h-20 w-auto max-w-full rounded border border-[#E4E8EA] object-cover"
+                          />
+                        </div>
+                      ) : null}
+                      {isAudio && value ? (
+                        <audio controls src={value} className="mt-1 w-full md:col-span-2" preload="none" />
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </EditorSection>
+          ) : null}
+
           {!isSidiBouSaid && (
             <EditorSection icon={FiMapPin} title="Date et lieu">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-3 md:grid-cols-2">
                 <Field label="Date">
                   <TextInput
                     type="date"
@@ -751,7 +1096,7 @@ function DigitalInviteEditorPage() {
               <button
                 type="button"
                 onClick={addTimelineItem}
-                disabled={invite.timeline.length >= maxTimelineItems}
+                disabled={timelineItems.length >= maxTimelineItems}
                 className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
               >
                 <FiPlus aria-hidden="true" /> {isSidiBouSaid ? "Add Event" : "Ajouter une etape"}
@@ -759,7 +1104,7 @@ function DigitalInviteEditorPage() {
             }
           >
             <div className="space-y-6">
-              {invite.timeline.map((item, index) => (
+              {timelineItems.map((item, index) => (
                 <div 
                   key={index} 
                   draggable
@@ -795,7 +1140,7 @@ function DigitalInviteEditorPage() {
                     <button
                       type="button"
                       onClick={() => removeTimelineItem(index)}
-                      disabled={invite.timeline.length <= 1}
+                      disabled={timelineItems.length <= 1}
                       title="Supprimer"
                       aria-label={`Supprimer l'etape ${index + 1}`}
                       className="inline-flex h-8 w-8 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
@@ -806,7 +1151,7 @@ function DigitalInviteEditorPage() {
 
                   {openEvents[index] && (
                     isSidiBouSaid ? (
-                      <div className="grid gap-4 md:grid-cols-2">
+                      <div className="grid gap-3 md:grid-cols-2">
                         <Field label="Title (English)">
                           <TextInput
                             value={item.title || ""}
@@ -860,7 +1205,7 @@ function DigitalInviteEditorPage() {
                           <select
                             value={getTimelineStepKey(item, index)}
                             onChange={(event) => updateTimelineItem(index, "step", event.target.value)}
-                            className="w-full border border-[#D8DDE2] bg-white px-4 py-3 text-base outline-none focus:border-black"
+                            className="w-full border border-[#D8DDE2] bg-white px-3 py-2 text-sm outline-none focus:border-black"
                           >
                             {fixedTimelineSteps.map((step) => (
                               <option key={step.image} value={step.image}>
@@ -943,66 +1288,115 @@ function DigitalInviteEditorPage() {
           )}
         </section>
 
-        <aside className="h-fit border border-[#D8DDE2] bg-white p-5 shadow-sm lg:sticky lg:top-6">
-          <h2 className="lw-h1">{selectedTemplate.label}</h2>
-          <p className="mt-2 lw-body">{selectedTemplate.description}</p>
-          <div className="my-5 h-px bg-[#E4E8EA]" />
-          <h3 className="inline-flex items-center gap-2 lw-h2">
-            <FiLink aria-hidden="true" /> Lien public
-          </h3>
-          <p className="mt-3 break-all lw-body">
-            {publicUrl || "Le lien apparaitra apres avoir ajoute un slug."}
-          </p>
-          <div className="mt-5 grid gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
-            >
-              <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
-            </button>
-            {publicPath ? (
-              <>
-                <Link
-                  to={dashboardPreviewPath}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
+        <aside className="flex h-fit flex-col gap-3 lg:sticky lg:top-3">
+          <div className="border border-[#D8DDE2] bg-white p-3 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                  Aperçu live
+                </p>
+                <h2 className="mt-0.5 text-sm font-semibold">{selectedTemplate.label}</h2>
+              </div>
+              <span
+                className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${
+                  invite.status === "published"
+                    ? "bg-emerald-50 text-emerald-800"
+                    : "bg-amber-50 text-amber-800"
+                }`}
+              >
+                {invite.status === "published" ? "Publiée" : "Brouillon"}
+              </span>
+            </div>
+
+            {/* Pro Max ratio, scaled ~270×587 — scroll sans barre */}
+            <div className="mt-3 flex justify-center">
+              <div
+                className="overflow-hidden rounded-[28px] border-[#1a1a1a] bg-[#1a1a1a] shadow-md"
+                style={{
+                  width: PREVIEW_PHONE_W + PREVIEW_FRAME_BORDER * 2,
+                  borderWidth: PREVIEW_FRAME_BORDER,
+                }}
+              >
+                <div
+                  data-invite-preview-scroll
+                  className="hide-scrollbar overflow-x-hidden overflow-y-auto bg-white"
+                  style={{
+                    width: PREVIEW_PHONE_W,
+                    height: PREVIEW_PHONE_H,
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  }}
                 >
-                  <FiExternalLink aria-hidden="true" /> Ouvrir l'apercu
-                </Link>
-                {invite.status !== "published" ? (
+                  <div style={{ width: PREVIEW_DESIGN_W, zoom: PREVIEW_SCALE }}>
+                    {PreviewComponent ? (
+                      <PreviewComponent invite={previewInvite} previewMode />
+                    ) : (
+                      <p className="p-4 text-sm text-gray-500">Aperçu indisponible.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-[#D8DDE2] bg-white p-3 shadow-sm">
+            <h3 className="inline-flex items-center gap-2 text-sm font-semibold">
+              <FiLink aria-hidden="true" /> Lien public
+            </h3>
+            <p className="mt-2 break-all text-xs text-gray-600">
+              {publicUrl || "Le lien apparaîtra après avoir ajouté un slug."}
+            </p>
+            <div className="mt-3 grid gap-2">
+              <button
+                type="submit"
+                disabled={saving}
+                className="inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+              >
+                <FiSave aria-hidden="true" /> {saving ? "Sauvegarde..." : "Enregistrer"}
+              </button>
+              {publicPath ? (
+                <>
+                  <Link
+                    to={dashboardPreviewPath}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 border border-black px-5 py-3 text-center text-sm font-semibold"
+                  >
+                    <FiExternalLink aria-hidden="true" /> Ouvrir l&apos;aperçu
+                  </Link>
+                  {invite.status !== "published" ? (
+                    <button
+                      type="button"
+                      onClick={handlePublish}
+                      disabled={saving}
+                      className="inline-flex items-center justify-center gap-2 border border-emerald-600 px-5 py-3 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                    >
+                      <FiUploadCloud aria-hidden="true" /> Publier
+                    </button>
+                  ) : null}
                   <button
                     type="button"
-                    onClick={handlePublish}
-                    disabled={saving}
-                    className="inline-flex items-center justify-center gap-2 border border-emerald-600 px-5 py-3 text-sm font-semibold text-emerald-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                    onClick={handleCopyLink}
+                    className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-5 py-3 text-sm font-semibold"
                   >
-                    <FiUploadCloud aria-hidden="true" /> Publier
+                    {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+                    {copied ? "Lien copié" : "Copier le lien"}
                   </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="inline-flex items-center justify-center gap-2 border border-[#D8DDE2] px-5 py-3 text-sm font-semibold"
-                >
-                  {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
-                  {copied ? "Lien copie" : "Copier le lien"}
-                </button>
-              </>
-            ) : null}
-            <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-gray-600">
-              <div className="border border-[#E4E8EA] p-3">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
-                  <FiCalendar aria-hidden="true" /> Date
+                </>
+              ) : null}
+              <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-gray-600">
+                <div className="border border-[#E4E8EA] p-3">
+                  <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
+                    <FiCalendar aria-hidden="true" /> Date
+                  </div>
+                  {formatDateLabel(invite.eventDate) || "Non définie"}
                 </div>
-                {formatDateLabel(invite.eventDate) || "Non definie"}
-              </div>
-              <div className="border border-[#E4E8EA] p-3">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
-                  <FiMapPin aria-hidden="true" /> Lieu
+                <div className="border border-[#E4E8EA] p-3">
+                  <div className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
+                    <FiMapPin aria-hidden="true" /> Lieu
+                  </div>
+                  {invite.city || "Non défini"}
                 </div>
-                {invite.city || "Non defini"}
               </div>
             </div>
           </div>

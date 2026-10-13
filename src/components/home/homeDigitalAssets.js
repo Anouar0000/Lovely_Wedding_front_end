@@ -69,6 +69,14 @@ export const homeDigitalAssets = {
   stepDigital2: `${FIGMA}/step-digital-2.png`,
   stepDigital3: `${FIGMA}/step-digital-3.png`,
 
+  // Product overview digital — hero invi
+  productOverviewDigital: `${FIGMA}/product-overview-digital.png`,
+  productOverviewPhones: `${FIGMA}/product-overview-phones.png`,
+  sidiWelcome: `${FIGMA}/hero-cover-sidi.png`,
+  sidiInvi: `${FIGMA}/sidi-invi.png`,
+  capriWelcome: `${FIGMA}/hero-cover-capri.png`,
+  capriInvi: `${FIGMA}/capri-invi.png`,
+
   avatar1: `${BASE}/avatar-1.jpg`,
   avatar2: `${BASE}/avatar-2.jpg`,
   avatar3: `${BASE}/avatar-3.jpg`,

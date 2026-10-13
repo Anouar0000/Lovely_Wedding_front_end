@@ -5,6 +5,9 @@ import templateConfig from "../data/digital/templates/sidi-bousaid.json";
 import { submitRsvpResponse } from "../services/rsvp";
 import { isFirebaseConfigured } from "../lib/firebase";
 import { toSafeHttpUrl } from "../lib/safeUrl";
+import { isSectionActive } from "../templates/digitalInviteSections";
+import { getInviteText } from "../templates/digitalInviteTexts";
+import { getInviteMedia } from "../templates/digitalInviteMedia";
 
 // Import figma assets for Our Story
 import watercolorBougainvillea from "../assets/digital/sidi-bousaid/exported/watercolor-bougainvillea-figma.png";
@@ -290,6 +293,10 @@ const WavyCircle = ({ percent }) => {
 };
 
 function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) {
+  const sectionInvite = {
+    ...invite,
+    template: invite?.template || templateConfig.id,
+  };
   const [isIntroFading, setIsIntroFading] = useState(false);
   const [isIntroDone, setIsIntroDone] = useState(invite.videoIntroEnabled === false);
   const [doorFrame, setDoorFrame] = useState(0);
@@ -547,6 +554,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
         </Section>
 
         {/* Canvas 5: Our Story (moved here, startY=804, height=340) */}
+        {isSectionActive(sectionInvite, "story") ? (
         <Section 
           startY={804} 
           height={340}
@@ -593,7 +601,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
                 className="absolute"
                 style={{ ...absoluteBox({ left: 185, top: 800 + 110, width: 225.25, height: 172.48 }), zIndex: 2 }}
                 alt="Couple"
-                src={vectorBg}
+                src={getInviteMedia(invite, "storyPhoto", vectorBg)}
                 draggable="false"
               />
 
@@ -649,8 +657,10 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
             </>
           )}
         </Section>
+        ) : null}
 
         {/* Canvas 2: Countdown (shifted, startY=1144, height=296) */}
+        {isSectionActive(sectionInvite, "countdown") ? (
         <Section 
           startY={1144} 
           height={296}
@@ -687,8 +697,11 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
             </>
           )}
         </Section>
+        ) : null}
 
         {/* Canvas 3: Celebrations Title (shifted, startY=1440, height=100) */}
+        {isSectionActive(sectionInvite, "celebrations") ? (
+        <>
         <Section startY={1440} height={100}>
           {({ textLayer }) => (
             <>
@@ -786,8 +799,11 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
             );
           })}
         </div>
+        </>
+        ) : null}
 
         {/* Canvas 6: Dress Code (shifted, startY=2790, height=430) */}
+        {isSectionActive(sectionInvite, "dress-code") ? (
         <Section 
           startY={2790} 
           height={430}
@@ -797,12 +813,14 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
             <>
               {textLayer({ left: 85, top: 2790, width: 260, fontSize: 22, family: "Cormorant Infant, serif", color: blue, align: "center", letterSpacing: "0.05em", children: "Dress Code" })}
               {textLayer({ left: 85, top: 2820, width: 260, fontSize: 22, family: "Gulzar, serif", color: blue, align: "center", children: "التبديلة" })}
-              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", children: invite.dressCodeText || "We Request Attending The Outeya\nWith A Traditional Attire" })}
+              {textLayer({ left: 85, top: 3100, width: 260, fontSize: 14, family: "Cormorant, serif", color: "#49606B", align: "center", weight: 400, wordSpacing: "0.15em", children: getInviteText(invite, "dressCodeText", "We Request Attending The Outeya\nWith A Traditional Attire") })}
             </>
           )}
         </Section>
+        ) : null}
 
         {/* Canvas 7: Programme (shifted, startY=3220, height=430) */}
+        {isSectionActive(sectionInvite, "programme") ? (
         <Section 
           startY={3220} 
           height={430}
@@ -889,9 +907,10 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
             </>
           )}
         </Section>
+        ) : null}
 
         {/* Canvas 8: RSVP (shifted, startY=3650, height=560) */}
-        {invite.rsvpEnabled !== false ? (
+        {isSectionActive(sectionInvite, "rsvp") ? (
           <Section startY={3650} height={560}>
             {({ absoluteBox, textLayer }) => (
               <>

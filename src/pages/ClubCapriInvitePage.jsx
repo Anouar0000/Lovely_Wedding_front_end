@@ -2,6 +2,9 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "re
 import templateConfig from "../data/digital/templates/club-capri.json";
 import { submitRsvpResponse } from "../services/rsvp";
 import { isFirebaseConfigured } from "../lib/firebase";
+import { isSectionActive } from "../templates/digitalInviteSections";
+import { getInviteText } from "../templates/digitalInviteTexts";
+import { getInviteMedia } from "../templates/digitalInviteMedia";
 
 import heroSea from "../assets/digital/club-capri/hero-sea.png";
 import cassette from "../assets/digital/club-capri/cassette-cut.png";
@@ -84,6 +87,14 @@ const splitNames = (coupleNames) => {
 };
 
 function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
+  const sectionInvite = {
+    ...invite,
+    template: invite?.template || templateConfig.id,
+  };
+  const showIntro = isSectionActive(sectionInvite, "intro");
+  const showCelebrations = isSectionActive(sectionInvite, "celebrations");
+  const showDressCode = isSectionActive(sectionInvite, "dress-code");
+  const showRsvp = isSectionActive(sectionInvite, "rsvp");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -92,18 +103,27 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
   const [rsvpStatus, setRsvpStatus] = useState("");
   const [rsvpError, setRsvpError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(Boolean(previewMode));
   const [musicPlaying, setMusicPlaying] = useState(false);
   const musicPlayerRef = useRef(null);
   const canvasRef = useRef(null);
   const countdownRef = useRef(null);
   const countdownAnimated = useRef(false);
   const countdownLatest = useRef(getCountdown(invite.eventDate));
-  const musicUrl = invite.musicUrl || defaultInvite.musicUrl || "";
+  const musicUrl =
+    getInviteMedia(invite, "musicUrl", "") ||
+    invite.musicUrl ||
+    defaultInvite.musicUrl ||
+    "";
+  const heroImageSrc = getInviteMedia(invite, "heroImage", heroSea);
+  const celebrationPhoto1Src = getInviteMedia(invite, "celebrationPhoto1", photoWedding);
+  const celebrationPhoto2Src = getInviteMedia(invite, "celebrationPhoto2", photoHenna);
+  const dressCodePhotoSrc = getInviteMedia(invite, "dressCodePhoto", family);
 
   // Scale canvas 430px → largeur téléphone (évite overflow / inclinaison)
+  // En previewMode le parent (éditeur) gère déjà le scale — rester à 1.
   const [scale, setScale] = useState(() => {
-    if (typeof window === "undefined") return 1;
+    if (previewMode || typeof window === "undefined") return 1;
     const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
     return w > 0 && w < PAGE_W ? w / PAGE_W : 1;
   });
@@ -125,6 +145,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
   }, [countdown]);
 
   useEffect(() => {
+    if (previewMode) return undefined;
     const html = document.documentElement;
     const body = document.body;
     const root = document.getElementById("root");
@@ -145,9 +166,13 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
       html.style.overflowX = prev.htmlOverflowX;
       body.style.overflowX = prev.bodyOverflowX;
     };
-  }, []);
+  }, [previewMode]);
 
   useLayoutEffect(() => {
+    if (previewMode) {
+      setScale(1);
+      return undefined;
+    }
     const updateScale = () => {
       const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
       setScale(w > 0 && w < PAGE_W ? w / PAGE_W : 1);
@@ -159,19 +184,34 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
       window.removeEventListener("resize", updateScale);
       window.removeEventListener("orientationchange", updateScale);
     };
-  }, []);
+  }, [previewMode]);
+
+  const activeSectionsKey = Array.isArray(invite?.activeSections)
+    ? invite.activeSections.join("|")
+    : "";
 
   useLayoutEffect(() => {
     const el = canvasRef.current;
     if (!el) return undefined;
-    const measure = () => setContentH(el.scrollHeight || el.offsetHeight || 3200);
+    const measure = () => {
+      const next = el.scrollHeight || el.offsetHeight || 3200;
+      setContentH(next);
+    };
     measure();
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
     ro?.observe(el);
-    return () => ro?.disconnect();
-  }, [entered]);
+    // Remesure après images / layout des blocs ON/OFF
+    const t1 = window.setTimeout(measure, 50);
+    const t2 = window.setTimeout(measure, 250);
+    return () => {
+      ro?.disconnect();
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [entered, activeSectionsKey, invite?.coupleNames, invite?.eventDate]);
 
   useEffect(() => {
+    if (previewMode) return undefined;
     if (!entered) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
@@ -182,15 +222,25 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
     }
     window.scrollTo(0, 0);
     return undefined;
-  }, [entered]);
+  }, [entered, previewMode]);
 
   // Scroll reveal — same pattern as Sakura
+  // En previewMode : tout visible tout de suite (le scroll est dans le mockup, pas la fenêtre).
   useEffect(() => {
     if (!entered) return undefined;
-    const nodes = document.querySelectorAll(".lw-capri-reveal");
+    const root = canvasRef.current;
+    const nodes = root
+      ? root.querySelectorAll(".lw-capri-reveal")
+      : document.querySelectorAll(".lw-capri-reveal");
     if (!nodes.length) return undefined;
 
     const reveal = (el) => el.classList.add("is-in");
+
+    if (previewMode) {
+      nodes.forEach(reveal);
+      return undefined;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -214,7 +264,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
     });
 
     return () => observer.disconnect();
-  }, [entered]);
+  }, [entered, previewMode, activeSectionsKey]);
 
   // Countdown tick
   useEffect(() => {
@@ -273,14 +323,23 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
     return () => observer.disconnect();
   }, [entered]);
 
+  const splitAddress = (value, fallback) =>
+    String(value || fallback)
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
   const celebrations = [
     {
       label: "wedding",
       postcardTitle: postcardTitle1Svg,
       labelSvg: weddingTitleSvg,
       labelW: 110,
-      addressLines: ["Dar Bouraoui Carthage", "Malaga", "18h"],
-      image: photoWedding,
+      addressLines: splitAddress(
+        getInviteText(invite, "celebrationAddress1", "Dar Bouraoui Carthage\nMalaga\n18h"),
+        "Dar Bouraoui Carthage\nMalaga\n18h"
+      ),
+      image: celebrationPhoto1Src,
       postmark: postmark1Svg,
       stampA: stampSunImg,
       stampB: stampCapriImg,
@@ -290,8 +349,11 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
       postcardTitle: postcardTitle2Svg,
       labelSvg: hennaTitleSvg,
       labelW: 79,
-      addressLines: ["Dar Bouraoui Carthage", "Malaga", "18h"],
-      image: photoHenna,
+      addressLines: splitAddress(
+        getInviteText(invite, "celebrationAddress2", "Dar Bouraoui Carthage\nMalaga\n18h"),
+        "Dar Bouraoui Carthage\nMalaga\n18h"
+      ),
+      image: celebrationPhoto2Src,
       postmark: postmark2Svg,
       stampA: stampCocktailImg,
       stampB: stampCapriImg,
@@ -385,7 +447,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
       <section className="relative h-[601px] overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src={heroSea}
+            src={heroImageSrc}
             alt=""
             className="absolute left-0 top-0 h-[601px] w-[430px] max-w-none object-cover"
             draggable={false}
@@ -470,6 +532,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
       </section>
 
       {/* Join us + The Day — Figma absolute (offset from hero end y:601) */}
+      {showIntro ? (
       <section className="relative z-10 overflow-hidden" style={{ height: 744 }}>
         {/* Join us in — y:626 → top:25, box 148×46, SVG 78×22 */}
         <div
@@ -498,7 +561,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           className="lw-capri-reveal absolute left-[102px] top-[114px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]"
           style={{ ["--lw-reveal-delay"]: "0.3s" }}
         >
-          {fixedText.inviteText}
+          {getInviteText(invite, "inviteText", fixedText.inviteText)}
         </p>
 
         {/* Arrow — y:787 → top:186 */}
@@ -548,10 +611,17 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           draggable={false}
         />
       </section>
+      ) : null}
 
-      {/* Celebrations — Figma y:1246 (overlap bateau : -99px after section y:1345)
-          Gap postcard bas (1631+255=1886) → Dress Code (2005) = 119px */}
-      <section className="relative z-10 overflow-hidden" style={{ marginTop: -99, paddingBottom: 119 }}>
+      {/* Celebrations — overlap bateau (-99) seulement si intro est visible */}
+      {showCelebrations ? (
+      <section
+        className="relative z-10 overflow-hidden"
+        style={{
+          marginTop: showIntro ? -99 : 48,
+          paddingBottom: showDressCode || showRsvp ? 119 : 48,
+        }}
+      >
         {/* Rayures gauches — Figma y:1396 → top:150, x:-324 */}
         <img
           src={stripesLeft}
@@ -662,9 +732,11 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           ))}
         </div>
       </section>
+      ) : null}
 
       {/* Dress code — Figma y:2005–2416 (relative tops from 2005) */}
-      <section className="relative overflow-hidden" style={{ height: 411 }}>
+      {showDressCode ? (
+      <section className="relative overflow-hidden" style={{ height: 411, marginTop: showCelebrations || showIntro ? 0 : 24 }}>
         {/* Dress Code — y:2005 → top:0, box 148×46, SVG 94×19 */}
         <div
           className="lw-capri-reveal absolute left-[141px] top-0 z-[2] flex h-[46px] w-[148px] items-center justify-center"
@@ -678,16 +750,23 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           className="lw-capri-reveal absolute left-[89px] top-[41px] z-[2] flex h-[42px] w-[253px] items-center justify-center"
           style={{ ["--lw-reveal-delay"]: "0.16s" }}
         >
-          {(invite.dressCode || defaultInvite.dressCode || "").toLowerCase() === "casual chic" ? (
-            <img src={casualChicTitleSvg} alt="casual chic" className="block h-[28px] w-[239px]" draggable={false} />
-          ) : (
-            <h2
-              className="text-[28px] lowercase leading-none tracking-[0.02em]"
-              style={{ fontFamily: F.serif, fontWeight: 300 }}
-            >
-              {invite.dressCode || defaultInvite.dressCode}
-            </h2>
-          )}
+          {(() => {
+            const dress = getInviteText(
+              invite,
+              "dressCode",
+              invite.dressCode || defaultInvite.dressCode || "casual chic"
+            );
+            return dress.toLowerCase() === "casual chic" ? (
+              <img src={casualChicTitleSvg} alt="casual chic" className="block h-[28px] w-[239px]" draggable={false} />
+            ) : (
+              <h2
+                className="text-[28px] lowercase leading-none tracking-[0.02em]"
+                style={{ fontFamily: F.serif, fontWeight: 300 }}
+              >
+                {dress}
+              </h2>
+            );
+          })()}
         </div>
 
         {/* Invite copy — y:2094 → top:89, 226×57 */}
@@ -695,21 +774,24 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           className="lw-capri-reveal absolute left-[102px] top-[89px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]"
           style={{ ["--lw-reveal-delay"]: "0.28s" }}
         >
-          {fixedText.inviteText}
+          {getInviteText(invite, "inviteText", fixedText.inviteText)}
         </p>
 
         {/* Family — y:2138 → top:133, 270×278 */}
         <img
-          src={family}
+          src={dressCodePhotoSrc}
           alt=""
           className="lw-capri-reveal absolute left-[80px] top-[133px] z-[2] h-[278px] w-[270px] object-cover"
           style={{ ["--lw-reveal-delay"]: "0.4s" }}
           draggable={false}
         />
       </section>
+      ) : null}
 
-      {/* Arrival & RSVP — Figma y:2422–2619, 6px sous la photo (section dress code finit à y:2416) */}
-      <section className="relative overflow-hidden" style={{ height: 203 }}>
+      {/* Arrival & RSVP — Figma y:2422–2619 */}
+      {showRsvp ? (
+      <>
+      <section className="relative overflow-hidden" style={{ height: 203, marginTop: showDressCode ? 0 : 24 }}>
         {/* Arrival — y:2422 → top:6, box 148×46, SVG 71×19 */}
         <div
           className="lw-capri-reveal absolute left-[141px] top-[6px] z-[2] flex h-[46px] w-[148px] items-center justify-center"
@@ -731,7 +813,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           className="lw-capri-reveal absolute left-[102px] top-[95px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]"
           style={{ ["--lw-reveal-delay"]: "0.28s" }}
         >
-          {fixedText.rsvpDeadline}
+          {getInviteText(invite, "rsvpDeadline", fixedText.rsvpDeadline)}
         </p>
       </section>
 
@@ -867,6 +949,8 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           </div>
         </div>
       </section>
+      </>
+      ) : null}
 
       {/* Footer — Figma y:3227–3454. Bouée y:3239, titre y:3320, rayures y:3339 */}
       <footer className="relative overflow-hidden" style={{ height: 227 }}>

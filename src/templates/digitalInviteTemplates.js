@@ -10,6 +10,14 @@ import sakuraKoiTemplate from "../data/digital/templates/sakura-koi.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
 import majesticWhiteTemplate from "../data/digital/templates/majestic-white.json";
+import {
+  TEMPLATE_SECTIONS,
+  getDefaultActiveSections,
+  getTemplateSections,
+  isSectionActive,
+  toggleInviteSection,
+  withActiveSections,
+} from "./digitalInviteSections";
 
 export const DIGITAL_TEMPLATE_IDS = {
   DOLCE_VITA: dolceVitaTemplate.id,
@@ -20,13 +28,21 @@ export const DIGITAL_TEMPLATE_IDS = {
   MAJESTIC_WHITE: majesticWhiteTemplate.id,
 };
 
+export {
+  getDefaultActiveSections,
+  getTemplateSections,
+  isSectionActive,
+  toggleInviteSection,
+};
+
 export const digitalInviteTemplates = [
   {
     id: clubCapriTemplate.id,
     label: clubCapriTemplate.label,
     description: clubCapriTemplate.description,
     Component: ClubCapriInvitePage,
-    defaults: clubCapriTemplate.sample,
+    defaults: withActiveSections(clubCapriTemplate.sample, clubCapriTemplate.id),
+    sections: TEMPLATE_SECTIONS[clubCapriTemplate.id],
     fixedTimelineSteps: clubCapriTemplate.fixedTimelineSteps || [],
   },
   {
@@ -34,7 +50,8 @@ export const digitalInviteTemplates = [
     label: sakuraKoiTemplate.label,
     description: sakuraKoiTemplate.description,
     Component: SakuraKoiInvitePage,
-    defaults: sakuraKoiTemplate.sample,
+    defaults: withActiveSections(sakuraKoiTemplate.sample, sakuraKoiTemplate.id),
+    sections: TEMPLATE_SECTIONS[sakuraKoiTemplate.id],
     fixedTimelineSteps: sakuraKoiTemplate.fixedTimelineSteps || [],
   },
   {
@@ -42,7 +59,11 @@ export const digitalInviteTemplates = [
     label: bridgertonTemplate.label,
     description: bridgertonTemplate.description,
     Component: BridgertonInvitePage,
-    defaults: bridgertonTemplate.sample || bridgertonTemplate.defaults,
+    defaults: withActiveSections(
+      bridgertonTemplate.sample || bridgertonTemplate.defaults,
+      bridgertonTemplate.id
+    ),
+    sections: TEMPLATE_SECTIONS[bridgertonTemplate.id],
     fixedTimelineSteps: bridgertonTemplate.fixedTimelineSteps || [],
   },
   {
@@ -50,7 +71,11 @@ export const digitalInviteTemplates = [
     label: majesticWhiteTemplate.label,
     description: majesticWhiteTemplate.description,
     Component: MajesticWhiteInvitePage,
-    defaults: majesticWhiteTemplate.sample || majesticWhiteTemplate.defaults,
+    defaults: withActiveSections(
+      majesticWhiteTemplate.sample || majesticWhiteTemplate.defaults,
+      majesticWhiteTemplate.id
+    ),
+    sections: TEMPLATE_SECTIONS[majesticWhiteTemplate.id],
     fixedTimelineSteps: majesticWhiteTemplate.fixedTimelineSteps || [],
   },
   {
@@ -58,7 +83,11 @@ export const digitalInviteTemplates = [
     label: dolceVitaTemplate.label,
     description: dolceVitaTemplate.description,
     Component: DolceVitaInvitePage,
-    defaults: dolceVitaTemplate.defaults || dolceVitaTemplate.sample,
+    defaults: withActiveSections(
+      dolceVitaTemplate.defaults || dolceVitaTemplate.sample,
+      dolceVitaTemplate.id
+    ),
+    sections: TEMPLATE_SECTIONS[dolceVitaTemplate.id],
     fixedTimelineSteps: dolceVitaTemplate.fixedTimelineSteps,
   },
   {
@@ -66,7 +95,11 @@ export const digitalInviteTemplates = [
     label: sidiBouSaidTemplate.label,
     description: sidiBouSaidTemplate.description,
     Component: SidiBouSaidInvitePage,
-    defaults: sidiBouSaidTemplate.defaults || sidiBouSaidTemplate.sample,
+    defaults: withActiveSections(
+      sidiBouSaidTemplate.defaults || sidiBouSaidTemplate.sample,
+      sidiBouSaidTemplate.id
+    ),
+    sections: TEMPLATE_SECTIONS[sidiBouSaidTemplate.id],
     fixedTimelineSteps: sidiBouSaidTemplate.fixedTimelineSteps,
   },
 ];

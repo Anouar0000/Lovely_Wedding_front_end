@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../components/audio/AudioPlayer";
 import ParticleEmitter from "../components/animations/ParticleEmitter";
 import templateConfig from "../data/digital/templates/majestic-white.json";
+import {
+  absolutePackLayerStyle,
+  getAbsoluteSectionPacking,
+  isSectionActive,
+} from "../templates/digitalInviteSections";
+import { getInviteText } from "../templates/digitalInviteTexts";
+import { getInviteMedia } from "../templates/digitalInviteMedia";
 
 // Assets for Majestic White Template
 import heroBg from "../assets/digital/majestic-white/hero-bg.png";
@@ -31,6 +38,18 @@ import footerNamesSvg from "../assets/digital/majestic-white/svg_text/footer-nam
 
 const CANVAS_WIDTH = 430;
 const CANVAS_HEIGHT = 4130;
+
+const MAJESTIC_PACK_RANGES = [
+  { id: "hero", y0: 0, y1: 654 },
+  { id: "our-story", y0: 654, y1: 1174 },
+  { id: "countdown", y0: 1174, y1: 1503 },
+  { id: "formal-invite", y0: 1503, y1: 2081 },
+  { id: "celebrations", y0: 2081, y1: 2636 },
+  { id: "timeline", y0: 2636, y1: 3069 },
+  { id: "leave-a-message", y0: 3069, y1: 3371 },
+  { id: "rsvp", y0: 3371, y1: 3869 },
+  { id: "footer", y0: 3869, y1: CANVAS_HEIGHT },
+];
 
 // Colors
 const COLOR_WHITE = "#FFFFFF";
@@ -62,6 +81,13 @@ export default function MajesticWhiteInvitePage({
   selectedElementId = null,
 }) {
   const currentInvite = invite || templateConfig.sample;
+  const sectionInvite = {
+    ...currentInvite,
+    template: currentInvite?.template || templateConfig.id,
+  };
+  const { shifts: packShifts, packedHeight, collapsed: packCollapsed } =
+    getAbsoluteSectionPacking(sectionInvite, MAJESTIC_PACK_RANGES);
+  const showAmbientPearls = packCollapsed === 0;
   const overrides = currentInvite.styleOverrides || {};
 
   const getText = (id, fallback) => {
@@ -209,6 +235,7 @@ export default function MajesticWhiteInvitePage({
   const storyImgSrc =
     overrides["story-photo"]?.image ||
     overrides["story-photo"]?.url ||
+    getInviteMedia(currentInvite, "storyPhoto", "") ||
     currentInvite.storyPhoto ||
     storyPhotoDefault;
 
@@ -227,9 +254,9 @@ export default function MajesticWhiteInvitePage({
       }}
     >
       {/* Music Player if configured */}
-      {currentInvite.musicUrl && (
+      {getInviteMedia(currentInvite, "musicUrl", "") && (
         <AudioPlayer
-          musicUrl={currentInvite.musicUrl}
+          musicUrl={getInviteMedia(currentInvite, "musicUrl", "")}
           autoPlay={!editable}
           themeColor="#977F6D"
         />
@@ -239,7 +266,7 @@ export default function MajesticWhiteInvitePage({
       <div
         style={{
           width: editable ? `${CANVAS_WIDTH}px` : `${CANVAS_WIDTH * scale}px`,
-          height: editable ? `${CANVAS_HEIGHT}px` : `${CANVAS_HEIGHT * scale}px`,
+          height: editable ? `${packedHeight}px` : `${packedHeight * scale}px`,
           position: "relative",
           display: "flex",
           justifyContent: "center",
@@ -251,7 +278,7 @@ export default function MajesticWhiteInvitePage({
           style={{
             position: "relative",
             width: `${CANVAS_WIDTH}px`,
-            height: `${CANVAS_HEIGHT}px`,
+            height: `${packedHeight}px`,
             backgroundColor: COLOR_WHITE,
             overflow: "hidden",
             boxShadow: editable ? "none" : "0 30px 80px rgba(0,0,0,0.12)",
@@ -289,7 +316,7 @@ export default function MajesticWhiteInvitePage({
             })}
           />
 
-          {/* Global Soft Background Gradient (y: 652 to 4186, 430 x 3534) */}
+          {/* Global Soft Background Gradient (y: 652 to packed bottom) */}
           <img
             src={bgGradient}
             alt=""
@@ -297,15 +324,17 @@ export default function MajesticWhiteInvitePage({
               x: 0,
               y: 652,
               width: 430,
-              height: 3534,
+              height: Math.max(0, packedHeight - 652),
               zIndex: 1,
               extra: { pointerEvents: "none" },
             })}
           />
 
           {/* =========================================================================
-              DECORATIVE SCATTERED PEARLS (z-index 2)
+              DECORATIVE SCATTERED PEARLS (z-index 2) — hidden while blocs are packed
               ========================================================================= */}
+          {showAmbientPearls ? (
+            <>
           {/* Pearl 1 (Right, Our Story - y: 644, x: 323, 159 x 285) */}
           <img
             src={pearlRight}
@@ -403,6 +432,8 @@ export default function MajesticWhiteInvitePage({
               extra: { pointerEvents: "none" },
             })}
           />
+            </>
+          ) : null}
 
           {/* =========================================================================
               SECTION 1: HERO (y: 0 - 654)
@@ -488,6 +519,8 @@ export default function MajesticWhiteInvitePage({
           {/* =========================================================================
               SECTION 2: OUR STORY (y: 654 - 1174)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "our-story") ? (
+          <div style={absolutePackLayerStyle(packShifts["our-story"], CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Title: "Our Story" (y: 709, x: 141, 148 x 46) */}
           <div
             id="preview-el-story-title"
@@ -521,7 +554,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["story-title"]?.fontFamily ? (
               <img src={ourStoryTitleSvg} alt="Our Story" style={{ width: 111, height: 41, display: "block" }} />
             ) : (
-              getText("story-title", currentInvite.storyTitle || "Our Story")
+              getText("story-title", getInviteText(currentInvite, "storyTitle", "Our Story"))
             )}
           </div>
 
@@ -557,8 +590,11 @@ export default function MajesticWhiteInvitePage({
           >
             {getText(
               "story-text",
-              currentInvite.storyText ||
+              getInviteText(
+                currentInvite,
+                "storyText",
                 "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas\nRerum Qui. Non R Numquam Molestiae Vero\nDolores Dolores. Dolor Ut Sit Quos\nAccusantium Vitae Aliquid Ducimus"
+              )
             )}
           </div>
 
@@ -601,10 +637,14 @@ export default function MajesticWhiteInvitePage({
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           </div>
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 3: COUNTDOWN (y: 1174 - 1503)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "countdown") ? (
+          <div style={absolutePackLayerStyle(packShifts.countdown, CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Background Banner (y: 1174, x: 0, 430 x 261) */}
           <img
             src={countdownBg}
@@ -652,7 +692,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["countdown-title"]?.fontFamily ? (
               <img src={countdownTitleSvg} alt="Countdown" style={{ width: 107, height: 30, display: "block" }} />
             ) : (
-              getText("countdown-title", currentInvite.countdownTitle || "Countdown")
+              getText("countdown-title", getInviteText(currentInvite, "countdownTitle", "Countdown"))
             )}
           </div>
 
@@ -777,10 +817,14 @@ export default function MajesticWhiteInvitePage({
               Minutes
             </div>
           </div>
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 4: FORMAL INVITE & ENVELOPE (y: 1503 - 2081)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "formal-invite") ? (
+          <div style={absolutePackLayerStyle(packShifts["formal-invite"], CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Title: "Formal Invite" (y: 1503, x: 135, 161 x 46) */}
           <div
             id="preview-el-formal-invite-title"
@@ -814,7 +858,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["formal-invite-title"]?.fontFamily ? (
               <img src={formalInviteTitleSvg} alt="Formal Invite" style={{ width: 171, height: 30, display: "block" }} />
             ) : (
-              getText("formal-invite-title", currentInvite.formalInviteTitle || "Formal Invite")
+              getText("formal-invite-title", getInviteText(currentInvite, "formalInviteTitle", "Formal Invite"))
             )}
           </div>
 
@@ -872,10 +916,14 @@ export default function MajesticWhiteInvitePage({
               extra: { objectFit: "cover", pointerEvents: "none" },
             })}
           />
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 5: CELEBRATIONS (y: 2081 - 2636)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "celebrations") ? (
+          <div style={absolutePackLayerStyle(packShifts.celebrations, CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Title: "Celebrations" (y: 2081, x: 141, 148 x 46) */}
           <div
             id="preview-el-celebrations-title"
@@ -909,7 +957,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["celebrations-title"]?.fontFamily ? (
               <img src={celebrationsTitleSvg} alt="Celebrations" style={{ width: 113, height: 30, display: "block" }} />
             ) : (
-              getText("celebrations-title", currentInvite.celebrationsTitle || "Celebrations")
+              getText("celebrations-title", getInviteText(currentInvite, "celebrationsTitle", "Celebrations"))
             )}
           </div>
 
@@ -944,8 +992,11 @@ export default function MajesticWhiteInvitePage({
           >
             {getText(
               "celebrations-subtitle",
-              currentInvite.celebrationsSubtitle ||
+              getInviteText(
+                currentInvite,
+                "celebrationsSubtitle",
                 "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas"
+              )
             )}
           </div>
 
@@ -978,7 +1029,7 @@ export default function MajesticWhiteInvitePage({
               },
             })}
           >
-            {getText("celebration1-title", currentInvite.celebration1Title || "Club Nautique")}
+            {getText("celebration1-title", getInviteText(currentInvite, "celebration1Title", "Club Nautique"))}
           </div>
 
           {/* Event 1 Address / Time: "Les Berges Du Lac 1 \nÀ 18h" (y: 2235, x: 136, 159 x 59) */}
@@ -1011,7 +1062,7 @@ export default function MajesticWhiteInvitePage({
               },
             })}
           >
-            {getText("celebration1-address", currentInvite.celebration1Address || "Les Berges Du Lac 1\nÀ 18h")}
+            {getText("celebration1-address", getInviteText(currentInvite, "celebration1Address", "Les Berges Du Lac 1\nÀ 18h"))}
           </div>
 
           {/* Event 1 Button: "Open In Maps" (y: 2289, x: 136, 158 x 45) */}
@@ -1082,8 +1133,11 @@ export default function MajesticWhiteInvitePage({
           >
             {getText(
               "celebration2-subtitle",
-              currentInvite.celebration2Subtitle ||
+              getInviteText(
+                currentInvite,
+                "celebration2Subtitle",
                 "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas"
+              )
             )}
           </div>
 
@@ -1116,7 +1170,7 @@ export default function MajesticWhiteInvitePage({
               },
             })}
           >
-            {getText("celebration2-title", currentInvite.celebration2Title || "Club Nautique")}
+            {getText("celebration2-title", getInviteText(currentInvite, "celebration2Title", "Club Nautique"))}
           </div>
 
           {/* Event 2 Address / Time: "Les Berges Du Lac 1 \nÀ 18h" (y: 2461, x: 136, 159 x 59) */}
@@ -1149,7 +1203,7 @@ export default function MajesticWhiteInvitePage({
               },
             })}
           >
-            {getText("celebration2-address", currentInvite.celebration2Address || "Les Berges Du Lac 1\nÀ 18h")}
+            {getText("celebration2-address", getInviteText(currentInvite, "celebration2Address", "Les Berges Du Lac 1\nÀ 18h"))}
           </div>
 
           {/* Event 2 Button: "Open In Maps" (y: 2515, x: 136, 158 x 45) */}
@@ -1187,10 +1241,14 @@ export default function MajesticWhiteInvitePage({
           >
             Open In Maps
           </a>
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 6: TIMELINE (y: 2636 - 3069)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "timeline") ? (
+          <div style={absolutePackLayerStyle(packShifts.timeline, CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Title: "Timeline" (y: 2636, x: 141, 148 x 46) */}
           <div
             id="preview-el-timeline-title"
@@ -1224,7 +1282,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["timeline-title"]?.fontFamily ? (
               <img src={timelineTitleSvg} alt="Timeline" style={{ width: 96, height: 30, display: "block" }} />
             ) : (
-              getText("timeline-title", currentInvite.timelineTitle || "Timeline")
+              getText("timeline-title", getInviteText(currentInvite, "timelineTitle", "Timeline"))
             )}
           </div>
 
@@ -1260,8 +1318,11 @@ export default function MajesticWhiteInvitePage({
           >
             {getText(
               "timeline-subtitle",
-              currentInvite.timelineSubtitle ||
+              getInviteText(
+                currentInvite,
+                "timelineSubtitle",
                 "Voluptatum Non Fugiat Qui Ab Non.\nAt Ut Quasi Dolorum Numquam Voluptas"
+              )
             )}
           </div>
 
@@ -1277,10 +1338,14 @@ export default function MajesticWhiteInvitePage({
               zIndex: 3,
             })}
           />
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 7: LEAVE A MESSAGE (y: 3069 - 3371)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "leave-a-message") ? (
+          <div style={absolutePackLayerStyle(packShifts["leave-a-message"], CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Title: "Leave a message" (y: 3069, x: 141, 148 x 46) */}
           <div
             id="preview-el-message-title"
@@ -1314,7 +1379,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["message-title"]?.fontFamily ? (
               <img src={leaveAMessageTitleSvg} alt="Leave a message" style={{ width: 151, height: 41, display: "block" }} />
             ) : (
-              getText("message-title", currentInvite.messageTitle || "Leave a message")
+              getText("message-title", getInviteText(currentInvite, "messageTitle", "Leave a message"))
             )}
           </div>
 
@@ -1349,7 +1414,7 @@ export default function MajesticWhiteInvitePage({
           >
             {getText(
               "message-subtitle",
-              currentInvite.messageSubtitle || "Leave A Heartfelt Message To The Brides"
+              getInviteText(currentInvite, "messageSubtitle", "Leave A Heartfelt Message To The Brides")
             )}
           </div>
 
@@ -1416,10 +1481,14 @@ export default function MajesticWhiteInvitePage({
               </button>
             )}
           </div>
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 8: RSVP (y: 3371 - 3869)
               ========================================================================= */}
+          {isSectionActive(sectionInvite, "rsvp") ? (
+          <div style={absolutePackLayerStyle(packShifts.rsvp, CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Title: "RSVP" (y: 3371, x: 141, 148 x 46) */}
           <div
             id="preview-el-rsvp-title"
@@ -1453,7 +1522,7 @@ export default function MajesticWhiteInvitePage({
             !overrides["rsvp-title"]?.fontFamily ? (
               <img src={rsvpTitleSvg} alt="RSVP" style={{ width: 114, height: 28, display: "block" }} />
             ) : (
-              getText("rsvp-title", currentInvite.rsvpTitle || "RSVP")
+              getText("rsvp-title", getInviteText(currentInvite, "rsvpTitle", "RSVP"))
             )}
           </div>
 
@@ -1661,10 +1730,13 @@ export default function MajesticWhiteInvitePage({
           >
             {rsvpSubmitting ? "Envoi..." : rsvpSuccess ? "Confirmé ✓" : "Send"}
           </button>
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 9: FOOTER (y: 3869 - 4130)
               ========================================================================= */}
+          <div style={absolutePackLayerStyle(packShifts.footer, CANVAS_WIDTH, CANVAS_HEIGHT)}>
           {/* Footer Background: Ballroom Chandelier Aisle (y: 3869, x: 0, 430 x 261) */}
           <img
             src={footerBg}
@@ -1715,6 +1787,7 @@ export default function MajesticWhiteInvitePage({
             ) : (
               getText("footer-names", currentInvite.footerCoupleNames || coupleNames)
             )}
+          </div>
           </div>
         </div>
       </div>

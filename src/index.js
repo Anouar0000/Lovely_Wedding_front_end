@@ -3,6 +3,19 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { isAbortError } from './lib/firebase';
+
+// Capture-phase: block CRA overlay for expected Firebase abort/teardown noise.
+window.addEventListener(
+  'unhandledrejection',
+  (event) => {
+    if (isAbortError(event.reason)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  },
+  true
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

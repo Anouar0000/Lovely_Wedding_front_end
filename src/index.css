@@ -143,7 +143,7 @@ body.hide-scrollbar::-webkit-scrollbar,
   --lw-half: 91px; /* demi-carte */
   /* Position initiale avant anim : même que 0% (étape 1) */
   transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
-  animation: lw-hero-rail 30s ease-in-out infinite;
+  animation: lw-hero-rail 16s ease-in-out infinite;
   will-change: transform;
 }
 

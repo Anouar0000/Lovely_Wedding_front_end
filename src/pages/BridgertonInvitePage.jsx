@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../components/audio/AudioPlayer";
 import ParticleEmitter from "../components/animations/ParticleEmitter";
 import templateConfig from "../data/digital/templates/bridgerton.json";
+import {
+  absolutePackLayerStyle,
+  getAbsoluteSectionPacking,
+  isSectionActive,
+} from "../templates/digitalInviteSections";
+import { getInviteText } from "../templates/digitalInviteTexts";
+import { getInviteMedia } from "../templates/digitalInviteMedia";
 
 // Assets for Bridgerton Template
 import heroBg from "../assets/digital/bridgerton/hero-bg.png";
@@ -27,6 +34,17 @@ import laceSeal from "../assets/digital/bridgerton/lace-seal.svg";
 
 const CANVAS_WIDTH = 430;
 const CANVAS_HEIGHT = 3243;
+
+const BRIDGERTON_PACK_RANGES = [
+  { id: "hero", y0: 0, y1: 649 },
+  { id: "countdown", y0: 649, y1: 931 },
+  { id: "celebrations", y0: 931, y1: 1255 },
+  { id: "location", y0: 1255, y1: 1600 },
+  { id: "dress-code", y0: 1600, y1: 2146 },
+  { id: "leave-a-message", y0: 2146, y1: 2450 },
+  { id: "rsvp", y0: 2450, y1: 3034 },
+  { id: "footer", y0: 3034, y1: CANVAS_HEIGHT },
+];
 const COLOR_MAUVE = "#917F7F";
 const COLOR_OVERLAY = "rgba(200, 212, 208, 0.2)";
 const COLOR_WHITE = "#FFFFFF";
@@ -57,6 +75,14 @@ export default function BridgertonInvitePage({
   selectedElementId = null,
 }) {
   const currentInvite = invite || templateConfig.sample;
+  const sectionInvite = {
+    ...currentInvite,
+    template: currentInvite?.template || templateConfig.id,
+  };
+  const { shifts: packShifts, packedHeight } = getAbsoluteSectionPacking(
+    sectionInvite,
+    BRIDGERTON_PACK_RANGES
+  );
   const overrides = currentInvite.styleOverrides || {};
 
   const getText = (id, fallback) => {
@@ -419,7 +445,10 @@ export default function BridgertonInvitePage({
       `}</style>
 
       {/* Audio Player */}
-      <AudioPlayer src={currentInvite.musicUrl} active={Boolean(currentInvite.musicUrl)} />
+      <AudioPlayer
+        src={getInviteMedia(currentInvite, "musicUrl", "")}
+        active={Boolean(getInviteMedia(currentInvite, "musicUrl", ""))}
+      />
 
       {/* Scaled Canvas Container */}
       <div
@@ -428,12 +457,12 @@ export default function BridgertonInvitePage({
         style={{
           position: "relative",
           width: `${CANVAS_WIDTH}px`,
-          height: `${CANVAS_HEIGHT}px`,
+          height: `${packedHeight}px`,
           backgroundColor: currentInvite.backgroundColor || COLOR_WHITE,
           overflow: "hidden",
           transform: scale < 1 ? `scale(${scale})` : undefined,
           transformOrigin: "top center",
-          marginBottom: scale < 1 ? `-${(CANVAS_HEIGHT * (1 - scale))}px` : undefined,
+          marginBottom: scale < 1 ? `-${packedHeight * (1 - scale)}px` : undefined,
           boxShadow: "0 15px 40px rgba(0,0,0,0.12)",
         }}
       >
@@ -497,11 +526,11 @@ export default function BridgertonInvitePage({
               height: 421,
               zIndex: 3,
               extra: {
-                backgroundImage: `url(${overrides["hero-photo"]?.image || overrides["hero-photo"]?.url || currentInvite.heroPhoto || heroCouplePhoto})`,
+                backgroundImage: `url(${overrides["hero-photo"]?.image || overrides["hero-photo"]?.url || getInviteMedia(currentInvite, "heroPhoto", "") || heroCouplePhoto})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 overflow: "hidden",
-                opacity: (overrides["hero-photo"]?.image || overrides["hero-photo"]?.url || currentInvite.heroPhoto) ? 1 : 0.8,
+                opacity: (overrides["hero-photo"]?.image || overrides["hero-photo"]?.url || getInviteMedia(currentInvite, "heroPhoto", "")) ? 1 : 0.8,
               },
             })
           )}
@@ -563,9 +592,13 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "hero-quote",
-            (!currentInvite.heroQuote || currentInvite.heroQuote.includes("L'amour") || currentInvite.heroQuote.includes("quelqu'un"))
-              ? "Our Happy Ever After"
-              : currentInvite.heroQuote
+            getInviteText(
+              currentInvite,
+              "heroQuote",
+              (!currentInvite.heroQuote || currentInvite.heroQuote.includes("L'amour") || currentInvite.heroQuote.includes("quelqu'un"))
+                ? "Our Happy Ever After"
+                : currentInvite.heroQuote
+            )
           )}
         </div>
 
@@ -617,6 +650,8 @@ export default function BridgertonInvitePage({
         {/* =========================================================================
             SECTION 2: DATE & WAITING FOR YOU (649 - 931px)
            ========================================================================= */}
+        {isSectionActive(sectionInvite, "countdown") ? (
+        <div style={absolutePackLayerStyle(packShifts.countdown, CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1586:98 Date: 23 / 11 / 26 */}
         <div
           id="preview-el-event-date"
@@ -720,10 +755,14 @@ export default function BridgertonInvitePage({
             },
           })}
         />
+        </div>
+        ) : null}
 
         {/* =========================================================================
             SECTION 3: MIDDLE BANNER QUOTE (931 - 1255px)
            ========================================================================= */}
+        {isSectionActive(sectionInvite, "celebrations") ? (
+        <div style={absolutePackLayerStyle(packShifts.celebrations, CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1586:110 Middle Banner Background */}
         <div
           style={figmaBox({
@@ -780,7 +819,10 @@ export default function BridgertonInvitePage({
             })
           )}
         >
-          {getText("banner-quote", currentInvite.bannerQuote || "Join Us For The \nBest Day Ever")}
+          {getText(
+            "banner-quote",
+            getInviteText(currentInvite, "bannerQuote", "Join Us For The \nBest Day Ever")
+          )}
         </div>
 
         {/* #1586:111 Torn Paper 2 */}
@@ -796,10 +838,14 @@ export default function BridgertonInvitePage({
             extra: { pointerEvents: "none" },
           })}
         />
+        </div>
+        ) : null}
 
         {/* =========================================================================
             SECTION 4: WEDDING VENUE (1255 - 1600px)
            ========================================================================= */}
+        {isSectionActive(sectionInvite, "location") ? (
+        <div style={absolutePackLayerStyle(packShifts.location, CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1587:2004 Statue Doodle */}
         <img
           src={statueDoodle}
@@ -871,7 +917,11 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "venue-details",
-            currentInvite.venueDetails || "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H"
+            getInviteText(
+              currentInvite,
+              "venueDetails",
+              "Dar Bouraoui \nCarthage\nSalle Malaga\n18H - 20H"
+            )
           )}
         </div>
 
@@ -927,9 +977,9 @@ export default function BridgertonInvitePage({
               overflow: "hidden",
             }}
           >
-            {(overrides["venue-photo"]?.image || overrides["venue-photo"]?.url || currentInvite.venuePhoto) && (
+            {(overrides["venue-photo"]?.image || overrides["venue-photo"]?.url || getInviteMedia(currentInvite, "venuePhoto", "")) && (
               <img
-                src={overrides["venue-photo"]?.image || overrides["venue-photo"]?.url || currentInvite.venuePhoto}
+                src={overrides["venue-photo"]?.image || overrides["venue-photo"]?.url || getInviteMedia(currentInvite, "venuePhoto", "")}
                 alt="Venue"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -964,10 +1014,14 @@ export default function BridgertonInvitePage({
             extra: { pointerEvents: "none" },
           })}
         />
+        </div>
+        ) : null}
 
         {/* =========================================================================
             SECTION 5: DRESS CODE & TRANSPORT (1600 - 2100px)
            ========================================================================= */}
+        {isSectionActive(sectionInvite, "dress-code") ? (
+        <div style={absolutePackLayerStyle(packShifts["dress-code"], CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1586:95 Title: "Dress Code" */}
         <div
           id="preview-el-dress-title"
@@ -1023,9 +1077,13 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "dress-text",
-            (!currentInvite.dressCodeText || currentInvite.dressCodeText.includes("Outeya"))
-              ? "We'd love for guests to embrace a formal look for our celebration."
-              : currentInvite.dressCodeText
+            getInviteText(
+              currentInvite,
+              "dressCodeText",
+              (!currentInvite.dressCodeText || currentInvite.dressCodeText.includes("Outeya"))
+                ? "We'd love for guests to embrace a formal look for our celebration."
+                : currentInvite.dressCodeText
+            )
           )}
         </div>
 
@@ -1141,8 +1199,11 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "transport-text",
-            currentInvite.transportText ||
+            getInviteText(
+              currentInvite,
+              "transportText",
               "Parking: On-site parking will be available at the venue.\nTaxis: We recommend booking taxis in advance."
+            )
           )}
         </div>
 
@@ -1159,10 +1220,14 @@ export default function BridgertonInvitePage({
             extra: { pointerEvents: "none" },
           })}
         />
+        </div>
+        ) : null}
 
         {/* =========================================================================
             SECTION 6: LEAVE A MESSAGE / GUESTBOOK (2146 - 2450px)
            ========================================================================= */}
+        {isSectionActive(sectionInvite, "leave-a-message") ? (
+        <div style={absolutePackLayerStyle(packShifts["leave-a-message"], CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1587:3498 Message Banner Background */}
         <div
           style={figmaBox({
@@ -1248,7 +1313,10 @@ export default function BridgertonInvitePage({
             })
           )}
         >
-          {getText("message-subtitle", currentInvite.messagePrompt || "Leave a heartfelt message to the brides")}
+          {getText(
+            "message-subtitle",
+            getInviteText(currentInvite, "messagePrompt", "Leave a heartfelt message to the brides")
+          )}
         </div>
 
         {/* #1602:3 Message Input Box */}
@@ -1326,10 +1394,14 @@ export default function BridgertonInvitePage({
             extra: { pointerEvents: "none" },
           })}
         />
+        </div>
+        ) : null}
 
         {/* =========================================================================
             SECTION 7: RSVP FORM (2450 - 3000px)
            ========================================================================= */}
+        {isSectionActive(sectionInvite, "rsvp") ? (
+        <div style={absolutePackLayerStyle(packShifts.rsvp, CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1587:3520 Title: "RSVP" */}
         <div
           id="preview-el-rsvp-title"
@@ -1384,9 +1456,13 @@ export default function BridgertonInvitePage({
         >
           {getText(
             "rsvp-deadline",
-            (!currentInvite.rsvpDeadline || currentInvite.rsvpDeadline.toLowerCase().includes("fifteenth"))
-              ? "The favour of a reply is kindly requested by the 15th of June, 2026"
-              : currentInvite.rsvpDeadline
+            getInviteText(
+              currentInvite,
+              "rsvpDeadline",
+              (!currentInvite.rsvpDeadline || currentInvite.rsvpDeadline.toLowerCase().includes("fifteenth"))
+                ? "The favour of a reply is kindly requested by the 15th of June, 2026"
+                : currentInvite.rsvpDeadline
+            )
           )}
         </div>
 
@@ -1612,10 +1688,13 @@ export default function BridgertonInvitePage({
             </span>
           </button>
         </form>
+        </div>
+        ) : null}
 
         {/* =========================================================================
             SECTION 8: FOOTER MONOGRAM SEAL (3034 - 3214px)
            ========================================================================= */}
+        <div style={absolutePackLayerStyle(packShifts.footer, CANVAS_WIDTH, CANVAS_HEIGHT)}>
         {/* #1583:14 Lace 1 Frame */}
         <div
           id="preview-el-footer-names"
@@ -1666,6 +1745,7 @@ export default function BridgertonInvitePage({
           >
             {getText("footer-names", coupleText)}
           </div>
+        </div>
         </div>
       </div>
     </div>

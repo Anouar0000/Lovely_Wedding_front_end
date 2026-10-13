@@ -1,5 +1,5 @@
 import React from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { LuHeart } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../../context/FavoritesContext";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
@@ -9,30 +9,33 @@ const cards = [
   {
     title: "Sidi Bou Said",
     image: a.heroCoverSidi,
-    to: "/digital-invitation/sidi-bousaid",
+    to: "/invitations-digital/sidi-bousaid",
   },
   {
     title: "Celestial",
     image: a.heroCoverSakura,
-    to: "/digital-invitation/sakura-koi",
+    to: "/invitations-digital/celestial",
   },
   {
     title: "Bridgeton",
     image: a.heroCoverBridgerton,
-    to: "/digital-invitation/bridgerton",
+    to: "/invitations-digital/bridgerton",
   },
   {
     title: "Majestic White",
     image: a.heroCoverMajestic,
-    to: "/digital-invitation/majestic-white",
+    to: "/invitations-digital/majestic-white",
   },
 ];
 
-/** Figma phone — 78×168 mobile · un peu plus grand desktop */
+/** Figma Lucide heart */
+const heartProps = { size: 18, strokeWidth: 1.5, "aria-hidden": true };
+
+/** Figma phone — noir fin 78×168 · desktop un peu plus grand */
 function PhonePreview({ src, title }) {
   return (
-    <div className="relative mx-auto h-[168px] w-[78px] lg:h-[200px] lg:w-[94px]">
-      <div className="absolute inset-[4px] overflow-hidden rounded-[14px] bg-[#F7F2EC] lg:inset-[5px] lg:rounded-[16px]">
+    <div className="relative mx-auto h-[168px] w-[78px] overflow-hidden rounded-[14px] border-[1.5px] border-[#131313] bg-[#131313] shadow-[0_10px_24px_-12px_rgba(75,66,66,0.4)] lg:h-[200px] lg:w-[94px] lg:rounded-[16px] lg:border-2">
+      <div className="absolute inset-[1.5px] overflow-hidden rounded-[12px] bg-[#F7F2EC] lg:inset-[2px] lg:rounded-[14px]">
         <img
           src={src}
           alt={title}
@@ -40,12 +43,10 @@ function PhonePreview({ src, title }) {
           draggable={false}
         />
       </div>
-      <div
-        className="pointer-events-none absolute inset-0 rounded-[16px] border-[4px] border-[#131313] shadow-[0_12px_28px_-12px_rgba(75,66,66,0.45)] lg:rounded-[18px] lg:border-[5px]"
+      <span
+        className="pointer-events-none absolute left-1/2 top-[4px] z-10 h-[6px] w-[22px] -translate-x-1/2 rounded-full bg-[#131313] lg:top-[5px] lg:h-[7px] lg:w-[26px]"
         aria-hidden
-      >
-        <span className="absolute left-1/2 top-[5px] h-[8px] w-[28px] -translate-x-1/2 rounded-full bg-[#131313] lg:top-[6px] lg:h-[10px] lg:w-[34px]" />
-      </div>
+      />
     </div>
   );
 }
@@ -86,11 +87,10 @@ function InvitationsWebSection() {
                     }}
                     className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
                   >
-                    {liked ? (
-                      <FaHeart className="text-[16px] lg:text-[18px]" aria-hidden />
-                    ) : (
-                      <FaRegHeart className="text-[16px] lg:text-[18px]" aria-hidden />
-                    )}
+                    <LuHeart
+                      {...heartProps}
+                      className={liked ? "fill-[#E23D48] text-[#E23D48]" : "fill-none text-[#E23D48]"}
+                    />
                   </button>
                   <button type="button" className="w-full text-left" onClick={() => navigate(c.to)}>
                     <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/260] lg:h-auto lg:min-h-[280px] lg:group-hover:shadow-md">

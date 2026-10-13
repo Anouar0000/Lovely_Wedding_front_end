@@ -11,12 +11,12 @@ import { useFavorites } from "../context/FavoritesContext";
 const FILTERS = ["Tous", "Romantique", "Moderne", "Arabesque"];
 
 const PRODUCTS = [
-  { name: "Club Capri", img: a.cardCapri, filled: true, to: "/digital-invitation/club-capri", category: "Moderne" },
-  { name: "Sakura Koi", img: a.cardSakura, filled: false, to: "/digital-invitation/sakura-koi", category: "Romantique" },
-  { name: "Sidi Bou Said", img: a.cardSidi, filled: false, to: "/digital-invitation/sidi-bousaid", category: "Arabesque" },
-  { name: "La Dolce Vita", img: a.cardDolce, filled: true, to: "/digital-invitation/dolce-vita", category: "Romantique" },
-  { name: "Bridgerton", img: a.themeBridgeton, filled: false, to: "/digital-invitation/bridgerton", category: "Moderne" },
-  { name: "Majestic White", img: a.themeMajesticWhite, filled: true, to: "/digital-invitation/majestic-white", category: "Romantique" },
+  { name: "Club Capri", img: a.cardCapri, filled: true, to: "/invitations-digital/club-capri", category: "Moderne" },
+  { name: "Sakura Koi", img: a.cardSakura, filled: false, to: "/invitations-digital/sakura-koi", category: "Romantique" },
+  { name: "Sidi Bou Said", img: a.cardSidi, filled: false, to: "/invitations-digital/sidi-bousaid", category: "Arabesque" },
+  { name: "La Dolce Vita", img: a.cardDolce, filled: true, to: "/invitations-digital/dolce-vita", category: "Romantique" },
+  { name: "Bridgerton", img: a.themeBridgeton, filled: false, to: "/invitations-digital/bridgerton", category: "Moderne" },
+  { name: "Majestic White", img: a.themeMajesticWhite, filled: true, to: "/invitations-digital/majestic-white", category: "Romantique" },
 ];
 
 function InvitationsDigitalPage() {

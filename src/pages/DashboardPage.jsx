@@ -18,6 +18,7 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
 import sampleInvites from "../data/digital/instances.json";
+import { isAbortError } from "../lib/firebase";
 import {
   deleteDigitalInvite,
   listAllDigitalInvites,
@@ -87,15 +88,49 @@ function DashboardPage() {
         : await listDigitalInvites(user.uid);
       setInvites(items);
     } catch (loadError) {
-      setError("Impossible de charger les invitations depuis Firestore.");
+      if (!isAbortError(loadError)) {
+        setError("Impossible de charger les invitations depuis Firestore.");
+      }
     } finally {
       setLoading(false);
     }
   }, [user?.uid, isAdmin]);
 
   useEffect(() => {
-    loadInvites();
-  }, [loadInvites]);
+    let active = true;
+
+    (async () => {
+      if (!user?.uid) {
+        if (active) {
+          setInvites([]);
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (active) {
+        setError("");
+        setLoading(true);
+      }
+
+      try {
+        const items = isAdmin
+          ? await listAllDigitalInvites()
+          : await listDigitalInvites(user.uid);
+        if (active) setInvites(items);
+      } catch (loadError) {
+        if (active && !isAbortError(loadError)) {
+          setError("Impossible de charger les invitations depuis Firestore.");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [user?.uid, isAdmin]);
 
   const handleAddSample = async () => {
     if (!user?.uid) {

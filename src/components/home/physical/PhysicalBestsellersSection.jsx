@@ -1,5 +1,5 @@
 import React from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { LuHeart } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../../../context/FavoritesContext";
 import { homePhysicalAssets as a } from "../homePhysicalAssets";
@@ -64,11 +64,12 @@ function PhysicalBestsellersSection() {
                     }}
                     className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
                   >
-                    {liked ? (
-                      <FaHeart className="text-[16px] lg:text-[18px]" aria-hidden />
-                    ) : (
-                      <FaRegHeart className="text-[16px] lg:text-[18px]" aria-hidden />
-                    )}
+                    <LuHeart
+                      size={18}
+                      strokeWidth={1.5}
+                      aria-hidden
+                      className={liked ? "fill-[#E23D48] text-[#E23D48]" : "fill-none text-[#E23D48]"}
+                    />
                   </button>
                   <button
                     type="button"

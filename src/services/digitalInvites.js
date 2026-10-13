@@ -35,7 +35,7 @@ function assertFirestoreReady() {
 }
 
 export function createDigitalInviteDraft(overrides = {}) {
-  return {
+  const draft = {
     slug: "",
     template: DIGITAL_INVITE_TEMPLATES.CLUB_CAPRI,
     status: DIGITAL_INVITE_STATUSES.DRAFT,
@@ -55,6 +55,13 @@ export function createDigitalInviteDraft(overrides = {}) {
     clientEmail: "",
     ...overrides,
   };
+
+  // Capri/Sakura samples have no timeline — keep a safe array for the editor.
+  if (!Array.isArray(draft.timeline)) {
+    draft.timeline = [];
+  }
+
+  return draft;
 }
 
 function sortInvitesByUpdatedAt(items) {
@@ -133,6 +140,29 @@ export async function getDigitalInviteById(id) {
   };
 }
 
+/** Remove undefined (Firestore rejects them). Keep FieldValue / Timestamp intact. */
+function stripUndefined(value) {
+  if (Array.isArray(value)) {
+    return value.map(stripUndefined);
+  }
+  if (
+    value &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype &&
+    !("_methodName" in value)
+  ) {
+    const next = {};
+    Object.keys(value).forEach((key) => {
+      const entry = value[key];
+      if (entry !== undefined) {
+        next[key] = stripUndefined(entry);
+      }
+    });
+    return next;
+  }
+  return value;
+}
+
 export async function saveDigitalInvite(id, invite) {
   assertFirestoreReady();
 
@@ -142,11 +172,12 @@ export async function saveDigitalInvite(id, invite) {
 
   const now = serverTimestamp();
   const inviteRef = doc(db, DIGITAL_INVITES_COLLECTION, id);
+  const cleanedInvite = stripUndefined(invite);
 
   await setDoc(
     inviteRef,
     {
-      ...invite,
+      ...cleanedInvite,
       createdAt: invite.createdAt || now,
       updatedAt: now,
     },
@@ -159,8 +190,10 @@ export async function saveDigitalInvite(id, invite) {
 export async function updateDigitalInvite(id, updates) {
   assertFirestoreReady();
 
+  const cleaned = stripUndefined(updates);
+
   await updateDoc(doc(db, DIGITAL_INVITES_COLLECTION, id), {
-    ...updates,
+    ...cleaned,
     updatedAt: serverTimestamp(),
   });
 
