@@ -14,19 +14,25 @@ import {
   FiUploadCloud,
   FiTrash2,
   FiUsers,
+  FiEyeOff,
 } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
 import sampleInvites from "../data/digital/instances.json";
 import {
   deleteDigitalInvite,
+  listAllDigitalInvites,
   listDigitalInvites,
   saveDigitalInvite,
   updateDigitalInvite,
 } from "../services/digitalInvites";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
+function inviteStatus(invite) {
+  return invite?.status === "published" ? "published" : "draft";
+}
+
 function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
@@ -37,12 +43,14 @@ function DashboardPage() {
 
   const filteredInvites = invites.filter((invite) => {
     const term = searchTerm.trim().toLowerCase();
-    const matchesStatus = statusFilter === "all" || invite.status === statusFilter;
+    const status = inviteStatus(invite);
+    const matchesStatus = statusFilter === "all" || status === statusFilter;
     const searchableText = [
       invite.coupleNames,
       invite.slug,
       invite.venueName,
       invite.city,
+      invite.clientEmail,
       getDigitalInviteTemplate(invite.template)?.label,
     ]
       .filter(Boolean)
@@ -53,10 +61,13 @@ function DashboardPage() {
   });
 
   const statusCounts = invites.reduce(
-    (counts, invite) => ({
-      ...counts,
-      [invite.status]: (counts[invite.status] || 0) + 1,
-    }),
+    (counts, invite) => {
+      const status = inviteStatus(invite);
+      return {
+        ...counts,
+        [status]: (counts[status] || 0) + 1,
+      };
+    },
     { all: invites.length, draft: 0, published: 0 }
   );
 
@@ -71,14 +82,16 @@ function DashboardPage() {
     setLoading(true);
 
     try {
-      const items = await listDigitalInvites(user.uid);
+      const items = isAdmin
+        ? await listAllDigitalInvites()
+        : await listDigitalInvites(user.uid);
       setInvites(items);
     } catch (loadError) {
       setError("Impossible de charger les invitations depuis Firestore.");
     } finally {
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, isAdmin]);
 
   useEffect(() => {
     loadInvites();
@@ -148,13 +161,31 @@ function DashboardPage() {
     }
   };
 
+  const handleUnpublish = async (invite) => {
+    setBusyId(invite.id);
+    setError("");
+
+    try {
+      await updateDigitalInvite(invite.id, { status: "draft" });
+      setInvites((currentInvites) =>
+        currentInvites.map((item) =>
+          item.id === invite.id ? { ...item, status: "draft" } : item
+        )
+      );
+    } catch (unpublishError) {
+      setError("Impossible de dépublier cette invitation.");
+    } finally {
+      setBusyId("");
+    }
+  };
+
   const getPublicInviteUrl = (slug) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/${slug}`;
   };
 
   const handleCopyLink = async (invite) => {
-    if (invite.status !== "published") {
+    if (inviteStatus(invite) !== "published") {
       setError("Publie l'invitation avant de copier le lien public.");
       return;
     }
@@ -318,7 +349,8 @@ function DashboardPage() {
           {!loading && filteredInvites.length > 0 ? (
             <div className="divide-y divide-[#E4E8EA]">
               {filteredInvites.map((invite) => {
-                const isPublished = invite.status === "published";
+                const isPublished = inviteStatus(invite) === "published";
+                const label = invite.coupleNames || invite.slug;
 
                 return (
                 <div
@@ -326,10 +358,13 @@ function DashboardPage() {
                   className="grid grid-cols-1 gap-4 px-5 py-4 text-sm transition-colors hover:bg-[#FAFAF8] md:grid-cols-[1.25fr_0.75fr_0.55fr_1fr] md:items-center"
                 >
                   <div>
-                    <p className="font-semibold">{invite.coupleNames || invite.slug}</p>
+                    <p className="font-semibold">{label}</p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-gray-500">
                       <FiExternalLink aria-hidden="true" /> /{invite.slug}
                     </p>
+                    {invite.clientEmail ? (
+                      <p className="mt-1 text-xs text-lw-muted">{invite.clientEmail}</p>
+                    ) : null}
                   </div>
                   <span>{getDigitalInviteTemplate(invite.template)?.label || invite.template}</span>
                   <span>
@@ -341,14 +376,14 @@ function DashboardPage() {
                       }`}
                     >
                       <span className={`h-2 w-2 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`} />
-                      {invite.status}
+                      {isPublished ? "published" : "draft"}
                     </span>
                   </span>
                   <div className="flex flex-wrap gap-2">
                     <Link
                       to={`/dashboard/invitations/${invite.id}/rsvp`}
                       title="RSVP"
-                      aria-label={`RSVP ${invite.coupleNames || invite.slug}`}
+                      aria-label={`RSVP ${label}`}
                       className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
                     >
                       <FiUsers aria-hidden="true" />
@@ -356,7 +391,7 @@ function DashboardPage() {
                     <Link
                       to={`/dashboard/invitations/${invite.id}/edit`}
                       title="Modifier"
-                      aria-label={`Modifier ${invite.coupleNames || invite.slug}`}
+                      aria-label={`Modifier ${label}`}
                       className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
                     >
                       <FiEdit2 aria-hidden="true" />
@@ -365,8 +400,8 @@ function DashboardPage() {
                       to={`/dashboard/invitations/${invite.id}/preview`}
                       target="_blank"
                       rel="noreferrer"
-                      title="Apercu"
-                      aria-label={`Apercu ${invite.coupleNames || invite.slug}`}
+                      title="Aperçu"
+                      aria-label={`Aperçu ${label}`}
                       className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black"
                     >
                       <FiEye aria-hidden="true" />
@@ -377,18 +412,29 @@ function DashboardPage() {
                         onClick={() => handlePublish(invite)}
                         disabled={busyId === invite.id}
                         title="Publier"
-                        aria-label={`Publier ${invite.coupleNames || invite.slug}`}
+                        aria-label={`Publier ${label}`}
                         className="inline-flex h-10 w-10 items-center justify-center border border-emerald-200 text-emerald-700 hover:border-emerald-500 disabled:cursor-not-allowed disabled:text-gray-400"
                       >
                         {busyId === invite.id ? "..." : <FiUploadCloud aria-hidden="true" />}
                       </button>
-                    ) : null}
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleUnpublish(invite)}
+                        disabled={busyId === invite.id}
+                        title="Dépublier"
+                        aria-label={`Dépublier ${label}`}
+                        className="inline-flex h-10 w-10 items-center justify-center border border-amber-200 text-amber-800 hover:border-amber-500 disabled:cursor-not-allowed disabled:text-gray-400"
+                      >
+                        {busyId === invite.id ? "..." : <FiEyeOff aria-hidden="true" />}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleCopyLink(invite)}
                       disabled={!isPublished}
                       title={isPublished ? "Copier le lien public" : "Publier avant de copier le lien public"}
-                      aria-label={`Copier le lien ${invite.coupleNames || invite.slug}`}
+                      aria-label={`Copier le lien ${label}`}
                       className="inline-flex h-10 w-10 items-center justify-center border border-[#D8DDE2] text-gray-700 hover:border-black hover:text-black disabled:cursor-not-allowed disabled:text-gray-300"
                     >
                       {copiedId === invite.id ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
@@ -398,7 +444,7 @@ function DashboardPage() {
                       onClick={() => handleDelete(invite)}
                       disabled={busyId === invite.id}
                       title="Supprimer"
-                      aria-label={`Supprimer ${invite.coupleNames || invite.slug}`}
+                      aria-label={`Supprimer ${label}`}
                       className="inline-flex h-10 w-10 items-center justify-center border border-red-200 text-red-700 hover:border-red-500 disabled:cursor-not-allowed disabled:text-gray-400"
                     >
                       {busyId === invite.id ? "..." : <FiTrash2 aria-hidden="true" />}

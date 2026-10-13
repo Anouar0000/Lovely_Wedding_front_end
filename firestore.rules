@@ -55,7 +55,7 @@ service cloud.firestore {
         || (isSignedIn() && resource.data.clientUserId == request.auth.uid)
         || (isSignedIn()
           && resource.data.clientEmail is string
-          && resource.data.clientEmail == request.auth.token.email)
+          && resource.data.clientEmail.lower() == request.auth.token.email.lower())
         || isAdmin();
 
       allow create: if isAdmin()
@@ -136,7 +136,7 @@ service cloud.firestore {
           resource.data.ownerId == request.auth.uid
           || resource.data.clientUserId == request.auth.uid
           || (resource.data.clientEmail is string
-            && resource.data.clientEmail == request.auth.token.email)
+            && resource.data.clientEmail.lower() == request.auth.token.email.lower())
           || isAdmin()
         );
 

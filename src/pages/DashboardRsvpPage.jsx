@@ -21,11 +21,9 @@ function canAccessInvite(invite, user, isAdmin) {
   if (isAdmin) return true;
   if (invite.ownerId === user.uid) return true;
   if (invite.clientUserId === user.uid) return true;
-  if (
-    invite.clientEmail &&
-    user.email &&
-    invite.clientEmail.toLowerCase() === user.email.toLowerCase()
-  ) {
+  const inviteEmail = String(invite.clientEmail || "").trim().toLowerCase();
+  const userEmail = String(user.email || "").trim().toLowerCase();
+  if (inviteEmail && userEmail && inviteEmail === userEmail) {
     return true;
   }
   return false;

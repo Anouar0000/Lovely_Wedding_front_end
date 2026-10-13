@@ -1,17 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FiExternalLink, FiHome, FiLogOut, FiUsers } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
 import { listDigitalInvitesForClient } from "../services/digitalInvites";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
+import { isAdminEmail } from "../services/users";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 
 function ClientEspacePage() {
   const { user, logout, isAdmin } = useAuth();
+  const location = useLocation();
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const needsEmailVerification =
+    Boolean(location.state?.adminRequired) ||
+    (isAdminEmail(user?.email) && user && !user.emailVerified);
 
   const load = useCallback(async () => {
     if (!user) {
@@ -79,6 +84,12 @@ function ClientEspacePage() {
           Consultez les réponses RSVP de votre invitation. La modification du design est réservée
           à l&apos;équipe Lovely Wedding.
         </p>
+
+        {needsEmailVerification ? (
+          <div className="mt-4 rounded-[8px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+            Vérifiez votre email ({user?.email}) pour accéder au dashboard admin.
+          </div>
+        ) : null}
 
         {error ? (
           <div className="mt-4 rounded-[8px] border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">

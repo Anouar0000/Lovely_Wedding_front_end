@@ -105,7 +105,7 @@ function EditorSection({ icon, title, children, action }) {
 function DigitalInviteEditorPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const isEditing = Boolean(id);
   const [invite, setInvite] = useState(() =>
     createDigitalInviteDraft(defaultTemplate.defaults)
@@ -188,8 +188,13 @@ function DigitalInviteEditorPage() {
           return;
         }
 
-        if (user?.uid && loadedInvite.ownerId && loadedInvite.ownerId !== user.uid) {
-          setError("Tu n'as pas acces a cette invitation.");
+        if (
+          user?.uid &&
+          loadedInvite.ownerId &&
+          loadedInvite.ownerId !== user.uid &&
+          !isAdmin
+        ) {
+          setError("Tu n'as pas accès à cette invitation.");
           return;
         }
 
@@ -219,7 +224,7 @@ function DigitalInviteEditorPage() {
     return () => {
       isMounted = false;
     };
-  }, [id, user?.uid]);
+  }, [id, user?.uid, isAdmin]);
 
   const publicPath = useMemo(() => {
     if (!invite.slug) {
@@ -428,8 +433,8 @@ function DigitalInviteEditorPage() {
           }),
       };
 
-      if (cleanedInvite.ownerId !== user.uid) {
-        setError("Tu n'as pas acces a cette invitation.");
+      if (cleanedInvite.ownerId !== user.uid && !isAdmin) {
+        setError("Tu n'as pas accès à cette invitation.");
         setSaving(false);
         return;
       }

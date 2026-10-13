@@ -57,6 +57,21 @@ export function createDigitalInviteDraft(overrides = {}) {
   };
 }
 
+function sortInvitesByUpdatedAt(items) {
+  return items.sort((a, b) => {
+    const aTime = a.updatedAt?.toMillis?.() || 0;
+    const bTime = b.updatedAt?.toMillis?.() || 0;
+    return bTime - aTime;
+  });
+}
+
+function mapInviteDocs(snapshot) {
+  return snapshot.docs.map((inviteDoc) => ({
+    id: inviteDoc.id,
+    ...inviteDoc.data(),
+  }));
+}
+
 export async function listDigitalInvites(ownerId) {
   assertFirestoreReady();
 
@@ -71,16 +86,15 @@ export async function listDigitalInvites(ownerId) {
   );
   const snapshot = await getDocs(invitesQuery);
 
-  return snapshot.docs
-    .map((inviteDoc) => ({
-      id: inviteDoc.id,
-      ...inviteDoc.data(),
-    }))
-    .sort((a, b) => {
-      const aTime = a.updatedAt?.toMillis?.() || 0;
-      const bTime = b.updatedAt?.toMillis?.() || 0;
-      return bTime - aTime;
-    });
+  return sortInvitesByUpdatedAt(mapInviteDocs(snapshot));
+}
+
+/** Admin-only: toutes les invitations (règles Firestore isAdmin). */
+export async function listAllDigitalInvites() {
+  assertFirestoreReady();
+
+  const snapshot = await getDocs(collection(db, DIGITAL_INVITES_COLLECTION));
+  return sortInvitesByUpdatedAt(mapInviteDocs(snapshot));
 }
 
 export async function getDigitalInviteBySlug(slug, { publishedOnly = false } = {}) {

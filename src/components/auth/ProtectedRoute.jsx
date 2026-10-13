@@ -19,7 +19,14 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/espace-client" replace />;
+    // Admin allowlist sans email vérifié → espace client (pas d'élévation UI)
+    return (
+      <Navigate
+        to="/espace-client"
+        replace
+        state={{ from: location, adminRequired: true }}
+      />
+    );
   }
 
   return children;
