@@ -34,6 +34,41 @@ function assertFirestoreReady() {
   }
 }
 
+/**
+ * Normalize Firestore / form dates to YYYY-MM-DD for <input type="date"> and invite pages.
+ */
+export function normalizeEventDate(value) {
+  if (!value) return "";
+  if (typeof value === "string") {
+    const iso = value.trim().slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    // DD/MM/YYYY or DD-MM-YYYY
+    const fr = value.trim().match(/^(\d{1,2})[/.](\d{1,2})[/.](\d{4})$/);
+    if (fr) {
+      return `${fr[3]}-${fr[2].padStart(2, "0")}-${fr[1].padStart(2, "0")}`;
+    }
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      const y = parsed.getFullYear();
+      const m = String(parsed.getMonth() + 1).padStart(2, "0");
+      const d = String(parsed.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+    return "";
+  }
+  // Firestore Timestamp
+  if (typeof value?.toDate === "function") {
+    return normalizeEventDate(value.toDate());
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const y = value.getFullYear();
+    const m = String(value.getMonth() + 1).padStart(2, "0");
+    const d = String(value.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  return "";
+}
+
 export function createDigitalInviteDraft(overrides = {}) {
   const draft = {
     slug: "",
@@ -73,10 +108,14 @@ function sortInvitesByUpdatedAt(items) {
 }
 
 function mapInviteDocs(snapshot) {
-  return snapshot.docs.map((inviteDoc) => ({
-    id: inviteDoc.id,
-    ...inviteDoc.data(),
-  }));
+  return snapshot.docs.map((inviteDoc) => {
+    const data = inviteDoc.data();
+    return {
+      id: inviteDoc.id,
+      ...data,
+      eventDate: normalizeEventDate(data.eventDate),
+    };
+  });
 }
 
 export async function listDigitalInvites(ownerId) {
@@ -119,9 +158,11 @@ export async function getDigitalInviteBySlug(slug, { publishedOnly = false } = {
     return null;
   }
 
+  const data = inviteDoc.data();
   return {
     id: inviteDoc.id,
-    ...invite,
+    ...data,
+    eventDate: normalizeEventDate(data.eventDate),
   };
 }
 
@@ -134,9 +175,11 @@ export async function getDigitalInviteById(id) {
     return null;
   }
 
+  const data = inviteDoc.data();
   return {
     id: inviteDoc.id,
-    ...inviteDoc.data(),
+    ...data,
+    eventDate: normalizeEventDate(data.eventDate),
   };
 }
 
@@ -172,7 +215,10 @@ export async function saveDigitalInvite(id, invite) {
 
   const now = serverTimestamp();
   const inviteRef = doc(db, DIGITAL_INVITES_COLLECTION, id);
-  const cleanedInvite = stripUndefined(invite);
+  const cleanedInvite = stripUndefined({
+    ...invite,
+    eventDate: normalizeEventDate(invite.eventDate),
+  });
 
   await setDoc(
     inviteRef,

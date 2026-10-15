@@ -63,7 +63,8 @@ export const TEMPLATE_TEXT_FIELDS = {
 const DEFAULTS_FROM_FIXED = {
   "club-capri": {
     inviteText: "We warmly invite you to celebrate our wedding day with us.",
-    rsvpDeadline: "The favour of a reply is kindly requested by the fifteenth of June, 2027",
+    // Vide = généré depuis eventDate dans ClubCapriInvitePage
+    rsvpDeadline: "",
     dressCode: "casual chic",
     celebrationAddress1: "Dar Bouraoui Carthage\nMalaga\n18h",
     celebrationAddress2: "Dar Bouraoui Carthage\nMalaga\n18h",

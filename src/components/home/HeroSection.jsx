@@ -14,35 +14,35 @@ const INVITES = [
 // Copies en fin pour boucle invisible ; démarre à l'index 1 → cartes L + R visibles.
 const RAIL = [...INVITES, INVITES[0], INVITES[1]];
 
+/** Même mockup que l’ancien (194×389, bord 6px, encoche) — un par invitation. */
 function InviteCard({ invite, index }) {
   return (
-    <div className="relative h-[377px] w-[182px] shrink-0 overflow-hidden rounded-[26px] bg-[#F7F2EC] lg:h-[464px] lg:w-[224px]">
-      <img
-        src={invite.cover}
-        alt={index < 2 ? `Invitation ${invite.name}` : ""}
-        className="pointer-events-none block h-full w-full object-cover object-center"
-        loading={index > 2 ? "lazy" : undefined}
-        draggable={false}
+    <div className="relative h-[428px] w-[200px] shrink-0 rounded-[32px] border-[4px] border-[#131313] shadow-[0_20px_45px_-20px_rgba(75,66,66,0.55)] lg:h-[523px] lg:w-[244px] lg:border-[5px]">
+      <div className="h-full w-full overflow-hidden rounded-[26px] bg-[#F7F2EC]">
+        <img
+          src={invite.cover}
+          alt={index < 2 ? `Invitation ${invite.name}` : ""}
+          className="pointer-events-none block h-full w-full object-cover object-center"
+          loading={index > 2 ? "lazy" : undefined}
+          draggable={false}
+        />
+      </div>
+      <span
+        className="pointer-events-none absolute left-1/2 top-[8px] h-[12px] w-[50px] -translate-x-1/2 rounded-full bg-[#131313] lg:top-[10px] lg:h-[14px] lg:w-[60px]"
+        aria-hidden
       />
     </div>
   );
 }
 
-/** Rail horizontal : aperçu décoratif (non cliquable). */
+/** Rail horizontal : chaque invitation dans son mockup, défilement continu. */
 function InviteRail() {
   return (
-    <div className="relative h-[389px] w-full shrink-0 overflow-hidden lg:h-[478px]">
-      <div className="lw-hero-rail absolute left-1/2 top-[6px] flex w-max gap-[15px] lg:top-[7px] lg:gap-[20px]">
+    <div className="relative h-[428px] w-full shrink-0 overflow-hidden lg:h-[523px]">
+      <div className="lw-hero-rail absolute left-1/2 top-0 flex w-max gap-[15px] lg:gap-[20px]">
         {RAIL.map((invite, i) => (
           <InviteCard key={`${invite.name}-${i}`} invite={invite} index={i} />
         ))}
-      </div>
-
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[389px] w-[194px] -translate-x-1/2 -translate-y-1/2 rounded-[32px] border-[6px] border-[#131313] shadow-[0_20px_45px_-20px_rgba(75,66,66,0.55)] lg:h-[478px] lg:w-[238px] lg:border-[7px]"
-        aria-hidden
-      >
-        <span className="absolute left-1/2 top-[8px] h-[17px] w-[58px] -translate-x-1/2 rounded-full bg-[#131313] lg:top-[10px] lg:h-[20px] lg:w-[70px]" />
       </div>
     </div>
   );
@@ -78,11 +78,11 @@ function HeroSection() {
         </div>
 
         {/* Rail full-bleed mobile : pas de margin/padding left-right */}
-        <div className="mt-6 flex min-h-0 w-full flex-1 items-center justify-center lg:mt-0 lg:flex-none">
+        <div className="my-[25px] flex w-full justify-center lg:my-0">
           <InviteRail />
         </div>
 
-        <div className="mt-auto flex justify-center px-6 pb-8 pt-4 lg:hidden">
+        <div className="flex justify-center px-6 pb-[25px] lg:hidden">
           <button
             type="button"
             onClick={() => navigate("/invitations-digital")}

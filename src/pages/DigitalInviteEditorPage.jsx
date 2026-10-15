@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
@@ -28,6 +28,7 @@ import {
   createDigitalInviteDraft,
   deleteDigitalInvite,
   getDigitalInviteById,
+  normalizeEventDate,
   saveDigitalInvite,
   updateDigitalInvite,
 } from "../services/digitalInvites";
@@ -48,7 +49,7 @@ import {
   getDefaultInviteMedia,
   getTemplateMediaFields,
 } from "../templates/digitalInviteMedia";
-import { uploadInviteMediaFile } from "../services/inviteMediaUpload";
+import { compressImageToDataUrl, uploadInviteMediaFile } from "../services/inviteMediaUpload";
 import { useAuth } from "../components/auth/AuthProvider";
 
 const defaultTemplate = getDefaultDigitalInviteTemplate();
@@ -147,9 +148,11 @@ function DigitalInviteEditorPage() {
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [mediaHint, setMediaHint] = useState("");
   const [uploadingKey, setUploadingKey] = useState("");
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [openEvents, setOpenEvents] = useState({});
+  const localMediaUrlsRef = useRef({});
 
   const toggleEvent = (index) => {
     setOpenEvents((prev) => ({
@@ -268,6 +271,9 @@ function DigitalInviteEditorPage() {
         setInvite({
           ...createDigitalInviteDraft(loadedTemplate.defaults),
           ...loadedInvite,
+          eventDate: normalizeEventDate(loadedInvite.eventDate) ||
+            normalizeEventDate(loadedTemplate.defaults?.eventDate) ||
+            "",
           timeline: loadedTimeline,
           activeSections: loadedSections,
           texts: loadedTexts,
@@ -358,6 +364,8 @@ function DigitalInviteEditorPage() {
   const { wife, husband } = getNames(invite.coupleNames || "");
 
   const fixedTimelineSteps = selectedTemplate.fixedTimelineSteps || [];
+  /** Timeline éditeur = étapes programme (Dolce) ou events Sidi — pas Capri/Sakura/etc. */
+  const showTimelineEditor = isSidiBouSaid || fixedTimelineSteps.length > 0;
   const maxTimelineItems = isSidiBouSaid ? 3 : (fixedTimelineSteps.length || Infinity);
   const getTimelineStepKey = (item, index) =>
     item.step || item.image || fixedTimelineSteps[index]?.image || fixedTimelineSteps[0]?.image || "";
@@ -389,7 +397,18 @@ function DigitalInviteEditorPage() {
     }));
   };
 
+  const revokeLocalMedia = (key) => {
+    const prev = localMediaUrlsRef.current[key];
+    if (prev) {
+      URL.revokeObjectURL(prev);
+      delete localMediaUrlsRef.current[key];
+    }
+  };
+
   const updateInviteMedia = (key, value) => {
+    if (typeof value === "string" && !value.startsWith("blob:")) {
+      revokeLocalMedia(key);
+    }
     setInvite((currentInvite) => {
       const nextMedia = {
         ...(currentInvite.media && typeof currentInvite.media === "object"
@@ -401,9 +420,12 @@ function DigitalInviteEditorPage() {
         ...currentInvite,
         media: nextMedia,
         ...(key === "musicUrl" ? { musicUrl: value } : {}),
-        ...(key === "heroPhoto" ? { heroPhoto: value } : {}),
+        ...(key === "heroPhoto" || key === "heroImage" ? { heroPhoto: value, heroImage: value } : {}),
         ...(key === "venuePhoto" ? { venuePhoto: value } : {}),
         ...(key === "storyPhoto" ? { storyPhoto: value } : {}),
+        ...(key === "dressCodePhoto" ? { dressCodePhoto: value } : {}),
+        ...(key === "celebrationPhoto1" ? { celebrationPhoto1: value } : {}),
+        ...(key === "celebrationPhoto2" ? { celebrationPhoto2: value } : {}),
       };
     });
   };
@@ -415,7 +437,15 @@ function DigitalInviteEditorPage() {
       return;
     }
     setError("");
+    setMediaHint("");
     setUploadingKey(field.key);
+
+    // Aperçu immédiat (blob) — indépendant de Firebase Storage
+    revokeLocalMedia(field.key);
+    const localUrl = URL.createObjectURL(file);
+    localMediaUrlsRef.current[field.key] = localUrl;
+    updateInviteMedia(field.key, localUrl);
+
     try {
       const url = await uploadInviteMediaFile({
         file,
@@ -424,21 +454,48 @@ function DigitalInviteEditorPage() {
         fieldKey: field.key,
         kind: field.kind,
       });
+      revokeLocalMedia(field.key);
       updateInviteMedia(field.key, url);
+      setMediaHint("");
     } catch (uploadError) {
+      // Sans Storage : embarquer l’image compressée dans Firestore → visible après publish
+      if (field.kind === "image") {
+        try {
+          const dataUrl = await compressImageToDataUrl(file);
+          revokeLocalMedia(field.key);
+          updateInviteMedia(field.key, dataUrl);
+          setMediaHint(
+            "Image enregistrée dans l’invitation (compressée). Enregistre puis publie : elle restera visible."
+          );
+          setError("");
+          return;
+        } catch (embedError) {
+          setMediaHint(embedError.message || "Impossible d’embarquer cette image.");
+          setError(embedError.message || "Impossible d’embarquer cette image.");
+          return;
+        }
+      }
       const code = uploadError?.code || "";
       const msg = String(uploadError?.message || "");
+      let hint =
+        "L’audio nécessite Firebase Storage ou une URL publique pour rester après publication.";
       if (code.includes("unauthorized") || msg.includes("permission") || msg.includes("unauthorized")) {
-        setError(
-          "Upload Storage refusé (règles Firebase). Colle une URL d’image/audio pour l’instant, ou déploie storage.rules."
-        );
-      } else {
-        setError(uploadError.message || "Upload impossible. Tu peux coller une URL.");
+        hint =
+          "Upload Storage refusé. Pour l’audio : colle une URL, ou active Firebase Storage.";
       }
+      setMediaHint(hint);
+      setError(hint);
     } finally {
       setUploadingKey("");
     }
   };
+
+  useEffect(() => {
+    const urls = localMediaUrlsRef.current;
+    return () => {
+      Object.values(urls).forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   const updateTimelineItem = (index, key, value) => {
     setInvite((currentInvite) => {
@@ -559,10 +616,26 @@ function DigitalInviteEditorPage() {
   };
 
   const handleDateChange = (dateValue) => {
-    setInvite((currentInvite) => ({
-      ...currentInvite,
-      eventDate: dateValue,
-    }));
+    const nextDate = normalizeEventDate(dateValue) || dateValue || "";
+    setInvite((currentInvite) => {
+      const texts =
+        currentInvite.texts && typeof currentInvite.texts === "object"
+          ? { ...currentInvite.texts }
+          : {};
+      // Laisse Capri (et co.) régénérer la deadline depuis la nouvelle date
+      const staleDeadline =
+        !texts.rsvpDeadline ||
+        /fifteenth of June,? 2027/i.test(String(texts.rsvpDeadline)) ||
+        /\d{1,2}(st|nd|rd|th) of \w+,? \d{4}/i.test(String(texts.rsvpDeadline));
+      if (staleDeadline) {
+        texts.rsvpDeadline = "";
+      }
+      return {
+        ...currentInvite,
+        eventDate: nextDate,
+        texts,
+      };
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -617,7 +690,9 @@ function DigitalInviteEditorPage() {
           (invite.media && invite.media.musicUrl) ||
           invite.musicUrl ||
           "",
-        eventDate: isSidiBouSaid && lastEvent?.date ? lastEvent.date : invite.eventDate,
+        eventDate: normalizeEventDate(
+          isSidiBouSaid && lastEvent?.date ? lastEvent.date : invite.eventDate
+        ),
         time: isSidiBouSaid && lastEvent?.time ? lastEvent.time : invite.time,
         timeline: safeTimeline
           .slice(0, maxTimelineItems)
@@ -978,6 +1053,11 @@ function DigitalInviteEditorPage() {
               <p className="mb-3 text-xs text-gray-600">
                 Colle une URL ou uploade un fichier. Champ vide = média d&apos;origine du template.
               </p>
+              {mediaHint ? (
+                <p className="mb-3 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                  {mediaHint}
+                </p>
+              ) : null}
               <div className="grid gap-4">
                 {templateMediaFields.map((field) => {
                   const value =
@@ -986,10 +1066,11 @@ function DigitalInviteEditorPage() {
                       : "";
                   const isAudio = field.kind === "audio";
                   const busy = uploadingKey === field.key;
+                  const isLocalPreview = typeof value === "string" && value.startsWith("blob:");
                   return (
                     <div
                       key={field.key}
-                      className="grid gap-2 border border-[#E4E8EA] bg-[#FCFCFB] p-3 md:grid-cols-[1fr_auto] md:items-end"
+                      className="grid gap-2 border border-[#E4E8EA] bg-[#FCFCFB] p-3 md:grid-cols-[1fr_auto_auto] md:items-end"
                     >
                       <Field label={field.label}>
                         <div className="flex items-center gap-2">
@@ -999,9 +1080,21 @@ function DigitalInviteEditorPage() {
                             <FiImage className="shrink-0 text-gray-400" aria-hidden />
                           )}
                           <TextInput
-                            value={value}
-                            placeholder={isAudio ? "https://…/musique.mp3" : "https://…/photo.jpg"}
-                            onChange={(event) => updateInviteMedia(field.key, event.target.value)}
+                            value={isLocalPreview ? "" : value}
+                            placeholder={
+                              isLocalPreview
+                                ? "Colle une URL https://… pour remplacer le fichier"
+                                : isAudio
+                                  ? "https://…/musique.mp3"
+                                  : "https://…/photo.jpg"
+                            }
+                            onChange={(event) => {
+                              const next = event.target.value;
+                              if (isLocalPreview && next.trim()) {
+                                revokeLocalMedia(field.key);
+                              }
+                              updateInviteMedia(field.key, next);
+                            }}
                           />
                         </div>
                       </Field>
@@ -1020,17 +1113,41 @@ function DigitalInviteEditorPage() {
                           }}
                         />
                       </label>
+                      {value ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            revokeLocalMedia(field.key);
+                            updateInviteMedia(field.key, "");
+                            setMediaHint("");
+                          }}
+                          className="inline-flex items-center justify-center border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 hover:border-red-500"
+                        >
+                          Effacer
+                        </button>
+                      ) : null}
                       {!isAudio && value ? (
-                        <div className="md:col-span-2">
+                        <div className="md:col-span-3">
                           <img
                             src={value}
                             alt=""
                             className="mt-1 h-20 w-auto max-w-full rounded border border-[#E4E8EA] object-cover"
+                            onError={(event) => {
+                              event.currentTarget.style.opacity = "0.35";
+                              setMediaHint(
+                                "Cette URL d’image ne s’affiche pas (lien privé, Drive, ou format non direct). Utilise un lien direct .jpg/.png (Imgur, Cloudinary, etc.)."
+                              );
+                            }}
                           />
+                          {isLocalPreview ? (
+                            <p className="mt-1 text-[11px] text-amber-800">
+                              Fichier local visible ici. Colle une URL publique ci-dessus pour la garder après enregistrement.
+                            </p>
+                          ) : null}
                         </div>
                       ) : null}
                       {isAudio && value ? (
-                        <audio controls src={value} className="mt-1 w-full md:col-span-2" preload="none" />
+                        <audio controls src={value} className="mt-1 w-full md:col-span-3" preload="none" />
                       ) : null}
                     </div>
                   );
@@ -1045,7 +1162,7 @@ function DigitalInviteEditorPage() {
                 <Field label="Date">
                   <TextInput
                     type="date"
-                    value={invite.eventDate}
+                    value={invite.eventDate || ""}
                     onChange={(event) => handleDateChange(event.target.value)}
                     required
                   />
@@ -1089,6 +1206,7 @@ function DigitalInviteEditorPage() {
             </EditorSection>
           )}
 
+          {showTimelineEditor ? (
           <EditorSection
             icon={FiClock}
             title={isSidiBouSaid ? "Celebrations" : "Timeline"}
@@ -1227,6 +1345,7 @@ function DigitalInviteEditorPage() {
               ))}
             </div>
           </EditorSection>
+          ) : null}
 
           {isSidiBouSaid && (
             <>

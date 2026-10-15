@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700&family=Allura&family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Gwendolyn:wght@400;700&family=Josefin+Sans:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;500&family=Special+Elite&family=Taprom&family=Urbanist:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700&family=Allura&family=Amiri+Quran&family=Antic+Didone&family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Gwendolyn:wght@400;700&family=Josefin+Sans:wght@400;700&family=Jost:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Montserrat:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;500&family=Special+Elite&family=Taprom&family=Urbanist:wght@300;400;500;600;700;800&display=swap');
 
 /* Figma Main Digital — sous-titre hero */
 @font-face {
@@ -137,50 +137,28 @@ body.hide-scrollbar::-webkit-scrollbar,
   }
 }
 
-/* Rail du hero : démarre à l'étape 1 (carte centrale + aperçus gauche ET droite). */
+/* Rail du hero : défilement continu — mockup 200×428 (+ gap 15) / desktop 244 (+ gap 20). */
 .lw-hero-rail {
-  --lw-step: 197px; /* largeur carte + gouttière */
-  --lw-half: 91px; /* demi-carte */
-  /* Position initiale avant anim : même que 0% (étape 1) */
+  --lw-step: 215px; /* 200 + 15 */
+  --lw-half: 100px; /* demi-mockup */
   transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
-  animation: lw-hero-rail 16s ease-in-out infinite;
+  animation: lw-hero-rail 8s linear infinite;
   will-change: transform;
 }
 
 @media (min-width: 1024px) {
   .lw-hero-rail {
-    --lw-step: 244px;
-    --lw-half: 112px;
+    --lw-step: 264px; /* 244 + 20 */
+    --lw-half: 122px;
   }
 }
 
 @keyframes lw-hero-rail {
-  /* Étapes 1→7 : gauche jamais vide ; 7 = même visuel que 1 pour la boucle */
-  0%,
-  11% {
+  /* 1 → 7 (= +6 cartes = 1 tour) : linéaire, pas d’arrêt */
+  from {
     transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
   }
-  16.66%,
-  27.66% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 2 * var(--lw-step))));
-  }
-  33.33%,
-  44.33% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 3 * var(--lw-step))));
-  }
-  50%,
-  61% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 4 * var(--lw-step))));
-  }
-  66.66%,
-  77.66% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 5 * var(--lw-step))));
-  }
-  83.33%,
-  94.33% {
-    transform: translateX(calc(-1 * (var(--lw-half) + 6 * var(--lw-step))));
-  }
-  100% {
+  to {
     transform: translateX(calc(-1 * (var(--lw-half) + 7 * var(--lw-step))));
   }
 }

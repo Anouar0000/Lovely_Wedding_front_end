@@ -101,7 +101,11 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
             Apercu dashboard / {invite.status === "published" ? "publiee" : "brouillon"}
           </div>
         ) : null}
-        <TemplateComponent invite={invite} previewMode={previewMode} />
+        <TemplateComponent
+          key={`${invite.id || invite.slug}-${invite.eventDate || ""}-${invite.time || ""}`}
+          invite={invite}
+          previewMode={previewMode}
+        />
       </>
     );
   }

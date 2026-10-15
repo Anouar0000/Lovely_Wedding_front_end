@@ -75,10 +75,30 @@ const getCountdown = (dateString) => {
   };
 };
 
-const getMonthLabel = (dateString) => {
-  if (!dateString) return "June";
+const getDateParts = (dateString) => {
+  const fallback = { day: "15", month: "June", monthUpper: "JUNE", year: "2027" };
+  if (!dateString) return fallback;
   const d = new Date(`${dateString}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? "June" : d.toLocaleString("en", { month: "long" });
+  if (Number.isNaN(d.getTime())) return fallback;
+  const month = d.toLocaleString("en", { month: "long" });
+  return {
+    day: String(d.getDate()),
+    month,
+    monthUpper: month.toUpperCase(),
+    year: String(d.getFullYear()),
+  };
+};
+
+const DEFAULT_RSVP_DEADLINE =
+  "The favour of a reply is kindly requested by the fifteenth of June, 2027";
+
+const formatRsvpDeadline = (dateString) => {
+  const parts = getDateParts(dateString);
+  const dayNum = Number(parts.day);
+  const ordinals = ["th", "st", "nd", "rd"];
+  const v = dayNum % 100;
+  const suffix = ordinals[(v - 20) % 10] || ordinals[v] || ordinals[0];
+  return `The favour of a reply is kindly requested by the ${dayNum}${suffix} of ${parts.month}, ${parts.year}`;
 };
 
 const splitNames = (coupleNames) => {
@@ -132,13 +152,20 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
   const inviteId = invite.id || invite.slug || "";
   const canSubmitRsvp = Boolean(invite.ownerId && inviteId && isFirebaseConfigured && !previewMode);
   const countdown = getCountdown(invite.eventDate);
-  const [displayCountdown, setDisplayCountdown] = useState(() => ({
-    days: "00",
-    hours: "00",
-    minutes: "00",
-  }));
-  const month = getMonthLabel(invite.eventDate);
+  const [displayCountdown, setDisplayCountdown] = useState(() =>
+    previewMode ? getCountdown(invite.eventDate) : { days: "00", hours: "00", minutes: "00" }
+  );
+  // En aperçu éditeur / dashboard : toujours la date live (pas d'état figé)
+  const shownCountdown = previewMode ? countdown : displayCountdown;
+  const dateParts = getDateParts(invite.eventDate);
   const names = useMemo(() => splitNames(invite.coupleNames || defaultInvite.coupleNames), [invite.coupleNames]);
+  const customRsvpDeadline = invite?.texts?.rsvpDeadline;
+  const rsvpDeadlineText =
+    typeof customRsvpDeadline === "string" &&
+    customRsvpDeadline.trim() &&
+    customRsvpDeadline.trim() !== DEFAULT_RSVP_DEADLINE
+      ? customRsvpDeadline.trim()
+      : formatRsvpDeadline(invite.eventDate);
 
   useEffect(() => {
     countdownLatest.current = countdown;
@@ -266,21 +293,30 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
     return () => observer.disconnect();
   }, [entered, previewMode, activeSectionsKey]);
 
-  // Countdown tick
+  // Countdown: always sync when date changes; animate once on public page
   useEffect(() => {
+    const next = getCountdown(invite.eventDate);
+    countdownLatest.current = next;
+
+    if (previewMode) {
+      countdownAnimated.current = true;
+      setDisplayCountdown(next);
+      return undefined;
+    }
+
     const tick = () => {
-      const next = getCountdown(invite.eventDate);
-      countdownLatest.current = next;
-      if (countdownAnimated.current) setDisplayCountdown(next);
+      const live = getCountdown(invite.eventDate);
+      countdownLatest.current = live;
+      setDisplayCountdown(live);
     };
     tick();
     const id = window.setInterval(tick, 30_000);
     return () => window.clearInterval(id);
-  }, [invite.eventDate]);
+  }, [invite.eventDate, previewMode]);
 
-  // Animate countdown numbers on first viewport entry
+  // Animate countdown numbers on first viewport entry (public invite only)
   useEffect(() => {
-    if (!entered || countdownAnimated.current) return undefined;
+    if (previewMode || !entered || countdownAnimated.current) return undefined;
     const el = countdownRef.current;
     if (!el) return undefined;
 
@@ -321,7 +357,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [entered]);
+  }, [entered, previewMode]);
 
   const splitAddress = (value, fallback) =>
     String(value || fallback)
@@ -542,38 +578,45 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           <img src={joinUsTitleSvg} alt="Join us in" className="block h-[22px] w-[78px]" draggable={false} />
         </div>
 
-        {/* JUNE — y:667 → top:66, box 239×42, SVG 89×31 */}
+        {/* Month + day/year from eventDate — y:667 → top:66 */}
         <div
-          className="lw-capri-reveal absolute left-[96px] top-[66px] z-[2] flex h-[42px] w-[239px] items-center justify-center"
+          className="lw-capri-reveal absolute left-[96px] top-[66px] z-[2] flex h-[42px] w-[239px] flex-col items-center justify-center"
           style={{ ["--lw-reveal-delay"]: "0.18s" }}
         >
-          {month.toLowerCase() === "june" ? (
-            <img src={juneTitleSvg} alt="JUNE" className="block h-[31px] w-[89px]" draggable={false} />
+          {dateParts.month.toLowerCase() === "june" ? (
+            <img src={juneTitleSvg} alt={dateParts.monthUpper} className="block h-[31px] w-[89px]" draggable={false} />
           ) : (
             <h2 className="text-[36px] uppercase leading-[40px]" style={{ fontFamily: F.serif, fontWeight: 300 }}>
-              {month}
+              {dateParts.monthUpper}
             </h2>
           )}
         </div>
-
-        {/* Invite text — y:715 → top:114, 226×57 */}
         <p
-          className="lw-capri-reveal absolute left-[102px] top-[114px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]"
+          className="lw-capri-reveal absolute left-[96px] top-[108px] z-[2] flex h-[24px] w-[239px] items-center justify-center text-center text-[13px] uppercase tracking-[0.18em]"
+          style={{ fontFamily: F.serif, fontWeight: 300, ["--lw-reveal-delay"]: "0.22s" }}
+        >
+          {dateParts.day} · {dateParts.year}
+          {invite.time ? ` · ${invite.time}` : ""}
+        </p>
+
+        {/* Invite text — pushed down to leave room for day/year */}
+        <p
+          className="lw-capri-reveal absolute left-[102px] top-[132px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]"
           style={{ ["--lw-reveal-delay"]: "0.3s" }}
         >
           {getInviteText(invite, "inviteText", fixedText.inviteText)}
         </p>
 
-        {/* Arrow — y:787 → top:186 */}
+        {/* Arrow */}
         <img
           src={arrowDownSvg}
           alt=""
-          className="lw-capri-arrow pointer-events-none absolute left-[212px] top-[186px] z-[2] h-[19px] w-[6px]"
+          className="lw-capri-arrow pointer-events-none absolute left-[212px] top-[198px] z-[2] h-[19px] w-[6px]"
           draggable={false}
           aria-hidden
         />
 
-        {/* The Day — y:838 → top:237, box 148×46, SVG 110×32 */}
+        {/* The Day */}
         <div
           className="lw-capri-reveal absolute left-[141px] top-[237px] z-[2] flex h-[46px] w-[148px] items-center justify-center"
           style={{ ["--lw-reveal-delay"]: "0.08s" }}
@@ -581,19 +624,22 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           <img src={theDayTitleSvg} alt="The Day" className="block h-[32px] w-[110px]" draggable={false} />
         </div>
 
-        {/* Countdown — y:913 → top:312, 307×64; cols x:0 / 127 / 253 */}
+        {/* Countdown — largeur adaptée aux 3 chiffres (jours) */}
         <div
           ref={countdownRef}
-          className="lw-capri-reveal absolute left-[62px] top-[312px] z-[3] h-[64px] w-[307px]"
+          className="lw-capri-reveal absolute left-[40px] top-[312px] z-[3] flex h-[64px] w-[350px] items-start justify-between px-2"
           style={{ ["--lw-reveal-delay"]: "0.2s" }}
         >
           {[
-            [displayCountdown.days, "Days", 0],
-            [displayCountdown.hours, "Hours", 127],
-            [displayCountdown.minutes, "Minutes", 253],
-          ].map(([value, label, left]) => (
-            <div key={label} className="absolute top-0 h-[64px] w-[44px] text-center" style={{ left }}>
-              <p className="h-[35px] text-[30px] leading-[40px]" style={{ fontFamily: F.serif, fontWeight: 300 }}>
+            [shownCountdown.days, "Days"],
+            [shownCountdown.hours, "Hours"],
+            [shownCountdown.minutes, "Minutes"],
+          ].map(([value, label]) => (
+            <div key={label} className="flex min-w-[72px] flex-1 flex-col items-center text-center">
+              <p
+                className="h-[35px] text-[30px] leading-[40px] tabular-nums"
+                style={{ fontFamily: F.serif, fontWeight: 300 }}
+              >
                 {value}
               </p>
               <p className="mt-[5px] flex h-[24px] items-center justify-center text-[12px] uppercase leading-[18px]">
@@ -783,6 +829,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           alt=""
           className="lw-capri-reveal absolute left-[80px] top-[133px] z-[2] h-[278px] w-[270px] object-cover"
           style={{ ["--lw-reveal-delay"]: "0.4s" }}
+          referrerPolicy="no-referrer"
           draggable={false}
         />
       </section>
@@ -813,7 +860,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
           className="lw-capri-reveal absolute left-[102px] top-[95px] z-[2] flex h-[57px] w-[226px] items-center justify-center text-center text-[12px] uppercase leading-[18px]"
           style={{ ["--lw-reveal-delay"]: "0.28s" }}
         >
-          {getInviteText(invite, "rsvpDeadline", fixedText.rsvpDeadline)}
+          {rsvpDeadlineText}
         </p>
       </section>
 

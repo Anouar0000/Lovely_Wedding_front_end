@@ -4,6 +4,9 @@ import { isFirebaseConfigured, storage } from "../lib/firebase";
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const AUDIO_TYPES = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/mp4", "audio/x-m4a"];
 
+/** Firestore doc ~1 Mo — garder une marge pour le reste de l'invitation */
+const MAX_EMBEDDED_DATA_URL_CHARS = 700_000;
+
 function extensionFor(file) {
   const name = file?.name || "";
   const fromName = name.includes(".") ? name.split(".").pop().toLowerCase() : "";
@@ -13,6 +16,61 @@ function extensionFor(file) {
   if (file?.type === "audio/wav") return "wav";
   if (file?.type === "audio/ogg") return "ogg";
   return file?.type?.startsWith("audio/") ? "mp3" : "jpg";
+}
+
+/**
+ * Compress a local image into a data URL that can be saved in Firestore
+ * (visible after publish without Firebase Storage).
+ */
+export function compressImageToDataUrl(file, { maxEdge = 1200, quality = 0.72 } = {}) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      reject(new Error("Fichier manquant."));
+      return;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Compression image impossible."));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        let q = quality;
+        let dataUrl = canvas.toDataURL("image/jpeg", q);
+        while (dataUrl.length > MAX_EMBEDDED_DATA_URL_CHARS && q > 0.4) {
+          q -= 0.08;
+          dataUrl = canvas.toDataURL("image/jpeg", q);
+        }
+        if (dataUrl.length > MAX_EMBEDDED_DATA_URL_CHARS) {
+          reject(
+            new Error(
+              "Image trop lourde même compressée. Choisis une photo plus légère ou un lien URL."
+            )
+          );
+          return;
+        }
+        resolve(dataUrl);
+      } catch (error) {
+        reject(error);
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Impossible de lire cette image."));
+    };
+    img.src = objectUrl;
+  });
 }
 
 /**

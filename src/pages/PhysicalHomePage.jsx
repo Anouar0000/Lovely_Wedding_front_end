@@ -17,7 +17,7 @@ import PhysicalFaqSection from "../components/home/physical/PhysicalFaqSection";
 function PhysicalHomePage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-urbanist text-lw-text">
-      <div className="flex min-h-[100dvh] flex-col bg-[#F7F2EC]">
+      <div className="flex flex-col bg-[#F7F2EC] lg:min-h-[100dvh]">
         <DigitalHomeHeader mode="imprimee" />
         <PhysicalHeroSection />
       </div>

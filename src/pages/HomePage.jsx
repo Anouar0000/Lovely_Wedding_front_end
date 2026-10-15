@@ -18,7 +18,7 @@ function HomePage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-urbanist text-lw-text">
       {/* Premier écran Figma : header + hero = une seule composition plein viewport */}
-      <div className="flex min-h-[100dvh] flex-col bg-[#F7F2EC]">
+      <div className="flex flex-col bg-[#F7F2EC] lg:min-h-[100dvh]">
         <DigitalHomeHeader mode="digitale" />
         <HeroSection />
       </div>

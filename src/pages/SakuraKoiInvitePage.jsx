@@ -308,8 +308,13 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
     return () => window.clearInterval(id);
   }, [invite.eventDate, invite.time]);
 
-  // Animate countdown numbers the first time the block enters the viewport
+  // Animate countdown on public page; in editor preview show live values immediately
   useEffect(() => {
+    if (previewMode) {
+      countdownAnimated.current = true;
+      setDisplayCountdown(countdown);
+      return undefined;
+    }
     if (!entered || countdownAnimated.current) return undefined;
     const el = countdownRef.current;
     if (!el) return undefined;
@@ -351,12 +356,12 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [entered]);
+  }, [entered, previewMode, countdown]);
 
-  // Keep display in sync after first animation
+  // Keep display in sync after first animation / on date change
   useEffect(() => {
-    if (countdownAnimated.current) setDisplayCountdown(countdown);
-  }, [countdown]);
+    if (countdownAnimated.current || previewMode) setDisplayCountdown(countdown);
+  }, [countdown, previewMode]);
 
   const musicUrl =
     getInviteMedia(invite, "musicUrl", "") ||

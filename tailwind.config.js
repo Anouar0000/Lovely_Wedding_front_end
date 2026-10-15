@@ -51,6 +51,7 @@ module.exports = {
         montserrat: ['"Montserrat"', 'sans-serif'],
         lora: ['"Lora"', 'serif'],
         glacial: ['"Glacial Indifference"', 'system-ui', 'sans-serif'],
+        jost: ['"Jost"', 'system-ui', 'sans-serif'],
         raleway: ['"Raleway"', 'sans-serif'],
         opensans: ['"Open Sans"', 'sans-serif'],
         crimson: ['"Crimson Text"', 'serif'],
