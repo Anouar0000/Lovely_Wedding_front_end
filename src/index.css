@@ -372,12 +372,6 @@ body.hide-scrollbar::-webkit-scrollbar,
   -webkit-mix-blend-mode: screen;
 }
 
-/* Blossom footer PNG — fond noir export Figma → transparent */
-.lw-sakura-blossom {
-  mix-blend-mode: screen;
-  -webkit-mix-blend-mode: screen;
-}
-
 .lw-sakura-koi-flip {
   /* Separate flip from page scale to avoid GPU shear on first paint */
   transform: scaleX(-1);

@@ -22,7 +22,7 @@ import letterContent from "../assets/digital/sakura-koi/letter-content.png";
 import storyLeft from "../assets/digital/sakura-koi/story-left.png";
 import storyRight from "../assets/digital/sakura-koi/story-right.png";
 import venueCircle from "../assets/digital/sakura-koi/venue-circle.png";
-import blossom from "../assets/digital/sakura-koi/blossom-cut.png";
+import blossom from "../assets/digital/sakura-koi/blossom-alpha.png";
 import DigitalInviteEntrance from "../components/digital/DigitalInviteEntrance";
 import AudioPlayer from "../components/audio/AudioPlayer";
 import { toSafeHttpUrl } from "../lib/safeUrl";
@@ -770,7 +770,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
         {/* Footer */}
         <div style={absolutePackLayerStyle(packShifts.footer, PAGE_W, PAGE_H)}>
           <h2
-            className="lw-sakura-reveal lw-sakura-cx absolute left-1/2 top-[3499px] z-10 w-[338px] text-center text-[38px] leading-[40px]"
+            className="lw-sakura-reveal lw-sakura-cx is-in absolute left-1/2 top-[3499px] z-10 w-[338px] text-center text-[38px] leading-[40px]"
             style={{ fontFamily: F.script, color: C.accent }}
           >
             {getInviteText(invite, "seeYou", fixedText.seeYou)}
@@ -778,8 +778,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
           <img
             src={blossom}
             alt=""
-            className="lw-sakura-reveal lw-sakura-blossom pointer-events-none absolute left-[175px] top-[3555px] z-[2] h-[100px] w-[80px] object-contain"
-            style={{ ["--lw-reveal-delay"]: "0.15s" }}
+            className="lw-sakura-reveal is-in pointer-events-none absolute left-[175px] top-[3555px] z-[2] h-[100px] w-[80px] object-contain"
             draggable={false}
           />
         </div>
