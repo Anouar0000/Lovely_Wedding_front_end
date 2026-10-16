@@ -31,7 +31,7 @@ const HERO_VIDEO = "/assets/digital/sakura-koi/hero-inside.mp4";
 const ENTRANCE_VIDEO = "/assets/digital/sakura-koi/entrance.mp4";
 const KOI_VIDEO = "/assets/digital/sakura-koi/koi-swim-v2.webm";
 const KOI_VIDEO_FALLBACK = "/assets/digital/sakura-koi/koi-swim-v2.mp4";
-const KOI_VIDEO_VER = "1703";
+const KOI_VIDEO_VER = "1704";
 
 const defaultInvite = templateConfig.sample;
 const fixedText = templateConfig.fixedText;
@@ -123,8 +123,9 @@ function KoiFish({ left, top, flip = false, width = 58, height = 90, className =
         playsInline
         preload="auto"
       >
-        <source src={`${KOI_VIDEO}?v=${KOI_VIDEO_VER}`} type="video/webm" />
+        {/* MP4 first: iOS ignores WebM alpha and showed a black box */}
         <source src={`${KOI_VIDEO_FALLBACK}?v=${KOI_VIDEO_VER}`} type="video/mp4" />
+        <source src={`${KOI_VIDEO}?v=${KOI_VIDEO_VER}`} type="video/webm" />
       </video>
     </div>
   );

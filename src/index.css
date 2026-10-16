@@ -367,6 +367,9 @@ body.hide-scrollbar::-webkit-scrollbar,
 .lw-sakura-koi-video {
   display: block;
   background: transparent;
+  /* MP4/WebM sans alpha : fond noir → transparent (surtout iOS Safari) */
+  mix-blend-mode: screen;
+  -webkit-mix-blend-mode: screen;
 }
 
 .lw-sakura-koi-flip {
