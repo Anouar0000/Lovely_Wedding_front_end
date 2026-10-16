@@ -199,7 +199,7 @@ function DigitalProductDetailPage() {
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
-      <DigitalHomeHeader mode="digitale" />
+      <DigitalHomeHeader mode="none" />
 
       <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:px-8 lg:pt-10">
         <Link to="/" className="hover:text-lw-accent">

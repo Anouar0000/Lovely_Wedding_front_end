@@ -85,7 +85,7 @@ function InvitationsPhysiquePage() {
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
-      <DigitalHomeHeader mode="imprimee" />
+      <DigitalHomeHeader mode="none" />
 
       <main className="mx-auto w-full max-w-[428px] flex-1 px-4 pb-12 lg:max-w-6xl lg:px-8 lg:pb-20">
         <nav className="flex items-center gap-2 pt-6 text-[14px] text-lw-text lg:pt-10">
