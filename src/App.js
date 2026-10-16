@@ -16,7 +16,6 @@ import { AuthProvider } from './components/auth/AuthProvider';
 import { CartProvider } from './context/CartContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import DigitalInviteDemoLayout from './components/home/DigitalInviteDemoLayout';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import DashboardPage from './pages/DashboardPage';
@@ -47,14 +46,12 @@ function App() {
             <Route path="/invitations-digital/e/:slug" element={<SharedDigitalInvitePage />} />
             <Route path="/invitations-digital/:slug" element={<DigitalProductDetailPage />} />
             <Route path="/e/:slug" element={<SharedDigitalInvitePage />} />
-            <Route element={<DigitalInviteDemoLayout />}>
-              <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
-              <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
-              <Route path="/digital-invitation/club-capri" element={<ClubCapriInvitePage />} />
-              <Route path="/digital-invitation/sakura-koi" element={<SakuraKoiInvitePage />} />
-              <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
-              <Route path="/digital-invitation/majestic-white" element={<MajesticWhiteInvitePage />} />
-            </Route>
+            <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
+            <Route path="/digital-invitation/sidi-bousaid" element={<SidiBouSaidInvitePage />} />
+            <Route path="/digital-invitation/club-capri" element={<ClubCapriInvitePage />} />
+            <Route path="/digital-invitation/sakura-koi" element={<SakuraKoiInvitePage />} />
+            <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
+            <Route path="/digital-invitation/majestic-white" element={<MajesticWhiteInvitePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/cart" element={<CartPage />} />
