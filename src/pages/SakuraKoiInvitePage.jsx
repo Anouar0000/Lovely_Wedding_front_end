@@ -47,7 +47,7 @@ const F = {
   serif: '"Cormorant Garamond", serif',
 };
 const PAGE_W = 430;
-const PAGE_H = 3645;
+const PAGE_H = 3680;
 
 /** Contiguous absolute Y ranges — used to collapse holes when Blocs are off */
 const SAKURA_PACK_RANGES = [
@@ -778,7 +778,7 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
           <img
             src={blossom}
             alt=""
-            className="lw-sakura-reveal pointer-events-none absolute left-[185px] top-[3555px] z-[2] h-[80px] w-[60px] object-contain"
+            className="lw-sakura-reveal lw-sakura-blossom pointer-events-none absolute left-[175px] top-[3555px] z-[2] h-[100px] w-[80px] object-contain"
             style={{ ["--lw-reveal-delay"]: "0.15s" }}
             draggable={false}
           />
