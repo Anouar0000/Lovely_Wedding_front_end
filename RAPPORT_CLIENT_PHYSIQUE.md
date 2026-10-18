@@ -79,6 +79,7 @@ Finaliser la page d’accueil **imprimée** (parité avec la digitale), brancher
 
 ## Technique (interne)
 
+- Commit : `132695b` — *Ship imprint home: CTAs, Start at 49$, scroll-to-top, client reports.*
 - Dépôt : `Anouar0000/Lovely_Wedding_front_end` (branche `master`)
 - Déploiement : `firebase deploy --only hosting:v2` → `lovely-wedding-v2.web.app`
 - Rapport digital précédent : `RAPPORT_CLIENT_DIGITAL.md`
