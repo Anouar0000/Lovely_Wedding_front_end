@@ -1,95 +1,83 @@
-# Rapport de livraison — Site Lovely Invitations (version imprimée)
+# Rapport de livraison — Product overview physique (Rustique)
 
 **Date :** 18 octobre 2026  
 **Environnement :** Production (Firebase Hosting v2)  
-**URL :** https://lovely-wedding-v2.web.app  
-**Page d’accueil imprimée :** https://lovely-wedding-v2.web.app/imprimee  
-**Catalogue imprimée :** https://lovely-wedding-v2.web.app/invitations-physique
+**URL :** https://lovely-wedding-v2.web.app/  
+**Exemple produit :** https://lovely-wedding-v2.web.app/invitation-model/Rustique%203  
 
 ---
 
-## Objectif de cette livraison
+## Objectif
 
-Finaliser la page d’accueil **imprimée** (parité avec la digitale), brancher les boutons vers le catalogue / les fiches produit, aligner les prix affichés, et corriger le scroll pour arriver toujours en haut de page après un clic.
+Finaliser la page **détail invitation imprimée** (Product overview physique) selon Figma : configuration quantité / format / motif, commande, avis, recommandations — sans créer de pages hors périmètre.
 
 ---
 
 ## Ce qui a été livré
 
-### 1. Accueil imprimée (`/imprimee`)
-- Hero avec rail d’invitations en défilement continu (mockups téléphone).
-- Boutons **Découvrir la collection** et clics sur les cartes du hero → catalogue `/invitations-physique`.
-- Sections : collection, étapes / livraison, bestsellers, expérience, dragées, communauté, avis, FAQ, footer.
-- **Pas de section Packs** sur l’imprimée (volontairement retirée).
+### 1. Catalogue imprimée
+- Filtres Rustique / Outeya / Cire
+- Marge **18px** entre le dernier prix « Start at 49$ » et le footer
 
-### 2. Prix
-- Affichage unifié : **Start at 49$** (bestsellers + catalogue).
-- Remplacement des anciens libellés « à partir de 1.5dt/pcs ».
+### 2. Page produit (ex. Rustique 3)
+- Image produit (coins arrondis 20px)
+- Note 4.7 (21), prix unitaire 1.5 DT
+- Sélecteurs **Quantité**, **Format**, **Motif** via popup
+- Résumé + total (ex. 100 → **150dt**, Glacial Bold 18/24)
+- Bouton **Passer la commande** → panier
 
-### 3. Boutons & navigation
-- Bestsellers : clic produit → fiche modèle (`/invitation-model/...`) avec prix 49$.
-- Collection / CTAs → catalogue imprimée.
-- Fil d’Ariane du catalogue : **Accueil** renvoie vers `/imprimee` (et non la digitale).
-- Header : mode Imprimée (switch Digitale / Imprimée) cohérent.
+### 3. Popups Quantité / Format / Motif
+- Overlay avant-plan `#C4A69C` à **50 %**
+- Ligne sélectionnée : **bordure** `#C4A69C` (plus de fond jaune)
+- Padding gauche / droite sur les lignes
+- Quantités 100 → 270 avec totaux (150DT … 405DT)
 
-### 4. Hero (visuels)
-- 6 visuels distincts sur le rail (correction du doublon d’image).
+### 4. Accordéons + avis
+- Fond beige `#F7F2EC` (Comment ça marche / Délai / Ce qui est inclus + avis)
+- Cartes avis Figma (Lilia & Rayen, étoiles, dates)
+- Bouton **Ecrire un avis** sans ombre
+- Espacement **52px** entre dernière ligne d’accordéon et cartes avis
+- **53px** entre le bloc beige et « Autres recommandations »
+- **53px** entre le titre et les cartes recommandations
+- **53px** sous la section recommandations
 
-### 5. Communauté (imprimée)
-- Espacement / padding aligné pour la version physique uniquement.
+### 5. Recommandations
+- Produits physiques de la même catégorie (ex. Versailles, Passeport Rosé)
 
-### 6. Scroll après navigation
-- Correction : après un clic (catalogue, produit, etc.), la page s’ouvre **en haut**, plus au milieu ni en bas.
-- Composant global `ScrollToTop` sur tous les changements de route.
-
----
-
-## Points déjà en place (rappel)
-
-- Page catalogue `/invitations-physique`.
-- Parcours modèle / personnalisation existant.
-- Switch Digitale (`/`) ↔ Imprimée (`/imprimee`).
-- Footer partagé (réseaux Instagram / Facebook, ancres FAQ / communauté / avis).
+### 6. Correctif technique
+- Accès direct URL `/invitation-model/Rustique%203` fonctionne (paramètre de route `modelName`)
 
 ---
 
-## Points en attente / à valider avec vous
+## Tests effectués
 
-| Élément | Statut | Action client |
-|--------|--------|----------------|
-| Prix « Start at 49$ » | Affiché partout imprimée | Confirmer devises / libellé FR si besoin (ex. « À partir de 49 $ ») |
-| Fiches produit imprimée | Navigation vers `/invitation-model` | Valider que le parcours personnalisation / commande imprint est le bon |
-| Textes FAQ & avis (physique) | Structure en place | Valider / remplacer par contenus définitifs |
-| Section Packs imprimée | Absente (demandé) | Indiquer si une offre packs papier doit être réintroduite plus tard |
-| Contenu communauté (vidéos / handles) | Layout prêt | Fournir contenus spécifiques imprimée si différents de la digitale |
-
----
-
-## Comment tester rapidement
-
-1. Ouvrir https://lovely-wedding-v2.web.app/imprimee  
-2. Vérifier le hero (rail fluide, 6 invitations distinctes).  
-3. Cliquer **Découvrir la collection** → catalogue, **en haut de page**.  
-4. Depuis les bestsellers, cliquer un produit → fiche modèle, **en haut**.  
-5. Vérifier les prix **Start at 49$**.  
-6. Tester le switch **Digitale / Imprimée**.  
-7. Sur le catalogue, cliquer **Accueil** → revient sur `/imprimee`.
+| Action | Résultat |
+|--------|----------|
+| Quantité 200 | Total 300dt |
+| Format Carré | OK |
+| Motif Fleurs Blanches | OK |
+| Accordéon Comment ça marche | OK |
+| Passer la commande | Panier avec Rustique 3, 300 DT |
 
 ---
 
-## Technique (interne)
+## Points en attente / à valider
 
-- Commit : `132695b` — *Ship imprint home: CTAs, Start at 49$, scroll-to-top, client reports.*
-- Dépôt : `Anouar0000/Lovely_Wedding_front_end` (branche `master`)
-- Déploiement : `firebase deploy --only hosting:v2` → `lovely-wedding-v2.web.app`
-- Rapport digital précédent : `RAPPORT_CLIENT_DIGITAL.md`
+| Élément | Statut |
+|--------|--------|
+| Textes FAQ accordéons | Placeholders — à valider |
+| Vrais avis clients | Structure Figma — contenus à confirmer |
+| Images catalogue physiques | Vérifier assets prod si manquants |
+| Formulaire « Ecrire un avis » | Bouton UI — pas encore de backend |
 
 ---
 
-## Prochaine étape proposée
+## Technique
 
-1. Valider prix / devise et parcours fiche produit imprimée.  
-2. Valider textes FAQ + avis côté physique.  
-3. Confirmer si des packs papier sont prévus ultérieurement.
+- Commit : `62f57ce` — *Ship physical product overview: qty popups, reviews, spacing.*
+- Branche : `master`
+- Déploiement : `firebase deploy --only hosting:v2`
 
-Merci — n’hésitez pas à remonter tout écart par rapport à la maquette Figma ou aux contenus réels.
+---
+
+Merci — n’hésitez pas à remonter tout écart Figma ou contenu à ajuster.
