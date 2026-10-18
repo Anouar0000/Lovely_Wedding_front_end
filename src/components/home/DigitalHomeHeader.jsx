@@ -48,6 +48,9 @@ function DigitalHomeHeader({ mode = "digitale" }) {
               type="button"
               className="hidden size-6 items-center justify-center lg:inline-flex"
               aria-label="Recherche"
+              onClick={() =>
+                navigate(mode === "imprimee" ? "/invitations-physique" : "/invitations-digital")
+              }
             >
               <LuSearch {...iconProps} />
             </button>
@@ -69,7 +72,7 @@ function DigitalHomeHeader({ mode = "digitale" }) {
 
           <button
             type="button"
-            onClick={() => navigate("/")}
+            onClick={() => navigate(mode === "imprimee" ? "/imprimee" : "/")}
             className="flex h-[31px] min-w-0 items-center justify-center"
           >
             <span className="lw-logo text-[26px] leading-none tracking-normal lg:text-[28px]">

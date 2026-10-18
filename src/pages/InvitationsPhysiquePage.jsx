@@ -13,42 +13,42 @@ const PRODUCTS = [
   {
     name: "Versailles",
     img: `${FIGMA}/catalog-4.png`,
-    price: "à partir de 1.5dt/pcs",
+    price: "Start at 49$",
     filled: false,
     category: "Rustique",
   },
   {
     name: "Sacré cœur",
     img: `${FIGMA}/catalog-1.png`,
-    price: "à partir de 1.5dt/pcs",
+    price: "Start at 49$",
     filled: true,
     category: "Outeya",
   },
   {
     name: "Aimé",
     img: `${FIGMA}/catalog-5.png`,
-    price: "à partir de 1.5dt/pcs",
+    price: "Start at 49$",
     filled: false,
     category: "Cire",
   },
   {
     name: "Passeport rosé",
     img: `${FIGMA}/catalog-2.png`,
-    price: "à partir de 1.5dt/pcs",
+    price: "Start at 49$",
     filled: false,
     category: "Rustique",
   },
   {
     name: "Rustique 3",
     img: `${FIGMA}/catalog-6.png`,
-    price: "à partir de 1.5dt/pcs",
+    price: "Start at 49$",
     filled: false,
     category: "Rustique",
   },
   {
     name: "Arabesque 1",
     img: `${FIGMA}/catalog-3.png`,
-    price: "à partir de 1.5dt/pcs",
+    price: "Start at 49$",
     filled: false,
     category: "Outeya",
   },
@@ -74,7 +74,7 @@ function InvitationsPhysiquePage() {
       state: {
         model: {
           name: p.name,
-          price: 1.5,
+          price: 49,
           image: p.img,
           templateId: p.name,
         },
@@ -89,7 +89,7 @@ function InvitationsPhysiquePage() {
 
       <main className="mx-auto w-full max-w-[428px] flex-1 px-4 pb-12 lg:max-w-6xl lg:px-8 lg:pb-20">
         <nav className="flex items-center gap-2 pt-6 text-[14px] text-lw-text lg:pt-10">
-          <Link to="/" className="font-normal hover:text-lw-accent">
+          <Link to="/imprimee" className="font-normal hover:text-lw-accent">
             Accueil
           </Link>
           <span aria-hidden className="text-lw-muted">

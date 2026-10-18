@@ -9,31 +9,45 @@ const products = [
     id: "versailles",
     name: "Versailles",
     img: a.productVersailles,
-    price: "à partir de 1.5dt/pcs",
-    to: "/invitations-physique",
+    price: "Start at 49$",
+    category: "Rustique",
   },
   {
     id: "sacre-coeur",
     name: "Sacré cœur",
     img: a.productSacreCoeur,
-    price: "à partir de 1.5dt/pcs",
-    to: "/invitations-physique",
+    price: "Start at 49$",
+    category: "Outeya",
   },
   {
     id: "aime",
     name: "Aimé",
     img: a.productAime,
-    price: "à partir de 1.5dt/pcs",
-    to: "/invitations-physique",
+    price: "Start at 49$",
+    category: "Cire",
   },
   {
     id: "passeport-rose",
     name: "Passeport rosé",
     img: a.productPasseport,
-    price: "à partir de 1.5dt/pcs",
-    to: "/invitations-physique",
+    price: "Start at 49$",
+    category: "Rustique",
   },
 ];
+
+const openPhysicalProduct = (navigate, p) => {
+  navigate(`/invitation-model/${encodeURIComponent(p.name)}`, {
+    state: {
+      model: {
+        name: p.name,
+        price: 49,
+        image: p.img,
+        templateId: p.name,
+      },
+      selectedCategory: p.category,
+    },
+  });
+};
 
 /** Invitations physiques — parity Digitale (grid, favoris, prix bold) */
 function PhysicalBestsellersSection() {
@@ -71,7 +85,7 @@ function PhysicalBestsellersSection() {
                       toggleFavorite({
                         id: p.id,
                         title: p.name,
-                        to: p.to,
+                        to: `/invitation-model/${encodeURIComponent(p.name)}`,
                         image: p.img,
                         productType: "print",
                       });
@@ -88,7 +102,7 @@ function PhysicalBestsellersSection() {
                   <button
                     type="button"
                     className="w-full text-left"
-                    onClick={() => navigate("/invitations-physique")}
+                    onClick={() => openPhysicalProduct(navigate, p)}
                   >
                     <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/260] lg:h-auto lg:min-h-[280px] lg:group-hover:shadow-md">
                       <img

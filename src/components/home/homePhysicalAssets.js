@@ -2,13 +2,13 @@ const FIGMA = "/assets/home-physical/figma";
 
 export const homePhysicalAssets = {
   heroVisual: `${FIGMA}/hero-visual.png`,
-  // Hero rail — invitations imprimées (comme covers digitales)
+  // Hero rail — 6 visuels distincts (catalog-1 = produit-1, éviter le doublon)
   heroCoverSacre: `${FIGMA}/product-1.png`,
   heroCoverPasseport: `${FIGMA}/product-2.png`,
   heroCoverVersailles: `${FIGMA}/product-3.png`,
   heroCoverAime: `${FIGMA}/product-4.png`,
   heroCoverFloral: `${FIGMA}/catalog-3.png`,
-  heroCoverEnvelopes: `${FIGMA}/catalog-1.png`,
+  heroCoverEnvelopes: `${FIGMA}/catalog-6.png`,
   bestsellerLeft: `${FIGMA}/product-4.png`,
   bestsellerCenter: `${FIGMA}/exp-1.png`,
   bestsellerRight: `${FIGMA}/exp-2.png`,

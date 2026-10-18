@@ -14,10 +14,15 @@ const INVITES = [
 // Double liste : assez de cartes à droite jusqu’à la fin de boucle (évite le trou).
 const RAIL = [...INVITES, ...INVITES];
 
-/** Même mockup que l’ancien (194×389, bord 6px, encoche) — un par invitation. */
-function InviteCard({ invite, index }) {
+/** Même mockup que l’ancien — un par invitation, clic → catalogue. */
+function InviteCard({ invite, index, onOpen }) {
   return (
-    <div className="relative h-[428px] w-[200px] shrink-0 rounded-[32px] border-[4px] border-[#131313] shadow-[0_20px_45px_-20px_rgba(75,66,66,0.55)] lg:h-[523px] lg:w-[244px] lg:border-[5px]">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="relative h-[428px] w-[200px] shrink-0 rounded-[32px] border-[4px] border-[#131313] shadow-[0_20px_45px_-20px_rgba(75,66,66,0.55)] lg:h-[523px] lg:w-[244px] lg:border-[5px]"
+      aria-label={`Voir ${invite.name}`}
+    >
       <div className="h-full w-full overflow-hidden rounded-[26px] bg-[#F7F2EC]">
         <img
           src={invite.cover}
@@ -31,17 +36,22 @@ function InviteCard({ invite, index }) {
         className="pointer-events-none absolute left-1/2 top-[8px] h-[12px] w-[50px] -translate-x-1/2 rounded-full bg-[#131313] lg:top-[10px] lg:h-[14px] lg:w-[60px]"
         aria-hidden
       />
-    </div>
+    </button>
   );
 }
 
 /** Rail horizontal : chaque invitation dans son mockup, défilement continu. */
-function InviteRail() {
+function InviteRail({ onOpen }) {
   return (
     <div className="relative h-[428px] w-full shrink-0 overflow-hidden lg:h-[523px]">
       <div className="lw-hero-rail absolute left-1/2 top-0 flex w-max gap-[15px] lg:gap-[20px]">
         {RAIL.map((invite, i) => (
-          <InviteCard key={`${invite.name}-${i}`} invite={invite} index={i} />
+          <InviteCard
+            key={`${invite.name}-${i}`}
+            invite={invite}
+            index={i}
+            onOpen={onOpen}
+          />
         ))}
       </div>
     </div>
@@ -51,6 +61,7 @@ function InviteRail() {
 /** Hero Figma Main Physical — rail animé comme Digitale */
 function PhysicalHeroSection() {
   const navigate = useNavigate();
+  const goCatalog = () => navigate("/invitations-physique");
 
   return (
     <section className="flex flex-1 flex-col overflow-x-hidden bg-[#F7F2EC] lg:justify-center lg:pb-20 lg:pt-14">
@@ -67,7 +78,7 @@ function PhysicalHeroSection() {
           </p>
           <button
             type="button"
-            onClick={() => navigate("/invitations-physique")}
+            onClick={goCatalog}
             className="mt-10 hidden h-[48px] items-center justify-center gap-2 rounded-full bg-[#A97C72] px-7 font-urbanist text-[15px] font-medium leading-none text-white shadow-[0_8px_20px_rgba(75,66,66,0.18)] hover:bg-[#966B62] lg:inline-flex"
           >
             Découvrir la collection
@@ -78,13 +89,13 @@ function PhysicalHeroSection() {
         </div>
 
         <div className="my-[25px] flex w-full justify-center lg:my-0">
-          <InviteRail />
+          <InviteRail onOpen={goCatalog} />
         </div>
 
         <div className="flex justify-center px-6 pb-[25px] lg:hidden">
           <button
             type="button"
-            onClick={() => navigate("/invitations-physique")}
+            onClick={goCatalog}
             className="inline-flex h-[48px] w-auto items-center justify-center gap-2 rounded-full bg-[#A97C72] px-7 font-urbanist text-[15px] font-medium leading-none text-white shadow-[0_8px_20px_rgba(75,66,66,0.18)] hover:bg-[#966B62]"
           >
             Découvrir la collection

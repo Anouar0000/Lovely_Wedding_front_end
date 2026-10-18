@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function scrollToSection(e, id) {
   e.preventDefault();
@@ -57,21 +58,41 @@ function DigitalHomeFooter() {
           <div>
             <h3 className="font-glacial text-[14px] font-bold leading-6 text-[#E8DFD5]">SHOP</h3>
             <ul className="mt-2.5 space-y-0 font-glacial text-[14px] font-normal leading-[18px] text-[#E8DFD5]">
-              <li>Envelopes</li>
-              <li>Liners</li>
-              <li>Stamps</li>
+              <li>
+                <Link to="/invitations-physique" className="hover:underline">
+                  Envelopes
+                </Link>
+              </li>
+              <li>
+                <Link to="/invitations-physique" className="hover:underline">
+                  Liners
+                </Link>
+              </li>
+              <li>
+                <Link to="/invitations-physique" className="hover:underline">
+                  Stamps
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h3 className="font-glacial text-[14px] font-bold leading-6 text-[#E8DFD5]">À PROPOS</h3>
             <ul className="mt-2.5 space-y-0 font-glacial text-[14px] font-normal leading-[18px] text-[#E8DFD5]">
               <li>
-                <a href="#communaute" className="hover:underline" onClick={(e) => scrollToSection(e, "communaute")}>
+                <a
+                  href="#communaute"
+                  className="hover:underline"
+                  onClick={(e) => scrollToSection(e, "communaute")}
+                >
                   Community
                 </a>
               </li>
               <li>
-                <a href="#our-story" className="hover:underline" onClick={(e) => scrollToSection(e, "our-story")}>
+                <a
+                  href="#our-story"
+                  className="hover:underline"
+                  onClick={(e) => scrollToSection(e, "our-story")}
+                >
                   Our Story
                 </a>
               </li>
@@ -85,8 +106,16 @@ function DigitalHomeFooter() {
                   FAQ
                 </a>
               </li>
-              <li>Contact</li>
-              <li>Shipping</li>
+              <li>
+                <Link to="/login" className="hover:underline">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+                  Shipping
+                </a>
+              </li>
             </ul>
           </div>
           <div>
@@ -117,7 +146,14 @@ function DigitalHomeFooter() {
         </div>
 
         <p className="mt-10 text-center font-glacial text-[12px] font-normal leading-6 text-[#A79C92] lg:mt-12">
-          © 2026 Lovely Invitations · Confidentialité · CGV
+          © 2026 Lovely Invitations ·{" "}
+          <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+            Confidentialité
+          </a>{" "}
+          ·{" "}
+          <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+            CGV
+          </a>
         </p>
       </div>
     </footer>

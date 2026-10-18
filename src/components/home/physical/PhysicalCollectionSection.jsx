@@ -89,19 +89,26 @@ function PhysicalCollectionSection() {
           const isActive = activeIndex === i;
           const mobileOrder = card.featured ? "order-1" : i === 0 ? "order-2" : "order-3";
           return (
-            <img
+            <button
               key={i}
+              type="button"
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              src={card.src}
-              alt={card.alt}
-              className={`pointer-events-none shrink-0 snap-center rounded-[5px] object-cover transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
+              onClick={() => navigate("/invitations-physique")}
+              className={`shrink-0 snap-center overflow-hidden rounded-[5px] transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
                 isActive ? "h-[410px] opacity-100 shadow-md" : "h-[320px] opacity-90"
               } ${card.desktopClass}`}
-              draggable={false}
-              loading={i > 0 ? "lazy" : undefined}
-            />
+              aria-label="Voir la collection imprimée"
+            >
+              <img
+                src={card.src}
+                alt={card.alt}
+                className="pointer-events-none h-full w-full object-cover"
+                draggable={false}
+                loading={i > 0 ? "lazy" : undefined}
+              />
+            </button>
           );
         })}
       </div>

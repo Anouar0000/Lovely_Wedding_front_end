@@ -30,10 +30,12 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import PaymentResultPage from './pages/PaymentResultPage';
 import TestPDFDownload from './pages/TestPDFDownload';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AuthProvider>
         <CartProvider>
           <FavoritesProvider>

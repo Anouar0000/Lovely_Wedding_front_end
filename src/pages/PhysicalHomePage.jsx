@@ -8,7 +8,6 @@ import PhysicalBestsellersSection from "../components/home/physical/PhysicalBest
 import FeaturesMarquee from "../components/home/FeaturesMarquee";
 import PhysicalExperienceSection from "../components/home/physical/PhysicalExperienceSection";
 import PhysicalDrageesSection from "../components/home/physical/PhysicalDrageesSection";
-import PhysicalPacksSection from "../components/home/physical/PhysicalPacksSection";
 import PhysicalSocialSection from "../components/home/physical/PhysicalSocialSection";
 import PhysicalReviewsSection from "../components/home/physical/PhysicalReviewsSection";
 import PhysicalFaqSection from "../components/home/physical/PhysicalFaqSection";
@@ -38,7 +37,6 @@ function PhysicalHomePage() {
         <div className="h-10 bg-white lg:h-14" aria-hidden />
         <PhysicalExperienceSection />
         <PhysicalDrageesSection />
-        <PhysicalPacksSection />
         <PhysicalSocialSection />
         <PhysicalReviewsSection />
         <PhysicalFaqSection />

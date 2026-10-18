@@ -29,7 +29,7 @@ function PhysicalSocialSection() {
   }, [deskStart]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section id="communaute" className="scroll-mt-24 overflow-x-hidden bg-white py-10 lg:py-24">
+    <section id="communaute" className="scroll-mt-24 overflow-x-hidden bg-white pb-10 pt-4 lg:pb-24 lg:pt-10">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <h2 className="px-4 text-center lw-h1 lg:text-[40px]">Communauté</h2>
         <p className="mx-auto mt-2 max-w-[241px] px-4 text-center lw-sub lg:mt-3 lg:max-w-none lg:text-[18px]">
