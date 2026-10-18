@@ -11,12 +11,12 @@ import { useFavorites } from "../context/FavoritesContext";
 const FILTERS = ["Tous", "Romantique", "Moderne", "Arabesque"];
 
 const PRODUCTS = [
-  { name: "Club Capri", img: a.cardCapri, filled: true, to: "/invitations-digital/club-capri", category: "Moderne" },
-  { name: "Sakura Koi", img: a.cardSakura, filled: false, to: "/invitations-digital/sakura-koi", category: "Romantique" },
-  { name: "Sidi Bou Said", img: a.cardSidi, filled: false, to: "/invitations-digital/sidi-bousaid", category: "Arabesque" },
-  { name: "La Dolce Vita", img: a.cardDolce, filled: true, to: "/invitations-digital/dolce-vita", category: "Romantique" },
-  { name: "Bridgerton", img: a.themeBridgeton, filled: false, to: "/invitations-digital/bridgerton", category: "Moderne" },
-  { name: "Majestic White", img: a.themeMajesticWhite, filled: true, to: "/invitations-digital/majestic-white", category: "Romantique" },
+  { id: "club-capri", name: "Club Capri", img: a.cardCapri, filled: true, to: "/invitations-digital/club-capri", category: "Moderne" },
+  { id: "sakura-koi", name: "Sakura Koi", img: a.cardSakura, filled: false, to: "/invitations-digital/sakura-koi", category: "Romantique" },
+  { id: "sidi-bousaid", name: "Sidi Bou Said", img: a.cardSidi, filled: false, to: "/invitations-digital/sidi-bousaid", category: "Arabesque" },
+  { id: "dolce-vita", name: "La Dolce Vita", img: a.cardDolce, filled: true, to: "/invitations-digital/dolce-vita", category: "Romantique" },
+  { id: "bridgerton", name: "Bridgerton", img: a.themeBridgeton, filled: false, to: "/invitations-digital/bridgerton", category: "Moderne" },
+  { id: "majestic-white", name: "Majestic White", img: a.themeMajesticWhite, filled: true, to: "/invitations-digital/majestic-white", category: "Romantique" },
 ];
 
 function InvitationsDigitalPage() {
@@ -70,9 +70,9 @@ function InvitationsDigitalPage() {
 
         <div className="mt-6 grid grid-cols-2 gap-4 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
           {products.map((p) => {
-            const liked = isFavorite(p.name);
+            const liked = isFavorite(p.id);
             return (
-              <article key={p.name + p.to} className="group relative">
+              <article key={p.id} className="group relative">
                 <button
                   type="button"
                   aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -80,7 +80,13 @@ function InvitationsDigitalPage() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleFavorite(p.name);
+                    toggleFavorite({
+                      id: p.id,
+                      title: p.name,
+                      to: p.to,
+                      image: p.img,
+                      productType: "digital",
+                    });
                   }}
                   className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90"
                 >

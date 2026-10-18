@@ -13,10 +13,12 @@ jest.mock("../context/CartContext", () => ({
 
 jest.mock("../context/FavoritesContext", () => ({
   useFavorites: () => ({
+    items: [],
     ids: [],
+    count: 0,
     isFavorite: () => false,
     toggleFavorite: () => {},
-    count: 0,
+    removeFavorite: () => {},
   }),
 }));
 

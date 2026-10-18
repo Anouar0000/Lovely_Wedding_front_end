@@ -7,21 +7,25 @@ import { homeDigitalAssets as a } from "./homeDigitalAssets";
 /** Invitations Web — design hero (cover + cadre iPhone) */
 const cards = [
   {
+    id: "sidi-bousaid",
     title: "Sidi Bou Said",
     image: a.heroCoverSidi,
     to: "/invitations-digital/sidi-bousaid",
   },
   {
+    id: "celestial",
     title: "Celestial",
     image: a.heroCoverSakura,
     to: "/invitations-digital/celestial",
   },
   {
-    title: "Bridgeton",
+    id: "bridgerton",
+    title: "Bridgerton",
     image: a.heroCoverBridgerton,
     to: "/invitations-digital/bridgerton",
   },
   {
+    id: "majestic-white",
     title: "Majestic White",
     image: a.heroCoverMajestic,
     to: "/invitations-digital/majestic-white",
@@ -72,9 +76,9 @@ function InvitationsWebSection() {
 
         <div className="mt-[35px] grid grid-cols-2 gap-4 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-8 lg:px-0">
           {cards.map((c) => {
-            const liked = isFavorite(c.title);
+            const liked = isFavorite(c.id);
             return (
-              <article key={c.title} className="group flex flex-col">
+              <article key={c.id} className="group flex flex-col">
                 <div className="relative">
                   <button
                     type="button"
@@ -83,7 +87,13 @@ function InvitationsWebSection() {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      toggleFavorite(c.title);
+                      toggleFavorite({
+                        id: c.id,
+                        title: c.title,
+                        to: c.to,
+                        image: c.image,
+                        productType: "digital",
+                      });
                     }}
                     className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
                   >

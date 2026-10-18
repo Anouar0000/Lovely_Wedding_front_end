@@ -6,24 +6,32 @@ import { homePhysicalAssets as a } from "../homePhysicalAssets";
 
 const products = [
   {
+    id: "versailles",
     name: "Versailles",
     img: a.productVersailles,
     price: "à partir de 1.5dt/pcs",
+    to: "/invitations-physique",
   },
   {
+    id: "sacre-coeur",
     name: "Sacré cœur",
     img: a.productSacreCoeur,
     price: "à partir de 1.5dt/pcs",
+    to: "/invitations-physique",
   },
   {
+    id: "aime",
     name: "Aimé",
     img: a.productAime,
     price: "à partir de 1.5dt/pcs",
+    to: "/invitations-physique",
   },
   {
+    id: "passeport-rose",
     name: "Passeport rosé",
     img: a.productPasseport,
     price: "à partir de 1.5dt/pcs",
+    to: "/invitations-physique",
   },
 ];
 
@@ -49,9 +57,9 @@ function PhysicalBestsellersSection() {
 
         <div className="mt-[35px] grid grid-cols-2 gap-4 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-8 lg:px-0">
           {products.map((p) => {
-            const liked = isFavorite(p.name);
+            const liked = isFavorite(p.id);
             return (
-              <article key={p.name} className="group flex flex-col">
+              <article key={p.id} className="group flex flex-col">
                 <div className="relative">
                   <button
                     type="button"
@@ -60,7 +68,13 @@ function PhysicalBestsellersSection() {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      toggleFavorite(p.name);
+                      toggleFavorite({
+                        id: p.id,
+                        title: p.name,
+                        to: p.to,
+                        image: p.img,
+                        productType: "print",
+                      });
                     }}
                     className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
                   >

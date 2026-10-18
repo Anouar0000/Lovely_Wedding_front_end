@@ -142,7 +142,7 @@ body.hide-scrollbar::-webkit-scrollbar,
   --lw-step: 215px; /* 200 + 15 */
   --lw-half: 100px; /* demi-mockup */
   transform: translateX(calc(-1 * (var(--lw-half) + 1 * var(--lw-step))));
-  animation: lw-hero-rail 8s linear infinite;
+  animation: lw-hero-rail 12s linear infinite;
   will-change: transform;
 }
 

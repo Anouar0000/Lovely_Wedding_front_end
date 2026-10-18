@@ -1,83 +1,123 @@
 import React from "react";
 
-/** Lettres d’amour — Figma 1229:714 / 1247:2121 */
+/** Lettres d’amour — Figma 1229:713 (fond) + 1695:761 (contenu) */
+function ArrowIcon() {
+  return (
+    <svg width={18} height={18} viewBox="0 0 18 18" fill="none" aria-hidden className="shrink-0">
+      <path
+        d="M3.75 9H14.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 3.75L14.25 9L9 14.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const reviews = [
   {
-    name: "Asma",
-    date: "23 / 11 / 2025",
-    title: "Travail minutieux",
-    text: "Merci énormément wallah yaatikom alf sa7a pour votre professionnalisme , j’ai trop adoré le travail minutieux",
+    name: "Lilia & Rayen",
+    meta: "Achat vérifié • Formule Signature",
+    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
+    date: "Posté le 12 Septembre 2026",
   },
   {
-    name: "Asma",
-    date: "23 / 11 / 2025",
-    title: "Travail minutieux",
-    text: "Merci énormément wallah yaatikom alf sa7a pour votre professionnalisme , j’ai trop adoré le travail minutieux",
+    name: "Lilia & Rayen",
+    meta: "Achat vérifié • Formule Signature",
+    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
+    date: "Posté le 12 Septembre 2026",
   },
   {
-    name: "Asma",
-    date: "23 / 11 / 2025",
-    title: "Travail minutieux",
-    text: "Merci énormément wallah yaatikom alf sa7a pour votre professionnalisme , j’ai trop adoré le travail minutieux",
-  },
-  {
-    name: "Asma",
-    date: "23 / 11 / 2025",
-    title: "Travail minutieux",
-    text: "Merci énormément wallah yaatikom alf sa7a pour votre professionnalisme , j’ai trop adoré le travail minutieux",
+    name: "Lilia & Rayen",
+    meta: "Achat vérifié • Formule Signature",
+    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
+    date: "Posté le 12 Septembre 2026",
   },
 ];
 
+function Stars({ size = "sm", className = "", label }) {
+  const textSize = size === "lg" ? "text-[14px]" : "text-[12px]";
+  return (
+    <span
+      className={`inline-flex gap-0.5 leading-none text-[#ffd220] ${textSize} ${className}`}
+      aria-label={label}
+      aria-hidden={!label}
+    >
+      {"★★★★★".split("").map((s, i) => (
+        <span key={i}>{s}</span>
+      ))}
+    </span>
+  );
+}
+
 function ReviewsSection() {
   return (
-    <section className="bg-[#f4f4f4] px-4 py-12 lg:px-8 lg:py-20">
-      <div className="mx-auto w-full max-w-3xl lg:max-w-4xl">
-        <h2 className="text-center lw-h1 lg:text-[40px]">
+    <section id="our-story" className="scroll-mt-24 bg-[#f7f2ec] px-4 py-12 lg:px-8 lg:py-20">
+      <div className="mx-auto w-full max-w-[399px] lg:max-w-xl">
+        <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-lw-text lg:text-[40px] lg:leading-tight">
           Lettres d&apos;amour
         </h2>
-        <p className="mx-auto mt-3 max-w-[241px] text-center lw-sub lg:max-w-xl lg:text-[18px]">
+        <p className="mx-auto mt-2 max-w-[241px] text-center font-glacial text-[18px] font-normal leading-6 text-lw-muted">
           Découvrez les avis de nos mariés.
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 lg:mt-10">
-          <p className="font-urbanist text-[14px] font-bold text-lw-text lg:text-[16px]">4.7</p>
-          <div className="flex gap-1 text-lw-accent" aria-label="4.7 sur 5">
-            {"★★★★★".split("").map((s, i) => (
-              <span key={i}>{s}</span>
-            ))}
+        {/* Score card */}
+        <div className="mt-8 rounded-3xl border-[0.5px] border-lw-accent bg-white px-5 py-5 lg:mt-10">
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="font-lora text-[40px] font-medium leading-9 tracking-[-0.4px] text-lw-text">
+              4.7
+            </p>
+            <Stars size="lg" label="4.7 sur 5" />
           </div>
-          <p className="font-urbanist text-[14px] font-bold capitalize text-lw-text lg:text-[16px]">
-            Basée sur 142 Avis
+          <p className="mt-2 font-glacial text-[14px] font-normal leading-[18px] text-lw-text">
+            Plus de 250 couples satisfaits
+          </p>
+          <p className="mt-1 font-glacial text-[12px] font-normal leading-6 text-lw-muted">
+            95% de recommandations positives
           </p>
         </div>
 
-        <div className="mt-6 divide-y divide-lw-line border-y border-lw-line lg:mt-8">
+        {/* Review cards */}
+        <div className="mt-4 flex flex-col gap-4 lg:mt-5 lg:gap-5">
           {reviews.map((r, i) => (
-            <article key={`${r.name}-${i}`} className="py-5 lg:py-7">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-baseline gap-2">
-                  <p className="lw-h3">{r.name}</p>
-                  <p className="lw-caption">{r.date}</p>
-                </div>
-                <div className="flex gap-0.5 text-sm text-lw-accent" aria-label="5 étoiles">
-                  {"★★★★★".split("").map((s, j) => (
-                    <span key={j}>{s}</span>
-                  ))}
-                </div>
+            <article
+              key={`${r.name}-${i}`}
+              className="rounded-3xl border-[0.5px] border-lw-accent bg-white px-5 py-5"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text">
+                  {r.name}
+                </p>
+                <Stars className="mt-2 shrink-0" />
               </div>
-              <h3 className="mt-3 font-urbanist text-[16px] font-semibold text-lw-text lg:text-[18px]">
-                {r.title}
-              </h3>
-              <p className="mt-1 font-urbanist text-[14px] leading-5 text-lw-muted lg:max-w-3xl lg:text-[15px] lg:leading-6">
+              <p className="font-glacial text-[14px] font-normal leading-[18px] text-lw-muted">
+                {r.meta}
+              </p>
+              <p className="mt-3 font-glacial text-[14px] font-normal leading-[18px] text-[#1c1917]">
                 {r.text}
+              </p>
+              <p className="mt-4 font-glacial text-[12px] font-normal leading-6 text-[#a89f91]">
+                {r.date}
               </p>
             </article>
           ))}
         </div>
 
-        <p className="mt-8 text-center font-urbanist text-[14px] font-bold capitalize text-lw-accent underline underline-offset-4">
+        <a
+          href="#our-story"
+          className="mx-auto mt-8 flex h-12 items-center gap-2.5 px-1 font-glacial text-[14px] font-bold leading-6 text-[#a97c72]"
+        >
           Lire tous les avis
-        </p>
+          <ArrowIcon />
+        </a>
       </div>
     </section>
   );

@@ -57,7 +57,7 @@ function PhysicalExperienceSection() {
   }, [updateProgress]);
 
   return (
-    <section className="bg-[#F7F2EC] px-0 pb-10 pt-8 lg:px-8 lg:pb-24 lg:pt-16">
+    <section id="experience" className="scroll-mt-24 bg-[#F7F2EC] px-0 pb-10 pt-8 lg:px-8 lg:pb-24 lg:pt-16">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
           <h2 className="mt-[5px] font-abhaya text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">

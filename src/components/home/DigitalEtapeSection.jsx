@@ -134,7 +134,7 @@ function DigitalEtapeSection() {
   const [step, setStep] = useState(0);
 
   return (
-    <section className="bg-[#F7F2EC]">
+    <section id="livraison" className="scroll-mt-24 bg-[#F7F2EC]">
       {/* Mobile — une étape */}
       <div className="relative mx-auto h-[615px] w-full max-w-[428px] overflow-hidden lg:hidden">
         <StepCard

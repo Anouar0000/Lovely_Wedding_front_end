@@ -11,8 +11,8 @@ const INVITES = [
   { name: "With Love", cover: a.heroCoverEnvelopes },
 ];
 
-// Copies en fin pour boucle invisible ; démarre à l'index 1 → cartes L + R visibles.
-const RAIL = [...INVITES, INVITES[0], INVITES[1]];
+// Double liste : assez de cartes à droite jusqu’à la fin de boucle (évite le trou).
+const RAIL = [...INVITES, ...INVITES];
 
 /** Même mockup que l’ancien (194×389, bord 6px, encoche) — un par invitation. */
 function InviteCard({ invite, index }) {

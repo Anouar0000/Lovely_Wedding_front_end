@@ -29,7 +29,7 @@ function CommunitySection() {
   }, [deskStart]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section className="overflow-x-hidden bg-white py-10 lg:py-24">
+    <section id="communaute" className="scroll-mt-24 overflow-x-hidden bg-white py-10 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <h2 className="px-4 text-center lw-h1 lg:text-[40px]">Communauté</h2>
         <p className="mx-auto mt-2 max-w-[241px] px-4 text-center lw-sub lg:mt-3 lg:max-w-none lg:text-[18px]">
@@ -40,7 +40,7 @@ function CommunitySection() {
         <div className="relative mt-14 hidden lg:block">
           <div className="flex items-end justify-center gap-8 px-14">
             {deskSlides.map((s) => (
-              <figure key={s.id} className="w-[280px] shrink-0 text-center">
+              <figure key={s.id} className="w-[280px] shrink-0 text-left">
                 <CommunityVideoCard
                   slide={s}
                   active={deskActive === s.id}
@@ -48,7 +48,7 @@ function CommunitySection() {
                   className="mx-auto"
                   style={{ width: 280, height: Math.round((280 * CARD_H) / CARD_W) }}
                 />
-                <figcaption className="mt-3 font-urbanist text-sm font-medium text-lw-text">
+                <figcaption className="mt-3 text-left font-urbanist text-sm font-medium text-lw-text">
                   {s.handle}
                 </figcaption>
               </figure>
@@ -98,7 +98,7 @@ function CommunitySection() {
             {slides.map((s) => (
               <figure
                 key={s.id}
-                className="w-[min(78vw,305px)] shrink-0 snap-center text-center"
+                className="w-[min(78vw,305px)] shrink-0 snap-center text-left"
               >
                 <CommunityVideoCard
                   slide={s}
@@ -106,7 +106,7 @@ function CommunitySection() {
                   onActivate={setActiveId}
                   className="mx-auto aspect-[305/486] w-full shadow-md"
                 />
-                <figcaption className="mt-3 font-urbanist text-[14px] font-medium text-lw-text">
+                <figcaption className="mt-3 text-left font-urbanist text-[14px] font-medium text-lw-text">
                   {s.handle}
                 </figcaption>
               </figure>
