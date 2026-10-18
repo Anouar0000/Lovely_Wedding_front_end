@@ -11,13 +11,19 @@ const iconProps = { size: 24, strokeWidth: 1.5, "aria-hidden": true };
 
 /**
  * @param {"digitale" | "imprimee" | "none"} mode
+ * @param {"digitale" | "imprimee"} [context] — quand mode=none (catalogue), home / collection / drawer
  */
-function DigitalHomeHeader({ mode = "digitale" }) {
+function DigitalHomeHeader({ mode = "digitale", context }) {
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
   const { itemCount } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const showToggle = mode === "digitale" || mode === "imprimee";
+  const isCatalog = mode === "none";
+  const line = context || (mode === "imprimee" ? "imprimee" : "digitale");
+  const homePath = line === "imprimee" ? "/imprimee" : "/";
+  const collectionPath =
+    line === "imprimee" ? "/invitations-physique" : "/invitations-digital";
 
   const goUser = () => {
     if (loading) return;
@@ -30,9 +36,19 @@ function DigitalHomeHeader({ mode = "digitale" }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 shrink-0 border-b border-transparent bg-[#F7F2EC] text-lw-text lg:border-lw-line/60">
-        {/* Figma: logo Y:23 → padding-top (pas margin). Antic 26, box 206×31, x:112 */}
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-[19px] pt-[23px] lg:px-8 lg:pb-4 lg:pt-4">
+      <header
+        className={`sticky top-0 z-50 shrink-0 text-lw-text ${
+          isCatalog
+            ? "border-b border-[#E8E0D8] bg-white"
+            : "border-b border-transparent bg-[#F7F2EC] lg:border-lw-line/60"
+        }`}
+      >
+        {/* Catalogue Figma : barre h=86 · Accueil : logo Y:23 */}
+        <div
+          className={`mx-auto flex w-full max-w-6xl items-center justify-between px-[19px] lg:px-8 ${
+            isCatalog ? "h-[86px] lg:h-auto lg:py-4" : "pt-[23px] lg:pb-4 lg:pt-4"
+          }`}
+        >
           <div className="flex h-[31px] w-[60px] shrink-0 items-center gap-3 lg:h-auto lg:w-auto lg:gap-6">
             <button
               type="button"
@@ -48,18 +64,14 @@ function DigitalHomeHeader({ mode = "digitale" }) {
               type="button"
               className="hidden size-6 items-center justify-center lg:inline-flex"
               aria-label="Recherche"
-              onClick={() =>
-                navigate(mode === "imprimee" ? "/invitations-physique" : "/invitations-digital")
-              }
+              onClick={() => navigate(collectionPath)}
             >
               <LuSearch {...iconProps} />
             </button>
             <nav className="hidden items-center gap-6 font-urbanist text-[14px] text-lw-text lg:flex">
               <button
                 type="button"
-                onClick={() =>
-                  navigate(mode === "imprimee" ? "/invitations-physique" : "/invitations-digital")
-                }
+                onClick={() => navigate(collectionPath)}
                 className="hover:text-lw-accent"
               >
                 Collection
@@ -72,7 +84,7 @@ function DigitalHomeHeader({ mode = "digitale" }) {
 
           <button
             type="button"
-            onClick={() => navigate(mode === "imprimee" ? "/imprimee" : "/")}
+            onClick={() => navigate(homePath)}
             className="flex h-[31px] min-w-0 items-center justify-center"
           >
             <span className="lw-logo text-[26px] leading-none tracking-normal lg:text-[28px]">
@@ -151,7 +163,11 @@ function DigitalHomeHeader({ mode = "digitale" }) {
       </header>
 
       <div id="lovely-mobile-menu">
-        <LovelyMobileDrawer open={menuOpen} onClose={() => setMenuOpen(false)} mode={mode} />
+        <LovelyMobileDrawer
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          mode={line}
+        />
       </div>
     </>
   );

@@ -1,264 +1,391 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FiChevronDown, FiX } from "react-icons/fi";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { FiChevronDown, FiStar, FiX } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import { useCart } from "../context/CartContext";
 
 const FIGMA = "/assets/home-physical/figma";
 
+const UNIT_PRICE = 1.5;
+
+const QUANTITY_OPTIONS = [100, 120, 150, 170, 200, 220, 250, 270];
+
+const FORMAT_OPTIONS = [
+  "Page plié (15 x 21 cm)",
+  "Page plié (9,5 x 21 cm)",
+  "Page simple (10 x 15 cm)",
+  "Carré (14 x 14 cm)",
+];
+
+const MOTIF_OPTIONS = ["Bagues Or", "Bagues Doré", "Fleurs Blanches", "Motif Classique"];
+
 const ACCORDIONS = [
-  { title: "Comment ça marche", body: "" },
-  { title: "Délai de livraison", body: "" },
-  { title: "Option accompagnement", body: "" },
-];
-
-const RECOS = [
   {
-    name: "Versailles",
-    img: `${FIGMA}/catalog-4.png`,
-    price: "à partir de 1.5dt/pcs",
-    filled: false,
+    title: "Comment ça marche",
+    body: "Choisissez quantité, format et motif, personnalisez vos textes, puis validez votre commande.",
   },
   {
-    name: "Sacré cœur",
-    img: `${FIGMA}/catalog-1.png`,
-    price: "à partir de 1.5dt/pcs",
-    filled: true,
+    title: "Délai de livraison",
+    body: "Impression et expédition sous 7 à 14 jours ouvrés après validation.",
+  },
+  {
+    title: "Ce qui est inclu",
+    body: "Invitation imprimée, enveloppe assortie et finitions selon le motif choisi.",
   },
 ];
 
-/** Product overview physique — Figma 169:618 */
+const REVIEWS = [
+  {
+    name: "Lilia & Rayen",
+    meta: "Achat vérifié • Formule Signature",
+    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
+    date: "Posté le 12 Septembre 2026",
+  },
+  {
+    name: "Lilia & Rayen",
+    meta: "Achat vérifié • Formule Signature",
+    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
+    date: "Posté le 12 Septembre 2026",
+  },
+];
+
+const PHYSICAL_PRODUCTS = [
+  { name: "Versailles", img: `${FIGMA}/catalog-4.png`, category: "Rustique" },
+  { name: "Sacré cœur", img: `${FIGMA}/catalog-1.png`, category: "Outeya" },
+  { name: "Aimé", img: `${FIGMA}/catalog-5.png`, category: "Cire" },
+  { name: "Passeport Rosé", img: `${FIGMA}/catalog-2.png`, category: "Rustique" },
+  { name: "Rustique 3", img: `${FIGMA}/catalog-6.png`, category: "Rustique" },
+  { name: "Arabesque 1", img: `${FIGMA}/catalog-3.png`, category: "Outeya" },
+];
+
+const CATALOG_BY_NAME = Object.fromEntries(
+  PHYSICAL_PRODUCTS.map((p) => [p.name, { img: p.img, category: p.category }]).concat([
+    ["Passeport rosé", { img: `${FIGMA}/catalog-2.png`, category: "Rustique" }],
+  ])
+);
+
+/** Product overview physique — détails Figma (dropdowns + Passer la commande) */
 function InvitationModelPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { modelName: routeName } = useParams();
   const { addItem } = useCart();
-  const model = location.state?.model;
-  const selectedCategory = location.state?.selectedCategory || "Rustique";
 
+  const resolvedName = location.state?.model?.name || decodeURIComponent(routeName || "");
+  const catalogHit = CATALOG_BY_NAME[resolvedName];
+  const model =
+    location.state?.model ||
+    (resolvedName
+      ? {
+          name: resolvedName,
+          price: UNIT_PRICE,
+          image: catalogHit?.img || `${FIGMA}/catalog-6.png`,
+          templateId: resolvedName,
+        }
+      : null);
+  const selectedCategory =
+    location.state?.selectedCategory || catalogHit?.category || "Rustique";
+
+  const [qty, setQty] = useState(100);
+  const [format, setFormat] = useState(FORMAT_OPTIONS[0]);
+  const [motif, setMotif] = useState(MOTIF_OPTIONS[0]);
   const [popup, setPopup] = useState(null);
-  const popupRef = useRef(null);
-  const [qté, setQté] = useState("");
-  const [format, setFormat] = useState("Page plié (9,5 x 21 cm)");
-  const [motif, setMotif] = useState("Bagues Doré");
   const [openAcc, setOpenAcc] = useState(-1);
-  const [added, setAdded] = useState(false);
+  const popupRef = useRef(null);
 
+  const unitPrice = UNIT_PRICE;
   const imageSrc = useMemo(() => {
     if (!model) return `${FIGMA}/catalog-6.png`;
-    if (model.image) return model.image;
-    if (model.thumbnail) {
-      try {
-        return require(`../${model.thumbnail}`);
-      } catch {
-        return `${FIGMA}/catalog-6.png`;
-      }
-    }
-    return `${FIGMA}/catalog-6.png`;
-  }, [model]);
+    return model.image || catalogHit?.img || `${FIGMA}/catalog-6.png`;
+  }, [model, catalogHit]);
 
-  const openPopup = (label) => {
-    setPopup(label);
-    document.body.style.overflow = "hidden";
-  };
+  const total = qty ? qty * unitPrice : null;
+  const isFormValid = Boolean(qty && format && motif);
 
-  const closePopup = () => {
-    setPopup(null);
-    document.body.style.overflow = "auto";
-  };
+  const recommendations = useMemo(() => {
+    const sameCat = PHYSICAL_PRODUCTS.filter(
+      (p) => p.category === selectedCategory && p.name !== model?.name
+    );
+    const pool = sameCat.length >= 2 ? sameCat : PHYSICAL_PRODUCTS.filter((p) => p.name !== model?.name);
+    return pool.slice(0, 2);
+  }, [selectedCategory, model?.name]);
+
+  const closePopup = () => setPopup(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        closePopup();
-      }
+    if (!popup) return undefined;
+    const onDown = (e) => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) closePopup();
     };
-    if (popup) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
   }, [popup]);
 
-  const quantityOptions = [100, 120, 150, 170, 200, 220, 250, 270];
-  const formatOptions = [
-    "Page plié (9,5 x 21 cm)",
-    "Page simple (10 x 15 cm)",
-    "Carré (14 x 14 cm)",
-  ];
-  const motifOptions = ["Bagues Doré", "Fleurs Blanches", "Motif Classique"];
-  const isFormValid = Boolean(qté && format && motif);
-
-  const handlePersonalize = () => {
-    if (!isFormValid) return;
-    navigate("/personalize", { state: { model, qté, format, motif } });
+  const openProduct = (p) => {
+    navigate(`/invitation-model/${encodeURIComponent(p.name)}`, {
+      state: {
+        model: {
+          name: p.name,
+          price: UNIT_PRICE,
+          image: p.img,
+          templateId: p.name,
+        },
+        selectedCategory: p.category,
+      },
+    });
   };
 
-  const handleAddToCart = () => {
+  const handleOrder = () => {
     if (!isFormValid || !model) return;
     addItem({
       productType: "physical",
       productId: model.templateId || model.name,
       title: model.name,
-      qty: Number(String(qté).match(/\d+/)?.[0]) || 1,
-      unitPrice: Number(model.price) || 1.5,
+      qty,
+      unitPrice,
       format,
       motif,
       meta: { category: selectedCategory },
     });
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1600);
+    navigate("/cart");
   };
 
   if (!model) {
     return (
       <div className="flex min-h-screen flex-col bg-white font-urbanist text-lw-text">
-        <DigitalHomeHeader mode="none" />
+        <DigitalHomeHeader mode="none" context="imprimee" />
         <p className="flex-1 p-10 text-center text-lw-muted">Aucun modèle sélectionné.</p>
         <DigitalHomeFooter />
       </div>
     );
   }
 
+  const rows = [
+    {
+      key: "Quantité",
+      label: "Quantité :",
+      value: qty ? `${qty} (à ${unitPrice}DT l'unité)` : "Choisissez votre quantité",
+      muted: !qty,
+    },
+    { key: "Format", label: "Format :", value: format, muted: false },
+    { key: "Motif", label: "Motif :", value: motif, muted: false },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
-      <DigitalHomeHeader mode="none" />
+      <DigitalHomeHeader mode="none" context="imprimee" />
 
-      <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:px-8 lg:pt-10">
-        <Link to="/" className="hover:text-lw-accent">
+      <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:max-w-6xl lg:px-8 lg:pt-10">
+        <Link to="/imprimee" className="hover:text-lw-accent">
           Accueil
         </Link>
-        <span>›</span>
+        <span aria-hidden className="text-lw-muted">
+          ›
+        </span>
         <Link to="/invitations-physique" className="hover:text-lw-accent">
           Invitations Physique
         </Link>
-        <span>›</span>
-        <span>Invitations {selectedCategory}</span>
-        <span>›</span>
+        <span aria-hidden className="text-lw-muted">
+          ›
+        </span>
+        <Link
+          to="/invitations-physique"
+          state={{ filter: selectedCategory }}
+          className="hover:text-lw-accent"
+        >
+          {selectedCategory}
+        </Link>
+        <span aria-hidden className="text-lw-muted">
+          ›
+        </span>
         <span className="font-bold">{model.name}</span>
       </nav>
 
-      {/* Mobile : image full-bleed · Desktop : 2 colonnes image | détails */}
-      <div className="mt-6 w-full lg:mx-auto lg:mt-10 lg:grid lg:max-w-6xl lg:grid-cols-2 lg:items-start lg:gap-12 lg:px-8">
-        <div className="w-full">
-          <img
-            src={imageSrc}
-            alt={model.name}
-            className="h-[537px] w-full object-cover lg:h-auto lg:min-h-[560px] lg:rounded-[5px] lg:object-cover"
-          />
-        </div>
+      <div className="mx-auto w-full max-w-[428px] px-4 pb-0 pt-5 lg:max-w-6xl lg:px-8 lg:pb-0 lg:pt-8">
+        <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
+          <div>
+            <div className="mx-auto h-[537px] w-[396px] max-w-full overflow-hidden rounded-[20px] bg-[#fffaed] lg:mx-0">
+              <img src={imageSrc} alt={model.name} className="h-full w-full object-cover" />
+            </div>
+          </div>
 
-        <section className="bg-[#fffaed] px-4 pb-10 pt-8 lg:rounded-[5px] lg:px-8 lg:pb-12 lg:pt-10">
-          <div className="mx-auto w-full lg:mx-0">
-            <h1 className="lw-h1 lg:text-[40px] lg:leading-tight">
-              {model.name}
-            </h1>
-            <p className="mt-3 max-w-[398px] lw-sub lg:mt-4 lg:leading-7">
-              Une invitation imprimée soignée — papier premium, finitions raffinées pour votre grand
-              jour.
+          <section className="mt-6 lg:mt-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h1 className="font-lora text-[28px] font-medium leading-[30px] tracking-[-0.28px] text-lw-text lg:text-[40px] lg:leading-tight">
+                {model.name}
+              </h1>
+              <p
+                className="inline-flex items-center gap-1 font-urbanist text-[14px] text-lw-muted"
+                aria-label="Note 4,7 sur 5, 21 avis"
+              >
+                <FiStar className="size-4 fill-[#E8B84A] text-[#E8B84A]" aria-hidden />
+                <span className="font-medium text-lw-text">4.7</span>
+                <span className="underline underline-offset-2">(21)</span>
+              </p>
+            </div>
+
+            <p className="mt-2 font-urbanist text-[14px] leading-5 text-lw-muted">
+              Classic stationery-inspired design.
             </p>
-            <p className="mt-4 font-abhaya text-[16px] text-[#1a1612]">350 gsm</p>
 
-            <div className="mt-8 border-t border-lw-line">
-              {[
-                {
-                  label: "Quantité :",
-                  value: qté || "Choisissez votre quantité",
-                  key: "Quantité",
-                },
-                { label: "Format :", value: format, key: "Format" },
-                { label: "Motif :", value: motif, key: "Motif" },
-              ].map((row) => (
+            {/* Amount — Value H2 22/34 · Currency Sub 2 16/24 #7D6E66 */}
+            <p className="mt-3 inline-flex items-baseline gap-1">
+              <span className="font-urbanist text-[22px] font-bold leading-[34px] text-lw-text">
+                {UNIT_PRICE}
+              </span>
+              <span className="font-urbanist text-[16px] font-normal leading-6 text-[#7D6E66]">
+                DT
+              </span>
+            </p>
+
+            <div className="mt-6 border-t border-[#E8E0D8]">
+              {rows.map((row) => (
                 <button
                   key={row.key}
                   type="button"
-                  className="flex w-full items-center justify-between border-b border-lw-line py-4 text-left"
-                  onClick={() => openPopup(row.key)}
+                  onClick={() => setPopup(row.key)}
+                  className="flex w-full items-center justify-between gap-3 border-b border-[#E8E0D8] py-4 text-left"
                 >
-                  <span className="font-urbanist text-[14px] font-bold capitalize text-lw-text">
+                  <span className="shrink-0 font-urbanist text-[14px] font-bold text-lw-text">
                     {row.label}
                   </span>
-                  <span className="flex items-center gap-2 font-urbanist text-[14px] text-lw-muted">
-                    {row.value}
-                    <FiChevronDown />
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <p className="mt-6 text-center font-urbanist text-[14px] font-bold uppercase text-lw-text lg:text-left">
-              À partir de 1.5DT la pièce
-            </p>
-            <button
-              type="button"
-              disabled={!isFormValid}
-              onClick={handlePersonalize}
-              className={`mt-3 flex h-[42px] w-[163px] items-center justify-center rounded-[5px] font-urbanist text-[14px] font-bold uppercase tracking-[0.7px] text-white mx-auto lg:mx-0 ${
-                isFormValid ? "bg-lw-accent hover:bg-lw-accentDark" : "cursor-not-allowed bg-lw-line"
-              }`}
-            >
-              Personnaliser
-            </button>
-            <button
-              type="button"
-              disabled={!isFormValid}
-              onClick={handleAddToCart}
-              className="mx-auto mt-3 block text-center font-urbanist text-sm font-semibold text-lw-accent underline underline-offset-4 disabled:cursor-not-allowed disabled:no-underline disabled:opacity-40 lg:mx-0 lg:text-left"
-            >
-              {added ? "Ajouté au panier" : "Ajouter au panier"}
-            </button>
-
-            <div className="mt-10 border-t border-lw-line">
-              {ACCORDIONS.map((item, i) => (
-                <button
-                  key={item.title}
-                  type="button"
-                  className="flex w-full items-center gap-3 border-b border-lw-line py-4 text-left"
-                  onClick={() => setOpenAcc(openAcc === i ? -1 : i)}
-                >
-                  <span className="text-lg leading-none">{openAcc === i ? "−" : "+"}</span>
-                  <span className="font-urbanist text-[14px] font-bold capitalize text-lw-text">
-                    {item.title}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <section className="bg-white px-4 py-12 lg:px-8 lg:py-20">
-        <div className="mx-auto w-full max-w-6xl">
-          <h2 className="text-center lw-h1 lg:text-[36px]">
-            Autres recommandations
-          </h2>
-          <div className="mt-8 grid grid-cols-2 gap-4 lg:mx-auto lg:max-w-3xl lg:gap-10">
-            {RECOS.map((r) => (
-              <button
-                key={r.name}
-                type="button"
-                className="text-left"
-                onClick={() =>
-                  navigate(`/invitation-model/${encodeURIComponent(r.name)}`, {
-                    state: {
-                      model: { name: r.name, price: 1.5, image: r.img, templateId: r.name },
-                      selectedCategory,
-                    },
-                  })
-                }
-              >
-                <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] lg:aspect-[189/224] lg:h-auto">
-                  <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
                   <span
-                    className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none ${
-                      r.filled
-                        ? "bg-lw-accent text-white"
-                        : "border border-lw-accent bg-white/90 text-lw-accent"
+                    className={`flex min-w-0 items-center gap-2 font-urbanist text-[14px] ${
+                      row.muted ? "text-lw-muted" : "text-lw-text"
                     }`}
                   >
-                    {r.price}
+                    <span className="truncate">{row.value}</span>
+                    <FiChevronDown className="size-4 shrink-0" aria-hidden />
                   </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Résumé + CTA — Figma Product overview physique */}
+            <div className="mt-[18px] flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-urbanist text-[16px] font-semibold leading-6 text-lw-text">
+                  {model.name}
+                </p>
+                <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
+                  {total != null
+                    ? `${total % 1 === 0 ? total : total.toFixed(1)}dt`
+                    : `${UNIT_PRICE}dt`}
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={!isFormValid}
+                onClick={handleOrder}
+                className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-urbanist text-[14px] font-semibold text-white ${
+                  isFormValid
+                    ? "bg-[#C4A69C] hover:bg-[#b3958a]"
+                    : "cursor-not-allowed bg-[#D9D9D9]"
+                }`}
+              >
+                Passer la commande
+                <span aria-hidden>→</span>
+              </button>
+            </div>
+
+            {/* Accordéons + avis — fond beige Figma #F7F2EC */}
+            <div className="-mx-4 mt-8 bg-[#F7F2EC] px-4 pb-8 pt-2 lg:-mx-0 lg:rounded-[24px] lg:px-5">
+              <div>
+                {ACCORDIONS.map((item, i) => {
+                  const open = openAcc === i;
+                  return (
+                    <div key={item.title} className="border-b border-[#E8E0D8]">
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between gap-4 py-[18px] text-left font-urbanist text-[14px] font-medium leading-5 text-lw-text"
+                        aria-expanded={open}
+                        onClick={() => setOpenAcc(open ? -1 : i)}
+                      >
+                        <span>{item.title}</span>
+                        <span
+                          className="flex size-5 shrink-0 items-center justify-center text-[20px] font-light leading-none text-lw-text"
+                          aria-hidden
+                        >
+                          {open ? "−" : "+"}
+                        </span>
+                      </button>
+                      {open ? (
+                        <p className="pb-4 font-urbanist text-[14px] leading-5 text-[#7D6E66]">
+                          {item.body}
+                        </p>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-[52px] flex flex-col gap-[18px]">
+                {REVIEWS.map((r, i) => (
+                  <article
+                    key={`${r.name}-${i}`}
+                    className="rounded-[24px] border-[0.5px] border-[#C4A69C] bg-white px-5 py-5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
+                        {r.name}
+                      </p>
+                      <div
+                        className="mt-2 flex shrink-0 gap-0 text-[12px] leading-none text-[#FFD220]"
+                        aria-label="5 étoiles"
+                      >
+                        {"★★★★★".split("").map((s, j) => (
+                          <span key={j}>{s}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="font-glacial text-[14px] font-normal leading-[18px] text-[#78716C]">
+                      {r.meta}
+                    </p>
+                    <p className="mt-3 font-glacial text-[14px] font-normal leading-[18px] text-[#1C1917]">
+                      {r.text}
+                    </p>
+                    <p className="mt-4 font-glacial text-[12px] font-normal leading-6 text-[#A89F91]">
+                      {r.date}
+                    </p>
+                  </article>
+                ))}
+
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    className="inline-flex h-12 items-center justify-center rounded-full border border-[#A97C72] bg-transparent px-6 font-glacial text-[14px] font-bold leading-6 text-[#A97C72] hover:bg-white/60"
+                  >
+                    Ecrire un avis
+                  </button>
                 </div>
-                <h3 className="mt-4 lw-h3 lg:text-[24px]">{r.name}</h3>
-                <p className="mt-1 lw-caption">
-                  Includes music, animations & guestbook
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section className="mt-[53px] bg-white px-4 pb-[53px] pt-0 lg:px-8">
+        <div className="mx-auto w-full max-w-[428px] lg:max-w-3xl">
+          <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-lw-text lg:text-[36px]">
+            Autres recommandations
+          </h2>
+          <div className="mt-[53px] grid grid-cols-2 gap-4 lg:gap-10">
+            {recommendations.map((r) => (
+              <button key={r.name} type="button" className="text-left" onClick={() => openProduct(r)}>
+                <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
+                  <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
+                </div>
+                <h3 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text">
+                  {r.name}
+                </h3>
+                <p className="font-urbanist text-[14px] leading-[18px] text-[#78716c]">
+                  Includes music, animations
+                  <br />
+                  {"& guestbook"}
+                </p>
+                <p className="mt-2 font-urbanist text-[14px] font-bold leading-6 text-lw-text">
+                  Start at 49$
                 </p>
               </button>
             ))}
@@ -267,61 +394,107 @@ function InvitationModelPage() {
       </section>
 
       {popup ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-[#C4A69C]/50 sm:items-center"
+          role="presentation"
+          onClick={closePopup}
+        >
           <div
             ref={popupRef}
-            className="max-h-[75vh] w-full overflow-hidden rounded-t-[12px] bg-white p-4 sm:max-w-md sm:rounded-[12px]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="popup-title"
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[85vh] w-full max-w-[428px] overflow-hidden rounded-none bg-white shadow-[0_-8px_32px_rgba(75,66,66,0.18)]"
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="lw-h2">{popup}</h2>
-              <button type="button" onClick={closePopup} aria-label="Fermer">
-                <FiX className="text-xl" />
+            <div className="flex items-center justify-between px-5 pb-1 pt-5">
+              <h2
+                id="popup-title"
+                className="font-urbanist text-[20px] font-semibold leading-7 text-lw-text"
+              >
+                {popup}
+              </h2>
+              <button
+                type="button"
+                onClick={closePopup}
+                aria-label="Fermer"
+                className="flex size-8 items-center justify-center text-lw-text"
+              >
+                <FiX className="size-5" strokeWidth={1.5} />
               </button>
             </div>
-            <div className="max-h-[58vh] space-y-1 overflow-y-auto pr-1">
+            <div className="max-h-[70vh] overflow-y-auto px-5 pb-8">
               {popup === "Quantité" &&
-                quantityOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    className="flex w-full items-center justify-between border-b border-lw-line px-3 py-3 text-left hover:bg-lw-surface"
-                    onClick={() => {
-                      setQté(`${option} (à 1.5DT l'unité)`);
-                      closePopup();
-                    }}
-                  >
-                    <span>{option} (à 1.5DT l&apos;unité)</span>
-                    <span className="font-bold">{option * 1.5} DT</span>
-                  </button>
-                ))}
+                QUANTITY_OPTIONS.map((option) => {
+                  const lineTotal = option * unitPrice;
+                  const active = qty === option;
+                  const totalLabel =
+                    lineTotal % 1 === 0 ? `${lineTotal}DT` : `${lineTotal.toFixed(1)}DT`;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition-colors ${
+                        active
+                          ? "border border-[#C4A69C] bg-white"
+                          : "border-b border-[#E8E0D8] border-x-0 border-t-0 hover:bg-[#F7F2EC]/40"
+                      }`}
+                      onClick={() => {
+                        setQty(option);
+                        closePopup();
+                      }}
+                    >
+                      <span className="font-urbanist text-[14px] font-normal leading-5 text-[#7D6E66]">
+                        {option} (à {unitPrice}DT l&apos;unité)
+                      </span>
+                      <span className="shrink-0 font-urbanist text-[14px] font-bold leading-5 text-lw-text">
+                        {totalLabel}
+                      </span>
+                    </button>
+                  );
+                })}
               {popup === "Format" &&
-                formatOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    className="flex w-full border-b border-lw-line px-3 py-3 text-left hover:bg-lw-surface"
-                    onClick={() => {
-                      setFormat(option);
-                      closePopup();
-                    }}
-                  >
-                    {option}
-                  </button>
-                ))}
+                FORMAT_OPTIONS.map((option) => {
+                  const active = format === option;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`flex w-full px-4 py-4 text-left font-urbanist text-[14px] text-lw-text transition-colors ${
+                        active
+                          ? "border border-[#C4A69C] bg-white font-medium"
+                          : "border-b border-[#E8E0D8] border-x-0 border-t-0 hover:bg-[#F7F2EC]/40"
+                      }`}
+                      onClick={() => {
+                        setFormat(option);
+                        closePopup();
+                      }}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
               {popup === "Motif" &&
-                motifOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    className="flex w-full border-b border-lw-line px-3 py-3 text-left hover:bg-lw-surface"
-                    onClick={() => {
-                      setMotif(option);
-                      closePopup();
-                    }}
-                  >
-                    {option}
-                  </button>
-                ))}
+                MOTIF_OPTIONS.map((option) => {
+                  const active = motif === option;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`flex w-full px-4 py-4 text-left font-urbanist text-[14px] text-lw-text transition-colors ${
+                        active
+                          ? "border border-[#C4A69C] bg-white font-medium"
+                          : "border-b border-[#E8E0D8] border-x-0 border-t-0 hover:bg-[#F7F2EC]/40"
+                      }`}
+                      onClick={() => {
+                        setMotif(option);
+                        closePopup();
+                      }}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
             </div>
           </div>
         </div>
