@@ -268,6 +268,12 @@ function DashboardPage() {
             >
               <FiHome aria-hidden="true" /> Site
             </Link>
+            <Link
+              to="/espace-client"
+              className="inline-flex items-center gap-2 rounded-[5px] border border-lw-line px-4 py-2 text-sm font-semibold"
+            >
+              <FiUsers aria-hidden="true" /> Espace client
+            </Link>
             <button
               type="button"
               onClick={logout}

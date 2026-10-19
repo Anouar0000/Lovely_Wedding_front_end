@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { useCart } from "../../context/CartContext";
+import { useFavorites } from "../../context/FavoritesContext";
 
 /**
  * Menu mobile Lovely — liens vitrine (header desktop).
@@ -13,6 +14,7 @@ function LovelyMobileDrawer({ open, onClose, mode = "digitale" }) {
   const navigate = useNavigate();
   const { user, loading, isAdmin, logout } = useAuth();
   const { itemCount } = useCart();
+  const { count: favCount } = useFavorites();
 
   useEffect(() => {
     if (!open) return undefined;
@@ -136,6 +138,9 @@ function LovelyMobileDrawer({ open, onClose, mode = "digitale" }) {
           </button>
           <button type="button" className={linkClass} onClick={goAccount}>
             {user ? (isAdmin ? "Dashboard" : "Mon espace") : "Connexion"}
+          </button>
+          <button type="button" className={linkClass} onClick={() => go("/favoris")}>
+            Favoris{favCount > 0 ? ` (${favCount})` : ""}
           </button>
           <button type="button" className={linkClass} onClick={() => go("/cart")}>
             Panier{itemCount > 0 ? ` (${itemCount})` : ""}

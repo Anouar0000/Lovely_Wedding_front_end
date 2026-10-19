@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { sendEmailVerification } from "firebase/auth";
 import { FiExternalLink, FiHome, FiLogOut, FiUsers } from "react-icons/fi";
 import { useAuth } from "../components/auth/AuthProvider";
 import { listDigitalInvitesForClient } from "../services/digitalInvites";
@@ -14,6 +15,8 @@ function ClientEspacePage() {
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [verifyInfo, setVerifyInfo] = useState("");
+  const [verifyBusy, setVerifyBusy] = useState(false);
   const needsEmailVerification =
     Boolean(location.state?.adminRequired) ||
     (isAdminEmail(user?.email) && user && !user.emailVerified);
@@ -86,8 +89,65 @@ function ClientEspacePage() {
         </p>
 
         {needsEmailVerification ? (
-          <div className="mt-4 rounded-[8px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
-            Vérifiez votre email ({user?.email}) pour accéder au dashboard admin.
+          <div className="mt-4 rounded-[8px] border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
+            <p className="font-semibold">
+              Votre compte admin ({user?.email}) nécessite une vérification email avant
+              d&apos;accéder au dashboard.
+            </p>
+            <p className="mt-1 font-normal text-amber-800/90">
+              Ouvrez le lien reçu par email, puis cliquez sur « J&apos;ai vérifié ».
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={verifyBusy}
+                className="rounded-[5px] bg-amber-900 px-3 py-2 text-xs font-bold uppercase text-white disabled:opacity-60"
+                onClick={async () => {
+                  if (!user) return;
+                  setVerifyBusy(true);
+                  setVerifyInfo("");
+                  setError("");
+                  try {
+                    await sendEmailVerification(user);
+                    setVerifyInfo("Email de vérification renvoyé. Vérifiez aussi les spams.");
+                  } catch {
+                    setError("Impossible d'envoyer l'email. Réessayez dans quelques minutes.");
+                  } finally {
+                    setVerifyBusy(false);
+                  }
+                }}
+              >
+                Renvoyer l&apos;email
+              </button>
+              <button
+                type="button"
+                disabled={verifyBusy}
+                className="rounded-[5px] border border-amber-900/40 bg-white px-3 py-2 text-xs font-bold uppercase text-amber-900 disabled:opacity-60"
+                onClick={async () => {
+                  if (!user) return;
+                  setVerifyBusy(true);
+                  setError("");
+                  try {
+                    await user.reload();
+                    await user.getIdToken(true);
+                    if (user.emailVerified && isAdminEmail(user.email)) {
+                      window.location.assign("/dashboard");
+                      return;
+                    }
+                    setVerifyInfo(
+                      "Email pas encore vérifié. Cliquez le lien dans votre boîte mail, puis réessayez."
+                    );
+                  } catch {
+                    setError("Impossible de rafraîchir le statut. Reconnectez-vous.");
+                  } finally {
+                    setVerifyBusy(false);
+                  }
+                }}
+              >
+                J&apos;ai vérifié
+              </button>
+            </div>
+            {verifyInfo ? <p className="mt-2 font-semibold">{verifyInfo}</p> : null}
           </div>
         ) : null}
 

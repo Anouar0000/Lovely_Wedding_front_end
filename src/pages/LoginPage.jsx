@@ -65,9 +65,13 @@ function LoginPage() {
 
     try {
       const trimmed = normalizeEmail(email);
-      await signInWithEmailAndPassword(auth, trimmed, password);
+      const cred = await signInWithEmailAndPassword(auth, trimmed, password);
       clearLoginFailures();
-      navigate(isAdminEmail(trimmed) ? "/dashboard" : "/espace-client", { replace: true });
+      const adminReady = isAdminEmail(trimmed) && Boolean(cred.user.emailVerified);
+      navigate(adminReady ? "/dashboard" : "/espace-client", {
+        replace: true,
+        state: adminReady ? undefined : { adminRequired: isAdminEmail(trimmed) },
+      });
     } catch {
       recordLoginFailure();
       const remaining = getLoginLockRemainingMs();

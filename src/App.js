@@ -26,6 +26,7 @@ import InvitationModelPage from "./pages/InvitationModelPage";
 import DigitalProductDetailPage from "./pages/DigitalProductDetailPage";
 import PersonalizeInvitationPage from "./pages/PersonalizeInvitationPage";
 import CartPage from './pages/CartPage';
+import FavoritesPage from './pages/FavoritesPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import PaymentResultPage from './pages/PaymentResultPage';
@@ -57,6 +58,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/favoris" element={<FavoritesPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/payment/result" element={<PaymentResultPage />} />
             <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />

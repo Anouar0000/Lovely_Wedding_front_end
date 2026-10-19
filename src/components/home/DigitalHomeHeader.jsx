@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiPrinter, FiSmartphone } from "react-icons/fi";
-import { LuMenu, LuSearch, LuShoppingBag, LuUser } from "react-icons/lu";
+import { LuHeart, LuMenu, LuSearch, LuShoppingBag, LuUser } from "react-icons/lu";
 import { useAuth } from "../auth/AuthProvider";
 import { useCart } from "../../context/CartContext";
+import { useFavorites } from "../../context/FavoritesContext";
 import LovelyMobileDrawer from "./LovelyMobileDrawer";
 
 /** Figma Lucide: 24px, stroke 1.5 */
@@ -17,6 +18,7 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
   const { itemCount } = useCart();
+  const { count: favCount } = useFavorites();
   const [menuOpen, setMenuOpen] = useState(false);
   const showToggle = mode === "digitale" || mode === "imprimee";
   const isCatalog = mode === "none";
@@ -92,7 +94,7 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
             </span>
           </button>
 
-          <div className="flex h-[31px] w-[60px] shrink-0 items-center justify-end gap-3 lg:h-auto lg:w-auto lg:gap-4">
+          <div className="flex h-[31px] shrink-0 items-center justify-end gap-3 lg:w-auto lg:gap-4">
             <button
               type="button"
               className="inline-flex size-6 items-center justify-center"
@@ -100,6 +102,19 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
               onClick={goUser}
             >
               <LuUser {...iconProps} />
+            </button>
+            <button
+              type="button"
+              className="relative inline-flex size-6 items-center justify-center"
+              aria-label="Favoris"
+              onClick={() => navigate("/favoris")}
+            >
+              <LuHeart {...iconProps} />
+              {favCount > 0 ? (
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-lw-text px-1 text-[10px] text-white">
+                  {favCount}
+                </span>
+              ) : null}
             </button>
             <button
               type="button"
