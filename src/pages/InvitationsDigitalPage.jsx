@@ -72,7 +72,7 @@ function InvitationsDigitalPage() {
           {products.map((p) => {
             const liked = isFavorite(p.id);
             return (
-              <article key={p.id} className="group relative">
+              <article key={p.id} className="lw-product-card group relative p-1">
                 <button
                   type="button"
                   aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -97,7 +97,7 @@ function InvitationsDigitalPage() {
                   )}
                 </button>
                 <button type="button" className="w-full text-left" onClick={() => navigate(p.to)}>
-                  <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
+                  <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
                     <img
                       src={p.img}
                       alt={p.name}

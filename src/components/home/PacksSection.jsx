@@ -309,7 +309,29 @@ function EssentielPackCard({ onChoose }) {
 const SUR_MESURE_W = 395;
 const SUR_MESURE_H = 669;
 
-/** Figma Plan / Sur mesure — node 1611:1279 (395×669). */
+/** Positions % — scintillement Sur-Mesure (demande cliente) */
+const SUR_MESURE_TWINKLES = [
+  { left: "8%", top: "6%", size: 2, dur: "2.1s", delay: "0s" },
+  { left: "18%", top: "14%", size: 3, dur: "2.8s", delay: "0.4s" },
+  { left: "28%", top: "4%", size: 2, dur: "2.3s", delay: "1.1s" },
+  { left: "42%", top: "11%", size: 2.5, dur: "3.1s", delay: "0.2s" },
+  { left: "55%", top: "5%", size: 2, dur: "2.5s", delay: "0.9s" },
+  { left: "68%", top: "13%", size: 3, dur: "2.9s", delay: "0.6s" },
+  { left: "78%", top: "7%", size: 2, dur: "2.2s", delay: "1.4s" },
+  { left: "88%", top: "16%", size: 2.5, dur: "3.2s", delay: "0.3s" },
+  { left: "12%", top: "22%", size: 2, dur: "2.6s", delay: "1.7s" },
+  { left: "35%", top: "20%", size: 3, dur: "2.4s", delay: "0.8s" },
+  { left: "48%", top: "26%", size: 2, dur: "3s", delay: "1.2s" },
+  { left: "62%", top: "21%", size: 2.5, dur: "2.7s", delay: "0.1s" },
+  { left: "82%", top: "24%", size: 2, dur: "2.3s", delay: "1.6s" },
+  { left: "22%", top: "32%", size: 2, dur: "2.9s", delay: "0.5s" },
+  { left: "72%", top: "30%", size: 3, dur: "2.5s", delay: "1s" },
+  { left: "5%", top: "38%", size: 2, dur: "3.1s", delay: "1.3s" },
+  { left: "92%", top: "35%", size: 2.5, dur: "2.2s", delay: "0.7s" },
+  { left: "40%", top: "36%", size: 2, dur: "2.8s", delay: "1.5s" },
+];
+
+/** Figma Plan / Sur mesure — node 1611:1279 (395×669) + étoiles animées. */
 function SurMesurePackCard({ onChoose }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -343,13 +365,27 @@ function SurMesurePackCard({ onChoose }) {
         }}
         data-name="Plan / Sur mesure"
       >
-        {/* Stars — top decorative layer */}
+        {/* Stars — fond + scintillement animé */}
         <div className="pointer-events-none absolute left-0 top-0 z-0 h-[325px] w-full overflow-hidden rounded-t-[24px]">
           <img
             src={SUR_MESURE_STARS}
             alt=""
-            className="absolute left-0 top-[-6%] h-[108%] w-full max-w-none object-cover mix-blend-screen"
+            className="lw-sur-mesure-stars-bg absolute left-0 top-[-6%] h-[108%] w-full max-w-none object-cover mix-blend-screen"
           />
+          {SUR_MESURE_TWINKLES.map((s, i) => (
+            <span
+              key={i}
+              className="lw-sur-mesure-star"
+              style={{
+                left: s.left,
+                top: s.top,
+                width: s.size,
+                height: s.size,
+                "--lw-star-dur": s.dur,
+                "--lw-star-delay": s.delay,
+              }}
+            />
+          ))}
         </div>
 
         {/* Header — y:36 */}
@@ -497,7 +533,7 @@ function PacksSection() {
             {TRUST_POINTS.map((pt) => (
               <li
                 key={pt}
-                className="flex items-center gap-2 font-jost text-[13px] font-normal leading-[18px] text-[#6F6760]"
+                className="flex items-center gap-2 font-glacial text-[13px] font-normal leading-[18px] text-[#6F6760]"
               >
                 <CheckIcon size={16} tone="#6F6760" />
                 <span>{pt}</span>

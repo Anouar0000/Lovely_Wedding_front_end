@@ -254,7 +254,7 @@ function DigitalProductDetailPage() {
       {/* Config produit */}
       <section className="mx-auto w-full max-w-[428px] px-4 pb-10 pt-8 lg:max-w-xl lg:px-8 lg:pb-14 lg:pt-12">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-lora text-[28px] font-semibold leading-8 text-lw-text lg:text-[40px] lg:leading-tight">
+          <h1 className="font-lora text-[28px] font-medium leading-8 text-lw-text lg:text-[40px] lg:leading-tight">
             {product.name}
           </h1>
           <div className="flex gap-0.5 text-[14px] text-[#E8B84A]" aria-label="5 étoiles">
@@ -411,7 +411,7 @@ function DigitalProductDetailPage() {
               <button
                 key={r.slug}
                 type="button"
-                className="text-left"
+                className="lw-product-card group p-1 text-left"
                 onClick={() => navigate(`/invitations-digital/${r.slug}`)}
               >
                 <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">

@@ -97,7 +97,7 @@ function BestsellersSection() {
               }}
               src={card.src}
               alt={card.alt}
-              className={`pointer-events-none shrink-0 snap-center rounded-[5px] object-cover transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
+              className={`lw-product-card pointer-events-auto shrink-0 snap-center rounded-[5px] object-cover transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
                 isActive ? "h-[410px] opacity-100 shadow-md" : "h-[320px] opacity-90"
               } ${card.desktopClass}`}
               draggable={false}

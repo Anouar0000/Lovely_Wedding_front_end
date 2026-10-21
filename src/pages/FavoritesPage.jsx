@@ -55,7 +55,7 @@ function FavoritesPage() {
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-4 lg:mt-10 lg:grid-cols-3 lg:gap-8">
             {items.map((item) => (
-              <article key={item.id} className="group relative flex flex-col">
+              <article key={item.id} className="lw-product-card group relative flex flex-col p-1">
                 <button
                   type="button"
                   aria-label="Retirer des favoris"
@@ -69,7 +69,7 @@ function FavoritesPage() {
                   className="w-full text-left"
                   onClick={() => navigate(item.to || "/")}
                 >
-                  <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
+                  <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
                     {item.image ? (
                       <img
                         src={item.image}

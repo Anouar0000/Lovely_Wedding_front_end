@@ -96,7 +96,7 @@ function PhysicalCollectionSection() {
                 cardRefs.current[i] = el;
               }}
               onClick={() => navigate("/invitations-physique")}
-              className={`shrink-0 snap-center overflow-hidden rounded-[5px] transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
+              className={`lw-product-card shrink-0 snap-center rounded-[5px] transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
                 isActive ? "h-[410px] opacity-100 shadow-md" : "h-[320px] opacity-90"
               } ${card.desktopClass}`}
               aria-label="Voir la collection imprimée"
@@ -104,7 +104,7 @@ function PhysicalCollectionSection() {
               <img
                 src={card.src}
                 alt={card.alt}
-                className="pointer-events-none h-full w-full object-cover"
+                className="pointer-events-none h-full w-full rounded-[5px] object-cover"
                 draggable={false}
                 loading={i > 0 ? "lazy" : undefined}
               />

@@ -1,167 +1,70 @@
 import React, { useState } from "react";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
-/** Visuels Figma « STEP DIGITAL 1/2/3 » (dossier hero invi) */
+/**
+ * Bloc Figma sous Bestsellers / avant Invitations Web.
+ * Group 65 / 63 / 64 — visuels complets (titre + texte inclus).
+ */
 const STEPS = [
-  {
-    title: (
-      <>
-        Etape 1:
-        <br />
-        Choisissez votre invitation
-      </>
-    ),
-    text: (
-      <>
-        Parcourez nos créations, choisissez votre
-        <br />
-        thème, votre design et les sections qui
-        <br />
-        vous plaisent.
-      </>
-    ),
-    image: a.stepDigital1,
-  },
-  {
-    title: (
-      <>
-        Etape 2:
-        <br />
-        Ajoutez vos détails
-      </>
-    ),
-    text: (
-      <>
-        Remplissez notre petit formulaire avec les
-        <br />
-        détails de votre mariage, et laissez-nous
-        <br />
-        donner vie à votre invitation.
-      </>
-    ),
-    image: a.stepDigital2,
-  },
-  {
-    title: (
-      <>
-        Etape 3:
-        <br />
-        Recevez votre invitation
-      </>
-    ),
-    text: (
-      <>
-        Votre invitation personnalisée est
-        <br />
-        préparée avec soin et vous est envoyée
-        <br />
-        sous 7 jours.
-      </>
-    ),
-    image: a.stepDigital3,
-  },
+  { alt: "Étape 1 : Choisissez votre invitation", image: `${a.stepDigital1}?v=group65` },
+  { alt: "Étape 2 : Remplissez le formulaire", image: `${a.stepDigital2}?v=group63` },
+  { alt: "Étape 3 : Recevez votre invitation", image: `${a.stepDigital3}?v=group64` },
 ];
-
-const glassStyle = {
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.25) 100%)",
-};
 
 function StepCard({ step, compact = false, dots = null }) {
   return (
     <div
       className={
         compact
-          ? "relative h-[420px] w-[280px] shrink-0 overflow-hidden bg-[#F7F2EC]"
-          : "relative h-full w-full overflow-hidden bg-[#F7F2EC]"
+          ? "relative w-[280px] shrink-0 overflow-hidden bg-[#F7F2EC]"
+          : "relative w-full overflow-hidden bg-[#F7F2EC]"
       }
     >
-      <div className="pointer-events-none absolute inset-0">
-        <img
-          src={step.image}
-          alt=""
-          className="h-full w-full object-cover object-center"
-          draggable={false}
-        />
-      </div>
-
-      <div className="absolute inset-x-0 bottom-0 z-[1]">
-        <div
-          className={
-            compact
-              ? "flex h-[140px] w-full flex-col items-center justify-center rounded-[5px] px-4 py-3 backdrop-blur-[4px]"
-              : "mx-auto flex h-[198px] w-full max-w-[426px] flex-col items-center justify-center rounded-[5px] px-6 py-5 backdrop-blur-[4px]"
-          }
-          style={glassStyle}
-        >
-          <div
-            className={
-              compact
-                ? "w-full text-left"
-                : "mx-auto w-full max-w-[287px] text-left"
-            }
-          >
-            <h2
-              className={
-                compact
-                  ? "font-lora text-[15px] font-medium leading-[18px] text-[#332B29]"
-                  : "font-lora text-[20px] font-medium leading-6 text-[#332B29]"
-              }
-            >
-              {step.title}
-            </h2>
-            <p
-              className={
-                compact
-                  ? "mt-1 font-glacial text-[11px] font-normal leading-[14px] text-[#6F6760]"
-                  : "mt-0 font-glacial text-[15px] font-normal leading-5 text-[#6F6760]"
-              }
-            >
-              {step.text}
-            </p>
-          </div>
-          {dots}
-        </div>
-      </div>
+      <img
+        src={step.image}
+        alt={step.alt}
+        className={
+          compact
+            ? "block h-[420px] w-full object-contain object-top"
+            : "block h-auto w-full object-contain object-top"
+        }
+        draggable={false}
+      />
+      {dots ? (
+        <div className="absolute inset-x-0 bottom-4 z-[1] flex justify-center gap-1.5">{dots}</div>
+      ) : null}
     </div>
   );
 }
 
-/**
- * Mobile : carousel 428×615 — Desktop : 3 étapes côte à côte, plus petites
- */
 function DigitalEtapeSection() {
   const [step, setStep] = useState(0);
 
   return (
     <section id="livraison" className="scroll-mt-24 bg-[#F7F2EC]">
-      {/* Mobile — une étape */}
-      <div className="relative mx-auto h-[615px] w-full max-w-[428px] overflow-hidden lg:hidden">
+      {/* Mobile — carousel juste sous Delicate Beige */}
+      <div className="relative mx-auto w-full max-w-[428px] lg:hidden">
         <StepCard
           step={STEPS[step]}
-          dots={
-            <div className="mt-6 flex w-full items-center justify-center gap-1.5">
-              {STEPS.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`Étape ${i + 1}`}
-                  aria-current={i === step ? "true" : undefined}
-                  onClick={() => setStep(i)}
-                  className={
-                    i === step
-                      ? "h-[6px] w-[18px] rounded-full bg-lw-text transition-all"
-                      : "h-[6px] w-[6px] rounded-full bg-[#C9BDB3] transition-all"
-                  }
-                />
-              ))}
-            </div>
-          }
+          dots={STEPS.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Étape ${i + 1}`}
+              aria-current={i === step ? "true" : undefined}
+              onClick={() => setStep(i)}
+              className={
+                i === step
+                  ? "h-[6px] w-[18px] rounded-full bg-lw-text transition-all"
+                  : "h-[6px] w-[6px] rounded-full bg-[#C9BDB3] transition-all"
+              }
+            />
+          ))}
         />
       </div>
 
-      {/* Desktop — 3 étapes côte à côte */}
-      <div className="mx-auto hidden max-w-6xl items-stretch justify-center gap-6 px-8 py-16 lg:flex xl:gap-8 xl:py-20">
+      {/* Desktop */}
+      <div className="mx-auto hidden max-w-6xl items-start justify-center gap-6 px-8 py-16 lg:flex xl:gap-8 xl:py-20">
         {STEPS.map((s, i) => (
           <StepCard key={i} step={s} compact />
         ))}

@@ -155,7 +155,7 @@ function InvitationsPhysiquePage() {
           {products.map((p) => {
             const liked = isFavorite(p.id);
             return (
-              <article key={p.id} className="group flex flex-col">
+              <article key={p.id} className="lw-product-card group flex flex-col p-1">
                 <div className="relative">
                   <button
                     type="button"
@@ -182,7 +182,7 @@ function InvitationsPhysiquePage() {
                     />
                   </button>
                   <button type="button" className="w-full text-left" onClick={() => openProduct(p)}>
-                    <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/224] lg:h-auto lg:group-hover:shadow-md">
+                    <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
                       <img
                         src={p.img}
                         alt={p.name}

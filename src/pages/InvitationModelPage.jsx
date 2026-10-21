@@ -173,7 +173,7 @@ function InvitationModelPage() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-lw-text lg:pb-0">
       <DigitalHomeHeader mode="none" context="imprimee" />
 
       <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:max-w-6xl lg:px-8 lg:pt-10">
@@ -229,9 +229,9 @@ function InvitationModelPage() {
               Classic stationery-inspired design.
             </p>
 
-            {/* Amount — Value H2 22/34 · Currency Sub 2 16/24 #7D6E66 */}
+            {/* Amount — Value: Lora Medium 22/34 -1% · Currency Sub 2 Glacial 16/24 #7D6E66 */}
             <p className="mt-3 inline-flex items-baseline gap-1">
-              <span className="font-glacial text-[22px] font-bold leading-[34px] text-lw-text">
+              <span className="font-lora text-[22px] font-medium leading-[34px] tracking-[-0.01em] text-lw-text">
                 {UNIT_PRICE}
               </span>
               <span className="font-glacial text-[16px] font-normal leading-6 text-[#7D6E66]">
@@ -262,31 +262,33 @@ function InvitationModelPage() {
               ))}
             </div>
 
-            {/* Résumé + CTA — Figma Product overview physique */}
-            <div className="mt-[18px] flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="truncate font-glacial text-[16px] font-semibold leading-6 text-lw-text">
-                  {model.name}
-                </p>
-                <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
-                  {total != null
-                    ? `${total % 1 === 0 ? total : total.toFixed(1)}dt`
-                    : `${UNIT_PRICE}dt`}
-                </p>
+            {/* Résumé + CTA — fixe en bas (mobile), in-flow desktop */}
+            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E8E0D8] bg-white px-4 py-3 shadow-[0_-4px_24px_rgba(75,66,66,0.1)] lg:static lg:mt-[18px] lg:border-0 lg:px-0 lg:py-0 lg:shadow-none">
+              <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-none">
+                <div className="min-w-0">
+                  <p className="truncate font-lora text-[16px] font-medium leading-6 text-lw-text">
+                    {model.name}
+                  </p>
+                  <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
+                    {total != null
+                      ? `${total % 1 === 0 ? total : total.toFixed(1)}dt`
+                      : `${UNIT_PRICE}dt`}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={!isFormValid}
+                  onClick={handleOrder}
+                  className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-glacial text-[14px] font-semibold text-white ${
+                    isFormValid
+                      ? "bg-[#A97C72] hover:bg-[#966B62]"
+                      : "cursor-not-allowed bg-[#D9D9D9]"
+                  }`}
+                >
+                  Passer la commande
+                  <span aria-hidden>→</span>
+                </button>
               </div>
-              <button
-                type="button"
-                disabled={!isFormValid}
-                onClick={handleOrder}
-                className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-glacial text-[14px] font-semibold text-white ${
-                  isFormValid
-                    ? "bg-[#C4A69C] hover:bg-[#b3958a]"
-                    : "cursor-not-allowed bg-[#D9D9D9]"
-                }`}
-              >
-                Passer la commande
-                <span aria-hidden>→</span>
-              </button>
             </div>
 
             {/* Accordéons + avis — fond beige Figma #F7F2EC */}
@@ -372,7 +374,12 @@ function InvitationModelPage() {
           </h2>
           <div className="mt-[53px] grid grid-cols-2 gap-4 lg:gap-10">
             {recommendations.map((r) => (
-              <button key={r.name} type="button" className="text-left" onClick={() => openProduct(r)}>
+              <button
+                key={r.name}
+                type="button"
+                className="lw-product-card group p-1 text-left"
+                onClick={() => openProduct(r)}
+              >
                 <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
                   <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
                 </div>

@@ -58,7 +58,7 @@ function PhysicalBestsellersSection() {
     <section className="bg-white px-0 py-8 lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
-          <h2 className="font-lora text-[26px] font-semibold leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
+          <h2 className="font-lora text-[26px] font-medium leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
             Invitations physiques
           </h2>
           <p className="font-glacial text-[16px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
@@ -73,7 +73,7 @@ function PhysicalBestsellersSection() {
           {products.map((p) => {
             const liked = isFavorite(p.id);
             return (
-              <article key={p.id} className="group flex flex-col">
+              <article key={p.id} className="lw-product-card group flex flex-col p-1">
                 <div className="relative">
                   <button
                     type="button"
@@ -104,7 +104,7 @@ function PhysicalBestsellersSection() {
                     className="w-full text-left"
                     onClick={() => openPhysicalProduct(navigate, p)}
                   >
-                    <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] transition-shadow lg:aspect-[189/260] lg:h-auto lg:min-h-[280px] lg:group-hover:shadow-md">
+                    <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/260] lg:h-auto lg:min-h-[280px]">
                       <img
                         src={p.img}
                         alt={p.name}

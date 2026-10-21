@@ -43,7 +43,7 @@ function SaveTheDatesSection() {
     <section className="bg-white px-0 py-10 lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-2.5 text-center lg:w-full lg:max-w-2xl lg:gap-3">
-          <h2 className="font-lora text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
+          <h2 className="font-lora text-[30px] font-medium leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
             Save The Dates
           </h2>
           <p className="font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
@@ -59,7 +59,7 @@ function SaveTheDatesSection() {
           className="mt-8 flex gap-[30px] overflow-x-auto hide-scrollbar px-4 pb-1 lg:mt-14 lg:grid lg:grid-cols-2 lg:justify-items-center lg:gap-10 lg:overflow-visible lg:px-0"
         >
           {items.map((item) => (
-            <article key={item.title} className="w-[280px] shrink-0 lg:w-[320px]">
+            <article key={item.title} className="lw-product-card w-[280px] shrink-0 p-1 lg:w-[320px]">
               <button
                 type="button"
                 className="w-full text-left"
