@@ -23,7 +23,7 @@ const MOTIF_OPTIONS = ["Bagues Or", "Bagues Doré", "Fleurs Blanches", "Motif Cl
 const ACCORDIONS = [
   {
     title: "Comment ça marche",
-    body: "Choisissez quantité, format et motif, personnalisez vos textes, puis validez votre commande.",
+    body: "Choisissez quantité, format et motif, puis validez votre commande. Nous préparons l'invitation pour vous.",
   },
   {
     title: "Délai de livraison",
@@ -140,7 +140,7 @@ function InvitationModelPage() {
     if (!isFormValid || !model) return;
     addItem({
       productType: "physical",
-      productId: model.templateId || model.name,
+      productId: location.state?.productId || model.templateId || model.name,
       title: model.name,
       qty,
       unitPrice,

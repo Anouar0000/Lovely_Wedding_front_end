@@ -18,7 +18,6 @@ import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
 import ApparenceMenu from '../components/canvas/ApparenceMenu';
 import data from '../data/physical/categories.json';
 import { useCart } from '../context/CartContext';
-
 const DEFAULT_CARD_SIZE_MM = { width: 100, height: 141.4 };
 
 const getCardSizeFromFormat = (formatValue) => {
@@ -84,13 +83,14 @@ const getResponsiveFontSize = (fontSize, dimensions) => {
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
   const [currentCard, setCurrentCard] = useState('front');
-  const unsafeZoneEditorEnabled = process.env.REACT_APP_UNSAFE_ZONE_EDITOR === 'true';
   
   const navigate = useNavigate();
   const location = useLocation();
   const { addItem } = useCart();
-  const { model, format, motif } = location.state || {};
-  const quantityValue = Object.entries(location.state || {}).find(([key]) => key.startsWith('qt'))?.[1];
+  const mergedState = location.state || {};
+  const { model, format, motif } = mergedState;
+  const unsafeZoneEditorEnabled = process.env.REACT_APP_UNSAFE_ZONE_EDITOR === 'true';
+  const quantityValue = Object.entries(mergedState).find(([key]) => key.startsWith('qt'))?.[1];
   const selectedCardSize = useMemo(() => getCardSizeFromFormat(format), [format]);
   const [designAspectRatio, setDesignAspectRatio] = useState(DEFAULT_CARD_SIZE_MM.width / DEFAULT_CARD_SIZE_MM.height);
   const [unsafeZoneEditorOpen, setUnsafeZoneEditorOpen] = useState(false);
@@ -190,15 +190,23 @@ const {
     });
   }, [currentCard, setCardContent]);
 
-  // Corrected initial load and template logic
+  // Initial load: saved design from catalog, else template defaults
 useEffect(() => {
-  // This logic now runs only when the template ID changes.
+  if (cardContent.front.textBoxes.length > 0) return;
+
+  if (model?.textBoxesFront?.length) {
+    setCardContent(
+      {
+        front: { textBoxes: model.textBoxesFront },
+        back: { textBoxes: model.textBoxesBack || [] },
+      },
+      true
+    );
+    return;
+  }
+
   const templateId = model?.templateId;
   if (!templateId) return;
-
-  // We check if there's already text. If so, it means the user has started editing,
-  // and we should not overwrite their work with the default template.
-  if (cardContent.front.textBoxes.length > 0) return;
 
   const template = templateData[templateId];
   if (template?.prefilledTextBoxes) {
@@ -211,7 +219,7 @@ useEffect(() => {
     const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
     setCardContent(initialContent, true); 
   }
-}, [model?.templateId, cardContent.front.textBoxes.length, setCardContent]);
+}, [model?.templateId, model?.textBoxesFront, model?.textBoxesBack, cardContent.front.textBoxes.length, setCardContent]);
 
   useEffect(() => {
     setSelectedTextId(null);
@@ -564,12 +572,21 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
       <div ref={headerRef} className="fixed top-0 left-0 z-50 w-full border-b border-lw-line bg-white/95 py-4 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4">
             <div className="flex space-x-2">
-                <button type="button" onClick={() => navigate('/invitations-physique')} className="rounded-[5px] border border-lw-line p-1.5" aria-label="Fermer">✕</button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/invitations-physique')}
+                  className="rounded-[5px] border border-lw-line p-1.5"
+                  aria-label="Fermer"
+                >
+                  ✕
+                </button>
                 <button type="button" onClick={undo} disabled={!canUndo} className="rounded-[5px] border border-lw-line p-1.5 disabled:cursor-not-allowed disabled:opacity-50"><FiCornerDownLeft /></button>
                 <button type="button" onClick={redo} disabled={!canRedo} className="rounded-[5px] border border-lw-line p-1.5 disabled:cursor-not-allowed disabled:opacity-50"><FiCornerUpRight /></button>
             </div>
-            <h1 className="flex-1 text-center lw-logo text-[16px] sm:text-[18px]">{model?.name?.replace(/^Modèle\s/, '') || 'Personnalisation'}</h1>
-            <div className="flex items-center gap-2">
+            <h1 className="flex-1 text-center lw-logo text-[16px] sm:text-[18px]">
+              {model?.name?.replace(/^Modèle\s/, '') || 'Personnalisation'}
+            </h1>
+            <div className="flex flex-wrap items-center justify-end gap-2">
               {unsafeZoneEditorEnabled && (
                 <button
                   type="button"

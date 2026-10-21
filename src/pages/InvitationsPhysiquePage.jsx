@@ -7,6 +7,7 @@ import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import { useFavorites } from "../context/FavoritesContext";
 import {
   CATALOG_TYPES,
+  catalogProductToCanvasModel,
   listActiveCatalogProducts,
 } from "../services/catalogProducts";
 
@@ -61,12 +62,14 @@ const STATIC_PRODUCTS = [
 ];
 
 function mapCatalogProduct(p) {
+  const canvas = catalogProductToCanvasModel(p);
   return {
     id: p.id,
     name: p.name,
-    img: p.imageUrl || `${FIGMA}/catalog-4.png`,
+    img: p.imageUrl || canvas?.modelImage || `${FIGMA}/catalog-4.png`,
     price: p.priceLabel || "Start at 49$",
     category: p.category || "Rustique",
+    canvasModel: canvas,
   };
 }
 
@@ -104,14 +107,23 @@ function InvitationsPhysiquePage() {
   );
 
   const openProduct = (p) => {
+    const canvas = p.canvasModel;
     navigate(`/invitation-model/${encodeURIComponent(p.name)}`, {
       state: {
-        model: {
-          name: p.name,
-          price: 49,
-          image: p.img,
-          templateId: p.name,
-        },
+        model: canvas
+          ? {
+              ...canvas,
+              image: canvas.modelImage || p.img,
+              price: canvas.price || 49,
+            }
+          : {
+              name: p.name,
+              price: 49,
+              image: p.img,
+              templateId: "m1",
+              modelImage: p.img,
+            },
+        productId: p.id,
         selectedCategory: p.category,
       },
     });

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FiPlus, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import { isAbortError } from "../../lib/firebase";
 import {
@@ -6,6 +7,7 @@ import {
   createCatalogProduct,
   deleteCatalogProduct,
   listAllCatalogProducts,
+  seedCatalogProducts,
   updateCatalogProduct,
 } from "../../services/catalogProducts";
 
@@ -22,13 +24,27 @@ const EMPTY_FORM = {
 };
 
 function AdminCatalogPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const typeFromUrl = searchParams.get("type");
+  const typeFilter =
+    typeFromUrl === CATALOG_TYPES.PHYSICAL || typeFromUrl === CATALOG_TYPES.DIGITAL
+      ? typeFromUrl
+      : "all";
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
-  const [typeFilter, setTypeFilter] = useState("all");
+
+  const setTypeFilter = (value) => {
+    if (value === "all") {
+      setSearchParams({});
+    } else {
+      setSearchParams({ type: value });
+    }
+  };
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -51,9 +67,16 @@ function AdminCatalogPage() {
     return products.filter((p) => p.type === typeFilter);
   }, [products, typeFilter]);
 
-  const openCreate = () => {
+  const openCreate = (preferredType) => {
+    const nextType =
+      preferredType === CATALOG_TYPES.PHYSICAL || preferredType === CATALOG_TYPES.DIGITAL
+        ? preferredType
+        : typeFilter === "all"
+          ? CATALOG_TYPES.DIGITAL
+          : typeFilter;
     setEditingId("new");
-    setForm(EMPTY_FORM);
+    setForm({ ...EMPTY_FORM, type: nextType });
+    if (nextType !== "all") setTypeFilter(nextType);
   };
 
   const openEdit = (product) => {
@@ -117,50 +140,97 @@ function AdminCatalogPage() {
     }
   };
 
+  const handleSeed = async (type) => {
+    setBusy(true);
+    setError("");
+    try {
+      const { created, skipped } = await seedCatalogProducts(type);
+      await loadProducts();
+      if (created === 0 && skipped > 0) {
+        setError("Produits déjà importés.");
+      }
+    } catch (err) {
+      setError(err.message || "Impossible d'importer le catalogue.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="font-lora text-[28px] font-medium text-[#4B4242] lg:text-[36px]">Catalogue</h2>
           <p className="mt-1 text-sm text-[#7D6E66]">
-            Produits digital / physique. Si la collection est vide, le site garde les listes statiques.
+            Choisis Digital ou Physique, puis ajoute / modifie les produits.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={loadProducts}
-            className="inline-flex items-center gap-2 rounded-[5px] border border-[#E8E0D8] bg-white px-4 py-3 text-sm font-semibold"
-          >
-            <FiRefreshCw aria-hidden /> Actualiser
-          </button>
-          <button
-            type="button"
-            onClick={openCreate}
-            className="inline-flex items-center gap-2 rounded-[5px] bg-[#A97C72] px-4 py-3 text-sm font-bold uppercase text-white"
-          >
-            <FiPlus aria-hidden /> Nouveau
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={loadProducts}
+          className="inline-flex items-center gap-2 rounded-[5px] border border-[#E8E0D8] bg-white px-4 py-3 text-sm font-semibold"
+        >
+          <FiRefreshCw aria-hidden /> Actualiser
+        </button>
       </div>
 
-      <div className="mb-4 flex overflow-hidden rounded-[5px] border border-[#E8E0D8] bg-white text-sm font-semibold">
-        {[
-          ["all", "Tous"],
-          [CATALOG_TYPES.DIGITAL, "Digital"],
-          [CATALOG_TYPES.PHYSICAL, "Physique"],
-        ].map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setTypeFilter(value)}
-            className={`px-4 py-3 ${
-              typeFilter === value ? "bg-[#A97C72] text-white" : "text-[#7D6E66]"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="mb-6 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => setTypeFilter(CATALOG_TYPES.DIGITAL)}
+          className={`rounded-[8px] border px-5 py-5 text-left transition ${
+            typeFilter === CATALOG_TYPES.DIGITAL
+              ? "border-[#A97C72] bg-[#A97C72] text-white"
+              : "border-[#E8E0D8] bg-white text-[#4B4242] hover:border-[#A97C72]"
+          }`}
+        >
+          <p className="font-lora text-[22px] font-medium">Digital</p>
+          <p className={`mt-1 text-sm ${typeFilter === CATALOG_TYPES.DIGITAL ? "text-white/90" : "text-[#7D6E66]"}`}>
+            Invitations web / catalogue digital
+          </p>
+        </button>
+        <button
+          type="button"
+          onClick={() => setTypeFilter(CATALOG_TYPES.PHYSICAL)}
+          className={`rounded-[8px] border px-5 py-5 text-left transition ${
+            typeFilter === CATALOG_TYPES.PHYSICAL
+              ? "border-[#A97C72] bg-[#A97C72] text-white"
+              : "border-[#E8E0D8] bg-white text-[#4B4242] hover:border-[#A97C72]"
+          }`}
+        >
+          <p className="font-lora text-[22px] font-medium">Physique</p>
+          <p className={`mt-1 text-sm ${typeFilter === CATALOG_TYPES.PHYSICAL ? "text-white/90" : "text-[#7D6E66]"}`}>
+            Invitations imprimées / catalogue physique
+          </p>
+        </button>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => setTypeFilter("all")}
+          className={`rounded-[5px] border px-4 py-2 text-sm font-semibold ${
+            typeFilter === "all"
+              ? "border-[#A97C72] bg-[#F7F2EC] text-[#A97C72]"
+              : "border-[#E8E0D8] bg-white text-[#7D6E66]"
+          }`}
+        >
+          Voir tout
+        </button>
+        <button
+          type="button"
+          onClick={() => openCreate(CATALOG_TYPES.DIGITAL)}
+          className="inline-flex items-center gap-2 rounded-[5px] bg-[#A97C72] px-4 py-2 text-sm font-bold uppercase text-white"
+        >
+          <FiPlus aria-hidden /> Nouveau digital
+        </button>
+        <button
+          type="button"
+          onClick={() => openCreate(CATALOG_TYPES.PHYSICAL)}
+          className="inline-flex items-center gap-2 rounded-[5px] border border-[#A97C72] px-4 py-2 text-sm font-bold uppercase text-[#A97C72]"
+        >
+          <FiPlus aria-hidden /> Nouveau physique
+        </button>
       </div>
 
       {error ? (
@@ -285,9 +355,34 @@ function AdminCatalogPage() {
         ) : null}
 
         {!loading && filtered.length === 0 ? (
-          <p className="px-5 py-12 text-center text-sm text-[#7D6E66]">
-            Aucun produit Firestore — le site utilise encore les catalogues statiques.
-          </p>
+          <div className="flex flex-col items-center gap-4 px-5 py-12 text-center">
+            <p className="text-sm text-[#7D6E66]">
+              Aucun produit Firestore — le site utilise encore les catalogues
+              statiques.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {(typeFilter === CATALOG_TYPES.DIGITAL || typeFilter === "all") && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => handleSeed(CATALOG_TYPES.DIGITAL)}
+                  className="rounded-[5px] bg-[#A97C72] px-5 py-3 text-sm font-bold uppercase text-white disabled:opacity-50"
+                >
+                  Importer le catalogue digital
+                </button>
+              )}
+              {(typeFilter === CATALOG_TYPES.PHYSICAL || typeFilter === "all") && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => handleSeed(CATALOG_TYPES.PHYSICAL)}
+                  className="rounded-[5px] border border-[#A97C72] px-5 py-3 text-sm font-bold uppercase text-[#A97C72] disabled:opacity-50"
+                >
+                  Importer le catalogue physique
+                </button>
+              )}
+            </div>
+          </div>
         ) : null}
 
         {!loading && filtered.length > 0 ? (

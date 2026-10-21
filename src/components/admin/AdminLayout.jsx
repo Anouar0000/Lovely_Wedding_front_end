@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   FiBox,
   FiGrid,
@@ -15,23 +15,42 @@ import { useAuth } from "../auth/AuthProvider";
 
 const NAV = [
   { to: "/dashboard", end: true, label: "Overview", icon: FiGrid },
-  { to: "/dashboard/invitations", label: "Invitations", icon: FiMail },
+  { to: "/dashboard/invitations", label: "Invitations digitales", icon: FiMail },
+  {
+    to: "/dashboard/catalog?type=digital",
+    label: "Catalogue digital",
+    icon: FiBox,
+    match: { path: "/dashboard/catalog", type: "digital" },
+  },
+  {
+    to: "/dashboard/catalog?type=physical",
+    label: "Catalogue physique",
+    icon: FiBox,
+    match: { path: "/dashboard/catalog", type: "physical" },
+  },
   { to: "/dashboard/orders", label: "Commandes", icon: FiShoppingBag },
   { to: "/dashboard/clients", label: "Clients", icon: FiUsers },
-  { to: "/dashboard/catalog", label: "Catalogue", icon: FiBox },
 ];
 
-function navClass({ isActive }) {
+function linkClass(active) {
   return `flex items-center gap-3 rounded-[5px] px-3 py-2.5 text-sm font-semibold transition-colors ${
-    isActive
-      ? "bg-[#A97C72] text-white"
-      : "text-[#4B4242] hover:bg-[#F7F2EC]"
+    active ? "bg-[#A97C72] text-white" : "text-[#4B4242] hover:bg-[#F7F2EC]"
   }`;
 }
 
 function AdminLayout() {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+
+  const isNavActive = (item) => {
+    if (item.match) {
+      const type = new URLSearchParams(location.search).get("type");
+      return location.pathname === item.match.path && type === item.match.type;
+    }
+    if (item.end) return location.pathname === item.to;
+    return location.pathname === item.to || location.pathname.startsWith(`${item.to}/`);
+  };
 
   const sidebar = (
     <div className="flex h-full flex-col">
@@ -43,18 +62,21 @@ function AdminLayout() {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {NAV.map(({ to, end, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={navClass}
-            onClick={() => setOpen(false)}
-          >
-            <Icon className="size-4 shrink-0" aria-hidden />
-            {label}
-          </NavLink>
-        ))}
+        {NAV.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={() => linkClass(isNavActive(item))}
+              onClick={() => setOpen(false)}
+            >
+              <Icon className="size-4 shrink-0" aria-hidden />
+              {item.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <div className="space-y-2 border-t border-[#E8E0D8] px-3 py-4">
