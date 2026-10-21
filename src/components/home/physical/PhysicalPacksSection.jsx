@@ -22,7 +22,7 @@ function PhysicalPacksSection() {
               key={q}
               type="button"
               onClick={() => setQty(q)}
-              className={`font-urbanist text-[18px] ${
+              className={`font-glacial text-[18px] ${
                 qty === q
                   ? "border-b-2 border-lw-text font-bold text-lw-text"
                   : "font-normal text-lw-text"
@@ -43,7 +43,7 @@ function PhysicalPacksSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-physique")}
-            className="inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-urbanist text-[14px] font-medium leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white"
+            className="inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-glacial text-[14px] font-medium leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white"
           >
             Créer mon invitation
             <span aria-hidden className="text-[16px] leading-none">

@@ -76,7 +76,7 @@ function PhysicalCollectionSection() {
         <h2 className="px-4 text-center lw-h1 lg:text-[40px] lg:leading-tight">
           Les Best-Sellers
         </h2>
-        <p className="mx-auto mt-2 w-[357px] max-w-[calc(100%-16px)] whitespace-nowrap text-center font-urbanist text-[18px] font-medium leading-6 text-lw-muted lg:mt-3 lg:w-auto lg:max-w-xl lg:text-[20px]">
+        <p className="mx-auto mt-2 w-[357px] max-w-[calc(100%-16px)] whitespace-nowrap text-center font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:mt-3 lg:w-auto lg:max-w-xl lg:text-[20px]">
           Les créations que vous avez le plus aimées.
         </p>
       </div>
@@ -116,14 +116,14 @@ function PhysicalCollectionSection() {
       <div className="mx-auto mt-5 w-[256px] text-left lg:mt-10 lg:grid lg:w-full lg:max-w-6xl lg:grid-cols-[240px_32px_280px_32px_240px] lg:justify-center lg:px-8">
         <div className="lg:col-start-3 lg:w-[280px]">
           <h3 className="lw-feature lg:text-[36px]">Delicate Beige</h3>
-          <p className="mt-[10px] w-[261px] max-w-full font-urbanist text-[16px] font-normal leading-6 text-lw-muted lg:mt-4 lg:w-full lg:text-[17px] lg:leading-7">
+          <p className="mt-[10px] w-[261px] max-w-full font-glacial text-[16px] font-normal leading-6 text-lw-muted lg:mt-4 lg:w-full lg:text-[17px] lg:leading-7">
             Classic stationery-inspired designs and Elevate your event with curated envelopes,
             liners, and stamps
           </p>
           <button
             type="button"
             onClick={() => navigate("/invitations-physique")}
-            className="mt-5 inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-urbanist text-[14px] font-bold leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white lg:mt-6"
+            className="mt-5 inline-flex h-[44px] items-center justify-center gap-2 rounded-full border border-[#A97C72] px-6 font-glacial text-[14px] font-bold leading-none text-[#A97C72] transition-colors hover:bg-[#A97C72] hover:text-white lg:mt-6"
           >
             Créer mon invitation
             <span aria-hidden className="text-[16px] leading-none">

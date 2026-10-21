@@ -8,7 +8,7 @@ function ProtectedRoute({ children, requireAdmin = false }) {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#F6F4EF] px-6 font-urbanist">
+      <main className="flex min-h-screen items-center justify-center bg-[#F6F4EF] px-6 font-glacial">
         <p className="text-sm uppercase tracking-[0.18em] text-gray-500">Chargement</p>
       </main>
     );

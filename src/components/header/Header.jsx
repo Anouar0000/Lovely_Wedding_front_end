@@ -39,7 +39,7 @@ function Header() {
           <h1 className="lw-logo text-[18px] lg:text-[20px]">Lovely Invitations</h1>
         </div>
 
-        <div className="flex items-center gap-2 font-urbanist text-sm z-10">
+        <div className="flex items-center gap-2 font-glacial text-sm z-10">
           <button
             type="button"
             onClick={() => navigate('/cart')}

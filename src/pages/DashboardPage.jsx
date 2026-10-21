@@ -251,7 +251,7 @@ function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white font-urbanist text-lw-text">
+    <main className="min-h-screen bg-white font-glacial text-lw-text">
       <header className="border-b border-lw-line bg-white px-5 py-4">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
           <div>

@@ -16,7 +16,7 @@ import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 /** Main Page Digital — mobile + desktop responsive (no phone shell) */
 function HomePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-urbanist text-lw-text">
+    <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-glacial text-lw-text">
       {/* Premier écran Figma : header + hero = une seule composition plein viewport */}
       <div className="flex flex-col bg-[#F7F2EC] lg:min-h-[100dvh]">
         <DigitalHomeHeader mode="digitale" />

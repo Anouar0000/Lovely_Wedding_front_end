@@ -79,7 +79,7 @@ function PhysicalHeroSection() {
           <button
             type="button"
             onClick={goCatalog}
-            className="mt-10 hidden h-[48px] items-center justify-center gap-2 rounded-full bg-[#A97C72] px-7 font-urbanist text-[15px] font-medium leading-none text-white shadow-[0_8px_20px_rgba(75,66,66,0.18)] hover:bg-[#966B62] lg:inline-flex"
+            className="mt-10 hidden h-[48px] items-center justify-center gap-2 rounded-full bg-[#A97C72] px-7 font-glacial text-[15px] font-medium leading-none text-white shadow-[0_8px_20px_rgba(75,66,66,0.18)] hover:bg-[#966B62] lg:inline-flex"
           >
             Découvrir la collection
             <span aria-hidden className="text-[18px] leading-none">
@@ -96,7 +96,7 @@ function PhysicalHeroSection() {
           <button
             type="button"
             onClick={goCatalog}
-            className="inline-flex h-[48px] w-auto items-center justify-center gap-2 rounded-full bg-[#A97C72] px-7 font-urbanist text-[15px] font-medium leading-none text-white shadow-[0_8px_20px_rgba(75,66,66,0.18)] hover:bg-[#966B62]"
+            className="inline-flex h-[48px] w-auto items-center justify-center gap-2 rounded-full bg-[#A97C72] px-7 font-glacial text-[15px] font-medium leading-none text-white shadow-[0_8px_20px_rgba(75,66,66,0.18)] hover:bg-[#966B62]"
           >
             Découvrir la collection
             <span aria-hidden className="text-[18px] leading-none">

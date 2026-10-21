@@ -10,7 +10,7 @@ function CartPage() {
   const { items, subtotal, updateQty, removeItem } = useCart();
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 lg:px-8 lg:py-16">
@@ -31,7 +31,7 @@ function CartPage() {
 
         {items.length === 0 ? (
           <div className="mt-10 rounded-[5px] bg-[#fffaed] px-6 py-10 text-center">
-            <p className="font-abhaya text-[22px] font-medium text-lw-text">Votre panier est vide</p>
+            <p className="font-lora text-[22px] font-medium text-lw-text">Votre panier est vide</p>
             <p className="mt-2 text-sm text-lw-muted">Découvrez nos collections digitales et imprimées.</p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
@@ -59,7 +59,7 @@ function CartPage() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-lw-accent">
                     {item.productType === "digital" ? "Digital" : "Imprimé"}
                   </p>
-                  <h2 className="mt-1 font-abhaya text-[22px] font-medium text-lw-text lg:text-[26px]">{item.title}</h2>
+                  <h2 className="mt-1 font-lora text-[22px] font-medium text-lw-text lg:text-[26px]">{item.title}</h2>
                   {(item.format || item.motif) && (
                     <p className="mt-1 text-sm text-lw-muted">
                       {[item.format, item.motif].filter(Boolean).join(" · ")}
@@ -106,7 +106,7 @@ function CartPage() {
             ))}
 
             <div className="rounded-[5px] bg-[#fffaed] p-5 lg:p-6">
-              <div className="flex items-center justify-between font-abhaya text-[22px] font-medium lg:text-[28px]">
+              <div className="flex items-center justify-between font-lora text-[22px] font-medium lg:text-[28px]">
                 <span>Sous-total</span>
                 <span>{subtotal.toFixed(0)} DT</span>
               </div>

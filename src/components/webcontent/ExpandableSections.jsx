@@ -28,7 +28,7 @@ function ExpandableSections({ className = "px-4 mt-16 mb-8" }) {
               ) : (
                 <FiPlus className="text-black" />
               )}
-              <span className="text-sm font-medium font-urbanist text-black">{section.title}</span>
+              <span className="text-sm font-medium font-glacial text-black">{section.title}</span>
             </div>
 
             {/* Optional: Show arrow for clarity */}

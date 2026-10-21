@@ -10,7 +10,7 @@ function FavoritesPage() {
   const { items, removeFavorite, count } = useFavorites();
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 lg:px-8 lg:py-16">
@@ -33,7 +33,7 @@ function FavoritesPage() {
 
         {items.length === 0 ? (
           <div className="mt-10 rounded-[5px] bg-[#fffaed] px-6 py-10 text-center">
-            <p className="font-abhaya text-[22px] font-medium text-lw-text">Aucun favori pour le moment</p>
+            <p className="font-lora text-[22px] font-medium text-lw-text">Aucun favori pour le moment</p>
             <p className="mt-2 text-sm text-lw-muted">
               Touchez le cœur sur un modèle pour l&apos;enregistrer ici.
             </p>

@@ -43,10 +43,10 @@ function SaveTheDatesSection() {
     <section className="bg-white px-0 py-10 lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-2.5 text-center lg:w-full lg:max-w-2xl lg:gap-3">
-          <h2 className="font-abhaya text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
+          <h2 className="font-lora text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
             Save The Dates
           </h2>
-          <p className="font-urbanist text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+          <p className="font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
             Une vidéo élégante pour
             <br className="lg:hidden" />
             <span className="hidden lg:inline"> </span>
@@ -74,7 +74,7 @@ function SaveTheDatesSection() {
                     className="h-full w-full object-cover"
                   />
                   {item.isNew ? (
-                    <span className="absolute right-0 top-0 flex h-[30px] w-[70px] items-center justify-center rounded-bl-[5px] bg-lw-sage font-urbanist text-[11px] font-bold uppercase text-white lg:h-[34px] lg:w-[80px] lg:text-[12px]">
+                    <span className="absolute right-0 top-0 flex h-[30px] w-[70px] items-center justify-center rounded-bl-[5px] bg-lw-sage font-glacial text-[11px] font-bold uppercase text-white lg:h-[34px] lg:w-[80px] lg:text-[12px]">
                       NEW
                     </span>
                   ) : null}

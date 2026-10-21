@@ -7,7 +7,7 @@ import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
 function InviteMessage({ title, children }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-lw-surface px-6 text-center font-urbanist text-lw-text">
+    <main className="flex min-h-screen items-center justify-center bg-lw-surface px-6 text-center font-glacial text-lw-text">
       <div>
         <h1 className="lw-h1">{title}</h1>
         {children}
@@ -97,7 +97,7 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
     return (
       <>
         {previewMode ? (
-          <div className="fixed left-0 right-0 top-0 z-[9999] bg-black px-4 py-2 text-center font-urbanist text-xs font-semibold uppercase tracking-[0.16em] text-white">
+          <div className="fixed left-0 right-0 top-0 z-[9999] bg-black px-4 py-2 text-center font-glacial text-xs font-semibold uppercase tracking-[0.16em] text-white">
             Apercu dashboard / {invite.status === "published" ? "publiee" : "brouillon"}
           </div>
         ) : null}

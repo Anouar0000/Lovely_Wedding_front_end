@@ -71,11 +71,11 @@ function PaymentResultPage() {
   }, [orderId, paymentId, isFail]);
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 lg:px-8 lg:py-16">
-        <p className="text-center font-urbanist text-xs font-semibold uppercase tracking-[0.22em] text-lw-accent lg:text-left">
+        <p className="text-center font-glacial text-xs font-semibold uppercase tracking-[0.22em] text-lw-accent lg:text-left">
           Paiement
         </p>
         <h1 className="mt-3 text-center lw-h1 lg:text-left lg:text-[40px] lg:leading-tight">

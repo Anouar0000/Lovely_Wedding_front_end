@@ -16,9 +16,9 @@
 body {
   margin: 0;
   background: #f7f2ec;
-  font-family: "Urbanist", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "Glacial Indifference", "Urbanist", system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   color: #4b4242;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -29,63 +29,63 @@ code {
     monospace;
 }
 
-/* ─── Lovely Figma type scale (Main Digital tokens) ─── */
+/* ─── Lovely Figma type scale — Lora (H*) + Glacial Indifference (Sub*) ─── */
 @layer components {
-  /* headline 1 — Abhaya SemiBold 26 / 30 */
+  /* H1 — Lora 26 / 36 */
   .lw-h1 {
-    @apply font-abhaya text-[26px] font-semibold capitalize leading-[30px] text-lw-text;
+    @apply font-lora text-[26px] font-medium leading-9 tracking-[-0.01em] text-lw-text;
   }
-  /* headline 2 — Abhaya Medium 24 */
+  /* H2 — Lora 22 / 34 */
   .lw-h2 {
-    @apply font-abhaya text-[24px] font-medium capitalize leading-none text-lw-text;
+    @apply font-lora text-[22px] font-normal leading-[34px] tracking-[-0.01em] text-lw-text;
   }
-  /* headline 3 — Abhaya Medium 20 */
+  /* H3 — Lora 18 / 34 */
   .lw-h3 {
-    @apply font-abhaya text-[20px] font-medium capitalize leading-none text-lw-text;
+    @apply font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text;
   }
-  /* hero title — Figma: Lora Medium 30 / 36, tracking -1%, box 397×72 */
+  /* hero title — Lora Medium 30 / 36 */
   .lw-hero {
     @apply font-lora text-[30px] font-medium leading-[36px] tracking-[-0.01em] text-lw-text;
   }
-  /* hero sub — Figma: Glacial Indifference Regular 20/24, box 338×48 */
+  /* hero sub — Glacial Regular 20 / 24 */
   .lw-hero-sub {
     @apply font-glacial text-[20px] font-normal leading-6 tracking-normal text-lw-muted;
   }
-  /* Delicate Beige etc. — Abhaya Medium 28 / 31 */
+  /* Feature / display — Lora Medium 28 / 34 */
   .lw-feature {
-    @apply font-abhaya text-[28px] font-medium leading-[31px] text-lw-text;
+    @apply font-lora text-[28px] font-medium leading-[34px] tracking-[-0.01em] text-lw-text;
   }
-  /* subtext — Urbanist Medium 18 / 24 */
+  /* Sub — Glacial 18 / 24 */
   .lw-sub {
-    @apply font-urbanist text-[18px] font-medium leading-6 text-lw-muted;
+    @apply font-glacial text-[18px] font-normal leading-6 text-lw-muted;
   }
-  /* subtext 2 — Urbanist Regular 14 / 20 */
+  /* Sub 4 — Glacial 14 / 18 */
   .lw-body {
-    @apply font-urbanist text-[14px] font-normal leading-5 text-lw-muted;
+    @apply font-glacial text-[14px] font-normal leading-[18px] text-lw-muted;
   }
-  /* subtext 3 — Urbanist Regular 13 */
+  /* sub 5 — Glacial 12 / 24 */
   .lw-caption {
-    @apply font-urbanist text-[13px] font-normal leading-4 text-lw-muted;
+    @apply font-glacial text-[12px] font-normal leading-6 text-lw-muted;
   }
-  /* Button — Urbanist Bold 14 uppercase */
+  /* Button — Glacial Bold 14 uppercase (Sub 3 size) */
   .lw-btn {
-    @apply inline-flex h-[42px] items-center justify-center rounded-[5px] bg-lw-accent font-urbanist text-[14px] font-bold uppercase tracking-[0.7px] text-white hover:bg-lw-accentDark;
+    @apply inline-flex h-[42px] items-center justify-center rounded-[5px] bg-lw-accent font-glacial text-[14px] font-bold uppercase tracking-[0.7px] text-white hover:bg-lw-accentDark;
   }
-  /* Button 2 — price pill Urbanist Bold 10 */
+  /* Pill — Glacial Bold 10 */
   .lw-pill {
-    @apply inline-flex h-[19px] items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none;
+    @apply inline-flex h-[19px] items-center justify-center rounded-full font-glacial text-[10px] font-bold leading-none;
   }
-  /* Logo — Antic Didone */
+  /* Logo — Antic Didone (brand mark, not text-style sheet) */
   .lw-logo {
     @apply whitespace-nowrap font-antic text-[20px] leading-none text-black lg:text-[28px];
   }
-  /* Page title (auth / dashboard) — Abhaya SemiBold 36 */
+  /* Page title — Lora H1 scaled */
   .lw-page {
-    @apply font-abhaya text-[36px] font-semibold leading-none text-lw-text;
+    @apply font-lora text-[36px] font-medium leading-9 tracking-[-0.01em] text-lw-text;
   }
-  /* Section title large — Abhaya SemiBold 40 */
+  /* Section title large — Lora */
   .lw-page-lg {
-    @apply font-abhaya text-[40px] font-semibold leading-none text-lw-text;
+    @apply font-lora text-[40px] font-medium leading-tight tracking-[-0.01em] text-lw-text;
   }
 }
 

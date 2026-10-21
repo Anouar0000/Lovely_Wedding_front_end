@@ -60,10 +60,10 @@ function PhysicalExperienceSection() {
     <section id="experience" className="scroll-mt-24 bg-[#F7F2EC] px-0 pb-10 pt-8 lg:px-8 lg:pb-24 lg:pt-16">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
-          <h2 className="mt-[5px] font-abhaya text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
+          <h2 className="mt-[5px] font-lora text-[30px] font-semibold leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
             L&apos;expérience
           </h2>
-          <p className="font-urbanist text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+          <p className="font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
             Découvrez tout ce qui rend
             <br className="lg:hidden" />
             <span className="hidden lg:inline"> </span>
@@ -88,10 +88,10 @@ function PhysicalExperienceSection() {
               />
               {/* Copy type Digitale (texte intégré aux images Figma) */}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-4 pb-5 pt-16">
-                <h3 className="font-abhaya text-[22px] font-semibold leading-7 text-white drop-shadow-sm">
+                <h3 className="font-lora text-[22px] font-semibold leading-7 text-white drop-shadow-sm">
                   {card.title}
                 </h3>
-                <p className="mt-1 max-w-[220px] font-urbanist text-[14px] font-medium leading-5 text-white/95 drop-shadow-sm">
+                <p className="mt-1 max-w-[220px] font-glacial text-[14px] font-medium leading-5 text-white/95 drop-shadow-sm">
                   {card.text}
                 </p>
               </div>

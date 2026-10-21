@@ -54,7 +54,7 @@ function FaqSection() {
               >
                 <button
                   type="button"
-                  className="flex h-[64px] w-full items-center justify-between gap-4 px-4 text-left font-urbanist text-[14px] font-normal leading-5 text-[#332b29]"
+                  className="flex h-[64px] w-full items-center justify-between gap-4 px-4 text-left font-glacial text-[14px] font-normal leading-5 text-[#332b29]"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? -1 : i)}
                 >

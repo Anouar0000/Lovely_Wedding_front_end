@@ -30,7 +30,7 @@ function InvitationsDigitalPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" context="digitale" />
 
       <main className="mx-auto w-full max-w-[428px] flex-1 px-4 pb-12 lg:max-w-6xl lg:px-8 lg:pb-20">
@@ -104,7 +104,7 @@ function InvitationsDigitalPage() {
                       className="h-[162px] w-[86px] object-contain transition-transform duration-300 lg:h-[75%] lg:w-auto lg:max-w-[42%] lg:group-hover:scale-105"
                     />
                     <span
-                      className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-urbanist text-[10px] font-bold leading-none ${
+                      className={`absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full font-glacial text-[10px] font-bold leading-none ${
                         p.filled
                           ? "bg-lw-accent text-white"
                           : "border border-lw-accent bg-white/90 text-lw-accent"

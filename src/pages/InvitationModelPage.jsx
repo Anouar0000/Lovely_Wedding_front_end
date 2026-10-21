@@ -153,7 +153,7 @@ function InvitationModelPage() {
 
   if (!model) {
     return (
-      <div className="flex min-h-screen flex-col bg-white font-urbanist text-lw-text">
+      <div className="flex min-h-screen flex-col bg-white font-glacial text-lw-text">
         <DigitalHomeHeader mode="none" context="imprimee" />
         <p className="flex-1 p-10 text-center text-lw-muted">Aucun modèle sélectionné.</p>
         <DigitalHomeFooter />
@@ -173,7 +173,7 @@ function InvitationModelPage() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" context="imprimee" />
 
       <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:max-w-6xl lg:px-8 lg:pt-10">
@@ -216,7 +216,7 @@ function InvitationModelPage() {
                 {model.name}
               </h1>
               <p
-                className="inline-flex items-center gap-1 font-urbanist text-[14px] text-lw-muted"
+                className="inline-flex items-center gap-1 font-glacial text-[14px] text-lw-muted"
                 aria-label="Note 4,7 sur 5, 21 avis"
               >
                 <FiStar className="size-4 fill-[#E8B84A] text-[#E8B84A]" aria-hidden />
@@ -225,16 +225,16 @@ function InvitationModelPage() {
               </p>
             </div>
 
-            <p className="mt-2 font-urbanist text-[14px] leading-5 text-lw-muted">
+            <p className="mt-2 font-glacial text-[14px] leading-5 text-lw-muted">
               Classic stationery-inspired design.
             </p>
 
             {/* Amount — Value H2 22/34 · Currency Sub 2 16/24 #7D6E66 */}
             <p className="mt-3 inline-flex items-baseline gap-1">
-              <span className="font-urbanist text-[22px] font-bold leading-[34px] text-lw-text">
+              <span className="font-glacial text-[22px] font-bold leading-[34px] text-lw-text">
                 {UNIT_PRICE}
               </span>
-              <span className="font-urbanist text-[16px] font-normal leading-6 text-[#7D6E66]">
+              <span className="font-glacial text-[16px] font-normal leading-6 text-[#7D6E66]">
                 DT
               </span>
             </p>
@@ -247,11 +247,11 @@ function InvitationModelPage() {
                   onClick={() => setPopup(row.key)}
                   className="flex w-full items-center justify-between gap-3 border-b border-[#E8E0D8] py-4 text-left"
                 >
-                  <span className="shrink-0 font-urbanist text-[14px] font-bold text-lw-text">
+                  <span className="shrink-0 font-glacial text-[14px] font-bold text-lw-text">
                     {row.label}
                   </span>
                   <span
-                    className={`flex min-w-0 items-center gap-2 font-urbanist text-[14px] ${
+                    className={`flex min-w-0 items-center gap-2 font-glacial text-[14px] ${
                       row.muted ? "text-lw-muted" : "text-lw-text"
                     }`}
                   >
@@ -265,7 +265,7 @@ function InvitationModelPage() {
             {/* Résumé + CTA — Figma Product overview physique */}
             <div className="mt-[18px] flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="truncate font-urbanist text-[16px] font-semibold leading-6 text-lw-text">
+                <p className="truncate font-glacial text-[16px] font-semibold leading-6 text-lw-text">
                   {model.name}
                 </p>
                 <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
@@ -278,7 +278,7 @@ function InvitationModelPage() {
                 type="button"
                 disabled={!isFormValid}
                 onClick={handleOrder}
-                className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-urbanist text-[14px] font-semibold text-white ${
+                className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-glacial text-[14px] font-semibold text-white ${
                   isFormValid
                     ? "bg-[#C4A69C] hover:bg-[#b3958a]"
                     : "cursor-not-allowed bg-[#D9D9D9]"
@@ -298,7 +298,7 @@ function InvitationModelPage() {
                     <div key={item.title} className="border-b border-[#E8E0D8]">
                       <button
                         type="button"
-                        className="flex w-full items-center justify-between gap-4 py-[18px] text-left font-urbanist text-[14px] font-medium leading-5 text-lw-text"
+                        className="flex w-full items-center justify-between gap-4 py-[18px] text-left font-glacial text-[14px] font-medium leading-5 text-lw-text"
                         aria-expanded={open}
                         onClick={() => setOpenAcc(open ? -1 : i)}
                       >
@@ -311,7 +311,7 @@ function InvitationModelPage() {
                         </span>
                       </button>
                       {open ? (
-                        <p className="pb-4 font-urbanist text-[14px] leading-5 text-[#7D6E66]">
+                        <p className="pb-4 font-glacial text-[14px] leading-5 text-[#7D6E66]">
                           {item.body}
                         </p>
                       ) : null}
@@ -379,12 +379,12 @@ function InvitationModelPage() {
                 <h3 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text">
                   {r.name}
                 </h3>
-                <p className="font-urbanist text-[14px] leading-[18px] text-[#78716c]">
+                <p className="font-glacial text-[14px] leading-[18px] text-[#78716c]">
                   Includes music, animations
                   <br />
                   {"& guestbook"}
                 </p>
-                <p className="mt-2 font-urbanist text-[14px] font-bold leading-6 text-lw-text">
+                <p className="mt-2 font-glacial text-[14px] font-bold leading-6 text-lw-text">
                   Start at 49$
                 </p>
               </button>
@@ -410,7 +410,7 @@ function InvitationModelPage() {
             <div className="flex items-center justify-between px-5 pb-1 pt-5">
               <h2
                 id="popup-title"
-                className="font-urbanist text-[20px] font-semibold leading-7 text-lw-text"
+                className="font-glacial text-[20px] font-semibold leading-7 text-lw-text"
               >
                 {popup}
               </h2>
@@ -444,10 +444,10 @@ function InvitationModelPage() {
                         closePopup();
                       }}
                     >
-                      <span className="font-urbanist text-[14px] font-normal leading-5 text-[#7D6E66]">
+                      <span className="font-glacial text-[14px] font-normal leading-5 text-[#7D6E66]">
                         {option} (à {unitPrice}DT l&apos;unité)
                       </span>
-                      <span className="shrink-0 font-urbanist text-[14px] font-bold leading-5 text-lw-text">
+                      <span className="shrink-0 font-glacial text-[14px] font-bold leading-5 text-lw-text">
                         {totalLabel}
                       </span>
                     </button>
@@ -460,7 +460,7 @@ function InvitationModelPage() {
                     <button
                       key={option}
                       type="button"
-                      className={`flex w-full px-4 py-4 text-left font-urbanist text-[14px] text-lw-text transition-colors ${
+                      className={`flex w-full px-4 py-4 text-left font-glacial text-[14px] text-lw-text transition-colors ${
                         active
                           ? "border border-[#C4A69C] bg-white font-medium"
                           : "border-b border-[#E8E0D8] border-x-0 border-t-0 hover:bg-[#F7F2EC]/40"
@@ -481,7 +481,7 @@ function InvitationModelPage() {
                     <button
                       key={option}
                       type="button"
-                      className={`flex w-full px-4 py-4 text-left font-urbanist text-[14px] text-lw-text transition-colors ${
+                      className={`flex w-full px-4 py-4 text-left font-glacial text-[14px] text-lw-text transition-colors ${
                         active
                           ? "border border-[#C4A69C] bg-white font-medium"
                           : "border-b border-[#E8E0D8] border-x-0 border-t-0 hover:bg-[#F7F2EC]/40"

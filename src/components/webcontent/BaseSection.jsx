@@ -11,7 +11,7 @@ function BaseSection({ title, description, setSelectedCategory }) {
   return (
     <section className="w-full pt-24 max-w-full mx-auto p-4 bg-gray-100 flex flex-col justify-center items-center">
       {/* Breadcrumb Navigation */}
-      <div className="w-full max-w-6xl text-xs font-urbanist flex items-center space-x-2">
+      <div className="w-full max-w-6xl text-xs font-glacial flex items-center space-x-2">
         {/* Accueil Link */}
         <span
           onClick={() => navigate("/")}

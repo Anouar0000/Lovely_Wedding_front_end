@@ -111,12 +111,12 @@ function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <main className="flex flex-1 items-center justify-center bg-[#fffaed]/px-4 py-12 lg:py-20">
         <section className="w-full max-w-md rounded-[5px] bg-white px-6 py-10 shadow-sm lg:px-10">
-          <p className="text-center font-urbanist text-xs font-semibold uppercase tracking-[0.22em] text-lw-accent">
+          <p className="text-center font-glacial text-xs font-semibold uppercase tracking-[0.22em] text-lw-accent">
             Compte
           </p>
           <h1 className="mt-3 text-center lw-page lg:text-[40px]">Inscription</h1>

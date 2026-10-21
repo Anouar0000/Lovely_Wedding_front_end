@@ -137,8 +137,8 @@ function InvitationsCategoryPage({ title, models, selectedCategory, onResetCateg
                   className="h-full object-cover w-full"
                 />
               </div>
-              <h1 className="mt-2 text-sm font-bold text-left w-full font-urbanist">{model.name}</h1>
-              <p className="text-sm text-left w-full font-urbanist">à partir de {model.price}DT</p>
+              <h1 className="mt-2 text-sm font-bold text-left w-full font-glacial">{model.name}</h1>
+              <p className="text-sm text-left w-full font-glacial">à partir de {model.price}DT</p>
             </div>
           ))}
         </div>
@@ -146,7 +146,7 @@ function InvitationsCategoryPage({ title, models, selectedCategory, onResetCateg
         {visibleCount < filteredModels.length && (
           <div className="flex flex-col items-center py-8">
             <button
-              className="bg-black text-white w-24 h-8 font-urbanist text-sm"
+              className="bg-black text-white w-24 h-8 font-glacial text-sm"
               onClick={showMore}
             >
               Voir Plus

@@ -551,7 +551,7 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-lw-surface font-urbanist text-lw-text">
+    <div className="relative min-h-screen bg-lw-surface font-glacial text-lw-text">
       <div
         aria-hidden="true"
         className="fixed pointer-events-none"
@@ -574,21 +574,21 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
                 <button
                   type="button"
                   onClick={() => setUnsafeZoneEditorOpen((isOpen) => !isOpen)}
-                  className={`rounded-[5px] border px-3 py-2 font-urbanist text-sm ${
+                  className={`rounded-[5px] border px-3 py-2 font-glacial text-sm ${
                     unsafeZoneEditorOpen ? 'border-lw-accent bg-lw-accent text-white' : 'border-lw-line bg-white text-lw-text'
                   }`}
                 >
                   Zones
                 </button>
               )}
-              <button type="button" onClick={handleAddToCartAndCheckout} className="rounded-[5px] bg-lw-accent px-4 py-2 font-urbanist text-sm font-bold uppercase text-white hover:bg-lw-accentDark">Commander</button>
-              <button type="button" onClick={handleDownloadExact} className="rounded-[5px] border border-lw-line bg-white px-3 py-2 font-urbanist text-sm font-semibold">PDF</button>
+              <button type="button" onClick={handleAddToCartAndCheckout} className="rounded-[5px] bg-lw-accent px-4 py-2 font-glacial text-sm font-bold uppercase text-white hover:bg-lw-accentDark">Commander</button>
+              <button type="button" onClick={handleDownloadExact} className="rounded-[5px] border border-lw-line bg-white px-3 py-2 font-glacial text-sm font-semibold">PDF</button>
             </div>
         </div>
       </div>
 
       {unsafeZoneEditorEnabled && unsafeZoneEditorOpen && selectedUnsafeZone && (
-        <div className="fixed top-24 right-2 z-50 w-[min(92vw,320px)] bg-white border border-gray-300 shadow-xl rounded-md p-3 font-urbanist text-xs">
+        <div className="fixed top-24 right-2 z-50 w-[min(92vw,320px)] bg-white border border-gray-300 shadow-xl rounded-md p-3 font-glacial text-xs">
           <div className="flex items-center justify-between gap-2 mb-3">
             <strong className="text-sm">Unsafe zones</strong>
             <button

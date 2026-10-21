@@ -192,7 +192,7 @@ function DashboardRsvpPage({ clientMode = false }) {
 
   if (clientMode) {
     return (
-      <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
         <DigitalHomeHeader mode="none" />
         <div className="flex-1">{body}</div>
         <DigitalHomeFooter />
@@ -200,7 +200,7 @@ function DashboardRsvpPage({ clientMode = false }) {
     );
   }
 
-  return <main className="min-h-screen bg-white font-urbanist text-lw-text">{body}</main>;
+  return <main className="min-h-screen bg-white font-glacial text-lw-text">{body}</main>;
 }
 
 export default DashboardRsvpPage;

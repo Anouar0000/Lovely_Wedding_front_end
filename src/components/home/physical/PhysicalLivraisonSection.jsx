@@ -100,8 +100,8 @@ function StepCard({ step, compact = false, dots = null }) {
             <h2
               className={
                 compact
-                  ? "font-abhaya text-[15px] font-medium leading-[18px] text-[#332B29]"
-                  : "font-abhaya text-[20px] font-medium leading-6 text-[#332B29]"
+                  ? "font-lora text-[15px] font-medium leading-[18px] text-[#332B29]"
+                  : "font-lora text-[20px] font-medium leading-6 text-[#332B29]"
               }
             >
               {step.title}
@@ -109,8 +109,8 @@ function StepCard({ step, compact = false, dots = null }) {
             <p
               className={
                 compact
-                  ? "mt-1 font-urbanist text-[11px] font-normal leading-[14px] text-[#6F6760]"
-                  : "mt-0 font-urbanist text-[15px] font-normal leading-5 text-[#6F6760]"
+                  ? "mt-1 font-glacial text-[11px] font-normal leading-[14px] text-[#6F6760]"
+                  : "mt-0 font-glacial text-[15px] font-normal leading-5 text-[#6F6760]"
               }
             >
               {step.text}

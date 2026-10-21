@@ -48,7 +48,7 @@ function CommunitySection() {
                   className="mx-auto"
                   style={{ width: 280, height: Math.round((280 * CARD_H) / CARD_W) }}
                 />
-                <figcaption className="mt-3 text-left font-urbanist text-sm font-medium text-lw-text">
+                <figcaption className="mt-3 text-left font-glacial text-sm font-medium text-lw-text">
                   {s.handle}
                 </figcaption>
               </figure>
@@ -106,7 +106,7 @@ function CommunitySection() {
                   onActivate={setActiveId}
                   className="mx-auto aspect-[305/486] w-full shadow-md"
                 />
-                <figcaption className="mt-3 text-left font-urbanist text-[14px] font-medium text-lw-text">
+                <figcaption className="mt-3 text-left font-glacial text-[14px] font-medium text-lw-text">
                   {s.handle}
                 </figcaption>
               </figure>

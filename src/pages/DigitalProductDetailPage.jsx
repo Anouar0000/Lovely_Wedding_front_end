@@ -198,7 +198,7 @@ function DigitalProductDetailPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:px-8 lg:pt-10">
@@ -228,7 +228,7 @@ function DigitalProductDetailPage() {
             <button
               type="button"
               onClick={() => setMode("apercu")}
-              className={`inline-flex h-[40px] min-w-[118px] items-center justify-center rounded-[8px] px-5 font-urbanist text-[14px] font-medium ${
+              className={`inline-flex h-[40px] min-w-[118px] items-center justify-center rounded-[8px] px-5 font-glacial text-[14px] font-medium ${
                 mode === "apercu"
                   ? "bg-[#C4A69C] text-white"
                   : "border border-[#C4A69C] bg-white text-[#C4A69C]"
@@ -239,7 +239,7 @@ function DigitalProductDetailPage() {
             <button
               type="button"
               onClick={handleDemo}
-              className={`inline-flex h-[40px] min-w-[118px] items-center justify-center rounded-[8px] px-5 font-urbanist text-[14px] font-medium ${
+              className={`inline-flex h-[40px] min-w-[118px] items-center justify-center rounded-[8px] px-5 font-glacial text-[14px] font-medium ${
                 mode === "demo"
                   ? "bg-[#C4A69C] text-white"
                   : "border border-[#C4A69C] bg-white text-[#C4A69C]"
@@ -254,7 +254,7 @@ function DigitalProductDetailPage() {
       {/* Config produit */}
       <section className="mx-auto w-full max-w-[428px] px-4 pb-10 pt-8 lg:max-w-xl lg:px-8 lg:pb-14 lg:pt-12">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-abhaya text-[28px] font-semibold leading-8 text-lw-text lg:text-[40px] lg:leading-tight">
+          <h1 className="font-lora text-[28px] font-semibold leading-8 text-lw-text lg:text-[40px] lg:leading-tight">
             {product.name}
           </h1>
           <div className="flex gap-0.5 text-[14px] text-[#E8B84A]" aria-label="5 étoiles">
@@ -264,7 +264,7 @@ function DigitalProductDetailPage() {
           </div>
         </div>
 
-        <p className="mt-2 font-urbanist text-[15px] leading-5 text-lw-muted lg:text-[16px]">
+        <p className="mt-2 font-glacial text-[15px] leading-5 text-lw-muted lg:text-[16px]">
           {product.desc}
         </p>
 
@@ -272,14 +272,14 @@ function DigitalProductDetailPage() {
           {product.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex h-[26px] items-center rounded-full border border-lw-line px-3 font-urbanist text-[12px] text-lw-text"
+              className="inline-flex h-[26px] items-center rounded-full border border-lw-line px-3 font-glacial text-[12px] text-lw-text"
             >
               {tag}
             </span>
           ))}
         </div>
 
-        <p className="mt-5 font-urbanist text-[22px] font-bold leading-none text-[#B85C5C] lg:text-[26px]">
+        <p className="mt-5 font-glacial text-[22px] font-bold leading-none text-[#B85C5C] lg:text-[26px]">
           {selectedPack.priceLabel}
         </p>
 
@@ -306,11 +306,11 @@ function DigitalProductDetailPage() {
                   >
                     {active ? "✓" : ""}
                   </span>
-                  <span className="font-urbanist text-[15px] font-medium text-lw-text">
+                  <span className="font-glacial text-[15px] font-medium text-lw-text">
                     {pack.label}
                   </span>
                 </span>
-                <span className="font-urbanist text-[15px] font-semibold text-lw-text">
+                <span className="font-glacial text-[15px] font-semibold text-lw-text">
                   {pack.priceLabel}
                 </span>
               </button>
@@ -321,7 +321,7 @@ function DigitalProductDetailPage() {
         <button
           type="button"
           onClick={handleContinue}
-          className="mt-6 flex h-[48px] w-full items-center justify-center rounded-[8px] bg-[#C4A69C] font-urbanist text-[15px] font-semibold text-white hover:bg-[#b3958a]"
+          className="mt-6 flex h-[48px] w-full items-center justify-center rounded-[8px] bg-[#C4A69C] font-glacial text-[15px] font-semibold text-white hover:bg-[#b3958a]"
         >
           Continuer
         </button>
@@ -333,7 +333,7 @@ function DigitalProductDetailPage() {
               <div key={item.title} className="overflow-hidden rounded-[5px] bg-[#f4f4f4]">
                 <button
                   type="button"
-                  className="flex h-[56px] w-full items-center justify-between gap-4 px-4 text-left font-urbanist text-[14px] font-medium text-lw-text"
+                  className="flex h-[56px] w-full items-center justify-between gap-4 px-4 text-left font-glacial text-[14px] font-medium text-lw-text"
                   aria-expanded={open}
                   onClick={() => setOpenAcc(open ? -1 : i)}
                 >
@@ -343,7 +343,7 @@ function DigitalProductDetailPage() {
                   </span>
                 </button>
                 {open ? (
-                  <p className="px-4 pb-4 font-urbanist text-[14px] leading-5 text-lw-muted">
+                  <p className="px-4 pb-4 font-glacial text-[14px] leading-5 text-lw-muted">
                     {item.body}
                   </p>
                 ) : null}
@@ -359,7 +359,7 @@ function DigitalProductDetailPage() {
           <h2 className="lw-h1 lg:text-[36px]">Vos avis</h2>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <p className="font-urbanist text-[18px] font-bold">4.7</p>
+              <p className="font-glacial text-[18px] font-bold">4.7</p>
               <div className="flex gap-0.5 text-[#E8B84A]" aria-label="4.7 sur 5">
                 {"★★★★★".split("").map((s, i) => (
                   <span key={i}>{s}</span>
@@ -368,7 +368,7 @@ function DigitalProductDetailPage() {
             </div>
             <button
               type="button"
-              className="h-[36px] rounded-[5px] border border-lw-text px-4 font-urbanist text-[13px] font-medium"
+              className="h-[36px] rounded-[5px] border border-lw-text px-4 font-glacial text-[13px] font-medium"
             >
               Écrire un avis
             </button>
@@ -388,15 +388,15 @@ function DigitalProductDetailPage() {
                     ))}
                   </div>
                 </div>
-                <h3 className="mt-3 font-urbanist text-[16px] font-semibold text-lw-text">
+                <h3 className="mt-3 font-glacial text-[16px] font-semibold text-lw-text">
                   {r.title}
                 </h3>
-                <p className="mt-1 font-urbanist text-[14px] leading-5 text-lw-muted">{r.text}</p>
+                <p className="mt-1 font-glacial text-[14px] leading-5 text-lw-muted">{r.text}</p>
               </article>
             ))}
           </div>
 
-          <p className="mt-6 text-center font-urbanist text-[14px] font-bold capitalize text-lw-accent underline underline-offset-4">
+          <p className="mt-6 text-center font-glacial text-[14px] font-bold capitalize text-lw-accent underline underline-offset-4">
             Lire tous les avis
           </p>
         </div>
@@ -420,7 +420,7 @@ function DigitalProductDetailPage() {
                     alt={r.name}
                     className="h-[162px] w-[86px] object-contain"
                   />
-                  <span className="absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full border border-lw-accent bg-white/90 font-urbanist text-[10px] font-bold leading-none text-lw-accent">
+                  <span className="absolute bottom-[12px] left-1/2 flex h-[19px] w-[127px] -translate-x-1/2 items-center justify-center rounded-full border border-lw-accent bg-white/90 font-glacial text-[10px] font-bold leading-none text-lw-accent">
                     à partir de 99dt
                   </span>
                 </div>

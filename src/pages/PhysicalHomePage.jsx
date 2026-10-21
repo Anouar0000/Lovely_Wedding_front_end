@@ -15,7 +15,7 @@ import PhysicalFaqSection from "../components/home/physical/PhysicalFaqSection";
 /** Main Page physical — Figma 155:169 · parity mobile/desktop avec Digitale */
 function PhysicalHomePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-urbanist text-lw-text">
+    <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-glacial text-lw-text">
       <div className="flex flex-col bg-[#F7F2EC] lg:min-h-[100dvh]">
         <DigitalHomeHeader mode="imprimee" />
         <PhysicalHeroSection />

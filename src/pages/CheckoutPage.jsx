@@ -78,7 +78,7 @@ function CheckoutPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 lg:grid lg:grid-cols-[1.2fr_0.8fr] lg:gap-10 lg:px-8 lg:py-16">
@@ -205,7 +205,7 @@ function CheckoutPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex justify-between font-abhaya text-[22px] font-medium">
+          <div className="mt-4 flex justify-between font-lora text-[22px] font-medium">
             <span>Total</span>
             <span>{subtotal.toFixed(0)} DT</span>
           </div>

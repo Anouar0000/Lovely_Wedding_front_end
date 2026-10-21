@@ -63,10 +63,10 @@ function InvitationsWebSection() {
     <section className="bg-white px-0 py-8 lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
-          <h2 className="font-abhaya text-[26px] font-semibold leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
+          <h2 className="font-lora text-[26px] font-semibold leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
             Invitations Web
           </h2>
-          <p className="font-urbanist text-[16px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+          <p className="font-glacial text-[16px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
             Un site personnalisé pour partager
             <br className="lg:hidden" />
             <span className="hidden lg:inline"> </span>
@@ -111,7 +111,7 @@ function InvitationsWebSection() {
                       Includes music, animations
                       <br />& guestbook
                     </p>
-                    <p className="mt-2 font-urbanist text-[14px] font-bold leading-5 text-lw-text lg:mt-3 lg:text-[15px]">
+                    <p className="mt-2 font-glacial text-[14px] font-bold leading-5 text-lw-text lg:mt-3 lg:text-[15px]">
                       Start at 49$
                     </p>
                   </button>
@@ -125,7 +125,7 @@ function InvitationsWebSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-digital")}
-            className="inline-flex items-center gap-1.5 font-urbanist text-[14px] font-medium leading-none text-[#A97C72] underline-offset-4 hover:underline lg:text-[16px]"
+            className="inline-flex items-center gap-1.5 font-glacial text-[14px] font-medium leading-none text-[#A97C72] underline-offset-4 hover:underline lg:text-[16px]"
           >
             Découvrir toute la collection
             <span aria-hidden className="text-[16px] leading-none lg:text-[18px]">

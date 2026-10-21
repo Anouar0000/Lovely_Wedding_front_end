@@ -86,7 +86,7 @@ function InvitationsPhysiquePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" context="imprimee" />
 
       <main className="mx-auto w-full max-w-[428px] flex-1 px-4 pb-[18px] lg:max-w-6xl lg:px-8 lg:pb-[18px]">
@@ -125,7 +125,7 @@ function InvitationsPhysiquePage() {
                 type="button"
                 onClick={() => setFilter(active ? null : f)}
                 aria-pressed={active}
-                className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[5px] bg-[#fffaed] font-urbanist text-[14px] leading-none text-lw-text lg:h-[36px] lg:w-[133px] lg:flex-none ${
+                className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[5px] bg-[#fffaed] font-glacial text-[14px] leading-none text-lw-text lg:h-[36px] lg:w-[133px] lg:flex-none ${
                   active ? "border border-[#C4A69C]" : "border border-transparent"
                 }`}
               >
@@ -137,13 +137,13 @@ function InvitationsPhysiquePage() {
         </div>
 
         <div className="mt-5 flex items-center justify-between lg:mt-8">
-          <p className="font-urbanist text-[16px] leading-6 text-lw-text">
+          <p className="font-glacial text-[16px] leading-6 text-lw-text">
             {products.length} produit{products.length > 1 ? "s" : ""} trouvé
             {products.length > 1 ? "s" : ""}
           </p>
           <button
             type="button"
-            className="inline-flex items-center gap-2 font-urbanist text-[16px] leading-6 text-lw-text"
+            className="inline-flex items-center gap-2 font-glacial text-[16px] leading-6 text-lw-text"
             aria-hidden
           >
             <FiFilter className="text-[17px]" />
@@ -192,12 +192,12 @@ function InvitationsPhysiquePage() {
                     <h2 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text lg:mt-4 lg:text-[24px] lg:leading-8">
                       {p.name}
                     </h2>
-                    <p className="mt-0 font-urbanist text-[14px] leading-[18px] text-[#78716c]">
+                    <p className="mt-0 font-glacial text-[14px] leading-[18px] text-[#78716c]">
                       Includes music, animations
                       <br />
                       {"& guestbook"}
                     </p>
-                    <p className="mt-2 font-urbanist text-[14px] font-bold leading-6 text-lw-text">
+                    <p className="mt-2 font-glacial text-[14px] font-bold leading-6 text-lw-text">
                       {p.price}
                     </p>
                   </button>

@@ -70,7 +70,7 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
             >
               <LuSearch {...iconProps} />
             </button>
-            <nav className="hidden items-center gap-6 font-urbanist text-[14px] text-lw-text lg:flex">
+            <nav className="hidden items-center gap-6 font-glacial text-[14px] text-lw-text lg:flex">
               <button
                 type="button"
                 onClick={() => navigate(collectionPath)}
@@ -146,8 +146,8 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
                 aria-selected={mode === "digitale"}
                 className={
                   mode === "digitale"
-                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#c4a69c] px-3 font-urbanist text-[14px] font-semibold leading-none text-white"
-                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-urbanist text-[14px] font-medium leading-none text-lw-text"
+                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#c4a69c] px-3 font-glacial text-[14px] font-semibold leading-none text-white"
+                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-glacial text-[14px] font-medium leading-none text-lw-text"
                 }
                 onClick={() => {
                   if (mode !== "digitale") navigate("/");
@@ -162,8 +162,8 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
                 aria-selected={mode === "imprimee"}
                 className={
                   mode === "imprimee"
-                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#c4a69c] px-3 font-urbanist text-[14px] font-semibold leading-none text-white"
-                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-urbanist text-[14px] font-medium leading-none text-lw-text"
+                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#c4a69c] px-3 font-glacial text-[14px] font-semibold leading-none text-white"
+                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-glacial text-[14px] font-medium leading-none text-lw-text"
                 }
                 onClick={() => {
                   if (mode !== "imprimee") navigate("/imprimee");

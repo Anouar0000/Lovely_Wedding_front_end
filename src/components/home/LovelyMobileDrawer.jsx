@@ -59,7 +59,7 @@ function LovelyMobileDrawer({ open, onClose, mode = "digitale" }) {
     mode === "imprimee" ? "/invitations-physique" : "/invitations-digital";
 
   const linkClass =
-    "block w-full border-b border-lw-line py-4 text-left font-urbanist text-[16px] font-medium text-lw-text transition-colors hover:text-lw-accent";
+    "block w-full border-b border-lw-line py-4 text-left font-glacial text-[16px] font-medium text-lw-text transition-colors hover:text-lw-accent";
 
   return (
     <div
@@ -152,7 +152,7 @@ function LovelyMobileDrawer({ open, onClose, mode = "digitale" }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full rounded-[5px] border border-lw-line py-3 font-urbanist text-[14px] font-semibold text-lw-text"
+              className="w-full rounded-[5px] border border-lw-line py-3 font-glacial text-[14px] font-semibold text-lw-text"
             >
               Déconnexion
             </button>

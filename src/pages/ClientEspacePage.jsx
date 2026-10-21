@@ -44,7 +44,7 @@ function ClientEspacePage() {
   }, [load]);
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-urbanist text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 lg:px-8 lg:py-14">
