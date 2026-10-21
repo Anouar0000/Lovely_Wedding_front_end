@@ -1,17 +1,21 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FiFilter, FiX } from "react-icons/fi";
 import { LuHeart } from "react-icons/lu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import { useFavorites } from "../context/FavoritesContext";
+import {
+  CATALOG_TYPES,
+  listActiveCatalogProducts,
+} from "../services/catalogProducts";
 
 const FIGMA = "/assets/home-physical/figma";
 
 /** Catalogue Figma 167:292 — invitations physiques tous */
 const FILTERS = ["Rustique", "Outeya", "Cire"];
 
-const PRODUCTS = [
+const STATIC_PRODUCTS = [
   {
     id: "versailles",
     name: "Versailles",
@@ -56,6 +60,16 @@ const PRODUCTS = [
   },
 ];
 
+function mapCatalogProduct(p) {
+  return {
+    id: p.id,
+    name: p.name,
+    img: p.imageUrl || `${FIGMA}/catalog-4.png`,
+    price: p.priceLabel || "Start at 49$",
+    category: p.category || "Rustique",
+  };
+}
+
 function InvitationsPhysiquePage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,10 +79,28 @@ function InvitationsPhysiquePage() {
       ? location.state.filter
       : null;
   const [filter, setFilter] = useState(initialFilter);
+  const [catalog, setCatalog] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const items = await listActiveCatalogProducts(CATALOG_TYPES.PHYSICAL);
+        if (active) setCatalog(items.length ? items.map(mapCatalogProduct) : null);
+      } catch {
+        if (active) setCatalog(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const source = catalog || STATIC_PRODUCTS;
 
   const products = useMemo(
-    () => (filter ? PRODUCTS.filter((p) => p.category === filter) : PRODUCTS),
-    [filter]
+    () => (filter ? source.filter((p) => p.category === filter) : source),
+    [filter, source]
   );
 
   const openProduct = (p) => {

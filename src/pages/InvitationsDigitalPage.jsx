@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FiFilter } from "react-icons/fi";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,27 +6,62 @@ import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
 import { useFavorites } from "../context/FavoritesContext";
+import {
+  CATALOG_TYPES,
+  listActiveCatalogProducts,
+} from "../services/catalogProducts";
 
 /** Catalogue Figma 1102:344 — mobile Figma · desktop grille 3–4 cols */
 const FILTERS = ["Tous", "Romantique", "Moderne", "Arabesque"];
 
-const PRODUCTS = [
-  { id: "club-capri", name: "Club Capri", img: a.cardCapri, filled: true, to: "/invitations-digital/club-capri", category: "Moderne" },
-  { id: "sakura-koi", name: "Sakura Koi", img: a.cardSakura, filled: false, to: "/invitations-digital/sakura-koi", category: "Romantique" },
-  { id: "sidi-bousaid", name: "Sidi Bou Said", img: a.cardSidi, filled: false, to: "/invitations-digital/sidi-bousaid", category: "Arabesque" },
-  { id: "dolce-vita", name: "La Dolce Vita", img: a.cardDolce, filled: true, to: "/invitations-digital/dolce-vita", category: "Romantique" },
-  { id: "bridgerton", name: "Bridgerton", img: a.themeBridgeton, filled: false, to: "/invitations-digital/bridgerton", category: "Moderne" },
-  { id: "majestic-white", name: "Majestic White", img: a.themeMajesticWhite, filled: true, to: "/invitations-digital/majestic-white", category: "Romantique" },
+const STATIC_PRODUCTS = [
+  { id: "club-capri", name: "Club Capri", img: a.cardCapri, filled: true, to: "/invitations-digital/club-capri", category: "Moderne", priceLabel: "à partir de 99dt" },
+  { id: "sakura-koi", name: "Sakura Koi", img: a.cardSakura, filled: false, to: "/invitations-digital/sakura-koi", category: "Romantique", priceLabel: "à partir de 99dt" },
+  { id: "sidi-bousaid", name: "Sidi Bou Said", img: a.cardSidi, filled: false, to: "/invitations-digital/sidi-bousaid", category: "Arabesque", priceLabel: "à partir de 99dt" },
+  { id: "dolce-vita", name: "La Dolce Vita", img: a.cardDolce, filled: true, to: "/invitations-digital/dolce-vita", category: "Romantique", priceLabel: "à partir de 99dt" },
+  { id: "bridgerton", name: "Bridgerton", img: a.themeBridgeton, filled: false, to: "/invitations-digital/bridgerton", category: "Moderne", priceLabel: "à partir de 99dt" },
+  { id: "majestic-white", name: "Majestic White", img: a.themeMajesticWhite, filled: true, to: "/invitations-digital/majestic-white", category: "Romantique", priceLabel: "à partir de 99dt" },
 ];
+
+function mapCatalogProduct(p) {
+  const slug = p.slug || p.id;
+  return {
+    id: p.id,
+    name: p.name,
+    img: p.imageUrl || a.cardCapri,
+    filled: Boolean(p.filled),
+    to: `/invitations-digital/${slug}`,
+    category: p.category || "Moderne",
+    priceLabel: p.priceLabel || "à partir de 99dt",
+  };
+}
 
 function InvitationsDigitalPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("Tous");
+  const [catalog, setCatalog] = useState(null);
   const { isFavorite, toggleFavorite } = useFavorites();
 
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const items = await listActiveCatalogProducts(CATALOG_TYPES.DIGITAL);
+        if (active) setCatalog(items.length ? items.map(mapCatalogProduct) : null);
+      } catch {
+        if (active) setCatalog(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const source = catalog || STATIC_PRODUCTS;
+
   const products = useMemo(
-    () => (filter === "Tous" ? PRODUCTS : PRODUCTS.filter((p) => p.category === filter)),
-    [filter]
+    () => (filter === "Tous" ? source : source.filter((p) => p.category === filter)),
+    [filter, source]
   );
 
   return (
@@ -110,7 +145,7 @@ function InvitationsDigitalPage() {
                           : "border border-lw-accent bg-white/90 text-lw-accent"
                       }`}
                     >
-                      à partir de 99dt
+                      {p.priceLabel || "à partir de 99dt"}
                     </span>
                   </div>
                   <h2 className="mt-4 lw-h3 leading-6 lg:text-[24px]">{p.name}</h2>

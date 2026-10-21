@@ -16,9 +16,15 @@ import { AuthProvider } from './components/auth/AuthProvider';
 import { CartProvider } from './context/CartContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AdminLayout from './components/admin/AdminLayout';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import DashboardPage from './pages/DashboardPage';
+import AdminOverviewPage from './pages/admin/AdminOverviewPage';
+import AdminInvitesPage from './pages/admin/AdminInvitesPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage';
+import AdminClientsPage from './pages/admin/AdminClientsPage';
+import AdminCatalogPage from './pages/admin/AdminCatalogPage';
 import DashboardRsvpPage from './pages/DashboardRsvpPage';
 import ClientEspacePage from './pages/ClientEspacePage';
 import DigitalInviteEditorPage from './pages/DigitalInviteEditorPage';
@@ -78,14 +84,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute requireAdmin>
-                  <DashboardPage />
+                  <AdminLayout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<AdminOverviewPage />} />
+              <Route path="invitations" element={<AdminInvitesPage />} />
+              <Route path="orders" element={<AdminOrdersPage />} />
+              <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
+              <Route path="clients" element={<AdminClientsPage />} />
+              <Route path="catalog" element={<AdminCatalogPage />} />
+            </Route>
+
             <Route
               path="/dashboard/invitations/new"
               element={

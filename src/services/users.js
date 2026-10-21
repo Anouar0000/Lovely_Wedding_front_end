@@ -1,4 +1,13 @@
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export const USERS_COLLECTION = "users";
@@ -91,4 +100,37 @@ export async function getUserProfile(uid) {
   const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
   if (!snap.exists()) return null;
   return { id: snap.id, ...snap.data() };
+}
+
+export async function listAllUsers() {
+  assertFirestoreReady();
+  const snap = await getDocs(collection(db, USERS_COLLECTION));
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => String(a.email || "").localeCompare(String(b.email || "")));
+}
+
+export async function updateUserProfile(uid, patch) {
+  assertFirestoreReady();
+  if (!uid) throw new Error("Utilisateur requis.");
+  const next = { updatedAt: serverTimestamp() };
+  if (patch.fullName !== undefined) {
+    next.fullName = String(patch.fullName || "").trim().slice(0, 120);
+  }
+  if (patch.phone !== undefined) {
+    next.phone = String(patch.phone || "").trim().slice(0, 40);
+  }
+  if (patch.notes !== undefined) {
+    next.notes = String(patch.notes || "").trim().slice(0, 500);
+  }
+  if (patch.role !== undefined) {
+    next.role = patch.role === USER_ROLES.ADMIN ? USER_ROLES.ADMIN : USER_ROLES.CLIENT;
+  }
+  await updateDoc(doc(db, USERS_COLLECTION, uid), next);
+}
+
+export async function deleteUserDoc(uid) {
+  assertFirestoreReady();
+  if (!uid) throw new Error("Utilisateur requis.");
+  await deleteDoc(doc(db, USERS_COLLECTION, uid));
 }
