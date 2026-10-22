@@ -30,6 +30,9 @@ import ClientEspacePage from './pages/ClientEspacePage';
 import DigitalInviteEditorPage from './pages/DigitalInviteEditorPage';
 import InvitationModelPage from "./pages/InvitationModelPage";
 import DigitalProductDetailPage from "./pages/DigitalProductDetailPage";
+import DigitalExtrasPage from "./pages/DigitalExtrasPage";
+import DigitalRecapPage from "./pages/DigitalRecapPage";
+import DigitalMerciPage from "./pages/DigitalMerciPage";
 import PersonalizeInvitationPage from "./pages/PersonalizeInvitationPage";
 import CartPage from './pages/CartPage';
 import FavoritesPage from './pages/FavoritesPage';
@@ -53,6 +56,9 @@ function App() {
             <Route path="/invitations-physique" element={<InvitationsPhysiquePage />} />
             <Route path="/invitations-digital" element={<InvitationsDigitalPage />} />
             <Route path="/invitations-digital/e/:slug" element={<SharedDigitalInvitePage />} />
+            <Route path="/invitations-digital/:slug/extras" element={<DigitalExtrasPage />} />
+            <Route path="/invitations-digital/:slug/checkout" element={<DigitalRecapPage />} />
+            <Route path="/invitations-digital/:slug/merci" element={<DigitalMerciPage />} />
             <Route path="/invitations-digital/:slug" element={<DigitalProductDetailPage />} />
             <Route path="/e/:slug" element={<SharedDigitalInvitePage />} />
             <Route path="/digital-invitation/dolce-vita" element={<DolceVitaInvitePage />} />
