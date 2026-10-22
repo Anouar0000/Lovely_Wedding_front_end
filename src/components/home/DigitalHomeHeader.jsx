@@ -13,8 +13,15 @@ const iconProps = { size: 24, strokeWidth: 1.5, "aria-hidden": true };
 /**
  * @param {"digitale" | "imprimee" | "none"} mode
  * @param {"digitale" | "imprimee"} [context] — quand mode=none (catalogue), home / collection / drawer
+ * @param {boolean} [hideFavorites] — Figma catalogue Group 23 : user + bag seulement
+ * @param {boolean} [catalogMobile] — header mobile Figma : menu seul (pas search)
  */
-function DigitalHomeHeader({ mode = "digitale", context }) {
+function DigitalHomeHeader({
+  mode = "digitale",
+  context,
+  hideFavorites = false,
+  catalogMobile = false,
+}) {
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
   const { itemCount } = useCart();
@@ -62,14 +69,17 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
             >
               <LuMenu {...iconProps} />
             </button>
-            <button
-              type="button"
-              className="hidden size-6 items-center justify-center lg:inline-flex"
-              aria-label="Recherche"
-              onClick={() => navigate(collectionPath)}
-            >
-              <LuSearch {...iconProps} />
-            </button>
+            {/* Accueil : search desktop only · Catalogue : pas de search */}
+            {!catalogMobile ? (
+              <button
+                type="button"
+                className="hidden size-6 items-center justify-center lg:inline-flex"
+                aria-label="Recherche"
+                onClick={() => navigate(collectionPath)}
+              >
+                <LuSearch {...iconProps} />
+              </button>
+            ) : null}
             <nav className="hidden items-center gap-6 font-glacial text-[14px] text-lw-text lg:flex">
               <button
                 type="button"
@@ -103,19 +113,21 @@ function DigitalHomeHeader({ mode = "digitale", context }) {
             >
               <LuUser {...iconProps} />
             </button>
-            <button
-              type="button"
-              className="relative inline-flex size-6 items-center justify-center"
-              aria-label="Favoris"
-              onClick={() => navigate("/favoris")}
-            >
-              <LuHeart {...iconProps} />
-              {favCount > 0 ? (
-                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-lw-text px-1 text-[10px] text-white">
-                  {favCount}
-                </span>
-              ) : null}
-            </button>
+            {!hideFavorites ? (
+              <button
+                type="button"
+                className="relative inline-flex size-6 items-center justify-center"
+                aria-label="Favoris"
+                onClick={() => navigate("/favoris")}
+              >
+                <LuHeart {...iconProps} />
+                {favCount > 0 ? (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-lw-text px-1 text-[10px] text-white">
+                    {favCount}
+                  </span>
+                ) : null}
+              </button>
+            ) : null}
             <button
               type="button"
               className="relative inline-flex size-6 items-center justify-center"
