@@ -106,6 +106,7 @@ function App() {
               <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
               <Route path="clients" element={<AdminClientsPage />} />
               <Route path="catalog" element={<AdminCatalogPage />} />
+              <Route path="pricing" element={<AdminDigitalPricingPage />} />
             </Route>
 
             <Route

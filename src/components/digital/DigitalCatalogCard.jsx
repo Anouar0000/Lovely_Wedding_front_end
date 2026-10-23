@@ -3,7 +3,9 @@ import { LuHeart } from "react-icons/lu";
 import { homeDigitalAssets as a } from "../home/homeDigitalAssets";
 
 /**
- * Catalogue Figma Group 23 — mêmes tuiles que /invitations-digital
+ * Catalogue Figma Group 23 — mêmes tuiles que /invitations-digital.
+ * Tuiles `img` = export Figma complet (fond crème + téléphone).
+ * `screen` = contenu seul (sans bezel) pour CatalogPhoneMock (Capri / Sakura).
  */
 export const DIGITAL_CATALOG_PRODUCTS = [
   {
@@ -41,7 +43,7 @@ export const DIGITAL_CATALOG_PRODUCTS = [
   {
     id: "club-capri",
     name: "Club Capri",
-    img: a.screenCapri,
+    img: a.catalogTileCapri,
     screen: a.screenCapri,
     to: "/invitations-digital/club-capri",
     category: "Moderne",
@@ -50,7 +52,7 @@ export const DIGITAL_CATALOG_PRODUCTS = [
   {
     id: "sakura-koi",
     name: "Sakura Koi",
-    img: a.screenSakura,
+    img: a.catalogTileSakura,
     screen: a.screenSakura,
     to: "/invitations-digital/sakura-koi",
     category: "Romantique",
@@ -82,6 +84,7 @@ export function CatalogPhoneMock({ src, alt }) {
 
 /**
  * Carte produit catalogue — code unique pour /invitations-digital et recommandations.
+ * Les tuiles Figma ont un cœur dessiné : on le masque, puis on pose le bouton favoris.
  */
 export function DigitalCatalogCard({
   product,
@@ -89,13 +92,18 @@ export function DigitalCatalogCard({
   onToggleFavorite,
   onOpen,
 }) {
+  const usePhoneMock = Boolean(product.screen);
+
   return (
     <article className="group flex flex-col">
       <div className="relative">
-        <span
-          className="pointer-events-none absolute right-1 top-1 z-10 size-9 rounded-sm bg-[#fffaed]"
-          aria-hidden
-        />
+        {/* Masque le cœur intégré dans les exports Figma (tuiles sans screen) */}
+        {!usePhoneMock ? (
+          <span
+            className="pointer-events-none absolute right-0 top-0 z-10 h-11 w-11 bg-[#fffaed]"
+            aria-hidden
+          />
+        ) : null}
         <button
           type="button"
           aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -118,14 +126,14 @@ export function DigitalCatalogCard({
         </button>
 
         <button type="button" className="w-full text-left" onClick={() => onOpen?.(product)}>
-          {product.screen ? (
+          {usePhoneMock ? (
             <div className="transition-transform duration-300 group-hover:scale-[1.02]">
               <CatalogPhoneMock src={product.screen} alt={product.name} />
             </div>
           ) : (
             <div className="relative aspect-[189/222] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
               <img
-                src={`${product.img}?v=g23`}
+                src={product.img}
                 alt={product.name}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 draggable={false}
