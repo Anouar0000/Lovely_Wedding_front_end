@@ -4,6 +4,10 @@ import { FiPlay, FiStar } from "react-icons/fi";
 import { LuHeart } from "react-icons/lu";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import {
+  DIGITAL_CATALOG_PRODUCTS,
+  DigitalCatalogCard,
+} from "../components/digital/DigitalCatalogCard";
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
 import { useFavorites } from "../context/FavoritesContext";
 
@@ -132,15 +136,6 @@ export const DIGITAL_PRODUCTS = {
   },
 };
 
-const RECOS = [
-  { slug: "bridgerton", name: "Bridgeton", img: a.catalogTileBridgeton },
-  { slug: "majestic-white", name: "Majestic White", img: a.catalogTileMajestic },
-  { slug: "sidi-bousaid", name: "Sidi Bou Said", img: a.catalogTileSidi },
-  { slug: "dolce-vita", name: "Dolce Vita", img: a.catalogTileDolce },
-  { slug: "club-capri", name: "Club Capri", img: a.screenCapri, screen: true },
-  { slug: "sakura-koi", name: "Sakura Koi", img: a.screenSakura, screen: true },
-];
-
 /** Product overview digital — Figma 1238:1953 */
 function DigitalProductDetailPage() {
   const { slug } = useParams();
@@ -158,7 +153,7 @@ function DigitalProductDetailPage() {
   );
 
   const recommendations = useMemo(
-    () => RECOS.filter((r) => r.slug !== product.slug).slice(0, 2),
+    () => DIGITAL_CATALOG_PRODUCTS.filter((p) => p.id !== product.slug).slice(0, 2),
     [product.slug]
   );
 
@@ -437,92 +432,27 @@ function DigitalProductDetailPage() {
       <section className="mt-[53px] bg-white px-4 pb-[53px] pt-0 lg:px-8">
         <div className="mx-auto w-full max-w-[428px] md:max-w-3xl lg:max-w-6xl">
           <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-[#4B4242]">
-            Autres Recommendation
+            Autres recommandations
           </h2>
-          <div className="mt-[53px] grid grid-cols-2 gap-x-[16px] gap-y-8 md:grid-cols-3 lg:grid-cols-4">
-            {recommendations.map((r) => {
-              const liked = isFavorite(r.slug);
-              return (
-                <article key={r.slug} className="group relative flex flex-col">
-                  <span
-                    className="pointer-events-none absolute right-1 top-1 z-10 size-9 rounded-sm bg-[#fffaed]"
-                    aria-hidden
-                  />
-                  <button
-                    type="button"
-                    aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
-                    aria-pressed={liked}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleFavorite({
-                        id: r.slug,
-                        title: r.name,
-                        to: `/invitations-digital/${r.slug}`,
-                        image: r.img,
-                        productType: "digital",
-                      });
-                    }}
-                    className="absolute right-[8px] top-[8px] z-20 flex size-8 items-center justify-center"
-                  >
-                    <LuHeart
-                      size={18}
-                      strokeWidth={1.75}
-                      aria-hidden
-                      className={
-                        liked
-                          ? "fill-[#E23D48] text-[#E23D48]"
-                          : "fill-none text-[#E23D48]"
-                      }
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full text-left"
-                    onClick={() => navigate(`/invitations-digital/${r.slug}`)}
-                  >
-                    {r.screen ? (
-                      <div className="relative aspect-[189/222] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
-                        <div className="absolute left-[28.5%] top-[12.5%] h-[77%] w-[42.5%] rounded-[16%/8%] bg-[#1c1c1c] p-[1.6%] shadow-[2px_6px_8px_-2px_rgba(75,66,66,0.45)]">
-                          <div className="relative h-full w-full overflow-hidden rounded-[14%/7%] bg-[#F7F2EC]">
-                            <img
-                              src={r.img}
-                              alt={r.name}
-                              className="pointer-events-none block h-full w-full object-cover object-top"
-                              draggable={false}
-                            />
-                            <span
-                              className="pointer-events-none absolute left-1/2 top-[2%] h-[3%] w-[26%] -translate-x-1/2 rounded-full bg-[#131313]"
-                              aria-hidden
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative aspect-[189/222] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
-                        <img
-                          src={`${r.img}?v=reco`}
-                          alt={r.name}
-                          className="h-full w-full object-cover"
-                          draggable={false}
-                        />
-                      </div>
-                    )}
-                    <h3 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
-                      {r.name}
-                    </h3>
-                    <p className="font-glacial text-[14px] leading-[18px] text-[#78716c]">
-                      Includes music, animations
-                      <br />
-                      {"& guestbook"}
-                    </p>
-                    <p className="mt-1 font-glacial text-[14px] font-bold leading-6 text-[#4B4242]">
-                      Start at 49$
-                    </p>
-                  </button>
-                </article>
-              );
-            })}
+          {/* Même grille / card que /invitations-digital */}
+          <div className="mt-[53px] grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+            {recommendations.map((p) => (
+              <DigitalCatalogCard
+                key={p.id}
+                product={p}
+                liked={isFavorite(p.id)}
+                onToggleFavorite={(product) =>
+                  toggleFavorite({
+                    id: product.id,
+                    title: product.name,
+                    to: product.to,
+                    image: product.img,
+                    productType: "digital",
+                  })
+                }
+                onOpen={(product) => navigate(product.to)}
+              />
+            ))}
           </div>
         </div>
       </section>
