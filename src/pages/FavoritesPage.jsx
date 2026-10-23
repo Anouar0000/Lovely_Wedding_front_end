@@ -3,7 +3,46 @@ import { Link, useNavigate } from "react-router-dom";
 import { LuHeart } from "react-icons/lu";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
 import { useFavorites } from "../context/FavoritesContext";
+
+/** Écrans seuls (sans cœur Figma) pour le mockup favoris. */
+const DIGITAL_SCREENS = {
+  "sidi-bousaid": a.cardSidi,
+  "dolce-vita": a.cardDolce,
+  bridgerton: a.themeBridgeton,
+  bridgeton: a.themeBridgeton,
+  "majestic-white": a.themeMajesticWhite,
+  "club-capri": a.screenCapri,
+  "sakura-koi": a.screenSakura,
+  celestial: a.heroCoverSakura,
+};
+
+/** Même chassis iPhone que le catalogue digital. */
+function CatalogPhoneMock({ src, alt }) {
+  return (
+    <div className="relative aspect-[189/222] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
+      <div className="absolute left-[28.5%] top-[12.5%] h-[77%] w-[42.5%] rounded-[16%/8%] bg-[#1c1c1c] p-[1.6%] shadow-[2px_6px_8px_-2px_rgba(75,66,66,0.45)]">
+        <div className="relative h-full w-full overflow-hidden rounded-[14%/7%] bg-[#F7F2EC]">
+          <img
+            src={src}
+            alt={alt}
+            className="pointer-events-none block h-full w-full object-cover object-top"
+            draggable={false}
+          />
+          <span
+            className="pointer-events-none absolute left-1/2 top-[2%] h-[3%] w-[26%] -translate-x-1/2 rounded-full bg-[#131313]"
+            aria-hidden
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function resolveDigitalScreen(item) {
+  return DIGITAL_SCREENS[item.id] || item.image || "";
+}
 
 function FavoritesPage() {
   const navigate = useNavigate();
@@ -13,19 +52,21 @@ function FavoritesPage() {
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 lg:px-8 lg:py-16">
-        <nav className="flex items-center gap-2 text-[14px] text-lw-text">
-          <Link to="/" className="hover:text-lw-accent">
+      <main className="mx-auto w-full max-w-[428px] flex-1 px-4 pb-[18px] lg:max-w-6xl lg:px-8 lg:pb-[18px]">
+        <nav className="flex flex-wrap items-center gap-2 pt-6 text-[14px] text-lw-text lg:pt-10">
+          <Link to="/" className="font-normal hover:text-lw-accent">
             Accueil
           </Link>
-          <span aria-hidden>›</span>
+          <span aria-hidden className="text-lw-muted">
+            ›
+          </span>
           <span className="font-bold">Favoris</span>
         </nav>
 
-        <h1 className="mt-6 text-center lw-h1 lg:text-left lg:text-[40px] lg:leading-tight">
+        <h1 className="mt-6 font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-lw-text lg:text-[40px] lg:leading-tight">
           Favoris
         </h1>
-        <p className="mx-auto mt-2 max-w-[320px] text-center lw-body lg:mx-0 lg:max-w-none lg:text-left lg:text-[16px]">
+        <p className="mt-2 font-glacial text-[14px] leading-[18px] text-[#78716c] lg:text-[16px] lg:leading-6">
           {count > 0
             ? `${count} modèle${count > 1 ? "s" : ""} enregistré${count > 1 ? "s" : ""}.`
             : "Retrouvez ici les invitations que vous aimez."}
@@ -53,46 +94,72 @@ function FavoritesPage() {
             </div>
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-2 gap-4 lg:mt-10 lg:grid-cols-3 lg:gap-8">
-            {items.map((item) => (
-              <article key={item.id} className="lw-product-card group relative flex flex-col p-1">
-                <button
-                  type="button"
-                  aria-label="Retirer des favoris"
-                  onClick={() => removeFavorite(item.id)}
-                  className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90"
-                >
-                  <LuHeart size={18} strokeWidth={1.5} className="fill-[#E23D48]" aria-hidden />
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left"
-                  onClick={() => navigate(item.to || "/")}
-                >
-                  <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className={
-                          item.productType === "digital"
-                            ? "h-[162px] w-[86px] object-contain lg:h-[75%] lg:w-auto lg:max-w-[42%]"
-                            : "h-full w-full object-cover"
-                        }
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
+            {items.map((item) => {
+              const price = item.priceLabel || "Start at 49$";
+              const isDigital = item.productType !== "print";
+              const digitalSrc = isDigital ? resolveDigitalScreen(item) : "";
+
+              return (
+                <article key={item.id} className="lw-product-card group flex flex-col p-1">
+                  <div className="relative">
+                    <button
+                      type="button"
+                      aria-label="Retirer des favoris"
+                      aria-pressed
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeFavorite(item.id);
+                      }}
+                      className="absolute right-2 top-2 z-20 flex size-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90"
+                    >
+                      <LuHeart
+                        size={18}
+                        strokeWidth={1.75}
+                        aria-hidden
+                        className="fill-[#E23D48] text-[#E23D48]"
                       />
-                    ) : (
-                      <span className="font-glacial text-[14px] text-lw-muted">Aperçu</span>
-                    )}
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full text-left"
+                      onClick={() => navigate(item.to || "/")}
+                    >
+                      {isDigital && digitalSrc ? (
+                        <div className="transition-transform duration-300 group-hover:scale-[1.02]">
+                          <CatalogPhoneMock src={digitalSrc} alt={item.title} />
+                        </div>
+                      ) : (
+                        <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="h-full w-full object-cover transition-transform duration-300 lg:group-hover:scale-105"
+                              draggable={false}
+                            />
+                          ) : (
+                            <span className="font-glacial text-[14px] text-lw-muted">Aperçu</span>
+                          )}
+                        </div>
+                      )}
+                      <h2 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text lg:mt-4 lg:text-[24px] lg:leading-8">
+                        {item.title}
+                      </h2>
+                      <p className="mt-0 font-glacial text-[14px] leading-[18px] text-[#78716c]">
+                        Includes music, animations
+                        <br />
+                        {"& guestbook"}
+                      </p>
+                      <p className="mt-2 font-glacial text-[14px] font-bold leading-6 text-lw-text">
+                        {price}
+                      </p>
+                    </button>
                   </div>
-                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-lw-accent">
-                    {item.productType === "print" ? "Imprimé" : "Digital"}
-                  </p>
-                  <h2 className="mt-1 font-lora text-[18px] font-normal leading-[28px] tracking-[-0.18px] text-lw-text lg:text-[22px]">
-                    {item.title}
-                  </h2>
-                </button>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </main>

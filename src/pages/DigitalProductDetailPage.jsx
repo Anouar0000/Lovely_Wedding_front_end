@@ -195,7 +195,7 @@ function DigitalProductDetailPage() {
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-lw-text lg:pb-0">
-      <DigitalHomeHeader mode="none" context="digitale" hideFavorites />
+      <DigitalHomeHeader mode="none" context="digitale" />
 
       <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] leading-[18px] text-[#4B4242] md:max-w-3xl lg:max-w-6xl lg:px-8 lg:pt-10">
         <Link to="/" className="font-normal hover:text-lw-accent">
