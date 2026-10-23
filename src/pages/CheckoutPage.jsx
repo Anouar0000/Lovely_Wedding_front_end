@@ -44,6 +44,7 @@ function CheckoutPage() {
 
       const orderId = await createOrder({
         items,
+        userId: user?.uid || null,
         customer: { fullName, email, phone },
         shipping: hasPhysical
           ? { address, city, notes }

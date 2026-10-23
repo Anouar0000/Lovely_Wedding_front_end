@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -32,6 +33,11 @@ const ALLOWED_ADMIN_STATUSES = new Set(Object.values(ORDER_STATUSES));
 const functions =
   isFirebaseConfigured && app ? getFunctions(app, "europe-west1") : null;
 
+/** Set REACT_APP_SERVER_ORDERS=true after Blaze + createOrder function deploy. */
+function useServerOrders() {
+  return process.env.REACT_APP_SERVER_ORDERS === "true";
+}
+
 function assertFirestoreReady() {
   if (!db) {
     throw new Error("Firebase is not configured.");
@@ -42,11 +48,59 @@ function mapOrder(snap) {
   return { id: snap.id, ...snap.data() };
 }
 
-/**
- * Create order via Cloud Function — server recomputes all prices.
- * Do not send unitPrice / totals from the client.
- */
-export async function createOrder({ items, customer, shipping }) {
+async function createOrderClient({ items, customer, shipping, userId = null }) {
+  assertFirestoreReady();
+
+  if (!items?.length) {
+    throw new Error("Le panier est vide.");
+  }
+
+  const normalizedItems = items.map((item) => ({
+    productType: item.productType,
+    productId: item.productId,
+    title: item.title,
+    qty: Number(item.qty) || 1,
+    unitPrice: Number(item.unitPrice) || 0,
+    format: item.format || "",
+    motif: item.motif || "",
+    meta: item.meta || {},
+  }));
+
+  const subtotal = normalizedItems.reduce(
+    (sum, item) => sum + item.qty * item.unitPrice,
+    0
+  );
+
+  const payload = {
+    userId: userId || null,
+    status: ORDER_STATUSES.PENDING_PAYMENT,
+    items: normalizedItems,
+    totals: {
+      subtotal,
+      currency: "DT",
+    },
+    customer: {
+      fullName: customer?.fullName?.trim() || "",
+      email: customer?.email?.trim() || "",
+      phone: customer?.phone?.trim() || "",
+    },
+    shipping: shipping
+      ? {
+          address: shipping.address?.trim() || "",
+          city: shipping.city?.trim() || "",
+          notes: shipping.notes?.trim() || "",
+        }
+      : null,
+    pricedServerSide: false,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+
+  const ref = await addDoc(collection(db, ORDERS_COLLECTION), payload);
+  return ref.id;
+}
+
+async function createOrderServer({ items, customer, shipping }) {
   if (!functions) {
     throw new Error("Firebase Functions non configure.");
   }
@@ -77,6 +131,19 @@ export async function createOrder({ items, customer, shipping }) {
   if (!orderId) {
     throw new Error("Impossible de créer la commande.");
   }
+  return orderId;
+}
+
+/**
+ * Create order.
+ * Default (Spark): client Firestore write.
+ * After Blaze: set REACT_APP_SERVER_ORDERS=true + deploy createOrder + lock rules.
+ */
+export async function createOrder({ items, customer, shipping, userId = null }) {
+  const orderId = useServerOrders()
+    ? await createOrderServer({ items, customer, shipping })
+    : await createOrderClient({ items, customer, shipping, userId });
+
   logSecurityEvent("order_create_client", {
     email: customer?.email || "",
     note: orderId,

@@ -99,8 +99,10 @@ function toHttpsError(err) {
 }
 
 /**
- * Server-side order creation — prices come from Firestore only.
- * Client must NOT send unitPrice / totals.
+ * BLAZE-READY (not required on Spark).
+ * Server-side order creation — prices from Firestore only.
+ * Enable with: Blaze plan → deploy functions → REACT_APP_SERVER_ORDERS=true
+ * → firestore.rules orders allow create: if false.
  */
 exports.createOrder = onCall(
   {
