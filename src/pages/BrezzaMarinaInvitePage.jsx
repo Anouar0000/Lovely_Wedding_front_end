@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { toSafeHttpUrl } from "../lib/safeUrl";
 import AudioPlayer from "../components/audio/AudioPlayer";
 import templateConfig from "../data/digital/templates/brezza-marina.json";
 
@@ -772,7 +773,8 @@ export default function BrezzaMarinaInvitePage({ invite, editable = false }) {
               targetUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
             }
 
-            window.open(targetUrl, "_blank");
+            const safeUrl = toSafeHttpUrl(targetUrl, "https://maps.google.com");
+            if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
           }}
           className="reveal"
           style={{

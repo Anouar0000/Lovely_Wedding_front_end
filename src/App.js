@@ -25,6 +25,7 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage';
 import AdminClientsPage from './pages/admin/AdminClientsPage';
 import AdminCatalogPage from './pages/admin/AdminCatalogPage';
+import AdminDigitalPricingPage from './pages/admin/AdminDigitalPricingPage';
 import DashboardRsvpPage from './pages/DashboardRsvpPage';
 import ClientEspacePage from './pages/ClientEspacePage';
 import DigitalInviteEditorPage from './pages/DigitalInviteEditorPage';

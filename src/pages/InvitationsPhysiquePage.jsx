@@ -63,11 +63,13 @@ const STATIC_PRODUCTS = [
 
 function mapCatalogProduct(p) {
   const canvas = catalogProductToCanvasModel(p);
+  const unitPrice = Number(p.unitPrice) || Number(canvas?.unitPrice) || 1.5;
   return {
     id: p.id,
     name: p.name,
     img: p.imageUrl || canvas?.modelImage || `${FIGMA}/catalog-4.png`,
-    price: p.priceLabel || "Start at 49$",
+    price: p.priceLabel || `${unitPrice} DT / unité`,
+    unitPrice,
     category: p.category || "Rustique",
     canvasModel: canvas,
   };
@@ -108,17 +110,20 @@ function InvitationsPhysiquePage() {
 
   const openProduct = (p) => {
     const canvas = p.canvasModel;
+    const unitPrice = Number(p.unitPrice) || Number(canvas?.unitPrice) || 1.5;
     navigate(`/invitation-model/${encodeURIComponent(p.name)}`, {
       state: {
         model: canvas
           ? {
               ...canvas,
               image: canvas.modelImage || p.img,
-              price: canvas.price || 49,
+              price: unitPrice,
+              unitPrice,
             }
           : {
               name: p.name,
-              price: 49,
+              price: unitPrice,
+              unitPrice,
               image: p.img,
               templateId: "m1",
               modelImage: p.img,

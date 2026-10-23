@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getFirestore, initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -26,6 +27,26 @@ export const isFirebaseConfigured = Boolean(
 const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
 
 export const auth = app ? getAuth(app) : null;
+
+/** App Check — set REACT_APP_RECAPTCHA_SITE_KEY (reCAPTCHA v3) in Firebase Console. */
+export const appCheck = (() => {
+  if (!app) return null;
+  const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY || "";
+  if (!siteKey) return null;
+  try {
+    if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+      window.FIREBASE_APPCHECK_DEBUG_TOKEN =
+        process.env.REACT_APP_APPCHECK_DEBUG_TOKEN || true;
+    }
+    return initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(siteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (error) {
+    console.warn("[firebase] App Check init failed:", error?.message || error);
+    return null;
+  }
+})();
 
 /**
  * Long-polling avoids WebChannel AbortError overlays in CRA Strict Mode / HMR.

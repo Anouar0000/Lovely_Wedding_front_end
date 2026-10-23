@@ -51,17 +51,28 @@ const REVIEWS = [
 ];
 
 const PHYSICAL_PRODUCTS = [
-  { name: "Versailles", img: `${FIGMA}/catalog-4.png`, category: "Rustique" },
-  { name: "Sacré cœur", img: `${FIGMA}/catalog-1.png`, category: "Outeya" },
-  { name: "Aimé", img: `${FIGMA}/catalog-5.png`, category: "Cire" },
-  { name: "Passeport Rosé", img: `${FIGMA}/catalog-2.png`, category: "Rustique" },
-  { name: "Rustique 3", img: `${FIGMA}/catalog-6.png`, category: "Rustique" },
-  { name: "Arabesque 1", img: `${FIGMA}/catalog-3.png`, category: "Outeya" },
+  { id: "versailles", name: "Versailles", img: `${FIGMA}/catalog-4.png`, category: "Rustique", unitPrice: 1.5 },
+  { id: "sacre-coeur", name: "Sacré cœur", img: `${FIGMA}/catalog-1.png`, category: "Outeya", unitPrice: 1.5 },
+  { id: "aime", name: "Aimé", img: `${FIGMA}/catalog-5.png`, category: "Cire", unitPrice: 1.5 },
+  { id: "passeport-rose", name: "Passeport Rosé", img: `${FIGMA}/catalog-2.png`, category: "Rustique", unitPrice: 1.5 },
+  { id: "rustique-3", name: "Rustique 3", img: `${FIGMA}/catalog-6.png`, category: "Rustique", unitPrice: 1.5 },
+  { id: "arabesque-1", name: "Arabesque 1", img: `${FIGMA}/catalog-3.png`, category: "Outeya", unitPrice: 1.5 },
 ];
 
 const CATALOG_BY_NAME = Object.fromEntries(
-  PHYSICAL_PRODUCTS.map((p) => [p.name, { img: p.img, category: p.category }]).concat([
-    ["Passeport rosé", { img: `${FIGMA}/catalog-2.png`, category: "Rustique" }],
+  PHYSICAL_PRODUCTS.map((p) => [
+    p.name,
+    { id: p.id, img: p.img, category: p.category, unitPrice: p.unitPrice },
+  ]).concat([
+    [
+      "Passeport rosé",
+      {
+        id: "passeport-rose",
+        img: `${FIGMA}/catalog-2.png`,
+        category: "Rustique",
+        unitPrice: 1.5,
+      },
+    ],
   ])
 );
 
@@ -79,13 +90,15 @@ function InvitationModelPage() {
     (resolvedName
       ? {
           name: resolvedName,
-          price: UNIT_PRICE,
+          price: Number(catalogHit?.unitPrice) || UNIT_PRICE,
           image: catalogHit?.img || `${FIGMA}/catalog-6.png`,
           templateId: resolvedName,
         }
       : null);
   const selectedCategory =
     location.state?.selectedCategory || catalogHit?.category || "Rustique";
+  const catalogProductId =
+    location.state?.productId || catalogHit?.id || model?.slug || null;
 
   const [qty, setQty] = useState(100);
   const [format, setFormat] = useState(FORMAT_OPTIONS[0]);
@@ -94,7 +107,7 @@ function InvitationModelPage() {
   const [openAcc, setOpenAcc] = useState(-1);
   const popupRef = useRef(null);
 
-  const unitPrice = UNIT_PRICE;
+  const unitPrice = Number(model?.price) || UNIT_PRICE;
   const imageSrc = useMemo(() => {
     if (!model) return `${FIGMA}/catalog-6.png`;
     return model.image || catalogHit?.img || `${FIGMA}/catalog-6.png`;
@@ -127,10 +140,11 @@ function InvitationModelPage() {
       state: {
         model: {
           name: p.name,
-          price: UNIT_PRICE,
+          price: Number(p.unitPrice) || Number(p.price) || UNIT_PRICE,
           image: p.img,
           templateId: p.name,
         },
+        productId: p.id,
         selectedCategory: p.category,
       },
     });
@@ -138,9 +152,11 @@ function InvitationModelPage() {
 
   const handleOrder = () => {
     if (!isFormValid || !model) return;
+    const productId = catalogProductId || model.templateId || model.name;
+    if (!productId) return;
     addItem({
       productType: "physical",
-      productId: location.state?.productId || model.templateId || model.name,
+      productId,
       title: model.name,
       qty,
       unitPrice,
@@ -232,7 +248,7 @@ function InvitationModelPage() {
             {/* Amount — Value: Lora Medium 22/34 -1% · Currency Sub 2 Glacial 16/24 #7D6E66 */}
             <p className="mt-3 inline-flex items-baseline gap-1">
               <span className="font-lora text-[22px] font-medium leading-[34px] tracking-[-0.01em] text-lw-text">
-                {UNIT_PRICE}
+                {unitPrice}
               </span>
               <span className="font-glacial text-[16px] font-normal leading-6 text-[#7D6E66]">
                 DT
@@ -272,7 +288,7 @@ function InvitationModelPage() {
                   <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
                     {total != null
                       ? `${total % 1 === 0 ? total : total.toFixed(1)}dt`
-                      : `${UNIT_PRICE}dt`}
+                      : `${unitPrice}dt`}
                   </p>
                 </div>
                 <button

@@ -30,6 +30,22 @@ service cloud.firestore {
       return isAdminEmail();
     }
 
+    // Same mailbox → same key. Keep in sync with canonicalEmail() in src/lib/authSecurity.js
+    function canonicalEmail(email) {
+      let parts = email.lower().split('@');
+      let local = parts[0].split('[+]')[0];
+      let domain = parts[1];
+      return domain in ['gmail.com', 'googlemail.com']
+        ? local.replace('[.]', '') + '@gmail.com'
+        : local + '@' + domain;
+    }
+
+    function verifiedEmailIs(email) {
+      return emailVerified()
+        && email is string
+        && email.lower() == request.auth.token.email.lower();
+    }
+
     function inviteDoc(inviteId) {
       return get(/databases/$(database)/documents/digitalInvites/$(inviteId)).data;
     }
@@ -43,18 +59,44 @@ service cloud.firestore {
 
       allow create: if isSignedIn()
         && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['email', 'role', 'fullName', 'phone', 'createdAt', 'updatedAt'])
+        && request.resource.data.email == request.auth.token.email
         && request.resource.data.role in ['client', 'admin']
         && (request.resource.data.role == 'client' || isAdminEmail());
 
+      // Clients may only edit their contact info; role/notes stay admin-managed.
       allow update: if isAdmin()
         || (
-          isSignedIn()
-          && request.auth.uid == userId
-          && (
-            request.resource.data.role == resource.data.role
-            || (request.resource.data.role == 'admin' && isAdminEmail())
-          )
+          isOwner(userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName', 'phone', 'updatedAt'])
+        )
+        || (
+          isOwner(userId)
+          && isAdminEmail()
+          && request.resource.data.role == 'admin'
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'email', 'fullName', 'phone', 'updatedAt'])
         );
+
+      allow delete: if isAdmin();
+    }
+
+    // One account per mailbox: doc id = canonical email, held by a single uid.
+    match /emailIndex/{emailKey} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && request.auth.token.email is string
+        && emailKey == canonicalEmail(request.auth.token.email)
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
+
+      // Re-claim by the same uid is a no-op; another uid can never take it over.
+      allow update: if isSignedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
 
       allow delete: if isAdmin();
     }
@@ -63,9 +105,7 @@ service cloud.firestore {
       allow read: if resource.data.status == 'published'
         || (isSignedIn() && resource.data.ownerId == request.auth.uid)
         || (isSignedIn() && resource.data.clientUserId == request.auth.uid)
-        || (isSignedIn()
-          && resource.data.clientEmail is string
-          && resource.data.clientEmail.lower() == request.auth.token.email.lower())
+        || verifiedEmailIs(resource.data.clientEmail)
         || isAdmin();
 
       allow create: if isAdmin()
@@ -78,25 +118,9 @@ service cloud.firestore {
       allow delete: if isAdmin() || isOwner(resource.data.ownerId);
     }
 
+    // Orders are created only by Cloud Function createOrder (Admin SDK).
     match /orders/{orderId} {
-      allow create: if request.resource.data.keys().hasAll(['status', 'items', 'customer', 'totals'])
-        && request.resource.data.status == 'pending_payment'
-        && request.resource.data.items is list
-        && request.resource.data.items.size() > 0
-        && request.resource.data.items.size() <= 50
-        && request.resource.data.customer.keys().hasAll(['fullName', 'email', 'phone'])
-        && request.resource.data.customer.fullName is string
-        && request.resource.data.customer.fullName.size() > 0
-        && request.resource.data.customer.fullName.size() <= 120
-        && request.resource.data.customer.email is string
-        && request.resource.data.customer.email.size() <= 200
-        && request.resource.data.customer.phone is string
-        && request.resource.data.customer.phone.size() <= 40
-        && (
-          !('userId' in request.resource.data)
-          || request.resource.data.userId == null
-          || (isSignedIn() && request.resource.data.userId == request.auth.uid)
-        );
+      allow create: if false;
 
       // Guest orders (userId null): ID acts as secret. Owned orders: owner/admin only.
       allow get: if isAdmin()
@@ -123,6 +147,15 @@ service cloud.firestore {
         && request.resource.data.name.size() <= 120;
 
       allow update, delete: if isAdmin();
+    }
+
+    // Digital pack / extra / section prices — public read, admin write.
+    match /pricing/{docId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && docId in ['digital']
+        && request.resource.data.keys().hasOnly(['packs', 'extras', 'sections', 'updatedAt']);
+      allow delete: if isAdmin();
     }
 
     match /rsvpResponses/{responseId} {
@@ -161,12 +194,31 @@ service cloud.firestore {
         && (
           resource.data.ownerId == request.auth.uid
           || resource.data.clientUserId == request.auth.uid
-          || (resource.data.clientEmail is string
-            && resource.data.clientEmail.lower() == request.auth.token.email.lower())
+          || verifiedEmailIs(resource.data.clientEmail)
           || isAdmin()
         );
 
       allow update, delete: if false;
+    }
+
+    // Append-only security audit trail (client best-effort; admin read).
+    match /securityEvents/{eventId} {
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly(['type', 'details', 'createdAt', 'userAgent'])
+        && request.resource.data.type is string
+        && request.resource.data.type in [
+          'admin_login',
+          'admin_mfa_missing',
+          'admin_mfa_ok',
+          'order_create_client',
+          'auth_email_taken',
+          'auth_lockout'
+        ]
+        && request.resource.data.details is map
+        && request.resource.data.userAgent is string
+        && request.resource.data.userAgent.size() <= 300;
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
     }
   }
 }

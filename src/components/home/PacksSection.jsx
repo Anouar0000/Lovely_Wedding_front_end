@@ -459,10 +459,10 @@ function SurMesurePackCard({ onChoose }) {
           </p>
           <div className="flex flex-wrap content-start gap-1.5">
             {[
-              "Musique",
-              "Vidéo save the date personnalisée",
-              "Illustrations animées",
-              "Monogramme",
+      "Musique",
+      "Vidéo save the date personnalisée",
+      "Illustrations animées",
+      "Monogramme",
             ].map((tag) => (
               <span
                 key={tag}

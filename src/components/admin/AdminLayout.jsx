@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   FiBox,
+  FiDollarSign,
   FiGrid,
   FiHome,
   FiLogOut,
@@ -28,6 +29,7 @@ const NAV = [
     icon: FiBox,
     match: { path: "/dashboard/catalog", type: "physical" },
   },
+  { to: "/dashboard/pricing", label: "Tarifs digitaux", icon: FiDollarSign },
   { to: "/dashboard/orders", label: "Commandes", icon: FiShoppingBag },
   { to: "/dashboard/clients", label: "Clients", icon: FiUsers },
 ];

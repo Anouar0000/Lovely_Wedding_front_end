@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { toSafeHttpUrl } from "../lib/safeUrl";
 import AudioPlayer from "../components/audio/AudioPlayer";
 import ParticleEmitter from "../components/animations/ParticleEmitter";
 import templateConfig from "../data/digital/templates/majestic-white.json";
@@ -1067,7 +1068,10 @@ export default function MajesticWhiteInvitePage({
 
           {/* Event 1 Button: "Open In Maps" (y: 2289, x: 136, 158 x 45) */}
           <a
-            href={currentInvite.celebration1MapUrl || "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac"}
+            href={toSafeHttpUrl(
+              currentInvite.celebration1MapUrl,
+              "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac"
+            )}
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -1208,7 +1212,10 @@ export default function MajesticWhiteInvitePage({
 
           {/* Event 2 Button: "Open In Maps" (y: 2515, x: 136, 158 x 45) */}
           <a
-            href={currentInvite.celebration2MapUrl || "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac"}
+            href={toSafeHttpUrl(
+              currentInvite.celebration2MapUrl,
+              "https://maps.google.com/?q=Club+Nautique+Les+Berges+du+Lac"
+            )}
             target="_blank"
             rel="noopener noreferrer"
             style={{

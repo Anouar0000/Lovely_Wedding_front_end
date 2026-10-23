@@ -48,13 +48,14 @@ function DigitalHomeHeader({
             : "border-b border-transparent bg-[#F7F2EC] lg:border-lw-line/60"
         }`}
       >
-        {/* Catalogue Figma : barre h=86 · Accueil : logo Y:23 */}
+        {/* Catalogue Figma : barre h=86 · Accueil : logo Y:23
+            Mobile = flux flex d’origine · Desktop = logo abs. centré (aligné au toggle) */}
         <div
-          className={`mx-auto flex w-full max-w-6xl items-center justify-between px-[19px] lg:px-8 ${
+          className={`relative mx-auto flex w-full max-w-6xl items-center justify-between px-[19px] lg:px-8 ${
             isCatalog ? "h-[86px] lg:h-auto lg:py-4" : "pt-[23px] lg:pb-4 lg:pt-4"
           }`}
         >
-          <div className="flex h-[31px] w-[60px] shrink-0 items-center gap-3 lg:h-auto lg:w-auto lg:gap-6">
+          <div className="relative z-10 flex h-[31px] w-[60px] shrink-0 items-center gap-3 lg:h-auto lg:min-w-[180px] lg:w-auto lg:gap-6">
             <button
               type="button"
               className="inline-flex size-6 items-center justify-center lg:hidden"
@@ -93,14 +94,14 @@ function DigitalHomeHeader({
           <button
             type="button"
             onClick={() => navigate(homePath)}
-            className="flex h-[31px] min-w-0 items-center justify-center"
+            className="flex h-[31px] min-w-0 items-center justify-center lg:absolute lg:left-1/2 lg:top-1/2 lg:z-0 lg:-translate-x-1/2 lg:-translate-y-1/2"
           >
-            <span className="lw-logo text-[26px] leading-none tracking-normal lg:text-[28px]">
+            <span className="lw-logo whitespace-nowrap text-[26px] leading-none tracking-normal lg:text-[28px]">
               Lovely Invitations
             </span>
           </button>
 
-          <div className="flex h-[31px] shrink-0 items-center justify-end gap-3 lg:w-auto lg:gap-4">
+          <div className="relative z-10 flex h-[31px] w-[60px] shrink-0 items-center justify-end gap-3 lg:min-w-[180px] lg:w-auto lg:gap-4">
             <button
               type="button"
               className="inline-flex size-6 items-center justify-center"
@@ -127,7 +128,7 @@ function DigitalHomeHeader({
 
         {showToggle ? (
           <div className="flex justify-center px-4 pb-3 pt-6 lg:pb-7 lg:pt-4">
-            {/* Figma Switcher: 244×48; ~24px sous le logo, 12px avant le hero */}
+            {/* Figma Switcher: 244×48 */}
             <div
               className="inline-flex h-12 w-[244px] items-center gap-1 rounded-full bg-white p-1 shadow-sm ring-1 ring-lw-line/80 lg:w-[280px]"
               role="tablist"

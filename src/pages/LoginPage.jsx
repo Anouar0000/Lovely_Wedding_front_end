@@ -17,7 +17,7 @@ import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 
 function LoginPage() {
-  const { user, loading, isConfigured, isAdmin } = useAuth();
+  const { user, loading, isConfigured, isAdmin, authError, clearAuthError } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -54,6 +54,7 @@ function LoginPage() {
     event.preventDefault();
     setError("");
     setInfo("");
+    clearAuthError();
 
     if (isLoginLocked()) {
       setLockMs(getLoginLockRemainingMs());
@@ -155,7 +156,9 @@ function LoginPage() {
                 </div>
               </label>
 
-              {error ? <p className="text-sm font-semibold text-red-700">{error}</p> : null}
+              {error || authError ? (
+                <p className="text-sm font-semibold text-red-700">{error || authError}</p>
+              ) : null}
               {info ? <p className="text-sm font-semibold text-lw-accent">{info}</p> : null}
 
               <button

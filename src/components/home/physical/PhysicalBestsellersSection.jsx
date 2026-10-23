@@ -40,10 +40,12 @@ const openPhysicalProduct = (navigate, p) => {
     state: {
       model: {
         name: p.name,
-        price: 49,
+        price: Number(p.unitPrice) || 1.5,
+        unitPrice: Number(p.unitPrice) || 1.5,
         image: p.img,
         templateId: p.name,
       },
+      productId: p.id,
       selectedCategory: p.category,
     },
   });

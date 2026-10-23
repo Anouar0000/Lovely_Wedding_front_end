@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { toSafeHttpUrl } from "../lib/safeUrl";
 import AudioPlayer from "../components/audio/AudioPlayer";
 import CelestialMoonSunReveal from "../components/animations/CelestialMoonSunReveal";
 import CelestialOrbit from "../components/animations/CelestialOrbit";
@@ -174,7 +175,10 @@ export default function CelestialInvitePage({
 
   const venueName = currentInvite.venueName || "Kobbet Ennhas Manouba";
   const eventTime = currentInvite.eventTime || "19:00 - 21:00";
-  const mapUrl = currentInvite.mapUrl || "https://maps.google.com/?q=Kobbet+Ennhas+Manouba";
+  const mapUrl = toSafeHttpUrl(
+    currentInvite.mapUrl,
+    "https://maps.google.com/?q=Kobbet+Ennhas+Manouba"
+  );
 
   const storyImgSrc =
     overrides["story-photo"]?.image ||

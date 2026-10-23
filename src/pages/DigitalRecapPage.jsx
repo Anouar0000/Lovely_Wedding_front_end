@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiX } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import { useAuth } from "../components/auth/AuthProvider";
 import { createOrder } from "../services/orders";
 import { createFlouciPaymentSession, isFlouciLiveMode } from "../services/payments";
+import { getDigitalPricing, defaultDigitalPricing } from "../services/pricing";
 import { DIGITAL_PRODUCTS } from "./DigitalProductDetailPage";
 import {
   resolveDigitalExtra,
@@ -22,17 +23,62 @@ function DigitalRecapPage() {
   const { user } = useAuth();
 
   const product = DIGITAL_PRODUCTS[slug] || DIGITAL_PRODUCTS["sidi-bousaid"];
-  const pack = resolveDigitalPack(location.state?.pack);
-  const extra = resolveDigitalExtra(location.state?.extraId);
-  const section = resolveDigitalSection(location.state?.sectionId);
+  const packBase = resolveDigitalPack(location.state?.pack);
+  const extraBase = resolveDigitalExtra(location.state?.extraId);
+  const sectionBase = resolveDigitalSection(location.state?.sectionId);
+
+  const [pricing, setPricing] = useState(defaultDigitalPricing());
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const next = await getDigitalPricing();
+        if (active) setPricing(next);
+      } catch {
+        /* keep defaults */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const pack = useMemo(() => {
+    const fromFs = pricing.packs?.[packBase.id];
+    return {
+      ...packBase,
+      price: Number(fromFs?.price) || packBase.price,
+      label: fromFs?.label || packBase.label,
+    };
+  }, [packBase, pricing]);
+
+  const extra = useMemo(() => {
+    if (!extraBase) return null;
+    const fromFs = pricing.extras?.[extraBase.id];
+    return {
+      ...extraBase,
+      price: Number(fromFs?.price) || extraBase.price,
+      label: fromFs?.label || extraBase.label,
+    };
+  }, [extraBase, pricing]);
+
+  const section = useMemo(() => {
+    if (!sectionBase) return null;
+    const fromFs = pricing.sections?.[sectionBase.id];
+    return {
+      ...sectionBase,
+      price: Number(fromFs?.price) || sectionBase.price,
+      label: fromFs?.label || sectionBase.label,
+    };
+  }, [sectionBase, pricing]);
 
   const total = useMemo(
     () => pack.price + (extra?.price || 0) + (section?.price || 0),
     [pack.price, extra, section]
   );
-
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
 
   const closeToExtras = () => {
     navigate(`/invitations-digital/${product.slug}/extras`, {
@@ -54,42 +100,32 @@ function DigitalRecapPage() {
           productId: product.slug,
           title: `${product.name} digitale · ${pack.label}`,
           qty: 1,
-          unitPrice: pack.price,
-          format: "",
-          motif: "",
           meta: { pack: pack.id },
         },
       ];
       if (extra) {
         items.push({
           productType: "digital",
-          productId: `${product.slug}-extra-${extra.id}`,
+          productId: product.slug,
           title: extra.label,
           qty: 1,
-          unitPrice: extra.price,
-          format: "",
-          motif: "",
           meta: { kind: "extra", extraId: extra.id },
         });
       }
       if (section) {
         items.push({
           productType: "digital",
-          productId: `${product.slug}-section-${section.id}`,
+          productId: product.slug,
           title: section.label,
           qty: 1,
-          unitPrice: section.price,
-          format: "",
-          motif: "",
           meta: { kind: "section", sectionId: section.id },
         });
       }
 
       const orderId = await createOrder({
         items,
-        userId: user?.uid || null,
         customer: {
-          fullName: user?.displayName || "",
+          fullName: user?.displayName || user?.email || "Client",
           email: user?.email || "",
           phone: "",
         },

@@ -295,12 +295,13 @@ useEffect(() => {
       return;
     }
 
+    const productId = mergedState.productId || model.templateId || model.name;
     addItem({
       productType: "physical",
-      productId: model.templateId || model.name,
+      productId,
       title: model.name,
       qty: Number(quantityValue) || 1,
-      unitPrice: Number(model.price) || 0,
+      unitPrice: Number(model.unitPrice ?? model.price) || 0,
       format: format || "",
       motif: motif || "",
       meta: { personalized: true },

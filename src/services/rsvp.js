@@ -10,9 +10,48 @@ import { db } from "../lib/firebase";
 
 export const RSVP_COLLECTION = "rsvpResponses";
 
+const RSVP_RATE_KEY = "lw_rsvp_rate_v1";
+const RSVP_MIN_INTERVAL_MS = 45_000;
+const RSVP_MAX_PER_HOUR = 8;
+
 function assertFirestoreReady() {
   if (!db) {
     throw new Error("Firebase is not configured.");
+  }
+}
+
+function assertRsvpRateLimit(inviteId) {
+  if (typeof window === "undefined") return;
+  const now = Date.now();
+  let state = { lastAt: 0, hourStart: now, count: 0 };
+  try {
+    state = { ...state, ...JSON.parse(localStorage.getItem(RSVP_RATE_KEY) || "{}") };
+  } catch {
+    /* ignore */
+  }
+  if (now - Number(state.lastAt || 0) < RSVP_MIN_INTERVAL_MS) {
+    throw new Error("Veuillez patienter avant d'envoyer un autre RSVP.");
+  }
+  const hourStart = Number(state.hourStart || now);
+  let count = Number(state.count || 0);
+  if (now - hourStart > 3_600_000) {
+    count = 0;
+  }
+  if (count >= RSVP_MAX_PER_HOUR) {
+    throw new Error("Trop de RSVP depuis cet appareil. Réessayez plus tard.");
+  }
+  try {
+    localStorage.setItem(
+      RSVP_RATE_KEY,
+      JSON.stringify({
+        lastAt: now,
+        hourStart: now - hourStart > 3_600_000 ? now : hourStart,
+        count: count + 1,
+        inviteId: String(inviteId || ""),
+      })
+    );
+  } catch {
+    /* ignore */
   }
 }
 
@@ -30,6 +69,7 @@ export async function submitRsvpResponse({
   lastName = "",
 }) {
   assertFirestoreReady();
+  assertRsvpRateLimit(inviteId);
 
   if (!inviteId) {
     throw new Error("Invitation invalide pour le RSVP.");

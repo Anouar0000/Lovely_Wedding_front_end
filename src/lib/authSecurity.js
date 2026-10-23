@@ -10,6 +10,26 @@ export function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
 
+const GMAIL_DOMAINS = new Set(["gmail.com", "googlemail.com"]);
+
+/** Same mailbox → same key. Keep in sync with canonicalEmail() in firestore.rules. */
+export function canonicalEmail(email) {
+  const normalized = normalizeEmail(email);
+  const at = normalized.lastIndexOf("@");
+  if (at <= 0) return normalized;
+  const local = normalized.slice(0, at).split("+")[0];
+  const domain = normalized.slice(at + 1);
+  if (GMAIL_DOMAINS.has(domain)) {
+    return `${local.replace(/\./g, "")}@gmail.com`;
+  }
+  return `${local}@${domain}`;
+}
+
+export function hasEmailAlias(email) {
+  const normalized = normalizeEmail(email);
+  return normalized.slice(0, normalized.lastIndexOf("@")).includes("+");
+}
+
 export function isSafeInternalPath(path) {
   if (!path || typeof path !== "string") return false;
   if (!path.startsWith("/")) return false;

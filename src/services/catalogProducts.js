@@ -62,9 +62,14 @@ export async function getCatalogProductById(id) {
 export function catalogProductToCanvasModel(product) {
   if (!product) return null;
   const image = product.modelImage || product.imageUrl || "";
+  const unitPrice =
+    Number(product.unitPrice) ||
+    Number(String(product.priceLabel || "").replace(/[^\d.]/g, "")) ||
+    1.5;
   return {
     name: product.name || "Modèle",
-    price: Number(String(product.priceLabel || "").replace(/[^\d.]/g, "")) || 49,
+    price: unitPrice,
+    unitPrice,
     templateId: product.templateId || "m1",
     modelImage: image.startsWith("http") || image.startsWith("/") ? image : `/${image}`,
     modelImagep2: product.modelImagep2
@@ -80,12 +85,14 @@ export function catalogProductToCanvasModel(product) {
 
 export async function createCatalogProduct(data) {
   assertFirestoreReady();
+  const unitPrice = Number(data.unitPrice);
   const payload = {
     type: data.type === CATALOG_TYPES.PHYSICAL ? CATALOG_TYPES.PHYSICAL : CATALOG_TYPES.DIGITAL,
     name: String(data.name || "").trim().slice(0, 120),
     slug: String(data.slug || "").trim().slice(0, 120),
     category: String(data.category || "").trim().slice(0, 80),
     priceLabel: String(data.priceLabel || "").trim().slice(0, 80),
+    unitPrice: Number.isFinite(unitPrice) && unitPrice >= 0 ? unitPrice : 0,
     imageUrl: String(data.imageUrl || "").trim().slice(0, 500),
     filled: Boolean(data.filled),
     active: data.active !== false,
@@ -113,6 +120,7 @@ export async function updateCatalogProduct(id, patch) {
     "slug",
     "category",
     "priceLabel",
+    "unitPrice",
     "imageUrl",
     "filled",
     "active",
@@ -135,6 +143,10 @@ export async function updateCatalogProduct(id, patch) {
   if (typeof next.modelImagep2 === "string") next.modelImagep2 = next.modelImagep2.trim().slice(0, 500);
   if (typeof next.templateId === "string") next.templateId = next.templateId.trim().slice(0, 40);
   if (next.sortOrder !== undefined) next.sortOrder = Number(next.sortOrder) || 0;
+  if (next.unitPrice !== undefined) {
+    const n = Number(next.unitPrice);
+    next.unitPrice = Number.isFinite(n) && n >= 0 ? n : 0;
+  }
   await updateDoc(doc(db, CATALOG_COLLECTION, id), next);
 }
 
@@ -217,7 +229,8 @@ export const SEED_PHYSICAL_PRODUCTS = [
     name: "Versailles",
     slug: "versailles",
     category: "Rustique",
-    priceLabel: "Start at 49$",
+    priceLabel: "1,5 DT / unité",
+    unitPrice: 1.5,
     imageUrl: `${FIGMA_PHY}/catalog-4.png`,
     modelImage: `${FIGMA_PHY}/catalog-4.png`,
     templateId: "m1",
@@ -228,7 +241,8 @@ export const SEED_PHYSICAL_PRODUCTS = [
     name: "Sacré cœur",
     slug: "sacre-coeur",
     category: "Outeya",
-    priceLabel: "Start at 49$",
+    priceLabel: "1,5 DT / unité",
+    unitPrice: 1.5,
     imageUrl: `${FIGMA_PHY}/catalog-1.png`,
     modelImage: `${FIGMA_PHY}/catalog-1.png`,
     templateId: "m1",
@@ -239,7 +253,8 @@ export const SEED_PHYSICAL_PRODUCTS = [
     name: "Aimé",
     slug: "aime",
     category: "Cire",
-    priceLabel: "Start at 49$",
+    priceLabel: "1,5 DT / unité",
+    unitPrice: 1.5,
     imageUrl: `${FIGMA_PHY}/catalog-5.png`,
     modelImage: `${FIGMA_PHY}/catalog-5.png`,
     templateId: "m1",
@@ -250,7 +265,8 @@ export const SEED_PHYSICAL_PRODUCTS = [
     name: "Passeport Rosé",
     slug: "passeport-rose",
     category: "Rustique",
-    priceLabel: "Start at 49$",
+    priceLabel: "1,5 DT / unité",
+    unitPrice: 1.5,
     imageUrl: `${FIGMA_PHY}/catalog-2.png`,
     modelImage: `${FIGMA_PHY}/catalog-2.png`,
     templateId: "m1",
@@ -261,7 +277,8 @@ export const SEED_PHYSICAL_PRODUCTS = [
     name: "Rustique 3",
     slug: "rustique-3",
     category: "Rustique",
-    priceLabel: "Start at 49$",
+    priceLabel: "1,5 DT / unité",
+    unitPrice: 1.5,
     imageUrl: `${FIGMA_PHY}/catalog-6.png`,
     modelImage: `${FIGMA_PHY}/catalog-6.png`,
     templateId: "m1",
@@ -272,7 +289,8 @@ export const SEED_PHYSICAL_PRODUCTS = [
     name: "Arabesque 1",
     slug: "arabesque-1",
     category: "Outeya",
-    priceLabel: "Start at 49$",
+    priceLabel: "1,5 DT / unité",
+    unitPrice: 1.5,
     imageUrl: `${FIGMA_PHY}/catalog-3.png`,
     modelImage: `${FIGMA_PHY}/catalog-3.png`,
     templateId: "m1",

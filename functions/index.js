@@ -3,6 +3,7 @@ const { setGlobalOptions } = require("firebase-functions/v2");
 const { defineSecret } = require("firebase-functions/params");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const { computeTrustedOrderItems } = require("./orderPricing");
 
 initializeApp();
 setGlobalOptions({ region: "europe-west1" });
@@ -81,6 +82,82 @@ function assertSafeRedirect(url, fieldName) {
     throw new HttpsError("invalid-argument", `HTTP only allowed on localhost.`);
   }
 }
+
+function toHttpsError(err) {
+  const code = err?.code || "internal";
+  const message = err?.message || "Order creation failed.";
+  if (
+    code === "invalid-argument" ||
+    code === "not-found" ||
+    code === "failed-precondition" ||
+    code === "permission-denied" ||
+    code === "unauthenticated"
+  ) {
+    return new HttpsError(code, message);
+  }
+  return new HttpsError("internal", message);
+}
+
+/**
+ * Server-side order creation — prices come from Firestore only.
+ * Client must NOT send unitPrice / totals.
+ */
+exports.createOrder = onCall(
+  {
+    // Enable enforcement in Firebase Console → App Check once RECAPTCHA is live.
+    consumeAppCheckToken: false,
+  },
+  async (request) => {
+  const rawItems = request.data?.items;
+  const customer = request.data?.customer || {};
+  const shipping = request.data?.shipping || null;
+
+  const fullName = String(customer.fullName || "").trim();
+  const email = String(customer.email || "").trim();
+  const phone = String(customer.phone || "").trim();
+
+  if (!fullName || fullName.length > 120) {
+    throw new HttpsError("invalid-argument", "Nom complet requis.");
+  }
+  if (email.length > 200) {
+    throw new HttpsError("invalid-argument", "Email invalide.");
+  }
+  if (phone.length > 40) {
+    throw new HttpsError("invalid-argument", "Téléphone invalide.");
+  }
+
+  let priced;
+  try {
+    priced = await computeTrustedOrderItems(db, rawItems);
+  } catch (err) {
+    throw toHttpsError(err);
+  }
+
+  const uid = request.auth?.uid || null;
+  const payload = {
+    userId: uid,
+    status: "pending_payment",
+    items: priced.items,
+    totals: {
+      subtotal: priced.subtotal,
+      currency: "DT",
+    },
+    customer: { fullName, email, phone },
+    shipping: shipping
+      ? {
+          address: String(shipping.address || "").trim().slice(0, 300),
+          city: String(shipping.city || "").trim().slice(0, 120),
+          notes: String(shipping.notes || "").trim().slice(0, 500),
+        }
+      : null,
+    pricedServerSide: true,
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
+  };
+
+  const ref = await db.collection("orders").add(payload);
+  return { orderId: ref.id, subtotal: priced.subtotal };
+});
 
 exports.createFlouciPayment = onCall(
   { secrets: [flouciPublicKey, flouciPrivateKey] },

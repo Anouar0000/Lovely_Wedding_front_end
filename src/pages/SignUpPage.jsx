@@ -11,10 +11,11 @@ import {
   PASSWORD_MIN_LENGTH,
   getPasswordChecks,
   getPasswordStrength,
+  hasEmailAlias,
   normalizeEmail,
   validatePassword,
 } from "../lib/authSecurity";
-import { saveUserContactInfo } from "../services/users";
+import { claimEmail, EMAIL_TAKEN_CODE, saveUserContactInfo } from "../services/users";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 
@@ -72,6 +73,11 @@ function SignUpPage() {
       return;
     }
 
+    if (hasEmailAlias(email)) {
+      setError("Les adresses avec « + » ne sont pas acceptées. Utilisez votre email principal.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas.");
       return;
@@ -88,6 +94,16 @@ function SignUpPage() {
     try {
       const trimmed = normalizeEmail(email);
       const cred = await createUserWithEmailAndPassword(auth, trimmed, password);
+      try {
+        await claimEmail(cred.user);
+      } catch (claimError) {
+        if (claimError?.code === EMAIL_TAKEN_CODE) {
+          await cred.user.delete().catch(() => {});
+          setError("Cet email est déjà utilisé. Connectez-vous plutôt.");
+          setSubmitting(false);
+          return;
+        }
+      }
       try {
         await updateProfile(cred.user, { displayName: name });
       } catch {

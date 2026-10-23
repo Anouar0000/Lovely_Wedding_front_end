@@ -1,5 +1,4 @@
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -8,7 +7,9 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import app, { db, isFirebaseConfigured } from "../lib/firebase";
+import { logSecurityEvent } from "./securityEvents";
 
 export const ORDERS_COLLECTION = "orders";
 
@@ -28,6 +29,9 @@ export const ORDER_STATUS_LABELS = {
 
 const ALLOWED_ADMIN_STATUSES = new Set(Object.values(ORDER_STATUSES));
 
+const functions =
+  isFirebaseConfigured && app ? getFunctions(app, "europe-west1") : null;
+
 function assertFirestoreReady() {
   if (!db) {
     throw new Error("Firebase is not configured.");
@@ -38,60 +42,46 @@ function mapOrder(snap) {
   return { id: snap.id, ...snap.data() };
 }
 
-export async function createOrder({
-  items,
-  customer,
-  shipping,
-  userId = null,
-}) {
-  assertFirestoreReady();
-
+/**
+ * Create order via Cloud Function — server recomputes all prices.
+ * Do not send unitPrice / totals from the client.
+ */
+export async function createOrder({ items, customer, shipping }) {
+  if (!functions) {
+    throw new Error("Firebase Functions non configure.");
+  }
   if (!items?.length) {
     throw new Error("Le panier est vide.");
   }
 
-  const normalizedItems = items.map((item) => ({
-    productType: item.productType,
-    productId: item.productId,
-    title: item.title,
-    qty: Number(item.qty) || 1,
-    unitPrice: Number(item.unitPrice) || 0,
-    format: item.format || "",
-    motif: item.motif || "",
-    meta: item.meta || {},
-  }));
-
-  const subtotal = normalizedItems.reduce(
-    (sum, item) => sum + item.qty * item.unitPrice,
-    0
-  );
-
-  const payload = {
-    userId: userId || null,
-    status: ORDER_STATUSES.PENDING_PAYMENT,
-    items: normalizedItems,
-    totals: {
-      subtotal,
-      currency: "DT",
-    },
+  const callable = httpsCallable(functions, "createOrder");
+  const response = await callable({
+    items: items.map((item) => ({
+      productType: item.productType,
+      productId: item.productId,
+      qty: Number(item.qty) || 1,
+      format: item.format || "",
+      motif: item.motif || "",
+      meta: item.meta || {},
+      pack: item.meta?.pack || item.pack,
+    })),
     customer: {
-      fullName: customer.fullName?.trim() || "",
-      email: customer.email?.trim() || "",
-      phone: customer.phone?.trim() || "",
+      fullName: customer?.fullName || "",
+      email: customer?.email || "",
+      phone: customer?.phone || "",
     },
-    shipping: shipping
-      ? {
-          address: shipping.address?.trim() || "",
-          city: shipping.city?.trim() || "",
-          notes: shipping.notes?.trim() || "",
-        }
-      : null,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  };
+    shipping: shipping || null,
+  });
 
-  const ref = await addDoc(collection(db, ORDERS_COLLECTION), payload);
-  return ref.id;
+  const orderId = response?.data?.orderId;
+  if (!orderId) {
+    throw new Error("Impossible de créer la commande.");
+  }
+  logSecurityEvent("order_create_client", {
+    email: customer?.email || "",
+    note: orderId,
+  });
+  return orderId;
 }
 
 export async function getOrderById(orderId) {

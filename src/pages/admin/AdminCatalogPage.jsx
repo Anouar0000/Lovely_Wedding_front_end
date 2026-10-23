@@ -17,6 +17,7 @@ const EMPTY_FORM = {
   slug: "",
   category: "",
   priceLabel: "",
+  unitPrice: 1.5,
   imageUrl: "",
   filled: false,
   active: true,
@@ -87,6 +88,7 @@ function AdminCatalogPage() {
       slug: product.slug || "",
       category: product.category || "",
       priceLabel: product.priceLabel || "",
+      unitPrice: Number(product.unitPrice) || 0,
       imageUrl: product.imageUrl || "",
       filled: Boolean(product.filled),
       active: product.active !== false,
@@ -300,8 +302,26 @@ function AdminCatalogPage() {
                 value={form.priceLabel}
                 onChange={(e) => setForm((f) => ({ ...f, priceLabel: e.target.value }))}
                 className="w-full rounded-[5px] border border-[#E8E0D8] px-3 py-2"
-                placeholder="Start at 49$ / à partir de 99dt"
+                placeholder="1,5 DT / unité"
               />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-[#7D6E66]">
+                Prix unitaire (DT) *
+              </span>
+              <input
+                required={form.type === CATALOG_TYPES.PHYSICAL}
+                type="number"
+                min="0"
+                step="0.001"
+                value={form.unitPrice}
+                onChange={(e) => setForm((f) => ({ ...f, unitPrice: e.target.value }))}
+                className="w-full rounded-[5px] border border-[#E8E0D8] px-3 py-2"
+                placeholder="1.5"
+              />
+              <span className="mt-1 block text-xs text-[#7D6E66]">
+                Obligatoire pour le physique — utilisé par le serveur au paiement.
+              </span>
             </label>
             <label className="text-sm sm:col-span-2">
               <span className="mb-1 block font-semibold text-[#7D6E66]">URL image</span>
@@ -408,7 +428,12 @@ function AdminCatalogPage() {
                       {product.type} · {product.category || "sans catégorie"} ·{" "}
                       {product.active ? "actif" : "inactif"}
                     </p>
-                    <p className="text-xs text-[#7D6E66]">{product.priceLabel}</p>
+                    <p className="text-xs text-[#7D6E66]">
+                      {product.priceLabel}
+                      {Number(product.unitPrice) > 0
+                        ? ` · ${product.unitPrice} DT/u`
+                        : ""}
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">

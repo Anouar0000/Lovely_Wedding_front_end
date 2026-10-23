@@ -9,8 +9,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { canonicalEmail } from "../lib/authSecurity";
 
 export const USERS_COLLECTION = "users";
+export const EMAIL_INDEX_COLLECTION = "emailIndex";
+export const EMAIL_TAKEN_CODE = "lw/email-taken";
 export const USER_ROLES = {
   ADMIN: "admin",
   CLIENT: "client",
@@ -44,6 +47,30 @@ export function isAdminEmail(email) {
   return getAdminEmails().includes(String(email).trim().toLowerCase());
 }
 
+/**
+ * Reserve the canonical mailbox for this uid (one account per email).
+ * Rules reject the write when another uid already holds it.
+ */
+export async function claimEmail(user) {
+  assertFirestoreReady();
+  if (!user?.uid || !user.email) return;
+  const key = canonicalEmail(user.email);
+  try {
+    await setDoc(doc(db, EMAIL_INDEX_COLLECTION, key), {
+      uid: user.uid,
+      email: user.email,
+      createdAt: serverTimestamp(),
+    });
+  } catch (error) {
+    if (error?.code === "permission-denied") {
+      const taken = new Error("Cet email est déjà utilisé par un autre compte.");
+      taken.code = EMAIL_TAKEN_CODE;
+      throw taken;
+    }
+    throw error;
+  }
+}
+
 export async function ensureUserProfile(user, extras = {}) {
   assertFirestoreReady();
   if (!user?.uid) {
@@ -52,6 +79,13 @@ export async function ensureUserProfile(user, extras = {}) {
 
   const ref = doc(db, USERS_COLLECTION, user.uid);
   const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    await claimEmail(user);
+  } else {
+    // Accounts created before the email index: never lock them out.
+    claimEmail(user).catch(() => {});
+  }
   const admin = isAdminEmail(user.email);
   const fullName = String(extras.fullName || "").trim().slice(0, 120);
   const phone = String(extras.phone || "").trim().slice(0, 40);
