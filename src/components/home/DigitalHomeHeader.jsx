@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiPrinter, FiSmartphone } from "react-icons/fi";
-import { LuMenu, LuSearch, LuShoppingBag, LuUser } from "react-icons/lu";
+import { LuHeart, LuMenu, LuSearch, LuShoppingBag, LuUser } from "react-icons/lu";
 import { useAuth } from "../auth/AuthProvider";
 import { useCart } from "../../context/CartContext";
+import { useFavorites } from "../../context/FavoritesContext";
 import LovelyMobileDrawer from "./LovelyMobileDrawer";
 
 /** Figma Lucide: 24px, stroke 1.5 */
@@ -22,6 +23,7 @@ function DigitalHomeHeader({
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
   const { itemCount } = useCart();
+  const { count: favCount } = useFavorites();
   const [menuOpen, setMenuOpen] = useState(false);
   const showToggle = mode === "digitale" || mode === "imprimee";
   const isCatalog = mode === "none";
@@ -102,6 +104,19 @@ function DigitalHomeHeader({
           </button>
 
           <div className="relative z-10 flex h-[31px] w-[60px] shrink-0 items-center justify-end gap-3 lg:min-w-[180px] lg:w-auto lg:gap-4">
+            <button
+              type="button"
+              className="relative hidden size-6 items-center justify-center lg:inline-flex"
+              aria-label="Favoris"
+              onClick={() => navigate("/favoris")}
+            >
+              <LuHeart {...iconProps} />
+              {favCount > 0 ? (
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-lw-text px-1 text-[10px] text-white">
+                  {favCount}
+                </span>
+              ) : null}
+            </button>
             <button
               type="button"
               className="inline-flex size-6 items-center justify-center"
