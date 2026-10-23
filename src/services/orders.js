@@ -34,7 +34,7 @@ const functions =
   isFirebaseConfigured && app ? getFunctions(app, "europe-west1") : null;
 
 /** Set REACT_APP_SERVER_ORDERS=true after Blaze + createOrder function deploy. */
-function useServerOrders() {
+function isServerOrdersEnabled() {
   return process.env.REACT_APP_SERVER_ORDERS === "true";
 }
 
@@ -140,7 +140,7 @@ async function createOrderServer({ items, customer, shipping }) {
  * After Blaze: set REACT_APP_SERVER_ORDERS=true + deploy createOrder + lock rules.
  */
 export async function createOrder({ items, customer, shipping, userId = null }) {
-  const orderId = useServerOrders()
+  const orderId = isServerOrdersEnabled()
     ? await createOrderServer({ items, customer, shipping })
     : await createOrderClient({ items, customer, shipping, userId });
 
