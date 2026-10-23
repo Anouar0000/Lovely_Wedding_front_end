@@ -234,11 +234,9 @@ function DigitalProductDetailPage() {
           >
             <div className="relative h-full w-full overflow-hidden rounded-[28px] border-[2.5px] border-[#131313] bg-[#131313] shadow-[0_18px_40px_-16px_rgba(75,66,66,0.45)]">
               <img
-                src={`${activeSlide.src}?v=g3`}
+                src={`${activeSlide.src}?v=g4`}
                 alt={product.name}
-                className={`h-full w-full object-cover ${
-                  activeSlide.play ? "object-top" : "object-center"
-                }`}
+                className="h-full w-full object-cover object-top"
                 draggable={false}
               />
               <span
