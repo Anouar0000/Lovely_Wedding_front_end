@@ -11,20 +11,21 @@ const CARDS = [
 /** L'expérience — mobile scroll · desktop grille 4 cols */
 function ExperienceSection() {
   const scrollerRef = useRef(null);
-  const [progress, setProgress] = useState({ left: 0, width: 0.35 });
+  /** Figma mini-bar : 93×1.5 sur piste 396 (même Save The Dates) */
+  const THUMB_W = 93;
+  const TRACK_W = 396;
+  const [thumbLeft, setThumbLeft] = useState(0);
 
   const updateProgress = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
     const max = el.scrollWidth - el.clientWidth;
     if (max <= 0) {
-      setProgress({ left: 0, width: 1 });
+      setThumbLeft(0);
       return;
     }
-    const ratio = el.clientWidth / el.scrollWidth;
-    const thumb = Math.max(0.22, Math.min(0.5, ratio));
-    const left = (el.scrollLeft / max) * (1 - thumb);
-    setProgress({ left, width: thumb });
+    const travel = TRACK_W - THUMB_W;
+    setThumbLeft((el.scrollLeft / max) * travel);
   }, []);
 
   useEffect(() => {
@@ -40,13 +41,16 @@ function ExperienceSection() {
   }, [updateProgress]);
 
   return (
-    <section id="experience" className="scroll-mt-24 bg-[#F7F2EC] px-0 pb-10 pt-8 lg:px-8 lg:pb-24 lg:pt-16">
+    <section
+      id="experience"
+      className="scroll-mt-24 bg-[#F7F2EC] px-0 pt-8 pb-[92px] lg:px-8 lg:pb-24 lg:pt-16"
+    >
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-3 text-center lg:w-full lg:max-w-2xl">
           <h2 className="mt-[5px] font-lora text-[30px] font-medium leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
             L&apos;expérience
           </h2>
-          <p className="font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+          <p className="font-glacial text-[18px] font-normal leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
             Découvrez tout ce qui rend
             <br className="lg:hidden" />
             <span className="hidden lg:inline"> </span>
@@ -74,15 +78,12 @@ function ExperienceSection() {
         </div>
 
         <div
-          className="relative mx-auto mt-6 h-[2px] w-[calc(100%-32px)] max-w-[360px] bg-[#D9D2CB] lg:hidden"
+          className="relative mx-auto mt-[32px] h-[0.5px] w-[396px] max-w-[calc(100%-32px)] bg-[#D9D2CB] lg:hidden"
           aria-hidden
         >
           <div
-            className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left,width] duration-150 ease-out"
-            style={{
-              width: `${progress.width * 100}%`,
-              left: `${progress.left * 100}%`,
-            }}
+            className="absolute top-1/2 h-[1.5px] w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
+            style={{ left: `${thumbLeft}px` }}
           />
         </div>
       </div>

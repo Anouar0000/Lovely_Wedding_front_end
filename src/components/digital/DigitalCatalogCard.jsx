@@ -1,6 +1,6 @@
 import React from "react";
-import { LuHeart } from "react-icons/lu";
 import { homeDigitalAssets as a } from "../home/homeDigitalAssets";
+import FavoritesHeartIcon from "../icons/FavoritesHeartIcon";
 
 /**
  * Catalogue Figma Group 23 — mêmes tuiles que /invitations-digital.
@@ -60,10 +60,10 @@ export const DIGITAL_CATALOG_PRODUCTS = [
   },
 ];
 
-/** Même chassis iPhone que les tuiles Figma (cadre fin + Dynamic Island). */
+/** Figma tile exacte 189×224 — chassis iPhone (cadre fin + Dynamic Island). */
 export function CatalogPhoneMock({ src, alt }) {
   return (
-    <div className="relative aspect-[189/222] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
+    <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
       <div className="absolute left-[28.5%] top-[12.5%] h-[77%] w-[42.5%] rounded-[16%/8%] bg-[#1c1c1c] p-[1.6%] shadow-[2px_6px_8px_-2px_rgba(75,66,66,0.45)]">
         <div className="relative h-full w-full overflow-hidden rounded-[14%/7%] bg-[#F7F2EC]">
           <img
@@ -84,7 +84,7 @@ export function CatalogPhoneMock({ src, alt }) {
 
 /**
  * Carte produit catalogue — code unique pour /invitations-digital et recommandations.
- * Les tuiles Figma ont un cœur dessiné : on le masque, puis on pose le bouton favoris.
+ * Tuile Figma exacte 189×224. Les exports ont un cœur dessiné : on le masque + bouton favoris.
  */
 export function DigitalCatalogCard({
   product,
@@ -95,7 +95,7 @@ export function DigitalCatalogCard({
   const usePhoneMock = Boolean(product.screen);
 
   return (
-    <article className="group flex flex-col">
+    <article className="group flex w-[189px] flex-col">
       <div className="relative">
         {/* Masque le cœur intégré dans les exports Figma (tuiles sans screen) */}
         {!usePhoneMock ? (
@@ -115,14 +115,7 @@ export function DigitalCatalogCard({
           }}
           className="absolute right-2 top-2 z-20 flex size-8 items-center justify-center"
         >
-          <LuHeart
-            size={18}
-            strokeWidth={1.75}
-            aria-hidden
-            className={
-              liked ? "fill-[#E23D48] text-[#E23D48]" : "fill-none text-[#E23D48]"
-            }
-          />
+          <FavoritesHeartIcon filled={liked} />
         </button>
 
         <button type="button" className="w-full text-left" onClick={() => onOpen?.(product)}>
@@ -131,7 +124,7 @@ export function DigitalCatalogCard({
               <CatalogPhoneMock src={product.screen} alt={product.name} />
             </div>
           ) : (
-            <div className="relative aspect-[189/222] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
+            <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
               <img
                 src={product.img}
                 alt={product.name}

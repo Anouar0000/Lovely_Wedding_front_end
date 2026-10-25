@@ -6,11 +6,25 @@ import { homeDigitalAssets as a } from "./homeDigitalAssets";
 function SaveTheDatesSection() {
   const navigate = useNavigate();
   const scrollerRef = useRef(null);
-  const [progress, setProgress] = useState({ left: 0, width: 0.32 });
+  /** Figma mini-bar : 93×1.5 sur piste 396 */
+  const THUMB_W = 93;
+  const TRACK_W = 396;
+  const [thumbLeft, setThumbLeft] = useState(0);
 
   const items = [
-    { title: "Sidi Bou Said", image: a.std1, to: "/digital-invitation/sidi-bousaid" },
-    { title: "La Dolce Vita", image: a.std2, to: "/digital-invitation/dolce-vita", isNew: true },
+    {
+      title: "Sidi Bou Said",
+      image: a.std1,
+      to: "/digital-invitation/sidi-bousaid",
+      price: "25$",
+    },
+    {
+      title: "La Dolce Vita",
+      image: a.std2,
+      to: "/digital-invitation/dolce-vita",
+      isNew: true,
+      price: "25$",
+    },
   ];
 
   const updateProgress = useCallback(() => {
@@ -18,13 +32,11 @@ function SaveTheDatesSection() {
     if (!el) return;
     const max = el.scrollWidth - el.clientWidth;
     if (max <= 0) {
-      setProgress({ left: 0, width: 1 });
+      setThumbLeft(0);
       return;
     }
-    const ratio = el.clientWidth / el.scrollWidth;
-    const thumb = Math.max(0.28, Math.min(0.4, ratio));
-    const left = (el.scrollLeft / max) * (1 - thumb);
-    setProgress({ left, width: thumb });
+    const travel = TRACK_W - THUMB_W;
+    setThumbLeft((el.scrollLeft / max) * travel);
   }, []);
 
   useEffect(() => {
@@ -40,13 +52,13 @@ function SaveTheDatesSection() {
   }, [updateProgress]);
 
   return (
-    <section className="bg-white px-0 py-10 lg:px-8 lg:py-24">
+    <section className="bg-white px-0 pt-10 pb-[92px] lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-2.5 text-center lg:w-full lg:max-w-2xl lg:gap-3">
-          <h2 className="font-lora text-[30px] font-medium leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
+          <h1 className="font-lora text-[30px] font-medium leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">
             Save The Dates
-          </h2>
-          <p className="font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+          </h1>
+          <p className="font-glacial text-[18px] font-normal leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
             Une vidéo élégante pour
             <br className="lg:hidden" />
             <span className="hidden lg:inline"> </span>
@@ -79,25 +91,31 @@ function SaveTheDatesSection() {
                     </span>
                   ) : null}
                 </div>
-                <h3 className="mt-5 lw-h3 leading-6 lg:mt-6 lg:text-[28px]">{item.title}</h3>
-                <p className="mt-1 lw-caption leading-5 lg:mt-2 lg:text-[15px] lg:leading-6">
-                  Includes music, animations & guestbook
-                </p>
+                <div className="mt-[10px] flex flex-col">
+                  <h3 className="font-lora text-[18px] font-normal leading-[34px] tracking-[-1px] text-lw-text">
+                    {item.title}
+                  </h3>
+                  <p className="mt-[2px] font-glacial text-[12px] font-normal leading-[18px] text-lw-muted lg:text-[15px] lg:leading-6">
+                    Includes music, animations
+                    <br />
+                    & guestbook
+                  </p>
+                  <p className="mt-[2px] font-glacial text-[14px] font-bold leading-5 text-lw-text lg:text-[15px]">
+                    {item.price}
+                  </p>
+                </div>
               </button>
             </article>
           ))}
         </div>
 
         <div
-          className="relative mx-auto my-[50px] h-[2px] w-[calc(100%-32px)] max-w-[360px] bg-[#D9D2CB] lg:hidden"
+          className="relative mx-auto mt-[32px] h-[0.5px] w-[396px] max-w-[calc(100%-32px)] bg-[#D9D2CB] lg:hidden"
           aria-hidden
         >
           <div
-            className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left,width] duration-150 ease-out"
-            style={{
-              width: `${progress.width * 100}%`,
-              left: `${progress.left * 100}%`,
-            }}
+            className="absolute top-1/2 h-[1.5px] w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
+            style={{ left: `${thumbLeft}px` }}
           />
         </div>
       </div>

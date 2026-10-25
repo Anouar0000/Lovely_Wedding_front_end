@@ -15,7 +15,7 @@ function FeaturesMarquee({ items = DEFAULT_ITEMS }) {
 
   return (
     <section className="overflow-hidden bg-[#F7F2EC] py-4" aria-label="Fonctionnalités">
-      <div className="flex w-max animate-hero-marquee gap-10 whitespace-nowrap px-4 font-glacial text-[13px] font-semibold uppercase tracking-[0.12em] text-lw-text lg:gap-14 lg:text-[14px]">
+      <div className="flex w-max animate-hero-marquee gap-10 whitespace-nowrap px-4 font-glacial text-[14px] font-bold uppercase tracking-[0.12em] text-lw-text lg:gap-14">
         {track.map((label, i) => (
           <span key={`${label}-${i}`}>{label}</span>
         ))}

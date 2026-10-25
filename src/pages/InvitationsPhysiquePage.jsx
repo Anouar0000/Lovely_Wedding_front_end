@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FiFilter, FiX } from "react-icons/fi";
-import { LuHeart } from "react-icons/lu";
+import FavoritesHeartIcon from "../components/icons/FavoritesHeartIcon";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
@@ -200,11 +200,11 @@ function InvitationsPhysiquePage() {
           </button>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 justify-items-center gap-x-4 gap-y-8 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
           {products.map((p) => {
             const liked = isFavorite(p.id);
             return (
-              <article key={p.id} className="lw-product-card group flex flex-col p-1">
+              <article key={p.id} className="lw-product-card group flex w-[189px] flex-col">
                 <div className="relative">
                   <button
                     type="button"
@@ -223,15 +223,10 @@ function InvitationsPhysiquePage() {
                     }}
                     className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90"
                   >
-                    <LuHeart
-                      size={18}
-                      strokeWidth={1.5}
-                      aria-hidden
-                      className={liked ? "fill-[#E23D48] text-[#E23D48]" : "fill-none text-[#E23D48]"}
-                    />
+                    <FavoritesHeartIcon filled={liked} />
                   </button>
                   <button type="button" className="w-full text-left" onClick={() => openProduct(p)}>
-                    <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
+                    <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
                       <img
                         src={p.img}
                         alt={p.name}
@@ -241,10 +236,8 @@ function InvitationsPhysiquePage() {
                     <h2 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text lg:mt-4 lg:text-[24px] lg:leading-8">
                       {p.name}
                     </h2>
-                    <p className="mt-0 font-glacial text-[14px] leading-[18px] text-[#78716c]">
-                      Includes music, animations
-                      <br />
-                      {"& guestbook"}
+                    <p className="mt-0 font-glacial text-[14px] font-normal leading-[18px] text-[#78716c]">
+                      Impression soignée · papier premium
                     </p>
                     <p className="mt-2 font-glacial text-[14px] font-bold leading-6 text-lw-text">
                       {p.price}

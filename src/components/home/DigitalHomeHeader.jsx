@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiPrinter, FiSmartphone } from "react-icons/fi";
-import { LuHeart, LuMenu, LuSearch, LuShoppingBag, LuUser } from "react-icons/lu";
+import { LuMenu, LuSearch, LuShoppingBag, LuUser } from "react-icons/lu";
 import { useAuth } from "../auth/AuthProvider";
 import { useCart } from "../../context/CartContext";
 import { useFavorites } from "../../context/FavoritesContext";
+import FavoritesHeartIcon from "../icons/FavoritesHeartIcon";
 import LovelyMobileDrawer from "./LovelyMobileDrawer";
 
 /** Figma Lucide: 24px, stroke 1.5 */
@@ -110,7 +111,7 @@ function DigitalHomeHeader({
               aria-label="Favoris"
               onClick={() => navigate("/favoris")}
             >
-              <LuHeart {...iconProps} />
+              <FavoritesHeartIcon filled={favCount > 0} />
               {favCount > 0 ? (
                 <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-lw-text px-1 text-[10px] text-white">
                   {favCount}
@@ -145,7 +146,7 @@ function DigitalHomeHeader({
           <div className="flex justify-center px-4 pb-3 pt-6 lg:pb-7 lg:pt-4">
             {/* Figma Switcher: 244×48 */}
             <div
-              className="inline-flex h-12 w-[244px] items-center gap-1 rounded-full bg-white p-1 shadow-sm ring-1 ring-lw-line/80 lg:w-[280px]"
+              className="inline-flex h-12 w-[244px] items-center gap-1 rounded-full bg-white p-1 lg:w-[280px]"
               role="tablist"
               aria-label="Type d'invitation"
             >
@@ -155,8 +156,8 @@ function DigitalHomeHeader({
                 aria-selected={mode === "digitale"}
                 className={
                   mode === "digitale"
-                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#c4a69c] px-3 font-glacial text-[14px] font-semibold leading-none text-white"
-                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-glacial text-[14px] font-medium leading-none text-lw-text"
+                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#C4A69C] px-3 font-glacial text-[14px] font-semibold leading-none text-white shadow-[0_4px_12px_rgba(196,166,156,0.45)]"
+                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-glacial text-[14px] font-medium leading-none text-[#C4A69C]"
                 }
                 onClick={() => {
                   if (mode !== "digitale") navigate("/");
@@ -171,8 +172,8 @@ function DigitalHomeHeader({
                 aria-selected={mode === "imprimee"}
                 className={
                   mode === "imprimee"
-                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#c4a69c] px-3 font-glacial text-[14px] font-semibold leading-none text-white"
-                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-glacial text-[14px] font-medium leading-none text-lw-text"
+                    ? "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#C4A69C] px-3 font-glacial text-[14px] font-semibold leading-none text-white shadow-[0_4px_12px_rgba(196,166,156,0.45)]"
+                    : "flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-transparent px-3 font-glacial text-[14px] font-medium leading-none text-[#C4A69C]"
                 }
                 onClick={() => {
                   if (mode !== "imprimee") navigate("/imprimee");

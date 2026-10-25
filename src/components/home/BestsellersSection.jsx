@@ -74,10 +74,10 @@ function BestsellersSection() {
   return (
     <section className="overflow-x-hidden bg-white pb-12 pt-8 lg:pb-24 lg:pt-20">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
-        <h2 className="px-4 text-center lw-h1 lg:text-[40px] lg:leading-tight">
+        <h2 className="px-4 text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.01em] text-lw-text lg:text-[40px] lg:leading-tight">
           Les Best-Sellers
         </h2>
-        <p className="mx-auto mt-2 w-[357px] max-w-[calc(100%-16px)] whitespace-nowrap text-center font-glacial text-[18px] font-medium leading-6 text-lw-muted lg:mt-3 lg:w-auto lg:max-w-xl lg:text-[20px]">
+        <p className="mx-auto mt-2 w-[357px] max-w-[calc(100%-16px)] whitespace-nowrap text-center font-glacial text-[18px] font-normal leading-6 text-lw-muted lg:mt-3 lg:w-auto lg:max-w-xl lg:text-[20px]">
           Les créations que vous avez le plus aimées.
         </p>
       </div>

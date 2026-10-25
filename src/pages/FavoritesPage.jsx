@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LuHeart } from "react-icons/lu";
+import FavoritesHeartIcon from "../components/icons/FavoritesHeartIcon";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
@@ -114,12 +114,7 @@ function FavoritesPage() {
                       }}
                       className="absolute right-2 top-2 z-20 flex size-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90"
                     >
-                      <LuHeart
-                        size={18}
-                        strokeWidth={1.75}
-                        aria-hidden
-                        className="fill-[#E23D48] text-[#E23D48]"
-                      />
+                      <FavoritesHeartIcon filled />
                     </button>
                     <button
                       type="button"

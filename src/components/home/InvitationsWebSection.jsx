@@ -1,7 +1,7 @@
 import React from "react";
-import { LuHeart } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../../context/FavoritesContext";
+import FavoritesHeartIcon from "../icons/FavoritesHeartIcon";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
 /** Invitations Web — design hero (cover + cadre iPhone) */
@@ -31,9 +31,6 @@ const cards = [
     to: "/invitations-digital/majestic-white",
   },
 ];
-
-/** Figma Lucide heart */
-const heartProps = { size: 18, strokeWidth: 1.5, "aria-hidden": true };
 
 /** Figma phone — noir fin 78×168 · desktop un peu plus grand */
 function PhonePreview({ src, title }) {
@@ -66,7 +63,7 @@ function InvitationsWebSection() {
           <h2 className="font-lora text-[26px] font-medium leading-[30px] text-lw-text lg:text-[40px] lg:leading-tight">
             Invitations Web
           </h2>
-          <p className="font-glacial text-[16px] font-medium leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
+          <p className="font-glacial text-[16px] font-normal leading-6 text-lw-muted lg:text-[20px] lg:leading-7">
             Un site personnalisé pour partager
             <br className="lg:hidden" />
             <span className="hidden lg:inline"> </span>
@@ -74,11 +71,11 @@ function InvitationsWebSection() {
           </p>
         </div>
 
-        <div className="mt-[35px] grid grid-cols-2 gap-4 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-8 lg:px-0">
+        <div className="mt-[35px] grid grid-cols-2 justify-items-center gap-x-4 gap-y-10 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-14 lg:px-0">
           {cards.map((c) => {
             const liked = isFavorite(c.id);
             return (
-              <article key={c.id} className="lw-product-card group flex flex-col p-1">
+              <article key={c.id} className="lw-product-card group flex w-[189px] flex-col">
                 <div className="relative">
                   <button
                     type="button"
@@ -97,13 +94,11 @@ function InvitationsWebSection() {
                     }}
                     className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center text-[#E23D48] transition-transform active:scale-90 lg:right-3 lg:top-3"
                   >
-                    <LuHeart
-                      {...heartProps}
-                      className={liked ? "fill-[#E23D48] text-[#E23D48]" : "fill-none text-[#E23D48]"}
-                    />
+                    <FavoritesHeartIcon filled={liked} />
                   </button>
                   <button type="button" className="w-full text-left" onClick={() => navigate(c.to)}>
-                    <div className="relative flex h-[224px] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/260] lg:h-auto lg:min-h-[280px]">
+                    {/* Figma tile exacte 189×224 */}
+                    <div className="relative flex h-[224px] w-[189px] items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed]">
                       <PhonePreview src={c.image} title={c.title} />
                     </div>
                     <h3 className="mt-4 lw-h3 leading-6 lg:mt-5 lg:text-[24px]">{c.title}</h3>
@@ -125,10 +120,10 @@ function InvitationsWebSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-digital")}
-            className="inline-flex items-center gap-1.5 font-glacial text-[14px] font-medium leading-none text-[#A97C72] underline-offset-4 hover:underline lg:text-[16px]"
+            className="inline-flex items-center gap-1.5 font-glacial text-[14px] font-bold leading-none text-[#A97C72] underline-offset-4 hover:underline"
           >
             Découvrir toute la collection
-            <span aria-hidden className="text-[16px] leading-none lg:text-[18px]">
+            <span aria-hidden className="text-[14px] font-bold leading-none">
               →
             </span>
           </button>

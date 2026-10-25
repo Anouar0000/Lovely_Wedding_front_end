@@ -74,7 +74,7 @@ function InvitationsDigitalPage() {
         </div>
 
         {/* Mobile 2 · tablet 3 · desktop 4 */}
-        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-12 pb-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:mt-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+        <div className="mt-6 grid grid-cols-2 justify-items-center gap-x-4 gap-y-12 pb-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:mt-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
           {products.map((p) => (
             <DigitalCatalogCard
               key={p.id}

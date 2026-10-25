@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiPlay, FiStar } from "react-icons/fi";
-import { LuHeart } from "react-icons/lu";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import {
@@ -435,7 +434,7 @@ function DigitalProductDetailPage() {
             Autres recommandations
           </h2>
           {/* Même grille / card que /invitations-digital */}
-          <div className="mt-[53px] grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+          <div className="mt-[53px] grid grid-cols-2 justify-items-center gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
             {recommendations.map((p) => (
               <DigitalCatalogCard
                 key={p.id}

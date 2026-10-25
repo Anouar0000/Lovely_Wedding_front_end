@@ -508,10 +508,10 @@ function PacksSection() {
     <section className="bg-[#F7F2EC] px-4 py-10 lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-5xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-8px)] flex-col items-center text-center lg:w-full lg:max-w-2xl">
-          <h2 className="font-lora text-[30px] font-bold leading-[36px] text-lw-text">
+          <h2 className="font-lora text-[30px] font-medium leading-[36px] text-lw-text">
             Trouvez votre forfait
           </h2>
-          <p className="mt-[7px] font-glacial text-[18px] font-medium leading-6 text-lw-muted">
+          <p className="mt-[7px] font-glacial text-[18px] font-normal leading-6 text-lw-muted">
             Choisissez le forfait qui
             <br />
             correspond à vos envies.
