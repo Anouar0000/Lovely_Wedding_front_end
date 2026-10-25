@@ -233,13 +233,13 @@ function InvitationsPhysiquePage() {
                         className="h-full w-full object-cover transition-transform duration-300 lg:group-hover:scale-105"
                       />
                     </div>
-                    <h2 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text lg:mt-4 lg:text-[24px] lg:leading-8">
+                    <h2 className="mt-[9px] font-lora text-[18px] font-normal leading-[34px] tracking-[-1px] text-[#4B4242]">
                       {p.name}
                     </h2>
-                    <p className="mt-0 font-glacial text-[14px] font-normal leading-[18px] text-[#78716c]">
+                    <p className="mt-[2px] font-glacial text-[14px] font-normal leading-[18px] tracking-normal text-[#78716c]">
                       Impression soignée · papier premium
                     </p>
-                    <p className="mt-2 font-glacial text-[14px] font-bold leading-6 text-lw-text">
+                    <p className="mt-[2px] font-glacial text-[14px] font-bold leading-[24px] text-lw-text">
                       {p.price}
                     </p>
                   </button>

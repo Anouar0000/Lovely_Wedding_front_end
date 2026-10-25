@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import PhysicalHeroSection from "../components/home/physical/PhysicalHeroSection";
@@ -14,6 +15,17 @@ import PhysicalFaqSection from "../components/home/physical/PhysicalFaqSection";
 
 /** Main Page physical — Figma 155:169 · parity mobile/desktop avec Digitale */
 function PhysicalHomePage() {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return undefined;
+    const id = hash.replace(/^#/, "");
+    const t = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [hash]);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-glacial text-lw-text">
       <div className="flex flex-col bg-[#F7F2EC] lg:min-h-[100dvh]">

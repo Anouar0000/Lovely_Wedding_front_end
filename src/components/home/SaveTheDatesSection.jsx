@@ -52,7 +52,7 @@ function SaveTheDatesSection() {
   }, [updateProgress]);
 
   return (
-    <section className="bg-white px-0 pt-10 pb-[92px] lg:px-8 lg:py-24">
+    <section id="save-the-dates" className="scroll-mt-24 bg-white px-0 pt-10 pb-[92px] lg:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <div className="mx-auto flex w-[399px] max-w-[calc(100%-16px)] flex-col items-center gap-2.5 text-center lg:w-full lg:max-w-2xl lg:gap-3">
           <h1 className="font-lora text-[30px] font-medium leading-[34px] text-lw-text lg:text-[40px] lg:leading-tight">

@@ -12,7 +12,7 @@ const DESKTOP_VISIBLE = 3;
 
 /** Communauté physique — même layout desktop / mobile */
 function PhysicalSocialSection() {
-  const { scrollerRef, index, activeId, go, setActiveId } = useCommunityCarousel(slides);
+  const { scrollerRef, activeId, go, setActiveId } = useCommunityCarousel(slides);
   const [deskStart, setDeskStart] = useState(0);
   const [deskActive, setDeskActive] = useState(slides[0].id);
 
@@ -29,7 +29,7 @@ function PhysicalSocialSection() {
   }, [deskStart]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section id="communaute" className="scroll-mt-24 overflow-x-hidden bg-white pb-10 pt-4 lg:pb-24 lg:pt-10">
+    <section id="communaute" className="scroll-mt-24 overflow-x-hidden bg-white pb-[71px] lg:pb-24 lg:pt-10">
       <div className="mx-auto w-full max-w-[428px] lg:max-w-6xl">
         <h2 className="px-4 text-center lw-h1 lg:text-[40px]">Communauté</h2>
         <p className="mx-auto mt-2 max-w-[241px] px-4 text-center lw-sub lg:mt-3 lg:max-w-none lg:text-[18px]">
@@ -73,19 +73,6 @@ function PhysicalSocialSection() {
             <FiChevronRight className="text-lg" />
           </button>
 
-          <div className="mt-8 flex justify-center gap-1.5">
-            {Array.from({ length: maxStart + 1 }).map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Page ${i + 1}`}
-                onClick={() => setDeskStart(i)}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === deskStart ? "w-4 bg-lw-accent" : "w-1.5 bg-lw-line"
-                }`}
-              />
-            ))}
-          </div>
         </div>
 
         <div className="relative mt-8 lg:hidden">
@@ -127,17 +114,6 @@ function PhysicalSocialSection() {
           >
             <FiChevronRight className="text-base" />
           </button>
-
-          <div className="mt-4 flex justify-center gap-1.5">
-            {slides.map((s, i) => (
-              <span
-                key={s.id}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === index ? "w-4 bg-lw-accent" : "w-1.5 bg-lw-line"
-                }`}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </section>

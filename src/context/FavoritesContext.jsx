@@ -5,11 +5,26 @@ const LEGACY_STORAGE_KEY = "lovely_wedding_favorites_v1";
 
 const FavoritesContext = createContext(null);
 
+/** Alias → id canonique (évite doublons Celestial/Sakura, Bridgeton, etc.) */
+const ID_ALIASES = {
+  bridgeton: "bridgerton",
+  celestial: "sakura-koi",
+  "sakura-koi": "sakura-koi",
+};
+
+function canonicalId(id) {
+  if (!id || typeof id !== "string") return "";
+  const key = id.trim().toLowerCase();
+  return ID_ALIASES[key] || key;
+}
+
 function normalizeItem(entry) {
   if (!entry) return null;
   if (typeof entry === "string") {
+    const id = canonicalId(entry);
+    if (!id) return null;
     return {
-      id: entry,
+      id,
       title: entry,
       to: "/invitations-digital",
       image: "",
@@ -17,9 +32,11 @@ function normalizeItem(entry) {
     };
   }
   if (typeof entry === "object" && typeof entry.id === "string" && entry.id) {
+    const id = canonicalId(entry.id);
+    if (!id) return null;
     return {
-      id: entry.id,
-      title: entry.title || entry.id,
+      id,
+      title: entry.title || id,
       to: entry.to || "/invitations-digital",
       image: entry.image || "",
       productType: entry.productType === "print" ? "print" : "digital",
@@ -28,22 +45,29 @@ function normalizeItem(entry) {
   return null;
 }
 
+function dedupeItems(list) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of list) {
+    const item = normalizeItem(raw);
+    if (!item || seen.has(item.id)) continue;
+    seen.add(item.id);
+    out.push(item);
+  }
+  return out;
+}
+
 function loadFavorites() {
   try {
     const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        return parsed.map(normalizeItem).filter(Boolean);
-      }
+      if (Array.isArray(parsed)) return dedupeItems(parsed);
     }
-    // Migrate v1 (string ids only)
     const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
     if (legacy) {
       const parsed = JSON.parse(legacy);
-      if (Array.isArray(parsed)) {
-        return parsed.map(normalizeItem).filter(Boolean);
-      }
+      if (Array.isArray(parsed)) return dedupeItems(parsed);
     }
   } catch {
     /* ignore */
@@ -59,8 +83,9 @@ export function FavoritesProvider({ children }) {
   }, [items]);
 
   const isFavorite = (id) => {
-    if (!id) return false;
-    return items.some((item) => item.id === id);
+    const cid = canonicalId(id);
+    if (!cid) return false;
+    return items.some((item) => item.id === cid);
   };
 
   const toggleFavorite = (entry) => {
@@ -70,13 +95,14 @@ export function FavoritesProvider({ children }) {
     setItems((current) => {
       const exists = current.some((item) => item.id === next.id);
       if (exists) return current.filter((item) => item.id !== next.id);
-      return [...current, next];
+      return dedupeItems([...current, next]);
     });
   };
 
   const removeFavorite = (id) => {
-    if (!id) return;
-    setItems((current) => current.filter((item) => item.id !== id));
+    const cid = canonicalId(id);
+    if (!cid) return;
+    setItems((current) => current.filter((item) => item.id !== cid));
   };
 
   const value = useMemo(

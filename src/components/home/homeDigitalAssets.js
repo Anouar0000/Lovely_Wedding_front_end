@@ -7,6 +7,10 @@ export const homeDigitalAssets = {
   iconUser: `${BASE}/icon-user.png`,
   iconCart: `${BASE}/icon-cart.png`,
   iconMenu: `${BASE}/icon-menu.png`,
+  /** Menu mobile Figma 1056:114 — oiseau + enveloppe */
+  menuOiseau: `${FIGMA}/menu-oiseau.png`,
+  /** Page Merci — pigeon HD (pigeon 1.png) */
+  merciPigeon: `${FIGMA}/merci-pigeon.png`,
 
   // Hero — Figma Group 30 + slides séparés
   heroVisual: `${FIGMA}/hero-group30.png`,

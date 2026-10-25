@@ -83,16 +83,6 @@ export const DIGITAL_PRODUCTS = {
     desc: "Classic stationery-inspired design.",
     category: "Romantique",
   },
-  celestial: {
-    name: "Celestial",
-    slug: "celestial",
-    cover: a.heroCoverSakura,
-    invi: a.cardSakura,
-    heroGallery: [a.gallerySakura1, a.gallerySakura2, a.gallerySakura3],
-    demoTo: "/digital-invitation/sakura-koi",
-    desc: "Classic stationery-inspired design.",
-    category: "Romantique",
-  },
   "club-capri": {
     name: "Club Capri",
     slug: "club-capri",
@@ -140,11 +130,18 @@ function DigitalProductDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const product = DIGITAL_PRODUCTS[slug] || DIGITAL_PRODUCTS["sidi-bousaid"];
+  const resolvedSlug = slug === "celestial" ? "sakura-koi" : slug;
+  const product = DIGITAL_PRODUCTS[resolvedSlug] || DIGITAL_PRODUCTS["sidi-bousaid"];
 
   const [packId, setPackId] = useState("essentiel");
   const [openAcc, setOpenAcc] = useState(-1);
   const [heroSlide, setHeroSlide] = useState(0);
+
+  useEffect(() => {
+    if (slug === "celestial") {
+      navigate("/invitations-digital/sakura-koi", { replace: true });
+    }
+  }, [slug, navigate]);
 
   const selectedPack = useMemo(
     () => PACKS.find((p) => p.id === packId) || PACKS[0],
@@ -188,7 +185,8 @@ function DigitalProductDetailPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-lw-text lg:pb-0">
+    <>
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" context="digitale" />
 
       <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] leading-[18px] text-[#4B4242] md:max-w-3xl lg:max-w-6xl lg:px-8 lg:pt-10">
@@ -331,28 +329,6 @@ function DigitalProductDetailPage() {
           })}
         </div>
 
-        {/* CTA — Figma sticky mobile */}
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E8E0D8] bg-white px-4 py-3 shadow-[0_-4px_24px_rgba(75,66,66,0.1)] lg:static lg:mt-[18px] lg:border-0 lg:px-0 lg:py-0 lg:shadow-none">
-          <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-none">
-            <div className="min-w-0">
-              <p className="truncate font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
-                {selectedPack.label}
-              </p>
-              <p className="font-glacial text-[18px] font-bold leading-6 text-[#4B4242]">
-                {selectedPack.priceLabel}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleOrder}
-              className="inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#A97C72] px-5 font-glacial text-[14px] font-bold text-white shadow-[0px_8px_10px_rgba(168,125,115,0.28)] hover:bg-[#966B62]"
-            >
-              Passer la commande
-              <span aria-hidden>→</span>
-            </button>
-          </div>
-        </div>
-
         {/* Accordéons + avis */}
         <div className="-mx-4 mt-8 bg-[#F7F2EC] px-4 pb-8 pt-2 lg:mx-0 lg:rounded-[16px]">
           <div>
@@ -458,6 +434,29 @@ function DigitalProductDetailPage() {
 
       <DigitalHomeFooter />
     </div>
+
+    {/* Hors overflow-x-hidden : Safari iOS casse sinon le position:fixed */}
+    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#E8E0D8] bg-white px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_24px_rgba(75,66,66,0.1)]">
+      <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-6xl">
+        <div className="min-w-0">
+          <p className="truncate font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
+            {selectedPack.label}
+          </p>
+          <p className="font-glacial text-[18px] font-bold leading-6 text-[#4B4242]">
+            {selectedPack.priceLabel}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleOrder}
+          className="inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#A97C72] px-5 font-glacial text-[14px] font-bold text-white shadow-[0px_8px_10px_rgba(168,125,115,0.28)] hover:bg-[#966B62]"
+        >
+          Passer la commande
+          <span aria-hidden>→</span>
+        </button>
+      </div>
+    </div>
+    </>
   );
 }
 

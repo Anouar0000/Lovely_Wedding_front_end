@@ -108,11 +108,13 @@ function PhysicalBestsellersSection() {
                         className="h-full w-full object-cover transition-transform duration-300 lg:group-hover:scale-105"
                       />
                     </div>
-                    <h3 className="mt-4 lw-h3 leading-6 lg:mt-5 lg:text-[24px]">{p.name}</h3>
-                    <p className="mt-1 lw-caption lg:mt-2 lg:text-[14px] lg:leading-5">
+                    <h3 className="mt-[9px] font-lora text-[18px] font-normal leading-[34px] tracking-[-1px] text-[#4B4242]">
+                      {p.name}
+                    </h3>
+                    <p className="mt-[2px] font-glacial text-[14px] font-normal leading-[18px] tracking-normal text-[#78716c]">
                       Impression soignée · papier premium
                     </p>
-                    <p className="mt-2 font-glacial text-[14px] font-bold leading-5 text-lw-text lg:mt-3 lg:text-[15px]">
+                    <p className="mt-[2px] font-glacial text-[14px] font-bold leading-[24px] text-lw-text">
                       {p.price}
                     </p>
                   </button>
@@ -126,10 +128,10 @@ function PhysicalBestsellersSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-physique")}
-            className="inline-flex items-center gap-1.5 font-glacial text-[14px] font-bold leading-none text-[#A97C72] underline-offset-4 hover:underline"
+            className="inline-flex h-12 items-center gap-1.5 font-glacial text-[14px] font-bold leading-[24px] text-[#A97C72] underline-offset-4 hover:underline"
           >
             Découvrir toute la collection
-            <span aria-hidden className="text-[14px] font-bold leading-none">
+            <span aria-hidden className="text-[14px] font-bold leading-[24px]">
               →
             </span>
           </button>

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import HeroSection from "../components/home/HeroSection";
 import BestsellersSection from "../components/home/BestsellersSection";
@@ -15,6 +16,17 @@ import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 
 /** Main Page Digital — mobile + desktop responsive (no phone shell) */
 function HomePage() {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return undefined;
+    const id = hash.replace(/^#/, "");
+    const t = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [hash]);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F7F2EC] font-glacial text-lw-text">
       {/* Premier écran Figma : header + hero = une seule composition plein viewport */}

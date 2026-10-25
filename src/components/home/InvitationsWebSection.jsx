@@ -13,10 +13,10 @@ const cards = [
     to: "/invitations-digital/sidi-bousaid",
   },
   {
-    id: "celestial",
-    title: "Celestial",
+    id: "sakura-koi",
+    title: "Sakura Koi",
     image: a.heroCoverSakura,
-    to: "/invitations-digital/celestial",
+    to: "/invitations-digital/sakura-koi",
   },
   {
     id: "bridgerton",
@@ -120,10 +120,10 @@ function InvitationsWebSection() {
           <button
             type="button"
             onClick={() => navigate("/invitations-digital")}
-            className="inline-flex items-center gap-1.5 font-glacial text-[14px] font-bold leading-none text-[#A97C72] underline-offset-4 hover:underline"
+            className="inline-flex h-12 items-center gap-1.5 font-glacial text-[14px] font-bold leading-[24px] text-[#A97C72] underline-offset-4 hover:underline"
           >
             Découvrir toute la collection
-            <span aria-hidden className="text-[14px] font-bold leading-none">
+            <span aria-hidden className="text-[14px] font-bold leading-[24px]">
               →
             </span>
           </button>
