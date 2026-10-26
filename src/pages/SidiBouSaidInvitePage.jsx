@@ -201,7 +201,7 @@ const Section = ({ startY, height, bg = "transparent", layerNames = [], children
       ...absoluteBox({ left, top, width: w }),
       color,
       fontFamily: family,
-      fontSize: `clamp(${fontSize * 0.78}px, ${(fontSize / pageWidth) * 100}vw, ${fontSize}px)`,
+      fontSize: `clamp(${fontSize * 0.78}px, calc(${(fontSize / pageWidth) * 100} * var(--vwu, 1vw)), ${fontSize}px)`,
       fontStyle: style,
       fontWeight: weight,
       lineHeight: lineHeight ? `${lineHeight / fontSize}` : 1.2,
@@ -499,6 +499,12 @@ function SidiBouSaidInvitePage({
   return (
     <main
       className={`${previewMode || demoInMockup ? "bg-[#dcebf0]" : "min-h-screen bg-[#dcebf0]"} font-urbanist text-[#0093d8]`}
+      style={
+        previewMode || demoInMockup
+          ? // Dans le mockup / l'éditeur, 1 "vw" = 1 % de la largeur design (pas de la fenêtre du visiteur)
+            { "--vwu": `${pageWidth / 100}px` }
+          : undefined
+      }
     >
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col" style={{ maxWidth: pageWidth }}>
         
@@ -528,8 +534,8 @@ function SidiBouSaidInvitePage({
 
                 {/* Initials Oval */}
                 <div style={{ ...absoluteBox({ left: 194, top: 75, width: 42, height: 64 }), border: "1.5px solid #fff", borderRadius: "100px", zIndex: 3 }}>
-                  <div style={{ position: "absolute", top: "15%", left: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                  <div style={{ position: "absolute", bottom: "15%", right: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+                  <div style={{ position: "absolute", top: "15%", left: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, calc(${(25 / pageWidth) * 100} * var(--vwu, 1vw)), 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                  <div style={{ position: "absolute", bottom: "15%", right: "20%", color: "#fff", fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, calc(${(25 / pageWidth) * 100} * var(--vwu, 1vw)), 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
                 </div>
 
                 {/* Names */}
@@ -558,7 +564,7 @@ function SidiBouSaidInvitePage({
                     cursor: "pointer" 
                   }}
                 >
-                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, ${(15 / pageWidth) * 100}vw, 15px)`, color: blue }}>Scroll down</span>
+                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(12px, calc(${(15 / pageWidth) * 100} * var(--vwu, 1vw)), 15px)`, color: blue }}>Scroll down</span>
                 </button>
 
                 {/* Reveal Titles */}
@@ -682,7 +688,7 @@ function SidiBouSaidInvitePage({
                   ...absoluteBox({ left: 8, top: 804 + 195, width: 241 }), 
                   transform: "rotate(-10deg)", 
                   fontFamily: "Cormorant Infant, serif", 
-                  fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                  fontSize: `clamp(11px, calc(${(12 / pageWidth) * 100} * var(--vwu, 1vw)), 12px)`, 
                   color: "#49606b", 
                   textAlign: "center",
                   letterSpacing: "1.2px",
@@ -732,8 +738,8 @@ function SidiBouSaidInvitePage({
                     justifyContent: "center",
                   }}
                 >
-                  <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(16 / pageWidth) * 100}vw, 16px)`, color: blue, lineHeight: "1.2", fontWeight: "600" }}>{String(box.value).padStart(2, '0')}</div>
-                  <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(9px, ${(10 / pageWidth) * 100}vw, 10px)`, color: blue, letterSpacing: "0.05em", marginTop: "2px" }}>{box.label}</div>
+                  <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, calc(${(16 / pageWidth) * 100} * var(--vwu, 1vw)), 16px)`, color: blue, lineHeight: "1.2", fontWeight: "600" }}>{String(box.value).padStart(2, '0')}</div>
+                  <div style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(9px, calc(${(10 / pageWidth) * 100} * var(--vwu, 1vw)), 10px)`, color: blue, letterSpacing: "0.05em", marginTop: "2px" }}>{box.label}</div>
                 </div>
               ))}
             </>
@@ -802,25 +808,25 @@ function SidiBouSaidInvitePage({
                     backgroundColor: "transparent" 
                   }}
                 >
-                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, ${(32 / pageWidth) * 100}vw, 32px)`, color: blue, lineHeight: "1" }}>{event.title}</span>
-                  <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, ${(24 / pageWidth) * 100}vw, 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>{event.titleAr}</span>
+                  <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(24px, calc(${(32 / pageWidth) * 100} * var(--vwu, 1vw)), 32px)`, color: blue, lineHeight: "1" }}>{event.title}</span>
+                  <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(20px, calc(${(24 / pageWidth) * 100} * var(--vwu, 1vw)), 24px)`, color: blue, lineHeight: "1.2", marginTop: "5px" }}>{event.titleAr}</span>
                   
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "80%", marginTop: "30px" }}>
                     <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{formatEventDate(event.date || invite.eventDate).weekday}</span>
+                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, calc(${(20 / pageWidth) * 100} * var(--vwu, 1vw)), 20px)`, color: "rgb(73, 96, 107)" }}>{formatEventDate(event.date || invite.eventDate).weekday}</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 15px" }}>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, ${(36 / pageWidth) * 100}vw, 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{formatEventDate(event.date || invite.eventDate).day}</span>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{formatEventDate(event.date || invite.eventDate).year}</span>
+                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(30px, calc(${(36 / pageWidth) * 100} * var(--vwu, 1vw)), 36px)`, color: "rgb(73, 96, 107)", lineHeight: "1" }}>{formatEventDate(event.date || invite.eventDate).day}</span>
+                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(14px, calc(${(18 / pageWidth) * 100} * var(--vwu, 1vw)), 18px)`, color: "rgb(73, 96, 107)", lineHeight: "1", marginTop: "2px" }}>{formatEventDate(event.date || invite.eventDate).year}</span>
                     </div>
                     <div style={{ borderTop: "1px solid #777", borderBottom: "1px solid #777", padding: "8px 0", flex: 1, textAlign: "center" }}>
-                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, ${(20 / pageWidth) * 100}vw, 20px)`, color: "rgb(73, 96, 107)" }}>{formatEventDate(event.date || invite.eventDate).month}</span>
+                      <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(16px, calc(${(20 / pageWidth) * 100} * var(--vwu, 1vw)), 20px)`, color: "rgb(73, 96, 107)" }}>{formatEventDate(event.date || invite.eventDate).month}</span>
                     </div>
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "40px" }}>
-                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(13 / pageWidth) * 100}vw, 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${event.venue || ""}\n${event.city || ""}`}</span>
-                    <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, ${(18 / pageWidth) * 100}vw, 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(event.venue, event.city)}</span>
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, calc(${(13 / pageWidth) * 100} * var(--vwu, 1vw)), 13px)`, color: blue, letterSpacing: "0.15em", textTransform: "uppercase", textAlign: "center", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{`${event.venue || ""}\n${event.city || ""}`}</span>
+                    <span style={{ fontFamily: "Gulzar, serif", fontSize: `clamp(14px, calc(${(18 / pageWidth) * 100} * var(--vwu, 1vw)), 18px)`, color: blue, textAlign: "center", marginTop: "10px", lineHeight: "1.4" }}>{getArabicVenueAndCity(event.venue, event.city)}</span>
                   </div>
 
                   <button
@@ -834,7 +840,7 @@ function SidiBouSaidInvitePage({
                     }}
                     style={{ border: "1px solid #e0e0e0", borderRadius: "10px", padding: "10px 20px", marginTop: "35px", backgroundColor: "#fff", cursor: "pointer" }}
                   >
-                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, ${(12 / pageWidth) * 100}vw, 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
+                    <span style={{ fontFamily: "Cormorant Infant, serif", fontSize: `clamp(10px, calc(${(12 / pageWidth) * 100} * var(--vwu, 1vw)), 12px)`, color: "rgb(73, 96, 107)", letterSpacing: "0.1em" }}>Open in maps</span>
                   </button>
                 </div>
               </section>
@@ -901,7 +907,7 @@ function SidiBouSaidInvitePage({
                         ...absoluteBox({ left: 131, top: top, width: 54, height: 18 }), 
                         fontFamily: "Cormorant Infant, serif", 
                         fontWeight: "600", 
-                        fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                        fontSize: `clamp(11px, calc(${(12 / pageWidth) * 100} * var(--vwu, 1vw)), 12px)`, 
                         color: "#2e88e2", 
                         letterSpacing: "1.2px", 
                         textAlign: "left",
@@ -934,7 +940,7 @@ function SidiBouSaidInvitePage({
                       style={{ 
                         ...absoluteBox({ left: 217, top: top + (isFinal ? 20 : 25), width: 100, height: 18 }), 
                         fontFamily: "Cormorant Infant, serif", 
-                        fontSize: `clamp(11px, ${(12 / pageWidth) * 100}vw, 12px)`, 
+                        fontSize: `clamp(11px, calc(${(12 / pageWidth) * 100} * var(--vwu, 1vw)), 12px)`, 
                         color: "#49606b", 
                         letterSpacing: "1.2px", 
                         textAlign: "center",
@@ -1029,8 +1035,8 @@ function SidiBouSaidInvitePage({
           {({ absoluteBox, textLayer }) => (
             <>
               <div style={{ ...absoluteBox({ left: 194, top: 4250, width: 42, height: 64 }), border: `1.5px solid ${blue}`, borderRadius: "100px", zIndex: 3 }}>
-                <div style={{ position: "absolute", top: "15%", left: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
-                <div style={{ position: "absolute", bottom: "15%", right: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, ${(25 / pageWidth) * 100}vw, 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
+                <div style={{ position: "absolute", top: "15%", left: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, calc(${(25 / pageWidth) * 100} * var(--vwu, 1vw)), 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.firstName.charAt(0).toUpperCase()}</div>
+                <div style={{ position: "absolute", bottom: "15%", right: "20%", color: blue, fontFamily: "Cormorant Infant, serif", fontSize: `clamp(20px, calc(${(25 / pageWidth) * 100} * var(--vwu, 1vw)), 25px)`, lineHeight: "1", fontWeight: "600" }}>{names.secondName.charAt(0).toUpperCase()}</div>
               </div>
               {textLayer({ left: 85, top: 4336, width: 260, fontSize: 26, family: "Gulzar, serif", color: blue, align: "center", children: "ان شاء الله ليلتكم زينة" })}
             </>

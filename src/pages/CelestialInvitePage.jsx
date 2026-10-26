@@ -64,10 +64,14 @@ const figmaBox = ({ x, y, width, height, zIndex = 2, extra = {} }) => ({
 export default function CelestialInvitePage({
   invite,
   editable = false,
+  /** Aperçu éditeur / démo mockup : le parent gère déjà l'échelle (zoom) → pas de scale viewport */
+  previewMode = false,
+  demoInMockup = false,
   activeSection = null,
   onSelectElement = null,
   selectedElementId = null,
 }) {
+  const fixedScale = editable || previewMode || demoInMockup;
   const currentInvite = invite || templateConfig.sample;
   const overrides = currentInvite.styleOverrides || {};
 
@@ -86,8 +90,11 @@ export default function CelestialInvitePage({
   useEffect(() => {
     const handleResize = () => {
       if (typeof window !== "undefined") {
-        const availableWidth = window.innerWidth;
-        if (!editable && availableWidth < CANVAS_WIDTH) {
+        const availableWidth = Math.min(
+          window.innerWidth,
+          document.documentElement.clientWidth || window.innerWidth
+        );
+        if (!fixedScale && availableWidth > 0 && availableWidth < CANVAS_WIDTH) {
           setScale(availableWidth / CANVAS_WIDTH);
         } else {
           setScale(1);
@@ -96,8 +103,12 @@ export default function CelestialInvitePage({
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [editable]);
+    window.addEventListener("orientationchange", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, [fixedScale]);
 
   // Style getter with user overrides
   const getStyle = (id, baseStyle) => {
@@ -197,7 +208,7 @@ export default function CelestialInvitePage({
       style={{
         position: "relative",
         width: "100%",
-        minHeight: "100vh",
+        minHeight: fixedScale ? undefined : "100vh",
         backgroundColor: editable ? "transparent" : "#0F172A",
         display: "flex",
         flexDirection: "column",
@@ -233,7 +244,7 @@ export default function CelestialInvitePage({
       </style>
 
       {/* Music Player if configured */}
-      {currentInvite.musicUrl && (
+      {!demoInMockup && currentInvite.musicUrl && (
         <AudioPlayer
           musicUrl={currentInvite.musicUrl}
           autoPlay={!editable}

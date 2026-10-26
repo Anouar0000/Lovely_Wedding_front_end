@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useHorizontalWheelScroll from "../../../hooks/useHorizontalWheelScroll";
 import { homePhysicalAssets as a } from "../homePhysicalAssets";
 
 /** Dragées — parity Save The Dates (scroll + barre Figma + prix) */
@@ -39,6 +40,8 @@ function PhysicalDrageesSection() {
       window.removeEventListener("resize", updateProgress);
     };
   }, [updateProgress]);
+
+  useHorizontalWheelScroll(scrollerRef);
 
   return (
     <section id="dragees" className="scroll-mt-24 bg-white px-0 pt-[60px] pb-[92px] lg:px-8 lg:pb-24 lg:pt-[60px]">

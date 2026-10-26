@@ -206,7 +206,7 @@ function DolceVitaInvitePage({ invite = defaultInvite, previewMode = false }) {
 
   return (
     <main
-      className="min-h-screen py-6"
+      className={previewMode ? "py-6" : "min-h-screen py-6"}
       style={{ backgroundColor: colors.pageBackground, color: colors.primaryText, fontFamily: fonts.body }}
     >
       <div

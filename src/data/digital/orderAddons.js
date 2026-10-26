@@ -31,3 +31,30 @@ export function resolveDigitalExtra(extraId) {
 export function resolveDigitalSection(sectionId) {
   return DIGITAL_SECTIONS.find((s) => s.id === sectionId) || null;
 }
+
+/** Normalise state (array, id unique legacy, ou vide) → ids uniques connus */
+export function normalizeAddonIds(raw, catalog) {
+  const list = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  const known = new Set(catalog.map((item) => item.id));
+  const out = [];
+  list.forEach((id) => {
+    if (known.has(id) && !out.includes(id)) out.push(id);
+  });
+  return out;
+}
+
+export function resolveDigitalExtras(ids) {
+  return normalizeAddonIds(ids, DIGITAL_EXTRAS)
+    .map((id) => resolveDigitalExtra(id))
+    .filter(Boolean);
+}
+
+export function resolveDigitalSections(ids) {
+  return normalizeAddonIds(ids, DIGITAL_SECTIONS)
+    .map((id) => resolveDigitalSection(id))
+    .filter(Boolean);
+}
+
+export function toggleAddonId(ids, id) {
+  return ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id];
+}

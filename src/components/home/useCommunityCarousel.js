@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Carrousel Communauté — snap + auto-scroll animé, pause au touch / flèches.
+ * Pas de scroll molette (laisse la page défiler verticalement).
  */
-export function useCommunityCarousel(slides, { intervalMs = 3800, resumeMs = 7000 } = {}) {
+export function useCommunityCarousel(slides, { intervalMs = 3800, resumeMs = 20000 } = {}) {
   const scrollerRef = useRef(null);
   const indexRef = useRef(0);
   const pausedUntilRef = useRef(0);

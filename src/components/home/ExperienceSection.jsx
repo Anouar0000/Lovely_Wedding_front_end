@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import useHorizontalWheelScroll from "../../hooks/useHorizontalWheelScroll";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
 const CARDS = [
@@ -39,6 +40,8 @@ function ExperienceSection() {
       window.removeEventListener("resize", updateProgress);
     };
   }, [updateProgress]);
+
+  useHorizontalWheelScroll(scrollerRef);
 
   return (
     <section

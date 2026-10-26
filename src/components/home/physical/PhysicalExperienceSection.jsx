@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import useHorizontalWheelScroll from "../../../hooks/useHorizontalWheelScroll";
 import { homePhysicalAssets as a } from "../homePhysicalAssets";
 
 /** Cartes expérience — texte en overlay (assets sans copy Figma intégrée) */
@@ -56,6 +57,8 @@ function PhysicalExperienceSection() {
       window.removeEventListener("resize", updateProgress);
     };
   }, [updateProgress]);
+
+  useHorizontalWheelScroll(scrollerRef);
 
   return (
     <section

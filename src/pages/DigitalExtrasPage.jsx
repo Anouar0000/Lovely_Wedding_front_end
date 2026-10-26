@@ -5,13 +5,16 @@ import { DIGITAL_PRODUCTS } from "./DigitalProductDetailPage";
 import {
   DIGITAL_EXTRAS,
   DIGITAL_SECTIONS,
-  resolveDigitalExtra,
+  normalizeAddonIds,
+  resolveDigitalExtras,
   resolveDigitalPack,
-  resolveDigitalSection,
+  resolveDigitalSections,
+  toggleAddonId,
 } from "../data/digital/orderAddons";
 
 /**
  * Extras — Figma mobile + shell projet (header / max-w-6xl) comme les autres pages
+ * Multi-sélection : cliquer pour ajouter / retirer (on peut tout sélectionner)
  */
 function DigitalExtrasPage() {
   const { slug } = useParams();
@@ -20,21 +23,39 @@ function DigitalExtrasPage() {
   const product = DIGITAL_PRODUCTS[slug] || DIGITAL_PRODUCTS["sidi-bousaid"];
 
   const pack = resolveDigitalPack(location.state?.pack);
-  const [extraId, setExtraId] = useState(location.state?.extraId || DIGITAL_EXTRAS[0].id);
-  const [sectionId, setSectionId] = useState(
-    location.state?.sectionId || DIGITAL_SECTIONS[0].id
+  const [extraIds, setExtraIds] = useState(() => {
+    const fromState = normalizeAddonIds(
+      location.state?.extraIds ?? location.state?.extraId,
+      DIGITAL_EXTRAS
+    );
+    return fromState.length ? fromState : [DIGITAL_EXTRAS[0].id];
+  });
+  const [sectionIds, setSectionIds] = useState(() => {
+    const fromState = normalizeAddonIds(
+      location.state?.sectionIds ?? location.state?.sectionId,
+      DIGITAL_SECTIONS
+    );
+    return fromState.length ? fromState : [DIGITAL_SECTIONS[0].id];
+  });
+
+  const selectedExtras = useMemo(() => resolveDigitalExtras(extraIds), [extraIds]);
+  const selectedSections = useMemo(
+    () => resolveDigitalSections(sectionIds),
+    [sectionIds]
   );
 
-  const selectedExtra = useMemo(() => resolveDigitalExtra(extraId), [extraId]);
-  const selectedSection = useMemo(() => resolveDigitalSection(sectionId), [sectionId]);
-
-  const total =
-    pack.price + (selectedExtra?.price || 0) + (selectedSection?.price || 0);
+  const extrasTotal = selectedExtras.reduce((sum, e) => sum + e.price, 0);
+  const sectionsTotal = selectedSections.reduce((sum, s) => sum + s.price, 0);
+  const total = pack.price + extrasTotal + sectionsTotal;
 
   const summaryParts = [
     pack.label,
-    selectedExtra ? "1 Extra" : null,
-    selectedSection ? "1 Section" : null,
+    selectedExtras.length
+      ? `${selectedExtras.length} Extra${selectedExtras.length > 1 ? "s" : ""}`
+      : null,
+    selectedSections.length
+      ? `${selectedSections.length} Section${selectedSections.length > 1 ? "s" : ""}`
+      : null,
   ].filter(Boolean);
 
   const closeToProduct = () => {
@@ -45,8 +66,8 @@ function DigitalExtrasPage() {
     navigate(`/invitations-digital/${product.slug}/checkout`, {
       state: {
         pack: pack.id,
-        extraId,
-        sectionId,
+        extraIds,
+        sectionIds,
         total,
       },
     });
@@ -73,7 +94,7 @@ function DigitalExtrasPage() {
         <div className="bg-[#F7F2EC]">
           <ul className="lg:grid lg:grid-cols-2">
             {DIGITAL_EXTRAS.map((item, index) => {
-              const active = item.id === extraId;
+              const active = extraIds.includes(item.id);
               return (
                 <li
                   key={item.id}
@@ -81,7 +102,8 @@ function DigitalExtrasPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => setExtraId(item.id)}
+                    aria-pressed={active}
+                    onClick={() => setExtraIds((ids) => toggleAddonId(ids, item.id))}
                     className={`flex w-full items-center gap-3 px-4 text-left lg:min-h-[96px] lg:px-8 lg:py-5 ${
                       index === 0 ? "h-[108px] lg:h-auto" : "h-[100px] lg:h-auto"
                     }`}
@@ -119,12 +141,13 @@ function DigitalExtrasPage() {
 
           <div className="-mx-4 mt-3 flex gap-6 overflow-x-auto hide-scrollbar px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-visible lg:px-0 xl:grid-cols-4">
             {DIGITAL_SECTIONS.map((item) => {
-              const active = item.id === sectionId;
+              const active = sectionIds.includes(item.id);
               return (
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => setSectionId(item.id)}
+                  aria-pressed={active}
+                  onClick={() => setSectionIds((ids) => toggleAddonId(ids, item.id))}
                   className="relative h-[96px] w-[311px] shrink-0 overflow-hidden rounded-[5px] border border-[#78716C] bg-white text-left lg:h-[100px] lg:w-full"
                 >
                   {active ? (

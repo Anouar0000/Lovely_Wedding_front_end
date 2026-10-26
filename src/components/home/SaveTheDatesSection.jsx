@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useHorizontalWheelScroll from "../../hooks/useHorizontalWheelScroll";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
 /** Save The Dates — mobile scroll · desktop grille 2 cols */
@@ -50,6 +51,8 @@ function SaveTheDatesSection() {
       window.removeEventListener("resize", updateProgress);
     };
   }, [updateProgress]);
+
+  useHorizontalWheelScroll(scrollerRef);
 
   return (
     <section id="save-the-dates" className="scroll-mt-24 bg-white px-0 pt-10 pb-[92px] lg:px-8 lg:py-24">

@@ -200,7 +200,7 @@ function ClubCapriInvitePage({
   }, [previewMode]);
 
   useLayoutEffect(() => {
-    if (previewMode) {
+    if (previewMode || demoInMockup) {
       setScale(1);
       return undefined;
     }
@@ -215,7 +215,7 @@ function ClubCapriInvitePage({
       window.removeEventListener("resize", updateScale);
       window.removeEventListener("orientationchange", updateScale);
     };
-  }, [previewMode]);
+  }, [previewMode, demoInMockup]);
 
   const activeSectionsKey = Array.isArray(invite?.activeSections)
     ? invite.activeSections.join("|")

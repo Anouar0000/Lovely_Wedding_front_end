@@ -70,10 +70,14 @@ const figmaBox = ({ x, y, width, height, zIndex = 2, extra = {} }) => ({
 export default function BridgertonInvitePage({
   invite,
   editable = false,
+  /** Aperçu éditeur / démo mockup : le parent gère déjà l'échelle (zoom) → pas de scale viewport */
+  previewMode = false,
+  demoInMockup = false,
   activeSection = null,
   onSelectElement = null,
   selectedElementId = null,
 }) {
+  const fixedScale = editable || previewMode || demoInMockup;
   const currentInvite = invite || templateConfig.sample;
   const sectionInvite = {
     ...currentInvite,
@@ -109,8 +113,11 @@ export default function BridgertonInvitePage({
   useEffect(() => {
     const handleResize = () => {
       if (typeof window !== "undefined") {
-        const availableWidth = window.innerWidth;
-        if (!editable && availableWidth < CANVAS_WIDTH) {
+        const availableWidth = Math.min(
+          window.innerWidth,
+          document.documentElement.clientWidth || window.innerWidth
+        );
+        if (!fixedScale && availableWidth > 0 && availableWidth < CANVAS_WIDTH) {
           setScale(availableWidth / CANVAS_WIDTH);
         } else {
           setScale(1);
@@ -119,8 +126,12 @@ export default function BridgertonInvitePage({
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [editable]);
+    window.addEventListener("orientationchange", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, [fixedScale]);
 
   // Style getter with user overrides
   const getStyle = (id, baseStyle) => {
@@ -264,7 +275,7 @@ export default function BridgertonInvitePage({
       style={{
         position: "relative",
         width: "100%",
-        minHeight: "100vh",
+        minHeight: fixedScale ? undefined : "100vh",
         backgroundColor: "#F8F6F2",
         display: "flex",
         flexDirection: "column",
@@ -444,11 +455,13 @@ export default function BridgertonInvitePage({
         }
       `}</style>
 
-      {/* Audio Player */}
-      <AudioPlayer
-        src={getInviteMedia(currentInvite, "musicUrl", "")}
-        active={Boolean(getInviteMedia(currentInvite, "musicUrl", ""))}
-      />
+      {/* Audio Player — jamais dans la démo mockup (bouton fixed hors téléphone) */}
+      {!demoInMockup ? (
+        <AudioPlayer
+          src={getInviteMedia(currentInvite, "musicUrl", "")}
+          active={Boolean(getInviteMedia(currentInvite, "musicUrl", ""))}
+        />
+      ) : null}
 
       {/* Scaled Canvas Container */}
       <div

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiStar } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
@@ -144,6 +144,9 @@ function DigitalProductDetailPage() {
   const [openAcc, setOpenAcc] = useState(-1);
   const [heroSlide, setHeroSlide] = useState(0);
   const [demoOpen, setDemoOpen] = useState(false);
+  const heroRef = useRef(null);
+  const slideLockRef = useRef(0);
+  const dragRef = useRef({ active: false, startX: 0, moved: false });
 
   useEffect(() => {
     if (slug === "celestial") {
@@ -184,6 +187,22 @@ function DigitalProductDetailPage() {
   }, [product.heroGallery, phoneSrc]);
 
   const activeSlide = heroSlides[heroSlide] || heroSlides[0];
+  const slideCount = heroSlides.length;
+
+  const goSlide = useCallback(
+    (dir) => {
+      const now = Date.now();
+      if (now - slideLockRef.current < 350) return;
+      slideLockRef.current = now;
+      setHeroSlide((i) => {
+        const next = i + dir;
+        if (next < 0) return slideCount - 1;
+        if (next >= slideCount) return 0;
+        return next;
+      });
+    },
+    [slideCount]
+  );
 
   useEffect(() => {
     setHeroSlide(0);
@@ -193,6 +212,50 @@ function DigitalProductDetailPage() {
   useEffect(() => {
     setDemoOpen(false);
   }, [heroSlide]);
+
+  /** Molette + trackpad : changer de slide (sauf quand la démo scrolle dans le mockup) */
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return undefined;
+
+    const onWheel = (e) => {
+      if (demoOpen) {
+        const demoScroller = el.querySelector("[data-demo-scroller]");
+        if (demoScroller && demoScroller.contains(e.target)) return;
+      }
+      const dominant =
+        Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(dominant) < 8) return;
+      e.preventDefault();
+      goSlide(dominant > 0 ? 1 : -1);
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [demoOpen, goSlide]);
+
+  const onHeroPointerDown = (e) => {
+    if (e.button !== 0) return;
+    if (demoOpen && e.target.closest("[data-demo-scroller]")) return;
+    dragRef.current = { active: true, startX: e.clientX, moved: false };
+  };
+
+  const onHeroPointerMove = (e) => {
+    if (!dragRef.current.active) return;
+    if (Math.abs(e.clientX - dragRef.current.startX) > 12) {
+      dragRef.current.moved = true;
+    }
+  };
+
+  const onHeroPointerUp = (e) => {
+    if (!dragRef.current.active) return;
+    const { startX, moved } = dragRef.current;
+    dragRef.current.active = false;
+    if (!moved) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) < 40) return;
+    goSlide(dx < 0 ? 1 : -1);
+  };
 
   const handleOrder = () => {
     navigate(`/invitations-digital/${product.slug}/extras`, {
@@ -219,7 +282,15 @@ function DigitalProductDetailPage() {
 
       <div className="mx-auto w-full max-w-[428px] px-4 pb-0 pt-5 md:max-w-3xl lg:grid lg:max-w-6xl lg:grid-cols-2 lg:gap-12 lg:px-8 lg:pt-10">
         {/* Hero 396×538 — fleurs coins (haut-gauche / bas-droite), bg déjà dans la vidéo */}
-        <div className="relative mx-auto h-[538px] w-[396px] max-w-full overflow-hidden rounded-[24px] bg-[#F7F6F1] lg:mx-0">
+        <div
+          ref={heroRef}
+          className="relative mx-auto h-[538px] w-[396px] max-w-full cursor-grab overflow-hidden rounded-[24px] bg-[#F7F6F1] active:cursor-grabbing lg:mx-0"
+          onPointerDown={onHeroPointerDown}
+          onPointerMove={onHeroPointerMove}
+          onPointerUp={onHeroPointerUp}
+          onPointerCancel={onHeroPointerUp}
+          onPointerLeave={onHeroPointerUp}
+        >
           {/* Coin haut-gauche — fond crème = card (évite la bande noire native <video>) */}
           <video
             className="pointer-events-none absolute z-[1] object-cover"
@@ -271,6 +342,7 @@ function DigitalProductDetailPage() {
             <div className="relative h-full w-full overflow-hidden rounded-[28px] border-[2.5px] border-[#131313] bg-[#131313] shadow-[0_18px_40px_-16px_rgba(75,66,66,0.45)]">
               {demoOpen && DemoComponent ? (
                 <div
+                  data-demo-scroller
                   className="hide-scrollbar h-full w-full overflow-x-hidden overflow-y-auto bg-black"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
@@ -486,12 +558,13 @@ function DigitalProductDetailPage() {
           <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-[#4B4242]">
             Autres recommandations
           </h2>
-          {/* Même grille / card que /invitations-digital */}
+          {/* Tuiles Figma 189×224 */}
           <div className="mt-[53px] grid grid-cols-2 justify-items-center gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
             {recommendations.map((p) => (
               <DigitalCatalogCard
                 key={p.id}
                 product={p}
+                fixedTile
                 liked={isFavorite(p.id)}
                 onToggleFavorite={(product) =>
                   toggleFavorite({

@@ -7,9 +7,12 @@ import { createFlouciPaymentSession, isFlouciLiveMode } from "../services/paymen
 import { getDigitalPricing, defaultDigitalPricing } from "../services/pricing";
 import { DIGITAL_PRODUCTS } from "./DigitalProductDetailPage";
 import {
-  resolveDigitalExtra,
+  DIGITAL_EXTRAS,
+  DIGITAL_SECTIONS,
+  normalizeAddonIds,
+  resolveDigitalExtras,
   resolveDigitalPack,
-  resolveDigitalSection,
+  resolveDigitalSections,
 } from "../data/digital/orderAddons";
 
 const fieldClass =
@@ -26,8 +29,27 @@ function DigitalRecapPage() {
 
   const product = DIGITAL_PRODUCTS[slug] || DIGITAL_PRODUCTS["sidi-bousaid"];
   const packBase = resolveDigitalPack(location.state?.pack);
-  const extraBase = resolveDigitalExtra(location.state?.extraId);
-  const sectionBase = resolveDigitalSection(location.state?.sectionId);
+  const extraIds = useMemo(
+    () =>
+      normalizeAddonIds(
+        location.state?.extraIds ?? location.state?.extraId,
+        DIGITAL_EXTRAS
+      ),
+    [location.state]
+  );
+  const sectionIds = useMemo(
+    () =>
+      normalizeAddonIds(
+        location.state?.sectionIds ?? location.state?.sectionId,
+        DIGITAL_SECTIONS
+      ),
+    [location.state]
+  );
+  const extrasBase = useMemo(() => resolveDigitalExtras(extraIds), [extraIds]);
+  const sectionsBase = useMemo(
+    () => resolveDigitalSections(sectionIds),
+    [sectionIds]
+  );
 
   const [pricing, setPricing] = useState(defaultDigitalPricing());
   const [busy, setBusy] = useState(false);
@@ -61,44 +83,53 @@ function DigitalRecapPage() {
     };
   }, [packBase, pricing]);
 
-  const extra = useMemo(() => {
-    if (!extraBase) return null;
-    const fromFs = pricing.extras?.[extraBase.id];
-    return {
-      ...extraBase,
-      price: Number(fromFs?.price) || extraBase.price,
-      label: fromFs?.label || extraBase.label,
-    };
-  }, [extraBase, pricing]);
+  const extras = useMemo(
+    () =>
+      extrasBase.map((item) => {
+        const fromFs = pricing.extras?.[item.id];
+        return {
+          ...item,
+          price: Number(fromFs?.price) || item.price,
+          label: fromFs?.label || item.label,
+        };
+      }),
+    [extrasBase, pricing]
+  );
 
-  const section = useMemo(() => {
-    if (!sectionBase) return null;
-    const fromFs = pricing.sections?.[sectionBase.id];
-    return {
-      ...sectionBase,
-      price: Number(fromFs?.price) || sectionBase.price,
-      label: fromFs?.label || sectionBase.label,
-    };
-  }, [sectionBase, pricing]);
+  const sections = useMemo(
+    () =>
+      sectionsBase.map((item) => {
+        const fromFs = pricing.sections?.[item.id];
+        return {
+          ...item,
+          price: Number(fromFs?.price) || item.price,
+          label: fromFs?.label || item.label,
+        };
+      }),
+    [sectionsBase, pricing]
+  );
 
   const total = useMemo(
-    () => pack.price + (extra?.price || 0) + (section?.price || 0),
-    [pack.price, extra, section]
+    () =>
+      pack.price +
+      extras.reduce((sum, e) => sum + e.price, 0) +
+      sections.reduce((sum, s) => sum + s.price, 0),
+    [pack.price, extras, sections]
   );
 
   const addonLines = useMemo(() => {
     const lines = [];
-    if (extra) lines.push(`+ ${extra.label}`);
-    if (section) lines.push(`+ ${section.label}`);
+    extras.forEach((e) => lines.push(`+ ${e.label}`));
+    sections.forEach((s) => lines.push(`+ ${s.label}`));
     return lines;
-  }, [extra, section]);
+  }, [extras, sections]);
 
   const closeToExtras = () => {
     navigate(`/invitations-digital/${product.slug}/extras`, {
       state: {
         pack: pack.id,
-        extraId: extra?.id,
-        sectionId: section?.id,
+        extraIds,
+        sectionIds,
       },
     });
   };
@@ -122,7 +153,7 @@ function DigitalRecapPage() {
           meta: { pack: pack.id },
         },
       ];
-      if (extra) {
+      extras.forEach((extra) => {
         items.push({
           productType: "digital",
           productId: product.slug,
@@ -131,8 +162,8 @@ function DigitalRecapPage() {
           unitPrice: extra.price,
           meta: { kind: "extra", extraId: extra.id },
         });
-      }
-      if (section) {
+      });
+      sections.forEach((section) => {
         items.push({
           productType: "digital",
           productId: product.slug,
@@ -141,7 +172,7 @@ function DigitalRecapPage() {
           unitPrice: section.price,
           meta: { kind: "section", sectionId: section.id },
         });
-      }
+      });
 
       const orderId = await createOrder({
         items,

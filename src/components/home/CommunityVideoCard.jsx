@@ -14,11 +14,16 @@ function CommunityVideoCard({
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [failed, setFailed] = useState(false);
   const userStartedRef = useRef(false);
+  const retryRef = useRef(0);
 
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return undefined;
+
+    let cancelled = false;
+    setFailed(false);
 
     const showFirstFrame = () => {
       try {
@@ -30,10 +35,8 @@ function CommunityVideoCard({
       }
     };
 
-    el.addEventListener("loadeddata", showFirstFrame);
-
-    if (active) {
-      // Autoplay requires mute unless the user already started this card.
+    const tryPlay = () => {
+      if (cancelled || !active) return;
       if (!userStartedRef.current) {
         el.muted = true;
         el.setAttribute("muted", "");
@@ -43,8 +46,52 @@ function CommunityVideoCard({
       const playPromise = el.play();
       if (playPromise?.then) {
         playPromise
-          .then(() => setPlaying(true))
-          .catch(() => setPlaying(false));
+          .then(() => {
+            if (!cancelled) setPlaying(true);
+          })
+          .catch(() => {
+            if (cancelled) return;
+            // iOS / autoplay : forcer muet puis réessayer une fois chargé
+            el.muted = true;
+            el.setAttribute("muted", "");
+            setMuted(true);
+            el.play()
+              .then(() => {
+                if (!cancelled) setPlaying(true);
+              })
+              .catch(() => {
+                if (!cancelled) setPlaying(false);
+              });
+          });
+      }
+    };
+
+    const onCanPlay = () => {
+      showFirstFrame();
+      if (active) tryPlay();
+    };
+
+    const onError = () => {
+      if (cancelled) return;
+      if (retryRef.current < 2) {
+        retryRef.current += 1;
+        el.load();
+        return;
+      }
+      setFailed(true);
+      setPlaying(false);
+    };
+
+    el.addEventListener("loadeddata", showFirstFrame);
+    el.addEventListener("canplay", onCanPlay);
+    el.addEventListener("error", onError);
+
+    if (active) {
+      retryRef.current = 0;
+      if (el.readyState < 2) {
+        el.load();
+      } else {
+        tryPlay();
       }
     } else {
       userStartedRef.current = false;
@@ -61,8 +108,10 @@ function CommunityVideoCard({
     }
 
     return () => {
+      cancelled = true;
       el.removeEventListener("loadeddata", showFirstFrame);
-      el.pause();
+      el.removeEventListener("canplay", onCanPlay);
+      el.removeEventListener("error", onError);
     };
   }, [active, slide.video]);
 
@@ -80,24 +129,40 @@ function CommunityVideoCard({
     const el = videoRef.current;
     if (!el) return;
 
+    if (failed) {
+      setFailed(false);
+      retryRef.current = 0;
+      el.load();
+    }
+
     if (el.paused) {
       onActivate?.(slide.id);
-      playWithSound(el)
-        .then(() => setPlaying(true))
-        .catch(() => {
-          // Fallback: some browsers still need a muted start first.
-          el.muted = true;
-          el.setAttribute("muted", "");
-          setMuted(true);
-          el.play()
-            .then(() => {
-              setPlaying(true);
-              el.muted = false;
-              el.removeAttribute("muted");
-              setMuted(false);
-            })
-            .catch(() => setPlaying(false));
-        });
+      const start = () => {
+        playWithSound(el)
+          .then(() => setPlaying(true))
+          .catch(() => {
+            el.muted = true;
+            el.setAttribute("muted", "");
+            setMuted(true);
+            el.play()
+              .then(() => {
+                setPlaying(true);
+                el.muted = false;
+                el.removeAttribute("muted");
+                setMuted(false);
+              })
+              .catch(() => setPlaying(false));
+          });
+      };
+      if (el.readyState >= 2) start();
+      else {
+        const once = () => {
+          el.removeEventListener("canplay", once);
+          start();
+        };
+        el.addEventListener("canplay", once);
+        el.load();
+      }
     } else {
       el.pause();
       setPlaying(false);
@@ -132,7 +197,13 @@ function CommunityVideoCard({
           toggle(e);
         }
       }}
-      aria-label={playing ? `Pause ${slide.handle}` : `Lire ${slide.handle}`}
+      aria-label={
+        failed
+          ? `Réessayer ${slide.handle}`
+          : playing
+            ? `Pause ${slide.handle}`
+            : `Lire ${slide.handle}`
+      }
       className={`relative overflow-hidden rounded-[5px] bg-[#1a1612] ${className}`}
       style={style}
     >
@@ -143,10 +214,21 @@ function CommunityVideoCard({
         playsInline
         muted
         loop
-        preload={active ? "auto" : "metadata"}
+        preload="auto"
+        controls={false}
         webkit-playsinline="true"
+        x-webkit-airplay="allow"
       />
-      {!playing ? (
+      {failed ? (
+        <span className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 px-4 text-center">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-lw-text shadow">
+            <FiPlay className="ml-0.5 text-lg" />
+          </span>
+          <span className="font-glacial text-[12px] text-white">
+            Appuyer pour réessayer
+          </span>
+        </span>
+      ) : !playing ? (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-lw-text shadow">
             <FiPlay className="ml-0.5 text-lg" />

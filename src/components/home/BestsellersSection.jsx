@@ -8,21 +8,25 @@ const CARDS = [
     src: a.bestsellerLeft,
     alt: "",
     featured: false,
-    desktopClass:
-      "lg:order-1 lg:h-[440px] lg:w-[240px] lg:opacity-100 lg:shadow-none",
+    mobileOrder: "order-2",
+    desktopOrder: "lg:order-1",
+    desktopImg: "lg:h-[440px] lg:w-[240px] lg:opacity-100 lg:shadow-none",
   },
   {
     src: a.bestsellerCenter,
     alt: "Best-seller Delicate Beige",
     featured: true,
-    desktopClass: "lg:order-2 lg:h-[480px] lg:w-[280px] lg:opacity-100 lg:shadow-md",
+    mobileOrder: "order-1",
+    desktopOrder: "lg:order-2",
+    desktopImg: "lg:h-[480px] lg:w-[280px] lg:opacity-100 lg:shadow-md",
   },
   {
     src: a.bestsellerRight,
     alt: "",
     featured: false,
-    desktopClass:
-      "lg:order-3 lg:h-[440px] lg:w-[240px] lg:opacity-100 lg:shadow-none",
+    mobileOrder: "order-3",
+    desktopOrder: "lg:order-3",
+    desktopImg: "lg:h-[440px] lg:w-[240px] lg:opacity-100 lg:shadow-none",
   },
 ];
 
@@ -36,7 +40,10 @@ function BestsellersSection() {
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail) return undefined;
+
+    let raf = 0;
+    let settleTimer = 0;
 
     const updateActive = () => {
       if (window.matchMedia("(min-width: 1024px)").matches) {
@@ -62,11 +69,20 @@ function BestsellersSection() {
       setActiveIndex((prev) => (prev === best ? prev : best));
     };
 
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(updateActive);
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(updateActive, 120);
+    };
+
     updateActive();
-    rail.addEventListener("scroll", updateActive, { passive: true });
+    rail.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", updateActive);
     return () => {
-      rail.removeEventListener("scroll", updateActive);
+      cancelAnimationFrame(raf);
+      window.clearTimeout(settleTimer);
+      rail.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", updateActive);
     };
   }, []);
@@ -88,21 +104,25 @@ function BestsellersSection() {
       >
         {CARDS.map((card, i) => {
           const isActive = activeIndex === i;
-          const mobileOrder = card.featured ? "order-1" : i === 0 ? "order-2" : "order-3";
           return (
-            <img
+            // Slot fixe 410×256 mobile : le snap ne saute plus quand l’image change de hauteur
+            <div
               key={i}
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              src={card.src}
-              alt={card.alt}
-              className={`lw-product-card pointer-events-auto shrink-0 snap-center rounded-[5px] object-cover transition-[height,opacity,box-shadow] duration-300 ease-out w-[256px] ${mobileOrder} ${
-                isActive ? "h-[410px] opacity-100 shadow-md" : "h-[320px] opacity-90"
-              } ${card.desktopClass}`}
-              draggable={false}
-              loading={i > 0 ? "lazy" : undefined}
-            />
+              className={`flex h-[410px] w-[256px] shrink-0 snap-center items-end ${card.mobileOrder} ${card.desktopOrder} lg:h-auto lg:w-auto`}
+            >
+              <img
+                src={card.src}
+                alt={card.alt}
+                className={`lw-product-card w-[256px] rounded-[5px] object-cover transition-[height,opacity,box-shadow] duration-300 ease-out ${
+                  isActive ? "h-[410px] opacity-100 shadow-md" : "h-[320px] opacity-90"
+                } ${card.desktopImg}`}
+                draggable={false}
+                loading={i > 0 ? "lazy" : undefined}
+              />
+            </div>
           );
         })}
       </div>

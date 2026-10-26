@@ -224,7 +224,7 @@ function SakuraKoiInvitePage({
 
   // Fit Figma 430px canvas to phone width (no horizontal overflow)
   useLayoutEffect(() => {
-    if (previewMode) {
+    if (previewMode || demoInMockup) {
       setScale(1);
       return undefined;
     }
@@ -239,7 +239,7 @@ function SakuraKoiInvitePage({
       window.removeEventListener("resize", updateScale);
       window.removeEventListener("orientationchange", updateScale);
     };
-  }, [previewMode]);
+  }, [previewMode, demoInMockup]);
 
   // Lock scroll on entrance; reset to top when opening
   useEffect(() => {
