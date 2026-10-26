@@ -70,7 +70,7 @@ function ReviewsSection() {
         </p>
 
         {/* Score card */}
-        <div className="mt-8 rounded-3xl border-[0.5px] border-lw-accent bg-white px-5 py-5 lg:mt-10">
+        <div className="mt-8 rounded-3xl border border-lw-accent bg-white px-5 py-5 lg:mt-10">
           <div className="flex flex-wrap items-center gap-3">
             <p className="font-lora text-[40px] font-medium leading-9 tracking-[-0.4px] text-lw-text">
               4.7
@@ -90,7 +90,7 @@ function ReviewsSection() {
           {reviews.map((r, i) => (
             <article
               key={`${r.name}-${i}`}
-              className="rounded-3xl border-[0.5px] border-lw-accent bg-white px-5 py-5"
+              className="rounded-3xl border border-lw-accent bg-white px-5 py-5"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text">

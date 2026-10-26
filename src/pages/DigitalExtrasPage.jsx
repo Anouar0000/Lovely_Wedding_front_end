@@ -53,9 +53,10 @@ function DigitalExtrasPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-[#4B4242]">
+    <>
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[max(96px,calc(72px+env(safe-area-inset-bottom,0px)))] font-glacial text-[#4B4242]">
       <div className="mx-auto w-full max-w-[428px] md:max-w-3xl lg:max-w-6xl">
-        <header className="flex h-[86px] items-center justify-between border-b-[0.5px] border-[#A19A9A] bg-white px-4 shadow-[0px_1px_5px_rgba(0,0,0,0.08)] lg:px-8">
+        <header className="flex h-[86px] items-center justify-between border-b border-[#C4BBB3] bg-white px-4 shadow-[0px_1px_5px_rgba(0,0,0,0.08)] lg:px-8">
           <h1 className="font-lora text-[22px] font-medium leading-[34px] tracking-[-0.22px] text-[#4B4242] lg:text-[26px]">
             Ajoutez des extras
           </h1>
@@ -76,7 +77,7 @@ function DigitalExtrasPage() {
               return (
                 <li
                   key={item.id}
-                  className="border-b-[0.5px] border-[#A19A9A] lg:border-[#A19A9A] lg:odd:border-r-[0.5px]"
+                  className="border-b border-[#C4BBB3] lg:odd:border-r"
                 >
                   <button
                     type="button"
@@ -124,7 +125,7 @@ function DigitalExtrasPage() {
                   key={item.id}
                   type="button"
                   onClick={() => setSectionId(item.id)}
-                  className="relative h-[96px] w-[311px] shrink-0 overflow-hidden rounded-[5px] border-[0.25px] border-[#78716C] bg-white text-left lg:h-[100px] lg:w-full"
+                  className="relative h-[96px] w-[311px] shrink-0 overflow-hidden rounded-[5px] border border-[#78716C] bg-white text-left lg:h-[100px] lg:w-full"
                 >
                   {active ? (
                     <span
@@ -167,32 +168,33 @@ function DigitalExtrasPage() {
         </section>
       </div>
 
-      {/* Barre bas — même pattern que fiche produit */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#A19A9A] bg-white px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_24px_rgba(75,66,66,0.08)]">
-        <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 md:max-w-3xl lg:max-w-6xl">
-          <div className="min-w-0">
-            <p className="truncate font-lora text-[18px] font-normal leading-7 tracking-[-0.18px] text-[#4B4242]">
-              {summaryParts.join(" + ")}
-            </p>
-            <p className="font-glacial text-[18px] font-bold leading-6 text-[#4B4242]">
-              {total}dt
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleContinue}
-            className="inline-flex h-12 w-[136px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#A97C72] font-glacial text-[14px] font-bold text-white shadow-[0px_8px_20px_rgba(168,125,115,0.28)] hover:bg-[#966B62]"
-          >
-            Continuer
-            <FiArrowRight className="size-[18px]" strokeWidth={1.5} aria-hidden />
-          </button>
-        </div>
-      </div>
-
       <p className="sr-only">
         Produit <Link to={`/invitations-digital/${product.slug}`}>{product.name}</Link>
       </p>
     </div>
+
+    {/* Hors overflow-x-hidden : Firefox coupe sinon le fixed */}
+    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
+      <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 md:max-w-3xl lg:max-w-6xl">
+        <div className="min-w-0">
+          <p className="truncate font-lora text-[18px] font-normal leading-7 tracking-[-0.18px] text-[#4B4242]">
+            {summaryParts.join(" + ")}
+          </p>
+          <p className="font-glacial text-[18px] font-bold leading-6 text-[#4B4242]">
+            {total}dt
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleContinue}
+          className="inline-flex h-12 w-[136px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#A97C72] font-glacial text-[14px] font-bold text-white shadow-[0px_8px_20px_rgba(168,125,115,0.28)] hover:bg-[#966B62]"
+        >
+          Continuer
+          <FiArrowRight className="size-[18px]" strokeWidth={1.5} aria-hidden />
+        </button>
+      </div>
+    </div>
+    </>
   );
 }
 

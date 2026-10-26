@@ -60,10 +60,10 @@ export const DIGITAL_CATALOG_PRODUCTS = [
   },
 ];
 
-/** Figma tile exacte 189×224 — chassis iPhone (cadre fin + Dynamic Island). */
+/** Tuile responsive (ratio Figma 189×224) — chassis iPhone (cadre fin + Dynamic Island). */
 export function CatalogPhoneMock({ src, alt }) {
   return (
-    <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
+    <div className="relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
       <div className="absolute left-[28.5%] top-[12.5%] h-[77%] w-[42.5%] rounded-[16%/8%] bg-[#1c1c1c] p-[1.6%] shadow-[2px_6px_8px_-2px_rgba(75,66,66,0.45)]">
         <div className="relative h-full w-full overflow-hidden rounded-[14%/7%] bg-[#F7F2EC]">
           <img
@@ -84,7 +84,7 @@ export function CatalogPhoneMock({ src, alt }) {
 
 /**
  * Carte produit catalogue — code unique pour /invitations-digital et recommandations.
- * Tuile Figma exacte 189×224. Les exports ont un cœur dessiné : on le masque + bouton favoris.
+ * Tuile fluide (ratio Figma 189×224). Les exports ont un cœur dessiné : on le masque + bouton favoris.
  */
 export function DigitalCatalogCard({
   product,
@@ -95,8 +95,8 @@ export function DigitalCatalogCard({
   const usePhoneMock = Boolean(product.screen);
 
   return (
-    <article className="group flex w-[189px] flex-col">
-      <div className="relative">
+    <article className="lw-product-card group flex w-full min-w-0 max-w-full flex-col">
+      <div className="relative w-full min-w-0">
         {/* Masque le cœur intégré dans les exports Figma (tuiles sans screen) */}
         {!usePhoneMock ? (
           <span
@@ -118,25 +118,25 @@ export function DigitalCatalogCard({
           <FavoritesHeartIcon filled={liked} />
         </button>
 
-        <button type="button" className="w-full text-left" onClick={() => onOpen?.(product)}>
+        <button type="button" className="w-full min-w-0 text-left" onClick={() => onOpen?.(product)}>
           {usePhoneMock ? (
-            <div className="transition-transform duration-300 group-hover:scale-[1.02]">
+            <div className="lw-product-card-media w-full overflow-hidden rounded-[5px]">
               <CatalogPhoneMock src={product.screen} alt={product.name} />
             </div>
           ) : (
-            <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
+            <div className="lw-product-card-media relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
               <img
                 src={product.img}
                 alt={product.name}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                className="h-full w-full object-cover"
                 draggable={false}
               />
             </div>
           )}
-          <h2 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242] lg:text-[20px] lg:leading-8">
+          <h2 className="mt-3 break-words font-lora text-[16px] font-normal leading-6 tracking-[-0.18px] text-[#4B4242] sm:text-[18px] sm:leading-[34px] lg:text-[20px] lg:leading-8">
             {product.name}
           </h2>
-          <p className="font-glacial text-[14px] leading-[18px] text-[#78716c]">
+          <p className="break-words font-glacial text-[13px] leading-[18px] text-[#78716c] sm:text-[14px]">
             Includes music, animations
             <br />
             {"& guestbook"}

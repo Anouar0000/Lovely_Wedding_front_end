@@ -108,11 +108,15 @@ code {
   .lw-page-lg {
     @apply font-lora text-[40px] font-medium leading-tight tracking-[-0.01em] text-lw-text;
   }
-  /* Product card — petite ombre sur toute la carte au survol */
+  /* Product card — ombre au survol uniquement sur la tuile image (.lw-product-card-media) */
   .lw-product-card {
-    @apply rounded-[8px] transition-shadow duration-300 ease-out;
+    @apply rounded-[8px];
   }
-  .lw-product-card:hover {
+  .lw-product-card-media {
+    @apply transition-shadow duration-300 ease-out;
+  }
+  .lw-product-card:hover .lw-product-card-media,
+  .group:hover .lw-product-card-media {
     box-shadow: 0 6px 18px rgba(75, 66, 66, 0.18);
   }
 }

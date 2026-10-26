@@ -540,7 +540,7 @@ export default function BrezzaMarinaInvitePage({ invite, editable = false }) {
               top: "3px",
               width: 0,
               height: "36px",
-              borderLeft: "0.5px solid #49606B"
+              borderLeft: "1px solid #49606B"
             }}
           />
 
@@ -586,7 +586,7 @@ export default function BrezzaMarinaInvitePage({ invite, editable = false }) {
               top: "3px",
               width: 0,
               height: "36px",
-              borderLeft: "0.5px solid #49606B"
+              borderLeft: "1px solid #49606B"
             }}
           />
 
@@ -902,7 +902,7 @@ export default function BrezzaMarinaInvitePage({ invite, editable = false }) {
               top: "8.32px",
               width: "174.95px",
               height: "108.55px",
-              border: "0.25px solid #49606B",
+              border: "1px solid #49606B",
               boxSizing: "border-box"
             }}
           />

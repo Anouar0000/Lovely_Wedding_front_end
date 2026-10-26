@@ -324,7 +324,7 @@ function BottomMenu({
                   className="size-[26px] shrink-0 rounded-full"
                   style={{
                     backgroundColor: color,
-                    border: color === "#FFFFFF" ? "0.5px solid #000" : "none",
+                    border: color === "#FFFFFF" ? "1px solid #000" : "none",
                   }}
                   onClick={() => setTextColor(color)}
                   aria-label={color}

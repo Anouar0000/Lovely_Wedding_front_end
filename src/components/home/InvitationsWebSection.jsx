@@ -71,12 +71,12 @@ function InvitationsWebSection() {
           </p>
         </div>
 
-        <div className="mt-[35px] grid grid-cols-2 justify-items-center gap-x-4 gap-y-10 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-14 lg:px-0">
+        <div className="mt-[35px] grid grid-cols-2 gap-x-4 gap-y-10 px-4 lg:mt-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-14 lg:px-0">
           {cards.map((c) => {
             const liked = isFavorite(c.id);
             return (
-              <article key={c.id} className="lw-product-card group flex w-[189px] flex-col">
-                <div className="relative">
+              <article key={c.id} className="lw-product-card group flex w-full min-w-0 flex-col">
+                <div className="relative w-full min-w-0">
                   <button
                     type="button"
                     aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -96,13 +96,12 @@ function InvitationsWebSection() {
                   >
                     <FavoritesHeartIcon filled={liked} />
                   </button>
-                  <button type="button" className="w-full text-left" onClick={() => navigate(c.to)}>
-                    {/* Figma tile exacte 189×224 */}
-                    <div className="relative flex h-[224px] w-[189px] items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed]">
+                  <button type="button" className="w-full min-w-0 text-left" onClick={() => navigate(c.to)}>
+                    <div className="lw-product-card-media relative flex aspect-[189/224] w-full items-center justify-center overflow-hidden rounded-[5px] bg-[#fffaed]">
                       <PhonePreview src={c.image} title={c.title} />
                     </div>
-                    <h3 className="mt-4 lw-h3 leading-6 lg:mt-5 lg:text-[24px]">{c.title}</h3>
-                    <p className="mt-1 lw-caption lg:mt-2 lg:text-[14px] lg:leading-5">
+                    <h3 className="mt-4 break-words lw-h3 leading-6 lg:mt-5 lg:text-[24px]">{c.title}</h3>
+                    <p className="mt-1 break-words font-glacial text-[14px] font-normal leading-[18px] tracking-normal text-lw-muted lg:mt-2">
                       Includes music, animations
                       <br />& guestbook
                     </p>

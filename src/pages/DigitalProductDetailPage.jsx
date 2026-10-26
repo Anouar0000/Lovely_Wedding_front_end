@@ -202,7 +202,7 @@ function DigitalProductDetailPage() {
 
   return (
     <>
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-lw-text">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[max(96px,calc(72px+env(safe-area-inset-bottom,0px)))] font-glacial text-lw-text">
       <DigitalHomeHeader mode="none" context="digitale" />
 
       <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] leading-[18px] text-[#4B4242] md:max-w-3xl lg:max-w-6xl lg:px-8 lg:pt-10">
@@ -370,7 +370,7 @@ function DigitalProductDetailPage() {
                 key={pack.id}
                 type="button"
                 onClick={() => setPackId(pack.id)}
-                className="relative flex h-[82px] w-[399px] max-w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-[#C4A69C] bg-white text-left"
+                className="relative flex h-[82px] w-[399px] max-w-full shrink-0 overflow-hidden rounded-[5px] border border-[#C4A69C] bg-white text-left"
               >
                 {active ? (
                   <span
@@ -441,7 +441,7 @@ function DigitalProductDetailPage() {
             {REVIEWS.map((r, i) => (
               <article
                 key={`${r.name}-${i}`}
-                className="rounded-[24px] border-[0.5px] border-[#C4A69C] bg-white px-5 py-5"
+                className="rounded-[24px] border border-[#C4A69C] bg-white px-5 py-5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
@@ -513,7 +513,7 @@ function DigitalProductDetailPage() {
     </div>
 
     {/* Hors overflow-x-hidden : Safari iOS casse sinon le position:fixed */}
-    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#E8E0D8] bg-white px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_24px_rgba(75,66,66,0.1)]">
+    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
       <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-6xl">
         <div className="min-w-0">
           <p className="truncate font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">

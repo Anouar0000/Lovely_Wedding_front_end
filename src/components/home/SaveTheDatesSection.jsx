@@ -95,7 +95,7 @@ function SaveTheDatesSection() {
                   <h3 className="font-lora text-[18px] font-normal leading-[34px] tracking-[-1px] text-lw-text">
                     {item.title}
                   </h3>
-                  <p className="mt-[2px] font-glacial text-[12px] font-normal leading-[18px] text-lw-muted lg:text-[15px] lg:leading-6">
+                  <p className="mt-[2px] font-glacial text-[14px] font-normal leading-[18px] tracking-normal text-lw-muted">
                     Includes music, animations
                     <br />
                     & guestbook
@@ -110,11 +110,11 @@ function SaveTheDatesSection() {
         </div>
 
         <div
-          className="relative mx-auto mt-[32px] h-[0.5px] w-[396px] max-w-[calc(100%-32px)] bg-[#D9D2CB] lg:hidden"
+          className="relative mx-auto mt-[32px] h-px w-[396px] max-w-[calc(100%-32px)] bg-[#C4BBB3] lg:hidden"
           aria-hidden
         >
           <div
-            className="absolute top-1/2 h-[1.5px] w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
+            className="absolute top-1/2 h-0.5 w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
             style={{ left: `${thumbLeft}px` }}
           />
         </div>

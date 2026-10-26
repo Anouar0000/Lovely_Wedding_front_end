@@ -103,11 +103,11 @@ function PhysicalExperienceSection() {
         </div>
 
         <div
-          className="relative mx-auto mt-[32px] h-[0.5px] w-[396px] max-w-[calc(100%-32px)] bg-[#D9D2CB] lg:hidden"
+          className="relative mx-auto mt-[32px] h-px w-[396px] max-w-[calc(100%-32px)] bg-[#C4BBB3] lg:hidden"
           aria-hidden
         >
           <div
-            className="absolute top-1/2 h-[1.5px] w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
+            className="absolute top-1/2 h-0.5 w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
             style={{ left: `${thumbLeft}px` }}
           />
         </div>

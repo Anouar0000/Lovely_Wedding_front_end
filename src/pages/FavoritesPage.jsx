@@ -67,7 +67,7 @@ function FavoritesPage() {
             </div>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 justify-items-center gap-x-4 gap-y-12 pb-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:mt-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-12 pb-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:mt-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
             {items.map((item) => {
               const catalog =
                 catalogById.get(item.id) ||
@@ -98,8 +98,8 @@ function FavoritesPage() {
               }
 
               return (
-                <article key={item.id} className="group flex w-[189px] flex-col">
-                  <div className="relative">
+                <article key={item.id} className="lw-product-card group flex w-full min-w-0 flex-col">
+                  <div className="relative w-full min-w-0">
                     <button
                       type="button"
                       aria-label="Retirer des favoris"
@@ -115,10 +115,10 @@ function FavoritesPage() {
                     </button>
                     <button
                       type="button"
-                      className="w-full text-left"
+                      className="w-full min-w-0 text-left"
                       onClick={() => navigate(item.to || "/")}
                     >
-                      <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
+                      <div className="lw-product-card-media relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
                         {item.image ? (
                           <img
                             src={item.image}
@@ -132,7 +132,7 @@ function FavoritesPage() {
                           </span>
                         )}
                       </div>
-                      <h2 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
+                      <h2 className="mt-3 break-words font-lora text-[16px] font-normal leading-6 tracking-[-0.18px] text-[#4B4242] sm:text-[18px] sm:leading-[34px]">
                         {item.title}
                       </h2>
                       <p className="font-glacial text-[14px] leading-[18px] text-[#78716c]">

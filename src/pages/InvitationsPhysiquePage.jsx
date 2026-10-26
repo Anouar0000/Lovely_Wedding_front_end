@@ -200,12 +200,12 @@ function InvitationsPhysiquePage() {
           </button>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 justify-items-center gap-x-4 gap-y-8 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 lg:mt-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
           {products.map((p) => {
             const liked = isFavorite(p.id);
             return (
-              <article key={p.id} className="lw-product-card group flex w-[189px] flex-col">
-                <div className="relative">
+              <article key={p.id} className="lw-product-card group flex w-full min-w-0 max-w-full flex-col">
+                <div className="relative w-full min-w-0">
                   <button
                     type="button"
                     aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -225,18 +225,18 @@ function InvitationsPhysiquePage() {
                   >
                     <FavoritesHeartIcon filled={liked} />
                   </button>
-                  <button type="button" className="w-full text-left" onClick={() => openProduct(p)}>
-                    <div className="relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
+                  <button type="button" className="w-full min-w-0 text-left" onClick={() => openProduct(p)}>
+                    <div className="lw-product-card-media relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
                       <img
                         src={p.img}
                         alt={p.name}
-                        className="h-full w-full object-cover transition-transform duration-300 lg:group-hover:scale-105"
+                        className="h-full w-full object-cover"
                       />
                     </div>
-                    <h2 className="mt-[9px] font-lora text-[18px] font-normal leading-[34px] tracking-[-1px] text-[#4B4242]">
+                    <h2 className="mt-[9px] break-words font-lora text-[16px] font-normal leading-6 tracking-[-0.5px] text-[#4B4242] sm:text-[18px] sm:leading-[34px] sm:tracking-[-1px]">
                       {p.name}
                     </h2>
-                    <p className="mt-[2px] font-glacial text-[14px] font-normal leading-[18px] tracking-normal text-[#78716c]">
+                    <p className="mt-[2px] break-words font-glacial text-[13px] font-normal leading-[18px] tracking-normal text-[#78716c] sm:text-[14px]">
                       Impression soignée · papier premium
                     </p>
                     <p className="mt-[2px] font-glacial text-[14px] font-bold leading-[24px] text-lw-text">

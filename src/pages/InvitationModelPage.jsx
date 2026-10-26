@@ -196,8 +196,37 @@ function InvitationModelPage() {
     { key: "Motif", label: "Motif :", value: motif, muted: false },
   ];
 
+  const orderSummary = (
+    <>
+      <div className="min-w-0">
+        <p className="truncate font-lora text-[16px] font-medium leading-6 text-lw-text">
+          {model.name}
+        </p>
+        <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
+          {total != null
+            ? `${total % 1 === 0 ? total : total.toFixed(1)}dt`
+            : `${unitPrice}dt`}
+        </p>
+      </div>
+      <button
+        type="button"
+        disabled={!isFormValid}
+        onClick={handlePersonalize}
+        className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-glacial text-[14px] font-semibold text-white ${
+          isFormValid
+            ? "bg-[#A97C72] hover:bg-[#966B62]"
+            : "cursor-not-allowed bg-[#D9D9D9]"
+        }`}
+      >
+        Passer la commande
+        <span aria-hidden>?</span>
+      </button>
+    </>
+  );
+
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[88px] font-glacial text-lw-text lg:pb-0">
+    <>
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white pb-[max(96px,calc(72px+env(safe-area-inset-bottom,0px)))] font-glacial text-lw-text lg:pb-0">
       <DigitalHomeHeader mode="none" context="imprimee" />
 
       <nav className="mx-auto flex w-full max-w-[428px] flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-6 text-[14px] text-lw-text lg:max-w-6xl lg:px-8 lg:pt-10">
@@ -286,33 +315,9 @@ function InvitationModelPage() {
               ))}
             </div>
 
-            {/* Résumé + CTA — fixe en bas (mobile), in-flow desktop */}
-            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E8E0D8] bg-white px-4 py-3 shadow-[0_-4px_24px_rgba(75,66,66,0.1)] lg:static lg:mt-[18px] lg:border-0 lg:px-0 lg:py-0 lg:shadow-none">
-              <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-none">
-                <div className="min-w-0">
-                  <p className="truncate font-lora text-[16px] font-medium leading-6 text-lw-text">
-                    {model.name}
-                  </p>
-                  <p className="mt-0.5 font-glacial text-[18px] font-bold leading-[24px] tracking-normal text-lw-text">
-                    {total != null
-                      ? `${total % 1 === 0 ? total : total.toFixed(1)}dt`
-                      : `${unitPrice}dt`}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  disabled={!isFormValid}
-                  onClick={handlePersonalize}
-                  className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-glacial text-[14px] font-semibold text-white ${
-                    isFormValid
-                      ? "bg-[#A97C72] hover:bg-[#966B62]"
-                      : "cursor-not-allowed bg-[#D9D9D9]"
-                  }`}
-                >
-                  Passer la commande
-                  <span aria-hidden>→</span>
-                </button>
-              </div>
+            {/* CTA desktop in-flow ? barre mobile hors overflow (Firefox) */}
+            <div className="mt-[18px] hidden items-center justify-between gap-3 lg:flex">
+              {orderSummary}
             </div>
 
             {/* Accordéons + avis — fond beige Figma #F7F2EC */}
@@ -350,7 +355,7 @@ function InvitationModelPage() {
                 {REVIEWS.map((r, i) => (
                   <article
                     key={`${r.name}-${i}`}
-                    className="rounded-[24px] border-[0.5px] border-[#C4A69C] bg-white px-5 py-5"
+                    className="rounded-[24px] border border-[#C4A69C] bg-white px-5 py-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <p className="font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
@@ -404,7 +409,7 @@ function InvitationModelPage() {
                 className="lw-product-card group p-1 text-left"
                 onClick={() => openProduct(r)}
               >
-                <div className="relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
+                <div className="lw-product-card-media relative h-[224px] w-full overflow-hidden rounded-[5px] bg-[#fffaed] lg:aspect-[189/224] lg:h-auto">
                   <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
                 </div>
                 <h3 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text">
@@ -533,6 +538,14 @@ function InvitationModelPage() {
 
       <DigitalHomeFooter />
     </div>
+
+    {/* Hors overflow-x-hidden : Firefox / Safari coupent sinon le fixed */}
+    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)] lg:hidden">
+      <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3">
+        {orderSummary}
+      </div>
+    </div>
+    </>
   );
 }
 

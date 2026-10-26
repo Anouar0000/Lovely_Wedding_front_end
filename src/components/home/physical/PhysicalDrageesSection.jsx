@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { homePhysicalAssets as a } from "../homePhysicalAssets";
 
-/** Dragées — parity Save The Dates (scroll + barre Figma, sans prix / voir) */
+/** Dragées — parity Save The Dates (scroll + barre Figma + prix) */
 function PhysicalDrageesSection() {
   const navigate = useNavigate();
   const scrollerRef = useRef(null);
@@ -12,8 +12,8 @@ function PhysicalDrageesSection() {
   const [thumbLeft, setThumbLeft] = useState(0);
 
   const items = [
-    { title: "Sidi Bou Said", image: a.drageeSidi },
-    { title: "La Dolce Vita", image: a.drageeDolce, isNew: true },
+    { title: "Sidi Bou Said", image: a.drageeSidi, price: "Start at 49$" },
+    { title: "La Dolce Vita", image: a.drageeDolce, isNew: true, price: "Start at 49$" },
   ];
 
   const updateProgress = useCallback(() => {
@@ -87,6 +87,9 @@ function PhysicalDrageesSection() {
                   <p className="font-glacial text-[14px] font-normal leading-[18px] tracking-normal text-[#78716c]">
                     Boîte personnalisée · finition soignée
                   </p>
+                  <p className="font-glacial text-[14px] font-bold leading-[24px] text-lw-text">
+                    {item.price}
+                  </p>
                 </div>
               </button>
             </article>
@@ -94,11 +97,11 @@ function PhysicalDrageesSection() {
         </div>
 
         <div
-          className="relative mx-auto mt-[32px] h-[0.5px] w-[396px] max-w-[calc(100%-32px)] bg-[#D9D2CB] lg:hidden"
+          className="relative mx-auto mt-[32px] h-px w-[396px] max-w-[calc(100%-32px)] bg-[#C4BBB3] lg:hidden"
           aria-hidden
         >
           <div
-            className="absolute top-1/2 h-[1.5px] w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
+            className="absolute top-1/2 h-0.5 w-[93px] -translate-y-1/2 rounded-full bg-[#4B4242] transition-[left] duration-150 ease-out"
             style={{ left: `${thumbLeft}px` }}
           />
         </div>

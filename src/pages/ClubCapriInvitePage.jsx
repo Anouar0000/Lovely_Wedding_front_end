@@ -757,7 +757,7 @@ function ClubCapriInvitePage({
                 draggable={false}
               />
               <div
-                className="absolute left-[187px] top-[29px] z-[2] h-[202px] w-0 border-l-[0.25px] border-[#083b50]"
+                className="absolute left-[187px] top-[29px] z-[2] h-[202px] w-0 border-l border-[#083b50]"
                 aria-hidden
               />
 
@@ -787,10 +787,10 @@ function ClubCapriInvitePage({
               <p className="absolute left-[210px] top-[125px] z-[2] flex h-[25px] w-[26px] items-center justify-center text-[10px] uppercase leading-[18px]">
                 To:
               </p>
-              <div className="absolute left-[214px] top-[142px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
-              <div className="absolute left-[214px] top-[165px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
-              <div className="absolute left-[214px] top-[188px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
-              <div className="absolute left-[214px] top-[211px] z-[1] w-[137px] border-t-[0.25px] border-[#083b50]" />
+              <div className="absolute left-[214px] top-[142px] z-[1] w-[137px] border-t border-[#083b50]" />
+              <div className="absolute left-[214px] top-[165px] z-[1] w-[137px] border-t border-[#083b50]" />
+              <div className="absolute left-[214px] top-[188px] z-[1] w-[137px] border-t border-[#083b50]" />
+              <div className="absolute left-[214px] top-[211px] z-[1] w-[137px] border-t border-[#083b50]" />
               <div
                 className="absolute left-[206px] top-[146px] z-[2] w-[148px] text-center text-[16px] leading-[23px]"
                 style={{ fontFamily: F.script }}

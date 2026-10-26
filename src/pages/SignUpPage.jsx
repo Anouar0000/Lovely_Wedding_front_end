@@ -20,7 +20,7 @@ import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 
 const fieldClass =
-  "w-full rounded-[5px] border-[0.5px] border-[#A19A9A] bg-white px-4 py-3 font-glacial text-[14px] text-[#4B4242] outline-none transition focus:border-[#A97C72] disabled:opacity-60";
+  "w-full rounded-[5px] border border-[#A19A9A] bg-white px-4 py-3 font-glacial text-[14px] text-[#4B4242] outline-none transition focus:border-[#A97C72] disabled:opacity-60";
 
 function getSignupErrorMessage(code) {
   switch (code) {
@@ -134,7 +134,7 @@ function SignUpPage() {
       <DigitalHomeHeader mode="none" context="digitale" />
 
       <main className="flex flex-1 items-center justify-center bg-[#F7F2EC] px-4 py-12 lg:py-16">
-        <section className="w-full max-w-[428px] border-[0.5px] border-[#A19A9A] bg-white px-5 py-10 md:max-w-md md:px-10">
+        <section className="w-full max-w-[428px] border border-[#A19A9A] bg-white px-5 py-10 md:max-w-md md:px-10">
           <h1 className="text-center font-lora text-[22px] font-medium leading-[34px] tracking-[-0.22px] text-[#4B4242] lg:text-[26px]">
             Inscription
           </h1>
@@ -143,7 +143,7 @@ function SignUpPage() {
           </p>
 
           {!isConfigured ? (
-            <div className="mt-8 rounded-[5px] border-[0.5px] border-[#A19A9A] bg-[#F7F2EC] p-5 text-[14px] leading-6 text-[#78716C]">
+            <div className="mt-8 rounded-[5px] border border-[#A19A9A] bg-[#F7F2EC] p-5 text-[14px] leading-6 text-[#78716C]">
               Firebase n&apos;est pas encore configuré.
             </div>
           ) : (
