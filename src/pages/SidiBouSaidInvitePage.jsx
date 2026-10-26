@@ -292,13 +292,20 @@ const WavyCircle = ({ percent }) => {
   );
 };
 
-function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) {
+function SidiBouSaidInvitePage({
+  invite = defaultInvite,
+  previewMode = false,
+  /** Démo produit : welcome dans le mockup (sans plein écran / sans toucher au body) */
+  demoInMockup = false,
+}) {
   const sectionInvite = {
     ...invite,
     template: invite?.template || templateConfig.id,
   };
+  const skipIntro =
+    invite.videoIntroEnabled === false || (previewMode && !demoInMockup);
   const [isIntroFading, setIsIntroFading] = useState(false);
-  const [isIntroDone, setIsIntroDone] = useState(invite.videoIntroEnabled === false);
+  const [isIntroDone, setIsIntroDone] = useState(skipIntro);
   const [doorFrame, setDoorFrame] = useState(0);
   const doorTimerRef = useRef(null);
   const [rsvpFirstName, setRsvpFirstName] = useState("");
@@ -355,14 +362,16 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
   };
 
   useEffect(() => {
-    if (invite.videoIntroEnabled === false) {
+    const skip =
+      invite.videoIntroEnabled === false || (previewMode && !demoInMockup);
+    if (skip) {
       setIsIntroDone(true);
       setIsIntroFading(false);
     } else {
       setIsIntroDone(false);
       setIsIntroFading(false);
     }
-  }, [invite.videoIntroEnabled]);
+  }, [invite.videoIntroEnabled, previewMode, demoInMockup]);
 
   const lastEvent = useMemo(() => {
     return invite.timeline && invite.timeline.length > 0
@@ -388,6 +397,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
   const countdown = useMemo(() => getCountdownParts(effectiveEventDate), [effectiveEventDate]);
 
   useEffect(() => {
+    if (previewMode) return undefined;
     if (isIntroDone) {
       document.body.style.overflow = "auto";
     } else {
@@ -396,7 +406,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [isIntroDone]);
+  }, [isIntroDone, previewMode]);
 
   useEffect(() => {
     doorFrameSources.forEach((frame) => {
@@ -456,8 +466,40 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
     }
   };
 
+  /**
+   * Remplit le mockup produit (166×370) en coords design 430 —
+   * évite la bande / ligne blanche (fond scroll + hauteur trop basse).
+   */
+  const mockupPhoneH = Math.ceil((pageWidth * 370) / 166);
+
+  if (demoInMockup && !isIntroDone) {
+    return (
+      <div
+        className={`relative overflow-hidden bg-black transition-opacity duration-1000 ${
+          isIntroFading ? "opacity-0" : "opacity-100"
+        }`}
+        style={{ width: pageWidth, height: mockupPhoneH }}
+        aria-hidden
+      >
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ transform: "scale(1.02)" }}
+          src={openingVideo}
+          autoPlay
+          muted
+          playsInline
+          onTimeUpdate={handleVideoTimeUpdate}
+          onEnded={completeIntro}
+          onError={completeIntro}
+        />
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-[#dcebf0] font-urbanist text-[#0093d8]">
+    <main
+      className={`${previewMode || demoInMockup ? "bg-[#dcebf0]" : "min-h-screen bg-[#dcebf0]"} font-urbanist text-[#0093d8]`}
+    >
       <div className="mx-auto w-full bg-[#fffcf9] shadow-2xl flex flex-col" style={{ maxWidth: pageWidth }}>
         
         {/* Canvas 1: Hero & Reveal */}
@@ -997,7 +1039,7 @@ function SidiBouSaidInvitePage({ invite = defaultInvite, previewMode = false }) 
 
       </div>
 
-      {!isIntroDone ? (
+      {!previewMode && !isIntroDone ? (
         <div
           className={`fixed inset-0 z-50 bg-black transition-opacity duration-1000 ${isIntroFading ? "opacity-0" : "opacity-100"}`}
           aria-hidden="true"

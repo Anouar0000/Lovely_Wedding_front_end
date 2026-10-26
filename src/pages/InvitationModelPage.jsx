@@ -3,7 +3,10 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiChevronDown, FiStar, FiX } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
-import { useCart } from "../context/CartContext";
+import {
+  PERSONALIZE_CARD_BACK,
+  PERSONALIZE_CARD_FRONT,
+} from "../components/home/homePhysicalAssets";
 
 const FIGMA = "/assets/home-physical/figma";
 
@@ -76,14 +79,12 @@ const CATALOG_BY_NAME = Object.fromEntries(
   ])
 );
 
-/** Product overview physique — détails Figma (dropdowns + Passer la commande) */
+/** Product overview physique — détails Figma (dropdowns + Personnalise) */
 function InvitationModelPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { modelName: routeName } = useParams();
-  const { addItem } = useCart();
-
-  const resolvedName = location.state?.model?.name || decodeURIComponent(routeName || "");
+    const resolvedName = location.state?.model?.name || decodeURIComponent(routeName || "");
   const catalogHit = CATALOG_BY_NAME[resolvedName];
   const model =
     location.state?.model ||
@@ -150,21 +151,28 @@ function InvitationModelPage() {
     });
   };
 
-  const handleOrder = () => {
+  const handlePersonalize = () => {
     if (!isFormValid || !model) return;
     const productId = catalogProductId || model.templateId || model.name;
     if (!productId) return;
-    addItem({
-      productType: "physical",
-      productId,
-      title: model.name,
-      qty,
-      unitPrice,
-      format,
-      motif,
-      meta: { category: selectedCategory },
+    navigate("/personalize", {
+      state: {
+        model: {
+          ...model,
+          price: unitPrice,
+          unitPrice,
+          templateId: model.templateId || "m1",
+          image: PERSONALIZE_CARD_FRONT,
+          modelImage: PERSONALIZE_CARD_FRONT,
+          modelImagep2: PERSONALIZE_CARD_BACK,
+        },
+        productId,
+        format,
+        motif,
+        selectedCategory,
+        [`qt${qty}`]: qty,
+      },
     });
-    navigate("/cart");
   };
 
   if (!model) {
@@ -294,7 +302,7 @@ function InvitationModelPage() {
                 <button
                   type="button"
                   disabled={!isFormValid}
-                  onClick={handleOrder}
+                  onClick={handlePersonalize}
                   className={`inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full px-5 font-glacial text-[14px] font-semibold text-white ${
                     isFormValid
                       ? "bg-[#A97C72] hover:bg-[#966B62]"

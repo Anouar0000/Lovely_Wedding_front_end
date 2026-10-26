@@ -152,7 +152,11 @@ function Ripple({ left, top, size = 176, delay = 0 }) {
   );
 }
 
-function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
+function SakuraKoiInvitePage({
+  invite = defaultInvite,
+  previewMode = false,
+  demoInMockup = false,
+}) {
   const sectionInvite = {
     ...invite,
     template: invite?.template || templateConfig.id,
@@ -170,11 +174,11 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
   const [rsvpStatus, setRsvpStatus] = useState("");
   const [rsvpError, setRsvpError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [entered, setEntered] = useState(Boolean(previewMode));
+  const [entered, setEntered] = useState(Boolean(previewMode && !demoInMockup));
   // Compute scale on first paint — avoids skewed/overflow layout until refresh
   // En previewMode le parent (éditeur) gère déjà le scale — rester à 1.
   const [scale, setScale] = useState(() => {
-    if (previewMode || typeof window === "undefined") return 1;
+    if (previewMode || demoInMockup || typeof window === "undefined") return 1;
     const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
     return w > 0 && w < PAGE_W ? w / PAGE_W : 1;
   });
@@ -413,6 +417,27 @@ function SakuraKoiInvitePage({ invite = defaultInvite, previewMode = false }) {
       setSubmitting(false);
     }
   };
+
+  const mockupPhoneH = Math.ceil((PAGE_W * 370) / 166);
+
+  if (demoInMockup && !entered) {
+    return (
+      <div
+        className="relative overflow-hidden"
+        style={{ width: PAGE_W, height: mockupPhoneH, background: "#f7ebe8" }}
+      >
+        <DigitalInviteEntrance
+          video={`${ENTRANCE_VIDEO}?v=1`}
+          alt="Sakura Koi invitation"
+          background="#f7ebe8"
+          autoOnly
+          autoOpenAfterMs={4000}
+          contained
+          onOpen={() => setEntered(true)}
+        />
+      </div>
+    );
+  }
 
   return (
     <>

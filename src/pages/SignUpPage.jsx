@@ -19,6 +19,9 @@ import { claimEmail, EMAIL_TAKEN_CODE, saveUserContactInfo } from "../services/u
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 
+const fieldClass =
+  "w-full rounded-[5px] border-[0.5px] border-[#A19A9A] bg-white px-4 py-3 font-glacial text-[14px] text-[#4B4242] outline-none transition focus:border-[#A97C72] disabled:opacity-60";
+
 function getSignupErrorMessage(code) {
   switch (code) {
     case "auth/email-already-in-use":
@@ -127,27 +130,28 @@ function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">
-      <DigitalHomeHeader mode="none" />
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-[#4B4242]">
+      <DigitalHomeHeader mode="none" context="digitale" />
 
-      <main className="flex flex-1 items-center justify-center bg-[#fffaed]/px-4 py-12 lg:py-20">
-        <section className="w-full max-w-md rounded-[5px] bg-white px-6 py-10 shadow-sm lg:px-10">
-          <p className="text-center font-glacial text-xs font-semibold uppercase tracking-[0.22em] text-lw-accent">
-            Compte
-          </p>
-          <h1 className="mt-3 text-center lw-page lg:text-[40px]">Inscription</h1>
-          <p className="mx-auto mt-3 max-w-[280px] text-center lw-body">
+      <main className="flex flex-1 items-center justify-center bg-[#F7F2EC] px-4 py-12 lg:py-16">
+        <section className="w-full max-w-[428px] border-[0.5px] border-[#A19A9A] bg-white px-5 py-10 md:max-w-md md:px-10">
+          <h1 className="text-center font-lora text-[22px] font-medium leading-[34px] tracking-[-0.22px] text-[#4B4242] lg:text-[26px]">
+            Inscription
+          </h1>
+          <p className="mx-auto mt-2 max-w-[300px] text-center font-glacial text-[14px] leading-[18px] text-[#78716C]">
             Créez votre compte pour suivre vos invitations et RSVP.
           </p>
 
           {!isConfigured ? (
-            <div className="mt-8 rounded-[5px] border border-lw-line bg-lw-surface p-5 text-sm leading-6 text-lw-muted">
+            <div className="mt-8 rounded-[5px] border-[0.5px] border-[#A19A9A] bg-[#F7F2EC] p-5 text-[14px] leading-6 text-[#78716C]">
               Firebase n&apos;est pas encore configuré.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold">Nom complet</span>
+                <span className="mb-2 block font-glacial text-[14px] font-bold text-[#4B4242]">
+                  Nom complet
+                </span>
                 <input
                   type="text"
                   value={fullName}
@@ -157,12 +161,14 @@ function SignUpPage() {
                   minLength={2}
                   maxLength={120}
                   disabled={submitting}
-                  className="w-full rounded-[5px] border border-lw-line bg-white px-4 py-3 text-base outline-none focus:border-lw-accent disabled:opacity-60"
+                  className={fieldClass}
                 />
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold">Téléphone</span>
+                <span className="mb-2 block font-glacial text-[14px] font-bold text-[#4B4242]">
+                  Téléphone
+                </span>
                 <input
                   type="tel"
                   value={phone}
@@ -172,12 +178,14 @@ function SignUpPage() {
                   required
                   disabled={submitting}
                   placeholder="+216 …"
-                  className="w-full rounded-[5px] border border-lw-line bg-white px-4 py-3 text-base outline-none focus:border-lw-accent disabled:opacity-60"
+                  className={fieldClass}
                 />
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold">Email</span>
+                <span className="mb-2 block font-glacial text-[14px] font-bold text-[#4B4242]">
+                  Email
+                </span>
                 <input
                   type="email"
                   value={email}
@@ -186,12 +194,14 @@ function SignUpPage() {
                   inputMode="email"
                   required
                   disabled={submitting}
-                  className="w-full rounded-[5px] border border-lw-line bg-white px-4 py-3 text-base outline-none focus:border-lw-accent disabled:opacity-60"
+                  className={fieldClass}
                 />
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold">Mot de passe</span>
+                <span className="mb-2 block font-glacial text-[14px] font-bold text-[#4B4242]">
+                  Mot de passe
+                </span>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -201,11 +211,11 @@ function SignUpPage() {
                     required
                     minLength={PASSWORD_MIN_LENGTH}
                     disabled={submitting}
-                    className="w-full rounded-[5px] border border-lw-line bg-white px-4 py-3 pr-16 text-base outline-none focus:border-lw-accent disabled:opacity-60"
+                    className={`${fieldClass} pr-16`}
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold uppercase tracking-wide text-lw-muted"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 font-glacial text-[12px] font-bold uppercase tracking-wide text-[#78716C]"
                     onClick={() => setShowPassword((v) => !v)}
                     tabIndex={-1}
                   >
@@ -214,9 +224,9 @@ function SignUpPage() {
                 </div>
                 {password ? (
                   <p
-                    className={`mt-2 text-xs font-semibold ${
+                    className={`mt-2 font-glacial text-[12px] font-bold ${
                       passwordStrength.level >= 3
-                        ? "text-lw-accent"
+                        ? "text-[#A97C72]"
                         : passwordStrength.level === 2
                           ? "text-amber-700"
                           : "text-red-700"
@@ -225,9 +235,12 @@ function SignUpPage() {
                     Force : {passwordStrength.label}
                   </p>
                 ) : null}
-                <ul className="mt-2 space-y-1 text-xs text-lw-muted">
+                <ul className="mt-2 space-y-1 font-glacial text-[12px] text-[#78716C]">
                   {passwordHints.map((hint) => (
-                    <li key={hint.label} className={hint.ok ? "text-lw-accent" : ""}>
+                    <li
+                      key={hint.label}
+                      className={hint.ok ? "font-bold text-[#A97C72]" : ""}
+                    >
                       {hint.ok ? "✓" : "○"} {hint.label}
                     </li>
                   ))}
@@ -235,7 +248,9 @@ function SignUpPage() {
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold">Confirmer le mot de passe</span>
+                <span className="mb-2 block font-glacial text-[14px] font-bold text-[#4B4242]">
+                  Confirmer le mot de passe
+                </span>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
@@ -244,23 +259,28 @@ function SignUpPage() {
                   required
                   minLength={PASSWORD_MIN_LENGTH}
                   disabled={submitting}
-                  className="w-full rounded-[5px] border border-lw-line bg-white px-4 py-3 text-base outline-none focus:border-lw-accent disabled:opacity-60"
+                  className={fieldClass}
                 />
               </label>
 
-              {error ? <p className="text-sm font-semibold text-red-700">{error}</p> : null}
+              {error ? (
+                <p className="font-glacial text-[14px] font-bold text-red-700">{error}</p>
+              ) : null}
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="h-[42px] w-full rounded-[5px] bg-lw-accent px-5 text-sm font-bold uppercase tracking-wide text-white hover:bg-lw-accentDark disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-12 w-full items-center justify-center rounded-full bg-[#A97C72] font-glacial text-[14px] font-bold text-white shadow-[0px_8px_20px_rgba(168,125,115,0.28)] transition hover:bg-[#966B62] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? "Création..." : "Créer mon compte"}
               </button>
 
-              <p className="pt-2 text-center text-sm text-lw-muted">
+              <p className="pt-2 text-center font-glacial text-[14px] text-[#78716C]">
                 Déjà un compte ?{" "}
-                <Link to="/login" className="font-semibold text-lw-text underline">
+                <Link
+                  to="/login"
+                  className="font-bold text-[#4B4242] underline underline-offset-2"
+                >
                   Se connecter
                 </Link>
               </p>

@@ -106,7 +106,11 @@ const splitNames = (coupleNames) => {
   return { left: left.trim(), right: right.trim() };
 };
 
-function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
+function ClubCapriInvitePage({
+  invite = defaultInvite,
+  previewMode = false,
+  demoInMockup = false,
+}) {
   const sectionInvite = {
     ...invite,
     template: invite?.template || templateConfig.id,
@@ -123,7 +127,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
   const [rsvpStatus, setRsvpStatus] = useState("");
   const [rsvpError, setRsvpError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [entered, setEntered] = useState(Boolean(previewMode));
+  const [entered, setEntered] = useState(Boolean(previewMode && !demoInMockup));
   const [musicPlaying, setMusicPlaying] = useState(false);
   const musicPlayerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -143,7 +147,7 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
   // Scale canvas 430px → largeur téléphone (évite overflow / inclinaison)
   // En previewMode le parent (éditeur) gère déjà le scale — rester à 1.
   const [scale, setScale] = useState(() => {
-    if (previewMode || typeof window === "undefined") return 1;
+    if (previewMode || demoInMockup || typeof window === "undefined") return 1;
     const w = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
     return w > 0 && w < PAGE_W ? w / PAGE_W : 1;
   });
@@ -430,6 +434,27 @@ function ClubCapriInvitePage({ invite = defaultInvite, previewMode = false }) {
       setSubmitting(false);
     }
   };
+
+  const mockupPhoneH = Math.ceil((PAGE_W * 370) / 166);
+
+  if (demoInMockup && !entered) {
+    return (
+      <div
+        className="relative overflow-hidden"
+        style={{ width: PAGE_W, height: mockupPhoneH, background: "#0a0a0a" }}
+      >
+        <DigitalInviteEntrance
+          video={`${ENTRANCE_VIDEO}?v=1`}
+          alt="Club Capri invitation entrance"
+          background="#0a0a0a"
+          autoOnly
+          autoOpenAfterMs={4000}
+          contained
+          onOpen={() => setEntered(true)}
+        />
+      </div>
+    );
+  }
 
   return (
     <>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FiPlay, FiStar } from "react-icons/fi";
+import { FiStar } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
 import {
@@ -9,6 +9,13 @@ import {
 } from "../components/digital/DigitalCatalogCard";
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
 import { useFavorites } from "../context/FavoritesContext";
+import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
+
+/** Mockup hero 166×370 — design invitation 430px (comme l’éditeur) */
+const MOCK_W = 166;
+const MOCK_H = 370;
+const DESIGN_W = 430;
+const MOCK_SCALE = MOCK_W / DESIGN_W;
 
 const PACKS = [
   {
@@ -136,6 +143,7 @@ function DigitalProductDetailPage() {
   const [packId, setPackId] = useState("essentiel");
   const [openAcc, setOpenAcc] = useState(-1);
   const [heroSlide, setHeroSlide] = useState(0);
+  const [demoOpen, setDemoOpen] = useState(false);
 
   useEffect(() => {
     if (slug === "celestial") {
@@ -152,6 +160,13 @@ function DigitalProductDetailPage() {
     () => DIGITAL_CATALOG_PRODUCTS.filter((p) => p.id !== product.slug).slice(0, 2),
     [product.slug]
   );
+
+  const inviteTemplate = useMemo(
+    () => getDigitalInviteTemplate(product.slug),
+    [product.slug]
+  );
+  const DemoComponent = inviteTemplate?.Component;
+  const demoInvite = inviteTemplate?.defaults;
 
   const phoneSrc = product.invi || product.cover;
 
@@ -172,16 +187,17 @@ function DigitalProductDetailPage() {
 
   useEffect(() => {
     setHeroSlide(0);
+    setDemoOpen(false);
   }, [product.slug]);
+
+  useEffect(() => {
+    setDemoOpen(false);
+  }, [heroSlide]);
 
   const handleOrder = () => {
     navigate(`/invitations-digital/${product.slug}/extras`, {
       state: { pack: selectedPack.id, fromOverview: true },
     });
-  };
-
-  const handlePlayDemo = () => {
-    navigate(product.demoTo, { state: { pack: selectedPack.id, fromOverview: true } });
   };
 
   return (
@@ -202,48 +218,109 @@ function DigitalProductDetailPage() {
       </nav>
 
       <div className="mx-auto w-full max-w-[428px] px-4 pb-0 pt-5 md:max-w-3xl lg:grid lg:max-w-6xl lg:grid-cols-2 lg:gap-12 lg:px-8 lg:pt-10">
-        {/* Hero 396×538 — fond Group 555 + téléphone + points (tous produits) */}
+        {/* Hero 396×538 — fleurs coins (haut-gauche / bas-droite), bg déjà dans la vidéo */}
         <div className="relative mx-auto h-[538px] w-[396px] max-w-full overflow-hidden rounded-[24px] bg-[#F7F6F1] lg:mx-0">
-          <img
-            src={`${a.heroFloralBg}?v=g555`}
-            alt=""
+          {/* Coin haut-gauche — fond crème = card (évite la bande noire native <video>) */}
+          <video
+            className="pointer-events-none absolute z-[1] object-cover"
+            style={{
+              width: 76,
+              height: 88,
+              left: -8,
+              top: -12,
+              transform: "rotate(-180deg)",
+              backgroundColor: "#F7F6F1",
+            }}
+            autoPlay
+            loop
+            muted
+            playsInline
             aria-hidden
-            className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
-            draggable={false}
-          />
+          >
+            <source src={a.flowerAppear} type="video/mp4" />
+          </video>
+          {/* Coin bas-droite */}
+          <video
+            className="pointer-events-none absolute z-[1] object-cover"
+            style={{
+              width: 76,
+              height: 88,
+              right: -8,
+              bottom: -12,
+              backgroundColor: "#F7F6F1",
+            }}
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden
+          >
+            <source src={a.flowerAppear} type="video/mp4" />
+          </video>
 
-          {activeSlide.play ? (
+          {activeSlide.play && !demoOpen ? (
             <p className="absolute left-1/2 top-[34px] z-10 w-[273px] -translate-x-1/2 text-center font-glacial text-[14px] leading-[18px] text-[#78716c]">
               Lancer la vidéo interactive
             </p>
           ) : null}
 
-          <button
-            type="button"
-            onClick={activeSlide.play ? handlePlayDemo : undefined}
+          <div
             className="absolute left-1/2 top-[72px] z-10 flex h-[370px] w-[166px] -translate-x-1/2 items-center justify-center"
-            aria-label={activeSlide.play ? "Lancer la démo" : product.name}
+            style={{ width: MOCK_W, height: MOCK_H }}
           >
             <div className="relative h-full w-full overflow-hidden rounded-[28px] border-[2.5px] border-[#131313] bg-[#131313] shadow-[0_18px_40px_-16px_rgba(75,66,66,0.45)]">
-              <img
-                src={`${activeSlide.src}?v=g4`}
-                alt={product.name}
-                className="h-full w-full object-cover object-top"
-                draggable={false}
-              />
+              {demoOpen && DemoComponent ? (
+                <div
+                  className="hide-scrollbar h-full w-full overflow-x-hidden overflow-y-auto bg-black"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  <div
+                    style={{
+                      width: DESIGN_W,
+                      zoom: MOCK_SCALE,
+                      minHeight: Math.ceil(MOCK_H / MOCK_SCALE),
+                    }}
+                  >
+                    <DemoComponent
+                      invite={demoInvite}
+                      previewMode
+                      demoInMockup
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <img
+                    src={`${activeSlide.src}?v=g4`}
+                    alt={product.name}
+                    className="h-full w-full object-cover object-top"
+                    draggable={false}
+                  />
+                  {activeSlide.play ? (
+                    <button
+                      type="button"
+                      onClick={() => setDemoOpen(true)}
+                      className="absolute inset-0 flex items-center justify-center bg-black/10"
+                      aria-label="Lancer la démo dans le mockup"
+                    >
+                      <img
+                        src={a.vectorPlay}
+                        alt=""
+                        className="object-contain drop-shadow-md"
+                        style={{ width: 22, height: 25 }}
+                        draggable={false}
+                        aria-hidden
+                      />
+                    </button>
+                  ) : null}
+                </>
+              )}
               <span
                 className="pointer-events-none absolute left-1/2 top-[8px] z-10 h-[8px] w-[40px] -translate-x-1/2 rounded-full bg-[#131313]"
                 aria-hidden
               />
-              {activeSlide.play ? (
-                <span className="absolute inset-0 flex items-center justify-center bg-black/10">
-                  <span className="flex size-14 items-center justify-center rounded-full bg-white text-[#4B4242] shadow-md ring-1 ring-black/10">
-                    <FiPlay className="ml-0.5 size-6 fill-current" aria-hidden />
-                  </span>
-                </span>
-              ) : null}
             </div>
-          </button>
+          </div>
 
           <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5">
             {heroSlides.map((_, i) => (
@@ -284,8 +361,8 @@ function DigitalProductDetailPage() {
           {product.desc}
         </p>
 
-        {/* Packs */}
-        <div className="mt-6 space-y-3">
+        {/* Packs — Figma 399×82 */}
+        <div className="mt-6 flex flex-col items-center gap-3">
           {PACKS.map((pack) => {
             const active = pack.id === packId;
             return (
@@ -293,7 +370,7 @@ function DigitalProductDetailPage() {
                 key={pack.id}
                 type="button"
                 onClick={() => setPackId(pack.id)}
-                className="relative flex w-full overflow-hidden rounded-[5px] border-[0.5px] border-[#C4A69C] bg-white text-left"
+                className="relative flex h-[82px] w-[399px] max-w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-[#C4A69C] bg-white text-left"
               >
                 {active ? (
                   <span
@@ -301,9 +378,9 @@ function DigitalProductDetailPage() {
                     className="absolute inset-y-0 left-0 w-[194px] max-w-[48%] bg-gradient-to-r from-[#C4A69C]/90 to-white/20"
                   />
                 ) : null}
-                <span className="relative flex w-full items-start gap-3 px-4 py-4">
+                <span className="relative flex h-full w-full items-center gap-3 px-4">
                   <span
-                    className={`mt-1.5 size-[14px] shrink-0 rounded-full border ${
+                    className={`size-[14px] shrink-0 rounded-full border ${
                       active
                         ? "border-[#332B29] bg-[#332B29]"
                         : "border-[#C4A69C] bg-white"
@@ -311,15 +388,15 @@ function DigitalProductDetailPage() {
                     aria-hidden
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-start justify-between gap-3">
-                      <span className="font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="font-lora text-[18px] font-normal leading-[22px] tracking-[-0.18px] text-[#4B4242]">
                         {pack.label}
                       </span>
-                      <span className="shrink-0 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
+                      <span className="shrink-0 font-lora text-[18px] font-normal leading-[22px] tracking-[-0.18px] text-[#4B4242]">
                         {pack.priceLabel}
                       </span>
                     </span>
-                    <span className="mt-0 block font-glacial text-[14px] leading-[18px] text-[#78716c]">
+                    <span className="mt-0.5 block font-glacial text-[14px] leading-[18px] text-[#78716c]">
                       {pack.desc}
                     </span>
                   </span>

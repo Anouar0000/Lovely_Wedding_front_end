@@ -9,15 +9,16 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { FiCornerDownLeft, FiCornerUpRight } from 'react-icons/fi';
 import useHistory from '../hooks/useHistory';
-import { templateData } from '../data/physical/templateData.js';
 import { useCanvasLayout } from '../hooks/useCanvasLayout';
 import { usePanAndZoom } from '../hooks/usePanAndZoom';
-import CardSwitcher from '../components/canvas/CardSwitcher';
 import { fontOptions } from '../config/fontConfig';
 import { useUnsafeZoneCollision } from '../hooks/useUnsafeZoneCollision';
 import ApparenceMenu from '../components/canvas/ApparenceMenu';
-import data from '../data/physical/categories.json';
 import { useCart } from '../context/CartContext';
+import {
+  PERSONALIZE_CARD_BACK,
+  PERSONALIZE_CARD_FRONT,
+} from '../components/home/homePhysicalAssets';
 const DEFAULT_CARD_SIZE_MM = { width: 100, height: 141.4 };
 
 const getCardSizeFromFormat = (formatValue) => {
@@ -82,13 +83,26 @@ const getResponsiveFontSize = (fontSize, dimensions) => {
 
 function PersonalizeInvitationPage() {
   const [activeTab, setActiveTab] = useState(null);
-  const [currentCard, setCurrentCard] = useState('front');
+  const [currentCard] = useState('front');
   
   const navigate = useNavigate();
   const location = useLocation();
   const { addItem } = useCart();
   const mergedState = location.state || {};
-  const { model, format, motif } = mergedState;
+  const { model: rawModel, format, motif } = mergedState;
+  /** Page Personnalise uniquement : Rect 6 = invi 1.1, Rect 35 = invi 1.2 */
+  const model = useMemo(
+    () =>
+      rawModel
+        ? {
+            ...rawModel,
+            image: PERSONALIZE_CARD_FRONT,
+            modelImage: PERSONALIZE_CARD_FRONT,
+            modelImagep2: PERSONALIZE_CARD_BACK,
+          }
+        : null,
+    [rawModel]
+  );
   const unsafeZoneEditorEnabled = process.env.REACT_APP_UNSAFE_ZONE_EDITOR === 'true';
   const quantityValue = Object.entries(mergedState).find(([key]) => key.startsWith('qt'))?.[1];
   const selectedCardSize = useMemo(() => getCardSizeFromFormat(format), [format]);
@@ -190,37 +204,6 @@ const {
     });
   }, [currentCard, setCardContent]);
 
-  // Initial load: saved design from catalog, else template defaults
-useEffect(() => {
-  if (cardContent.front.textBoxes.length > 0) return;
-
-  if (model?.textBoxesFront?.length) {
-    setCardContent(
-      {
-        front: { textBoxes: model.textBoxesFront },
-        back: { textBoxes: model.textBoxesBack || [] },
-      },
-      true
-    );
-    return;
-  }
-
-  const templateId = model?.templateId;
-  if (!templateId) return;
-
-  const template = templateData[templateId];
-  if (template?.prefilledTextBoxes) {
-    const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
-      ...box,
-      position: { x: box.position.x, y: box.position.y },
-      width: box.width,
-    }));
-    
-    const initialContent = { front: { textBoxes: responsiveTextBoxes }, back: { textBoxes: [] } };
-    setCardContent(initialContent, true); 
-  }
-}, [model?.templateId, model?.textBoxesFront, model?.textBoxesBack, cardContent.front.textBoxes.length, setCardContent]);
-
   useEffect(() => {
     setSelectedTextId(null);
   }, [currentCard]);
@@ -242,17 +225,31 @@ useEffect(() => {
   }, [selectedTextId, cardContent, currentCard, updateCurrentCardTextBoxes]);
   
   const handleAddText = () => {
-    if (!canvasDimensions.width || !canvasDimensions.height) return;
-    const defaultWidth = Math.min(150, canvasDimensions.width * 0.45);
+    const width = canvasDimensions.width || parseFloat(canvasStyle.width) || 300;
+    const height = canvasDimensions.height || parseFloat(canvasStyle.height) || 420;
+    const dims = { width, height };
+    const defaultWidth = Math.min(150, width * 0.45);
     const newTextBox = {
       id: Date.now(),
-      text: 'Nouveau texte',
-      style: { fontSize: 16, bold: false, italic: false, alignment: 'center', color: '#000000', lineHeight: 1.5, fontFamily: 'Playfair Display' },
-      position: toPercentPosition({ x: canvasDimensions.width / 2 - defaultWidth / 2, y: canvasDimensions.height / 2 - 20 }, canvasDimensions),
-      width: toPercentWidth(defaultWidth, canvasDimensions),
+      text: "Nouveau texte",
+      style: {
+        fontSize: 16,
+        bold: false,
+        italic: false,
+        alignment: "center",
+        color: "#4B4242",
+        lineHeight: 1.5,
+        fontFamily: "Playfair Display",
+      },
+      position: toPercentPosition(
+        { x: width / 2 - defaultWidth / 2, y: height / 2 - 20 },
+        dims
+      ),
+      width: toPercentWidth(defaultWidth, dims),
     };
-    updateCurrentCardTextBoxes(prevTextBoxes => [...prevTextBoxes, newTextBox]); 
+    updateCurrentCardTextBoxes((prev) => [...prev, newTextBox]);
     setSelectedTextId(newTextBox.id);
+    setActiveTab(null);
   };
   
   const handleUpdateText = (id, newText) => updateCurrentCardTextBoxes(textBoxes.map(box => box.id === id ? { ...box, text: newText } : box));
@@ -398,38 +395,27 @@ const handleDesignChange = (newDesignData) => {
 
   const selectedUnsafeZone = editableUnsafeZones.find((zone) => zone.id === selectedUnsafeZoneId) || editableUnsafeZones[0];
 
-  // Corrected handler, now expects the full data object
-  const handleTemplateChange = (newTemplateData) => {
-    if (newTemplateData && newTemplateData.templateId && templateData[newTemplateData.templateId]?.prefilledTextBoxes) {
-        const template = templateData[newTemplateData.templateId];
-        
-        const responsiveTextBoxes = template.prefilledTextBoxes.map(box => ({
-            ...box,
-            position: { x: box.position.x, y: box.position.y },
-            width: box.width,
-        }));
-        
-        const newContent = {
-            front: { textBoxes: responsiveTextBoxes },
-            back: { textBoxes: [] }
-        };
-
-        setCardContent(newContent, true);
-    }
+  const handleTemplateChange = () => {
+    // Images Figma uniquement — pas de texte template
   };
 
   const renderTextBoxes = (cardKey) => {
+    if (cardKey !== "front") return null;
     const boxes = renderedCardContent[cardKey]?.textBoxes || [];
     return (
-      <div 
-        className="absolute top-0 left-0 w-full h-full"
-        style={{ 
-            visibility: currentCard === cardKey ? 'visible' : 'hidden',
-            pointerEvents: currentCard === cardKey ? 'auto' : 'none' 
-        }}
-      >
+      <div className="absolute top-0 left-0 h-full w-full">
         {boxes.map((box) => (
-          <TextBox key={box.id} {...box} isSelected={box.id === selectedTextId && currentCard === cardKey} onSelect={setSelectedTextId} onUpdate={handleUpdateText} onUpdatePosition={handleUpdatePosition} onUpdateWidth={handleUpdateWidth} scale={scale} onInteractionChange={handleChildInteraction} />
+          <TextBox
+            key={box.id}
+            {...box}
+            isSelected={box.id === selectedTextId}
+            onSelect={setSelectedTextId}
+            onUpdate={handleUpdateText}
+            onUpdatePosition={handleUpdatePosition}
+            onUpdateWidth={handleUpdateWidth}
+            scale={scale}
+            onInteractionChange={handleChildInteraction}
+          />
         ))}
       </div>
     );
@@ -505,11 +491,22 @@ const handleDesignChange = (newDesignData) => {
     ))
   );
   
-  const activeCardStyle = { transform: 'scale(1) translateX(-3%)', zIndex: 10 };
-  const inactiveCardStyle = { transform: 'scale(0.92) translateX(9%)', zIndex: 5 };
-  
-// Determine the current active scale based on the card's style
-const currentScale = (currentCard === 'front' ? activeCardStyle : inactiveCardStyle).transform.match(/scale\(([^)]+)\)/)[1] || 1;
+  /* Figma : Rect 6 (1.1) devant, Rect 35 (1.2) derrière à droite */
+  const backPeekStyle = {
+    width: "65%",
+    height: "112%",
+    left: "38%",
+    top: "-6%",
+    zIndex: 5,
+  };
+  const frontCardStyle = {
+    width: "100%",
+    height: "100%",
+    left: "0%",
+    top: "0%",
+    zIndex: 10,
+  };
+  const currentScale = 1;
 
 // Pass this scale to the hook
 const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardContent, currentCard, contentContainerRef, currentScale);
@@ -529,28 +526,25 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
     };
   }, []);
 
-  // NEW: State for design options, moved up from MainMenu
+  // Design options — mêmes cartes Personnalise (1.1) tant que les designs client ne sont pas prêts
   const [designOptions, setDesignOptions] = useState([]);
-  // NEW: useEffect to calculate designOptions. This logic is now here.
   useEffect(() => {
-    if (model?.name) {
-      const nameParts = model.name.split(' ');
-      const category = nameParts[nameParts.length - 1];
-      const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
-      const categoryModels = data.models[capitalizedCategory];
-
-      if (categoryModels) {
-        const options = Object.keys(categoryModels).map(templateId => ({
-            templateId: templateId,
-            name: categoryModels[templateId].name,
-            frontImage: categoryModels[templateId].modelImage,
-            fullData: categoryModels[templateId]
-        }));
-        setDesignOptions(options);
-      } else {
-        setDesignOptions([]);
-      }
-    }
+    const base = {
+      name: model?.name || "Design",
+      modelImage: PERSONALIZE_CARD_FRONT,
+      modelImagep2: PERSONALIZE_CARD_BACK,
+      templateId: model?.templateId || "m1",
+      price: model?.price,
+      unitPrice: model?.unitPrice ?? model?.price,
+    };
+    setDesignOptions(
+      [1, 2, 3].map((i) => ({
+        templateId: `placeholder-${i}`,
+        name: `${base.name} ${i}`,
+        frontImage: PERSONALIZE_CARD_FRONT,
+        fullData: { ...base, templateId: base.templateId },
+      }))
+    );
   }, [model]);
 
   useEffect(() => {
@@ -560,7 +554,7 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-lw-surface font-glacial text-lw-text">
+    <div className="relative min-h-screen bg-[#F4F4F4] font-urbanist text-[#4B4242]">
       <div
         aria-hidden="true"
         className="fixed pointer-events-none"
@@ -570,38 +564,76 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
         {model?.modelImagep2 && renderExportCard('back', model?.modelImagep2, exportBackRef)}
       </div>
 
-      <div ref={headerRef} className="fixed top-0 left-0 z-50 w-full border-b border-lw-line bg-white/95 py-4 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4">
-            <div className="flex space-x-2">
-                <button
-                  type="button"
-                  onClick={() => navigate('/invitations-physique')}
-                  className="rounded-[5px] border border-lw-line p-1.5"
-                  aria-label="Fermer"
-                >
-                  ✕
-                </button>
-                <button type="button" onClick={undo} disabled={!canUndo} className="rounded-[5px] border border-lw-line p-1.5 disabled:cursor-not-allowed disabled:opacity-50"><FiCornerDownLeft /></button>
-                <button type="button" onClick={redo} disabled={!canRedo} className="rounded-[5px] border border-lw-line p-1.5 disabled:cursor-not-allowed disabled:opacity-50"><FiCornerUpRight /></button>
-            </div>
-            <h1 className="flex-1 text-center lw-logo text-[16px] sm:text-[18px]">
-              {model?.name?.replace(/^Modèle\s/, '') || 'Personnalisation'}
-            </h1>
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              {unsafeZoneEditorEnabled && (
-                <button
-                  type="button"
-                  onClick={() => setUnsafeZoneEditorOpen((isOpen) => !isOpen)}
-                  className={`rounded-[5px] border px-3 py-2 font-glacial text-sm ${
-                    unsafeZoneEditorOpen ? 'border-lw-accent bg-lw-accent text-white' : 'border-lw-line bg-white text-lw-text'
-                  }`}
-                >
-                  Zones
-                </button>
-              )}
-              <button type="button" onClick={handleAddToCartAndCheckout} className="rounded-[5px] bg-lw-accent px-4 py-2 font-glacial text-sm font-bold uppercase text-white hover:bg-lw-accentDark">Commander</button>
-              <button type="button" onClick={handleDownloadExact} className="rounded-[5px] border border-lw-line bg-white px-3 py-2 font-glacial text-sm font-semibold">PDF</button>
-            </div>
+      <div
+        ref={headerRef}
+        className="fixed top-0 left-0 z-50 h-[86px] w-full bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)]"
+      >
+        <div className="relative mx-auto flex h-full max-w-[430px] items-center px-4 sm:max-w-6xl">
+          <div className="absolute left-4 top-1/2 flex -translate-y-1/2 items-center gap-[6px]">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="flex size-[29px] items-center justify-center"
+              aria-label="Fermer"
+            >
+              <svg width={29} height={29} viewBox="0 0 29 29" fill="none" aria-hidden>
+                <rect x={2.5} y={2.5} width={24} height={24} rx={2} stroke="#292D32" strokeWidth={1.5} />
+                <path d="M9 9l11 11M20 9L9 20" stroke="#292D32" strokeWidth={1.5} strokeLinecap="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={undo}
+              disabled={!canUndo}
+              className="flex size-[29px] items-center justify-center disabled:opacity-40"
+              aria-label="Annuler"
+            >
+              <FiCornerDownLeft size={18} color="#292D32" />
+            </button>
+            <button
+              type="button"
+              onClick={redo}
+              disabled={!canRedo}
+              className="flex size-[29px] items-center justify-center disabled:opacity-40"
+              aria-label="Rétablir"
+            >
+              <FiCornerUpRight size={18} color="#292D32" />
+            </button>
+          </div>
+
+          <h1 className="mx-auto max-w-[168px] truncate text-center font-abhaya text-[20px] font-medium leading-6 text-[#4B4242]">
+            {model?.name?.replace(/^Modèle\s/, "") || "Personnalisation"}
+          </h1>
+
+          <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-2">
+            {unsafeZoneEditorEnabled && (
+              <button
+                type="button"
+                onClick={() => setUnsafeZoneEditorOpen((isOpen) => !isOpen)}
+                className={`rounded-[5px] border px-2 py-1 text-xs ${
+                  unsafeZoneEditorOpen
+                    ? "border-[#A97C72] bg-[#A97C72] text-white"
+                    : "border-[#A19A9A] bg-white text-[#4B4242]"
+                }`}
+              >
+                Zones
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleDownloadExact}
+              className="rounded-[5px] border border-[#A19A9A] bg-white px-2 py-1 text-xs font-semibold"
+            >
+              PDF
+            </button>
+            <button
+              type="button"
+              onClick={handleAddToCartAndCheckout}
+              className="rounded-full bg-[#A97C72] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#966B62]"
+            >
+              Commander
+            </button>
+          </div>
         </div>
       </div>
 
@@ -667,67 +699,88 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
       )}
       
       <main
-        className="mx-auto flex w-full max-w-6xl flex-col items-center"
+        className="mx-auto flex w-full max-w-[430px] flex-col items-center sm:max-w-6xl"
         style={{ paddingTop: `${mainPadding.top}px`, paddingBottom: `${mainPadding.bottom}px` }}
       >
-        <div className="relative mx-auto" style={{ width: canvasStyle.width, height: canvasStyle.height }}>
-          <div ref={wrapperRef} className="absolute top-0 left-0 w-full h-full bg-transparent touch-none overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full" style={{ transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`, transition: isInteracting ? 'none' : 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)'}}>
-              <div ref={contentContainerRef} onClick={handleCanvasClick} className="relative w-full h-full flex items-center justify-center">
-                  {model?.modelImagep2 && (
-                    <div
-                      className="absolute w-full h-full transition-all duration-300 ease-in-out"
-                      style={{
-                        backgroundImage: `url(${model.modelImagep2})`,
-                        backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat',
-                        ...(currentCard === 'back' ? activeCardStyle : inactiveCardStyle),
-                      }}
-                    >
-                      {renderTextBoxes('back')}
-                    </div>
-                  )}
+        <div
+          className="relative mx-auto w-full max-w-[430px]"
+          style={{
+            width: canvasStyle.width,
+            height: canvasStyle.height,
+            maxWidth: 430,
+            marginTop: 160,
+          }}
+        >
+          <div ref={wrapperRef} className="absolute inset-0 touch-none overflow-visible bg-transparent">
+            <div
+              className="absolute inset-0"
+              style={{
+                transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
+                transition: isInteracting ? "none" : "transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)",
+              }}
+            >
+              <div
+                ref={contentContainerRef}
+                onClick={handleCanvasClick}
+                className="relative mx-auto h-full"
+                style={{ width: canvasStyle.width, maxWidth: "100%" }}
+              >
+                {/* Verso 1.2 — derrière à droite (Rect 35) */}
+                {model?.modelImagep2 ? (
                   <div
-                    className="absolute w-full h-full transition-all duration-300 ease-in-out"
+                    className="absolute overflow-hidden shadow-sm"
                     style={{
-                      backgroundImage: `url(${model?.modelImage})`,
-                      backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat',
-                      ...(currentCard === 'front' ? activeCardStyle : (model?.modelImagep2 ? inactiveCardStyle : activeCardStyle)),
+                      backgroundImage: `url(${model.modelImagep2})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                      ...backPeekStyle,
                     }}
-                  >
-                    {renderUnsafeZones()}
-                    {renderTextBoxes('front')}
-                  </div>
+                    aria-hidden
+                  />
+                ) : null}
+
+                {/* Recto 1.1 — devant (Rect 6) */}
+                <div
+                  className="absolute overflow-hidden bg-white shadow-md"
+                  style={{
+                    backgroundImage: `url(${model?.modelImage})`,
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    ...frontCardStyle,
+                  }}
+                >
+                  {renderUnsafeZones()}
+                  <div className="absolute inset-0 z-20">{renderTextBoxes("front")}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <CardSwitcher model={model} currentCard={currentCard} setCurrentCard={setCurrentCard} />
       </main>
 
-      <div ref={mainMenuRef} className="fixed bottom-0 left-0 w-full z-40 px-0 sm:px-4 sm:pb-4">
-        {selectedTextId && textBoxes.find(b => b.id === selectedTextId) ? (
+      <div ref={mainMenuRef} className="fixed bottom-0 left-0 z-40 w-full">
+        {selectedTextId && textBoxes.find((b) => b.id === selectedTextId) ? (
           <BottomMenu
             onDelete={handleDeleteText}
             setSelectedTextId={setSelectedTextId}
-            fontSize={textBoxes.find(b => b.id === selectedTextId)?.style.fontSize || 16}
-            setFontSize={size => updateTextStyle('fontSize', size)}
-            lineHeight={textBoxes.find(b => b.id === selectedTextId)?.style.lineHeight || 1.5}
-            setLineHeight={line => updateTextStyle('lineHeight', line)}
-            alignment={textBoxes.find(b => b.id === selectedTextId)?.style.alignment || 'center'}
-            setAlignment={val => updateTextStyle('alignment', val)}
-            fontFamily={textBoxes.find(b => b.id === selectedTextId)?.style.fontFamily}
-            setFontFamily={val => updateTextStyle('fontFamily', val)}
-            textColor={textBoxes.find(b => b.id === selectedTextId)?.style.color || '#000000'}
-            setTextColor={val => updateTextStyle('color', val)}
-            activeTab={activeTab} // Pass these for BottomMenu's own tabs
-            setActiveTab={setActiveTab}
-            // Pass any other missing props like isBold, isItalic if your BottomMenu needs them
-            isBold={textBoxes.find(b => b.id === selectedTextId)?.style.bold || false}
-            setIsBold={val => updateTextStyle('bold', val)}
-            isItalic={textBoxes.find(b => b.id === selectedTextId)?.style.italic || false}
-            setIsItalic={val => updateTextStyle('italic', val)}
+            fontSize={textBoxes.find((b) => b.id === selectedTextId)?.style.fontSize || 16}
+            setFontSize={(size) => updateTextStyle("fontSize", size)}
+            lineHeight={textBoxes.find((b) => b.id === selectedTextId)?.style.lineHeight || 1.5}
+            setLineHeight={(line) => updateTextStyle("lineHeight", line)}
+            alignment={textBoxes.find((b) => b.id === selectedTextId)?.style.alignment || "center"}
+            setAlignment={(val) => updateTextStyle("alignment", val)}
+            fontFamily={textBoxes.find((b) => b.id === selectedTextId)?.style.fontFamily}
+            setFontFamily={(val) => updateTextStyle("fontFamily", val)}
+            textColor={textBoxes.find((b) => b.id === selectedTextId)?.style.color || "#000000"}
+            setTextColor={(val) => updateTextStyle("color", val)}
+            textTransform={textBoxes.find((b) => b.id === selectedTextId)?.style.textTransform || "none"}
+            setTextTransform={(val) => updateTextStyle("textTransform", val)}
+            smallCaps={Boolean(textBoxes.find((b) => b.id === selectedTextId)?.style.smallCaps)}
+            setSmallCaps={(val) => updateTextStyle("smallCaps", val)}
           />
-        ) : activeTab === 'design' ? (
+        ) : activeTab === "design" ? (
           <ApparenceMenu
             model={model}
             designOptions={designOptions}
@@ -738,7 +791,7 @@ const activeUnsafeZones = useUnsafeZoneCollision(effectiveModel, renderedCardCon
         ) : (
           <MainMenu
             onAddText={handleAddText}
-            onShowApparenceMenu={() => setActiveTab('design')}
+            onShowApparenceMenu={() => setActiveTab("design")}
           />
         )}
       </div>

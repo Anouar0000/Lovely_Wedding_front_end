@@ -88,6 +88,12 @@ export const homeDigitalAssets = {
   productOverviewPhones: `${FIGMA}/product-overview-phones.png`,
   /** Fond fleuri Figma Group 555 — 396×538 */
   heroFloralBg: `${FIGMA}/hero-floral-bg.png`,
+  heroFloralTl: `${FIGMA}/hero-floral-tl.png`,
+  heroFloralBr: `${FIGMA}/hero-floral-br.png`,
+  /** Fleurs animées — product overview digital */
+  flowerAppear: `${FIGMA}/flower-appear.mp4`,
+  /** Icône play — product overview mockup */
+  vectorPlay: `${FIGMA}/vector-play.png`,
   /** Galerie fiche produit — slides téléphone 1/2/3 */
   gallerySidi1: `${FIGMA}/gallery-sidi-1.jpg`,
   gallerySidi2: `${FIGMA}/gallery-sidi-2.jpg`,

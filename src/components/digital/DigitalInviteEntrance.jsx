@@ -12,6 +12,8 @@ function DigitalInviteEntrance({
   background = "#000",
   autoOpenAfterMs,
   autoOnly = false,
+  /** Dans un mockup : absolute au lieu de fixed plein écran */
+  contained = false,
   onOpen,
 }) {
   const videoRef = useRef(null);
@@ -52,10 +54,14 @@ function DigitalInviteEntrance({
 
   if (!image && !video) return null;
 
+  const shellClass = contained
+    ? "absolute inset-0 z-[10000] flex items-center justify-center"
+    : "fixed inset-0 z-[10000] flex items-center justify-center";
+
   if (autoOnly) {
     return (
       <div
-        className="fixed inset-0 z-[10000] flex items-center justify-center"
+        className={shellClass}
         style={{ background }}
         aria-hidden
       >
@@ -84,7 +90,7 @@ function DigitalInviteEntrance({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex cursor-pointer items-center justify-center"
+      className={`${shellClass} cursor-pointer`}
       style={{ background }}
       role="button"
       tabIndex={0}

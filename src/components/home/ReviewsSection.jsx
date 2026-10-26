@@ -60,7 +60,7 @@ function Stars({ size = "sm", className = "", label }) {
 
 function ReviewsSection() {
   return (
-    <section id="our-story" className="scroll-mt-24 bg-[#f7f2ec] px-4 py-12 lg:px-8 lg:py-20">
+    <section id="our-story" className="scroll-mt-24 bg-[#f7f2ec] px-4 pt-12 pb-6 lg:px-8 lg:pt-20 lg:pb-10">
       <div className="mx-auto w-full max-w-[399px] lg:max-w-xl">
         <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-lw-text lg:text-[40px] lg:leading-tight">
           Lettres d&apos;amour
@@ -113,7 +113,7 @@ function ReviewsSection() {
 
         <a
           href="#our-story"
-          className="mx-auto mt-8 flex h-12 items-center gap-2.5 px-1 font-glacial text-[14px] font-bold leading-6 text-[#a97c72]"
+          className="mx-auto mt-8 flex h-12 w-fit items-center gap-2.5 px-1 font-glacial text-[14px] font-bold leading-6 text-[#a97c72]"
         >
           Lire tous les avis
           <ArrowIcon />

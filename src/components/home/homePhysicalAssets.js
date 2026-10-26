@@ -1,6 +1,12 @@
 const FIGMA = "/assets/home-physical/figma";
 
+/** Uniquement page Personnalise — ne change pas les images catalogue */
+export const PERSONALIZE_CARD_FRONT = `${FIGMA}/invi-1-1.png`;
+export const PERSONALIZE_CARD_BACK = `${FIGMA}/invi-1-2.png`;
+
 export const homePhysicalAssets = {
+  personalizeCardFront: PERSONALIZE_CARD_FRONT,
+  personalizeCardBack: PERSONALIZE_CARD_BACK,
   heroVisual: `${FIGMA}/hero-visual.png`,
   // Hero rail — 6 visuels distincts (catalog-1 = produit-1, éviter le doublon)
   heroCoverSacre: `${FIGMA}/product-1.png`,

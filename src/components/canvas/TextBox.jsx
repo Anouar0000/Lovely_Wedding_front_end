@@ -165,9 +165,11 @@ function TextBox({ id, text, style, position, width, onSelect, onUpdate, onUpdat
                     width: `${boxWidth}px`,
                     maxWidth: '100%',
                     fontFamily: style.fontFamily || 'serif',
+                    textTransform: style.textTransform && style.textTransform !== 'none' ? style.textTransform : 'none',
+                    fontVariant: style.smallCaps ? 'small-caps' : 'normal',
                     userSelect: isEditing || resizing ? 'none' : 'auto',
-                    touchAction: 'none', // Prevents page zoom on mobile
-                    direction: style.direction || 'ltr', // Add this line
+                    touchAction: 'none',
+                    direction: style.direction || 'ltr',
                 }}
             >
                 {isSelected && !isEditing && (
