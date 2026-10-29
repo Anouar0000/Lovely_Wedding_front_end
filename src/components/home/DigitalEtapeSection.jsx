@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import useHorizontalWheelScroll from "../../hooks/useHorizontalWheelScroll";
 import { homeDigitalAssets as a } from "./homeDigitalAssets";
 
 /**
@@ -11,13 +12,13 @@ const STEPS = [
   { alt: "Étape 3 : Recevez votre invitation", image: `${a.stepDigital3}?v=group64` },
 ];
 
-function StepCard({ step, compact = false, dots = null }) {
+function StepCard({ step, compact = false }) {
   return (
     <div
       className={
         compact
           ? "relative w-[280px] shrink-0 overflow-hidden bg-[#F7F2EC]"
-          : "relative w-full overflow-hidden bg-[#F7F2EC]"
+          : "relative w-full shrink-0 snap-center overflow-hidden bg-[#F7F2EC]"
       }
     >
       <img
@@ -30,37 +31,72 @@ function StepCard({ step, compact = false, dots = null }) {
         }
         draggable={false}
       />
-      {dots ? (
-        <div className="absolute inset-x-0 bottom-4 z-[1] flex justify-center gap-1.5">{dots}</div>
-      ) : null}
     </div>
   );
 }
 
 function DigitalEtapeSection() {
   const [step, setStep] = useState(0);
+  const scrollerRef = useRef(null);
+  useHorizontalWheelScroll(scrollerRef);
+
+  const syncStep = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const w = el.clientWidth || 1;
+    const i = Math.round(el.scrollLeft / w);
+    setStep(Math.max(0, Math.min(STEPS.length - 1, i)));
+  }, []);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return undefined;
+    syncStep();
+    el.addEventListener("scroll", syncStep, { passive: true });
+    window.addEventListener("resize", syncStep);
+    return () => {
+      el.removeEventListener("scroll", syncStep);
+      window.removeEventListener("resize", syncStep);
+    };
+  }, [syncStep]);
+
+  const goTo = (i) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+    setStep(i);
+  };
 
   return (
     <section id="livraison" className="scroll-mt-24 bg-[#F7F2EC]">
-      {/* Mobile — carousel juste sous Delicate Beige */}
+      {/* Mobile — carrousel horizontal (molette → gauche/droite) */}
       <div className="relative mx-auto w-full max-w-[428px] lg:hidden">
-        <StepCard
-          step={STEPS[step]}
-          dots={STEPS.map((_, i) => (
+        <div
+          ref={scrollerRef}
+          className="flex snap-x snap-mandatory overflow-x-auto hide-scrollbar"
+        >
+          {STEPS.map((s, i) => (
+            <div key={i} className="w-full shrink-0 snap-center">
+              <StepCard step={s} />
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[1] flex justify-center gap-1.5">
+          {STEPS.map((_, i) => (
             <button
               key={i}
               type="button"
               aria-label={`Étape ${i + 1}`}
               aria-current={i === step ? "true" : undefined}
-              onClick={() => setStep(i)}
+              onClick={() => goTo(i)}
               className={
                 i === step
-                  ? "h-[6px] w-[18px] rounded-full bg-lw-text transition-all"
-                  : "h-[6px] w-[6px] rounded-full bg-[#C9BDB3] transition-all"
+                  ? "pointer-events-auto h-[6px] w-[18px] rounded-full bg-lw-text transition-all"
+                  : "pointer-events-auto h-[6px] w-[6px] rounded-full bg-[#C9BDB3] transition-all"
               }
             />
           ))}
-        />
+        </div>
       </div>
 
       {/* Desktop */}

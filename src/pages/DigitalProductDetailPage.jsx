@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiStar } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
@@ -16,6 +23,64 @@ const MOCK_W = 166;
 const MOCK_H = 370;
 const DESIGN_W = 430;
 const MOCK_SCALE = MOCK_W / DESIGN_W;
+
+/**
+ * Scale Safari-safe : `zoom` est ignoré / buggé sur iPhone Safari
+ * → transform:scale + boîte de layout à la taille visuelle.
+ */
+function MockupScaledDemo({ children }) {
+  const innerRef = useRef(null);
+  const [contentH, setContentH] = useState(Math.ceil(MOCK_H / MOCK_SCALE));
+
+  useLayoutEffect(() => {
+    const el = innerRef.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const next = el.scrollHeight || el.offsetHeight || 0;
+      if (next > 0) setContentH(next);
+    };
+    measure();
+    const ro =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    const imgs = el.querySelectorAll("img");
+    imgs.forEach((img) => img.addEventListener("load", measure));
+    return () => {
+      ro?.disconnect();
+      imgs.forEach((img) => img.removeEventListener("load", measure));
+    };
+  }, [children]);
+
+  return (
+    <div
+      data-demo-scroller
+      className="hide-scrollbar h-full w-full overflow-x-hidden overflow-y-auto bg-black"
+      style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+    >
+      <div
+        style={{
+          width: MOCK_W,
+          height: Math.max(MOCK_H, contentH * MOCK_SCALE),
+          position: "relative",
+        }}
+      >
+        <div
+          ref={innerRef}
+          style={{
+            width: DESIGN_W,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            transform: `scale(${MOCK_SCALE})`,
+            transformOrigin: "top left",
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const PACKS = [
   {
@@ -341,25 +406,13 @@ function DigitalProductDetailPage() {
           >
             <div className="relative h-full w-full overflow-hidden rounded-[28px] border-[2.5px] border-[#131313] bg-[#131313] shadow-[0_18px_40px_-16px_rgba(75,66,66,0.45)]">
               {demoOpen && DemoComponent ? (
-                <div
-                  data-demo-scroller
-                  className="hide-scrollbar h-full w-full overflow-x-hidden overflow-y-auto bg-black"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                >
-                  <div
-                    style={{
-                      width: DESIGN_W,
-                      zoom: MOCK_SCALE,
-                      minHeight: Math.ceil(MOCK_H / MOCK_SCALE),
-                    }}
-                  >
-                    <DemoComponent
-                      invite={demoInvite}
-                      previewMode
-                      demoInMockup
-                    />
-                  </div>
-                </div>
+                <MockupScaledDemo>
+                  <DemoComponent
+                    invite={demoInvite}
+                    previewMode
+                    demoInMockup
+                  />
+                </MockupScaledDemo>
               ) : (
                 <>
                   <img
@@ -559,7 +612,7 @@ function DigitalProductDetailPage() {
             Autres recommandations
           </h2>
           {/* Tuiles Figma 189×224 */}
-          <div className="mt-[53px] grid grid-cols-2 justify-items-center gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+          <div className="mt-[53px] grid grid-cols-2 gap-x-3 gap-y-12 sm:gap-x-5 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
             {recommendations.map((p) => (
               <DigitalCatalogCard
                 key={p.id}

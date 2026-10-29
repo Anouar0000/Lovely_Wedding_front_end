@@ -401,15 +401,15 @@ function InvitationModelPage() {
           <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-lw-text lg:text-[36px]">
             Autres recommandations
           </h2>
-          <div className="mt-[53px] grid grid-cols-2 justify-items-center gap-4 lg:gap-10">
+          <div className="mt-[53px] grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 lg:gap-x-10 lg:gap-y-12">
             {recommendations.map((r) => (
               <button
                 key={r.name}
                 type="button"
-                className="lw-product-card group w-[189px] p-1 text-left"
+                className="lw-product-card group w-full min-w-0 max-w-[189px] justify-self-center p-1 text-left"
                 onClick={() => openProduct(r)}
               >
-                <div className="lw-product-card-media relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]">
+                <div className="lw-product-card-media relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]">
                   <img
                     src={r.img}
                     alt={r.name}
@@ -418,10 +418,10 @@ function InvitationModelPage() {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <h3 className="mt-3 font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-lw-text">
+                <h3 className="mt-3 font-lora text-[16px] font-normal leading-6 tracking-[-0.18px] text-lw-text sm:text-[18px] sm:leading-[34px]">
                   {r.name}
                 </h3>
-                <p className="font-glacial text-[14px] leading-[18px] text-[#78716c]">
+                <p className="font-glacial text-[13px] leading-[18px] text-[#78716c] sm:text-[14px]">
                   Includes music, animations
                   <br />
                   {"& guestbook"}

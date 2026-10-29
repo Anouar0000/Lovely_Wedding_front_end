@@ -91,21 +91,23 @@ export function DigitalCatalogCard({
   liked,
   onToggleFavorite,
   onOpen,
-  /** true = tuile Figma fixe 189×224 (recommandations) */
+  /**
+   * Recommandations : ratio Figma 189×224, max 189px, mais fluide
+   * pour laisser un vrai gap sur mobile (2×189 ne rentre pas dans ~360px utiles).
+   */
   fixedTile = false,
 }) {
   const usePhoneMock = Boolean(product.screen);
-  const mediaBox = fixedTile
-    ? "lw-product-card-media relative h-[224px] w-[189px] overflow-hidden rounded-[5px] bg-[#fffaed]"
-    : "lw-product-card-media relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]";
+  const mediaBox =
+    "lw-product-card-media relative aspect-[189/224] w-full overflow-hidden rounded-[5px] bg-[#fffaed]";
 
   return (
     <article
       className={`lw-product-card group flex min-w-0 flex-col ${
-        fixedTile ? "w-[189px]" : "w-full max-w-full"
+        fixedTile ? "w-full max-w-[189px]" : "w-full max-w-full"
       }`}
     >
-      <div className={`relative min-w-0 ${fixedTile ? "w-[189px]" : "w-full"}`}>
+      <div className="relative w-full min-w-0">
         {/* Masque le cœur intégré dans les exports Figma (tuiles sans screen) */}
         {!usePhoneMock ? (
           <span
@@ -129,11 +131,7 @@ export function DigitalCatalogCard({
 
         <button type="button" className="w-full min-w-0 text-left" onClick={() => onOpen?.(product)}>
           {usePhoneMock ? (
-            <div
-              className={`lw-product-card-media overflow-hidden rounded-[5px] ${
-                fixedTile ? "h-[224px] w-[189px]" : "w-full"
-              }`}
-            >
+            <div className="lw-product-card-media w-full overflow-hidden rounded-[5px]">
               <CatalogPhoneMock src={product.screen} alt={product.name} />
             </div>
           ) : (
