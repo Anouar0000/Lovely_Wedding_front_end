@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
@@ -9,9 +9,16 @@ import PhysicalBestsellersSection from "../components/home/physical/PhysicalBest
 import FeaturesMarquee from "../components/home/FeaturesMarquee";
 import PhysicalExperienceSection from "../components/home/physical/PhysicalExperienceSection";
 import PhysicalDrageesSection from "../components/home/physical/PhysicalDrageesSection";
-import PhysicalSocialSection from "../components/home/physical/PhysicalSocialSection";
-import PhysicalReviewsSection from "../components/home/physical/PhysicalReviewsSection";
-import PhysicalFaqSection from "../components/home/physical/PhysicalFaqSection";
+
+const PhysicalSocialSection = lazy(() =>
+  import("../components/home/physical/PhysicalSocialSection")
+);
+const PhysicalReviewsSection = lazy(() =>
+  import("../components/home/physical/PhysicalReviewsSection")
+);
+const PhysicalFaqSection = lazy(() =>
+  import("../components/home/physical/PhysicalFaqSection")
+);
 
 /** Main Page physical — Figma 155:169 · parity mobile/desktop avec Digitale */
 function PhysicalHomePage() {
@@ -22,7 +29,7 @@ function PhysicalHomePage() {
     const id = hash.replace(/^#/, "");
     const t = window.setTimeout(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
+    }, 120);
     return () => window.clearTimeout(t);
   }, [hash]);
 
@@ -49,9 +56,11 @@ function PhysicalHomePage() {
         <div className="h-10 bg-white lg:h-14" aria-hidden />
         <PhysicalExperienceSection />
         <PhysicalDrageesSection />
-        <PhysicalSocialSection />
-        <PhysicalReviewsSection />
-        <PhysicalFaqSection />
+        <Suspense fallback={<div className="min-h-[200px] bg-white" aria-hidden />}>
+          <PhysicalSocialSection />
+          <PhysicalReviewsSection />
+          <PhysicalFaqSection />
+        </Suspense>
       </main>
       <DigitalHomeFooter />
     </div>

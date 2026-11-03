@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import HeroSection from "../components/home/HeroSection";
@@ -9,10 +9,11 @@ import FeaturesMarquee from "../components/home/FeaturesMarquee";
 import ExperienceSection from "../components/home/ExperienceSection";
 import SaveTheDatesSection from "../components/home/SaveTheDatesSection";
 import PacksSection from "../components/home/PacksSection";
-import CommunitySection from "../components/home/CommunitySection";
-import ReviewsSection from "../components/home/ReviewsSection";
-import FaqSection from "../components/home/FaqSection";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+
+const CommunitySection = lazy(() => import("../components/home/CommunitySection"));
+const ReviewsSection = lazy(() => import("../components/home/ReviewsSection"));
+const FaqSection = lazy(() => import("../components/home/FaqSection"));
 
 /** Main Page Digital — mobile + desktop responsive (no phone shell) */
 function HomePage() {
@@ -23,7 +24,7 @@ function HomePage() {
     const id = hash.replace(/^#/, "");
     const t = window.setTimeout(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
+    }, 120);
     return () => window.clearTimeout(t);
   }, [hash]);
 
@@ -43,9 +44,11 @@ function HomePage() {
         <ExperienceSection />
         <SaveTheDatesSection />
         <PacksSection />
-        <CommunitySection />
-        <ReviewsSection />
-        <FaqSection />
+        <Suspense fallback={<div className="min-h-[200px] bg-white" aria-hidden />}>
+          <CommunitySection />
+          <ReviewsSection />
+          <FaqSection />
+        </Suspense>
       </main>
       <DigitalHomeFooter />
     </div>

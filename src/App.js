@@ -1,47 +1,58 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import PhysicalHomePage from './pages/PhysicalHomePage';
-import CanvasContainer from './pages/CanvasContainer';
-import InvitationsPhysiquePage from './pages/InvitationsPhysiquePage';
-import InvitationsDigitalPage from './pages/InvitationsDigitalPage';
-import DolceVitaInvitePage from './pages/DolceVitaInvitePage';
-import SidiBouSaidInvitePage from './pages/SidiBouSaidInvitePage';
-import ClubCapriInvitePage from './pages/ClubCapriInvitePage';
-import SakuraKoiInvitePage from './pages/SakuraKoiInvitePage';
-import BridgertonInvitePage from './pages/BridgertonInvitePage';
-import MajesticWhiteInvitePage from './pages/MajesticWhiteInvitePage';
-import SharedDigitalInvitePage from './pages/SharedDigitalInvitePage';
 import { AuthProvider } from './components/auth/AuthProvider';
 import { CartProvider } from './context/CartContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import AdminLayout from './components/admin/AdminLayout';
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
-import AdminOverviewPage from './pages/admin/AdminOverviewPage';
-import AdminInvitesPage from './pages/admin/AdminInvitesPage';
-import AdminOrdersPage from './pages/admin/AdminOrdersPage';
-import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage';
-import AdminClientsPage from './pages/admin/AdminClientsPage';
-import AdminCatalogPage from './pages/admin/AdminCatalogPage';
-import AdminDigitalPricingPage from './pages/admin/AdminDigitalPricingPage';
-import DashboardRsvpPage from './pages/DashboardRsvpPage';
-import ClientEspacePage from './pages/ClientEspacePage';
-import DigitalInviteEditorPage from './pages/DigitalInviteEditorPage';
-import InvitationModelPage from "./pages/InvitationModelPage";
-import DigitalProductDetailPage from "./pages/DigitalProductDetailPage";
-import DigitalExtrasPage from "./pages/DigitalExtrasPage";
-import DigitalRecapPage from "./pages/DigitalRecapPage";
-import DigitalMerciPage from "./pages/DigitalMerciPage";
-import PersonalizeInvitationPage from "./pages/PersonalizeInvitationPage";
-import CartPage from './pages/CartPage';
-import FavoritesPage from './pages/FavoritesPage';
-import CheckoutPage from './pages/CheckoutPage';
-import OrderConfirmationPage from './pages/OrderConfirmationPage';
-import PaymentResultPage from './pages/PaymentResultPage';
-import TestPDFDownload from './pages/TestPDFDownload';
 import ScrollToTop from './components/ScrollToTop';
+
+/** Accueil chargé en premier — le reste en lazy pour alléger le bundle initial */
+import HomePage from './pages/HomePage';
+
+const PhysicalHomePage = lazy(() => import('./pages/PhysicalHomePage'));
+const CanvasContainer = lazy(() => import('./pages/CanvasContainer'));
+const InvitationsPhysiquePage = lazy(() => import('./pages/InvitationsPhysiquePage'));
+const InvitationsDigitalPage = lazy(() => import('./pages/InvitationsDigitalPage'));
+const DolceVitaInvitePage = lazy(() => import('./pages/DolceVitaInvitePage'));
+const SidiBouSaidInvitePage = lazy(() => import('./pages/SidiBouSaidInvitePage'));
+const ClubCapriInvitePage = lazy(() => import('./pages/ClubCapriInvitePage'));
+const SakuraKoiInvitePage = lazy(() => import('./pages/SakuraKoiInvitePage'));
+const BridgertonInvitePage = lazy(() => import('./pages/BridgertonInvitePage'));
+const MajesticWhiteInvitePage = lazy(() => import('./pages/MajesticWhiteInvitePage'));
+const SharedDigitalInvitePage = lazy(() => import('./pages/SharedDigitalInvitePage'));
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignUpPage = lazy(() => import('./pages/SignUpPage'));
+const AdminOverviewPage = lazy(() => import('./pages/admin/AdminOverviewPage'));
+const AdminInvitesPage = lazy(() => import('./pages/admin/AdminInvitesPage'));
+const AdminOrdersPage = lazy(() => import('./pages/admin/AdminOrdersPage'));
+const AdminOrderDetailPage = lazy(() => import('./pages/admin/AdminOrderDetailPage'));
+const AdminClientsPage = lazy(() => import('./pages/admin/AdminClientsPage'));
+const AdminCatalogPage = lazy(() => import('./pages/admin/AdminCatalogPage'));
+const AdminDigitalPricingPage = lazy(() => import('./pages/admin/AdminDigitalPricingPage'));
+const DashboardRsvpPage = lazy(() => import('./pages/DashboardRsvpPage'));
+const ClientEspacePage = lazy(() => import('./pages/ClientEspacePage'));
+const DigitalInviteEditorPage = lazy(() => import('./pages/DigitalInviteEditorPage'));
+const InvitationModelPage = lazy(() => import('./pages/InvitationModelPage'));
+const DigitalProductDetailPage = lazy(() => import('./pages/DigitalProductDetailPage'));
+const DigitalExtrasPage = lazy(() => import('./pages/DigitalExtrasPage'));
+const DigitalRecapPage = lazy(() => import('./pages/DigitalRecapPage'));
+const DigitalMerciPage = lazy(() => import('./pages/DigitalMerciPage'));
+const PersonalizeInvitationPage = lazy(() => import('./pages/PersonalizeInvitationPage'));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage'));
+const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
+const TestPDFDownload = lazy(() => import('./pages/TestPDFDownload'));
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center bg-[#F7F2EC] font-glacial text-lw-muted">
+      Chargement…
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -50,6 +61,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <FavoritesProvider>
+          <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/imprimee" element={<PhysicalHomePage />} />
@@ -146,6 +158,7 @@ function App() {
             <Route path="/pdf-test" element={<TestPDFDownload />} />
             <Route path="/:slug" element={<SharedDigitalInvitePage />} />
           </Routes>
+          </Suspense>
           </FavoritesProvider>
         </CartProvider>
       </AuthProvider>

@@ -214,7 +214,7 @@ function CommunityVideoCard({
         playsInline
         muted
         loop
-        preload="auto"
+        preload={active ? "metadata" : "none"}
         controls={false}
         webkit-playsinline="true"
         x-webkit-airplay="allow"
