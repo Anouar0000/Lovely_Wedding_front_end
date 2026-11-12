@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
@@ -1448,7 +1448,13 @@ function DigitalInviteEditorPage() {
                 >
                   <div style={{ width: PREVIEW_DESIGN_W, zoom: PREVIEW_SCALE }}>
                     {PreviewComponent ? (
-                      <PreviewComponent invite={previewInvite} previewMode />
+                      <Suspense
+                        fallback={
+                          <p className="p-4 text-sm text-gray-500">Chargement de l&apos;aperçu…</p>
+                        }
+                      >
+                        <PreviewComponent invite={previewInvite} previewMode />
+                      </Suspense>
                     ) : (
                       <p className="p-4 text-sm text-gray-500">Aperçu indisponible.</p>
                     )}

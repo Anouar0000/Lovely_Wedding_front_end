@@ -4,6 +4,7 @@ import FavoritesHeartIcon from "../components/icons/FavoritesHeartIcon";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import CatalogFilterSheet from "../components/catalog/CatalogFilterSheet";
 import { useFavorites } from "../context/FavoritesContext";
 import {
   CATALOG_TYPES,
@@ -84,6 +85,7 @@ function InvitationsPhysiquePage() {
       ? location.state.filter
       : null;
   const [filter, setFilter] = useState(initialFilter);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [catalog, setCatalog] = useState(null);
 
   useEffect(() => {
@@ -192,8 +194,11 @@ function InvitationsPhysiquePage() {
           </p>
           <button
             type="button"
+            onClick={() => setFilterOpen(true)}
             className="inline-flex items-center gap-2 font-glacial text-[16px] leading-6 text-lw-text"
-            aria-hidden
+            aria-label="Filtrer"
+            aria-haspopup="dialog"
+            aria-expanded={filterOpen}
           >
             <FiFilter className="text-[17px]" />
             Filtrer
@@ -255,6 +260,14 @@ function InvitationsPhysiquePage() {
       </main>
 
       <DigitalHomeFooter />
+
+      <CatalogFilterSheet
+        open={filterOpen}
+        options={FILTERS}
+        value={filter}
+        onApply={setFilter}
+        onClose={() => setFilterOpen(false)}
+      />
     </div>
   );
 }

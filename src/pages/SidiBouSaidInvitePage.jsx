@@ -1,15 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import openingVideo from "../assets/videos/Mediterranean_Sea_harbor_bougain.mp4";
 import exportLayers from "../assets/digital/sidi-bousaid/export-v2/layers.json";
 import templateConfig from "../data/digital/templates/sidi-bousaid.json";
+import DigitalInviteEntrance from "../components/digital/DigitalInviteEntrance";
 import { submitRsvpResponse } from "../services/rsvp";
 import { isFirebaseConfigured } from "../lib/firebase";
 import { toSafeHttpUrl } from "../lib/safeUrl";
 import { isSectionActive } from "../templates/digitalInviteSections";
 import { getInviteText } from "../templates/digitalInviteTexts";
 import { getInviteMedia } from "../templates/digitalInviteMedia";
-
-// Import figma assets for Our Story
 import watercolorBougainvillea from "../assets/digital/sidi-bousaid/exported/watercolor-bougainvillea-figma.png";
 import tape from "../assets/digital/sidi-bousaid/exported/tape-8.png";
 import tornPaper from "../assets/digital/sidi-bousaid/exported/torn-paper-3.png";
@@ -18,12 +16,13 @@ import stamp3 from "../assets/digital/sidi-bousaid/exported/stamp-3.png";
 import vectorBg from "../assets/digital/sidi-bousaid/exported/vector-bg.png";
 import layer1 from "../assets/digital/sidi-bousaid/exported/layer-1.png";
 import layer2 from "../assets/digital/sidi-bousaid/exported/layer-2.png";
-
-// Import figma assets for Programme
 import rect118 from "../assets/digital/sidi-bousaid/exported/rect-118.png";
 import rect119 from "../assets/digital/sidi-bousaid/exported/rect-119.png";
 import rect120 from "../assets/digital/sidi-bousaid/exported/rect-120.png";
 import rect121 from "../assets/digital/sidi-bousaid/exported/rect-121.png";
+
+/** Welcome / ouverture — même pattern Capri & Sakura */
+const ENTRANCE_VIDEO = "/assets/digital/sidi-bousaid/entrance.mp4";
 
 const exportImageContext = require.context("../assets/digital/sidi-bousaid/export-v2", false, /\.(png|svg)$/);
 const exportImageSources = exportImageContext.keys().reduce((images, key) => {
@@ -302,10 +301,9 @@ function SidiBouSaidInvitePage({
     ...invite,
     template: invite?.template || templateConfig.id,
   };
-  const skipIntro =
+  const skipWelcome =
     invite.videoIntroEnabled === false || (previewMode && !demoInMockup);
-  const [isIntroFading, setIsIntroFading] = useState(false);
-  const [isIntroDone, setIsIntroDone] = useState(skipIntro);
+  const [entered, setEntered] = useState(skipWelcome);
   const [doorFrame, setDoorFrame] = useState(0);
   const doorTimerRef = useRef(null);
   const [rsvpFirstName, setRsvpFirstName] = useState("");
@@ -364,13 +362,7 @@ function SidiBouSaidInvitePage({
   useEffect(() => {
     const skip =
       invite.videoIntroEnabled === false || (previewMode && !demoInMockup);
-    if (skip) {
-      setIsIntroDone(true);
-      setIsIntroFading(false);
-    } else {
-      setIsIntroDone(false);
-      setIsIntroFading(false);
-    }
+    setEntered(skip);
   }, [invite.videoIntroEnabled, previewMode, demoInMockup]);
 
   const lastEvent = useMemo(() => {
@@ -397,8 +389,8 @@ function SidiBouSaidInvitePage({
   const countdown = useMemo(() => getCountdownParts(effectiveEventDate), [effectiveEventDate]);
 
   useEffect(() => {
-    if (previewMode) return undefined;
-    if (isIntroDone) {
+    if (previewMode || demoInMockup) return undefined;
+    if (entered) {
       document.body.style.overflow = "auto";
     } else {
       document.body.style.overflow = "hidden";
@@ -406,14 +398,15 @@ function SidiBouSaidInvitePage({
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [isIntroDone, previewMode]);
+  }, [entered, previewMode, demoInMockup]);
 
-  useEffect(() => {
+  /** Précharge les frames porte seulement au 1er clic (pas au montage) */
+  const preloadDoorFrames = () => {
     doorFrameSources.forEach((frame) => {
       const image = new Image();
       image.src = frame;
     });
-  }, []);
+  };
 
   useEffect(() => {
     return () => {
@@ -423,23 +416,12 @@ function SidiBouSaidInvitePage({
     };
   }, []);
 
-  const completeIntro = () => {
-    setIsIntroFading(true);
-    window.setTimeout(() => setIsIntroDone(true), 900);
-  };
-
-  const handleVideoTimeUpdate = (event) => {
-    const video = event.currentTarget;
-    if (video.duration && video.duration - video.currentTime < 1.1) {
-      setIsIntroFading(true);
-    }
-  };
-
   const handleDoorClick = () => {
     if (!doorFrameSources.length || doorTimerRef.current || doorFrame === doorFrameSources.length - 1) {
       return;
     }
 
+    preloadDoorFrames();
     setDoorFrame(0);
 
     doorTimerRef.current = window.setInterval(() => {
@@ -472,31 +454,40 @@ function SidiBouSaidInvitePage({
    */
   const mockupPhoneH = Math.ceil((pageWidth * 370) / 166);
 
-  if (demoInMockup && !isIntroDone) {
+  if (demoInMockup && !entered) {
     return (
       <div
-        className={`relative overflow-hidden bg-black transition-opacity duration-1000 ${
-          isIntroFading ? "opacity-0" : "opacity-100"
-        }`}
+        className="relative overflow-hidden bg-black"
         style={{ width: pageWidth, height: mockupPhoneH }}
-        aria-hidden
       >
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ transform: "scale(1.02)" }}
-          src={openingVideo}
-          autoPlay
-          muted
-          playsInline
-          onTimeUpdate={handleVideoTimeUpdate}
-          onEnded={completeIntro}
-          onError={completeIntro}
+        <DigitalInviteEntrance
+          video={`${ENTRANCE_VIDEO}?v=3`}
+          alt="Sidi Bou Said — welcome"
+          background="#000"
+          autoOnly
+          autoOpenAfterMs={12000}
+          contained
+          onOpen={() => setEntered(true)}
         />
       </div>
     );
   }
 
   return (
+    <>
+      {!entered ? (
+        <DigitalInviteEntrance
+          video={`${ENTRANCE_VIDEO}?v=3`}
+          alt="Sidi Bou Said — welcome"
+          background="#000"
+          autoOnly
+          autoOpenAfterMs={12000}
+          onOpen={() => {
+            window.scrollTo(0, 0);
+            setEntered(true);
+          }}
+        />
+      ) : null}
     <main
       className={`${previewMode || demoInMockup ? "bg-[#dcebf0]" : "min-h-screen bg-[#dcebf0]"} font-urbanist text-[#0093d8]`}
       style={
@@ -525,7 +516,7 @@ function SidiBouSaidInvitePage({
                 <video
                   className="absolute left-0 top-0 h-auto w-full"
                   style={{ height: pct(501, 804), objectFit: "cover", zIndex: 1 }}
-                  src={openingVideo}
+                  src={`${ENTRANCE_VIDEO}?v=3`}
                   autoPlay
                   muted
                   loop
@@ -1044,25 +1035,8 @@ function SidiBouSaidInvitePage({
         </Section>
 
       </div>
-
-      {!previewMode && !isIntroDone ? (
-        <div
-          className={`fixed inset-0 z-50 bg-black transition-opacity duration-1000 ${isIntroFading ? "opacity-0" : "opacity-100"}`}
-          aria-hidden="true"
-        >
-          <video
-            className="h-full w-full object-cover"
-            src={openingVideo}
-            autoPlay
-            muted
-            playsInline
-            onTimeUpdate={handleVideoTimeUpdate}
-            onEnded={completeIntro}
-            onError={completeIntro}
-          />
-        </div>
-      ) : null}
     </main>
+    </>
   );
 }
 

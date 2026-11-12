@@ -1,9 +1,4 @@
-import ClubCapriInvitePage from "../pages/ClubCapriInvitePage";
-import DolceVitaInvitePage from "../pages/DolceVitaInvitePage";
-import SakuraKoiInvitePage from "../pages/SakuraKoiInvitePage";
-import SidiBouSaidInvitePage from "../pages/SidiBouSaidInvitePage";
-import BridgertonInvitePage from "../pages/BridgertonInvitePage";
-import MajesticWhiteInvitePage from "../pages/MajesticWhiteInvitePage";
+import { lazy } from "react";
 import clubCapriTemplate from "../data/digital/templates/club-capri.json";
 import dolceVitaTemplate from "../data/digital/templates/dolce-vita.json";
 import sakuraKoiTemplate from "../data/digital/templates/sakura-koi.json";
@@ -18,6 +13,17 @@ import {
   toggleInviteSection,
   withActiveSections,
 } from "./digitalInviteSections";
+
+/**
+ * Components en lazy : une invitation ne charge plus toutes les autres
+ * (évite le mega-chunk ~480 Ko + assets au premier aperçu).
+ */
+const ClubCapriInvitePage = lazy(() => import("../pages/ClubCapriInvitePage"));
+const DolceVitaInvitePage = lazy(() => import("../pages/DolceVitaInvitePage"));
+const SakuraKoiInvitePage = lazy(() => import("../pages/SakuraKoiInvitePage"));
+const SidiBouSaidInvitePage = lazy(() => import("../pages/SidiBouSaidInvitePage"));
+const BridgertonInvitePage = lazy(() => import("../pages/BridgertonInvitePage"));
+const MajesticWhiteInvitePage = lazy(() => import("../pages/MajesticWhiteInvitePage"));
 
 export const DIGITAL_TEMPLATE_IDS = {
   DOLCE_VITA: dolceVitaTemplate.id,
@@ -96,7 +102,7 @@ export const digitalInviteTemplates = [
     description: sidiBouSaidTemplate.description,
     Component: SidiBouSaidInvitePage,
     defaults: withActiveSections(
-      sidiBouSaidTemplate.defaults || sidiBouSaidTemplate.sample,
+      sidiBouSaidTemplate.sample || sidiBouSaidTemplate.defaults,
       sidiBouSaidTemplate.id
     ),
     sections: TEMPLATE_SECTIONS[sidiBouSaidTemplate.id],

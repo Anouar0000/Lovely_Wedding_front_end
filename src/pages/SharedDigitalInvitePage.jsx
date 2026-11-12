@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import invites from "../data/digital/instances.json";
 import { isFirebaseConfigured } from "../lib/firebase";
@@ -101,11 +101,19 @@ function SharedDigitalInvitePage({ allowDraft = false, previewMode = false, look
             Apercu dashboard / {invite.status === "published" ? "publiee" : "brouillon"}
           </div>
         ) : null}
-        <TemplateComponent
-          key={`${invite.id || invite.slug}-${invite.eventDate || ""}-${invite.time || ""}`}
-          invite={invite}
-          previewMode={previewMode}
-        />
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center bg-[#F7F2EC] font-glacial text-lw-muted">
+              Chargement de l&apos;invitation…
+            </div>
+          }
+        >
+          <TemplateComponent
+            key={`${invite.id || invite.slug}-${invite.eventDate || ""}-${invite.time || ""}`}
+            invite={invite}
+            previewMode={previewMode}
+          />
+        </Suspense>
       </>
     );
   }

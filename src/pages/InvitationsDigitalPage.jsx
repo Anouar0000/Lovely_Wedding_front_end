@@ -3,6 +3,7 @@ import { FiSliders } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import CatalogFilterSheet from "../components/catalog/CatalogFilterSheet";
 import {
   DIGITAL_CATALOG_PRODUCTS,
   DigitalCatalogCard,
@@ -17,6 +18,7 @@ const FILTERS = ["Romantique", "Moderne", "Arabesque"];
 function InvitationsDigitalPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState(null);
+  const [filterOpen, setFilterOpen] = useState(false);
   const { isFavorite, toggleFavorite } = useFavorites();
 
   const products = useMemo(
@@ -65,8 +67,11 @@ function InvitationsDigitalPage() {
           </p>
           <button
             type="button"
+            onClick={() => setFilterOpen(true)}
             className="inline-flex items-center gap-1.5 font-glacial text-[16px] leading-6 text-[#4B4242]"
             aria-label="Filtrer"
+            aria-haspopup="dialog"
+            aria-expanded={filterOpen}
           >
             <FiSliders className="size-[17px]" />
             Filtrer
@@ -100,6 +105,14 @@ function InvitationsDigitalPage() {
       </main>
 
       <DigitalHomeFooter />
+
+      <CatalogFilterSheet
+        open={filterOpen}
+        options={FILTERS}
+        value={filter}
+        onApply={setFilter}
+        onClose={() => setFilterOpen(false)}
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, {
+  Suspense,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -16,6 +17,7 @@ import {
 } from "../components/digital/DigitalCatalogCard";
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
 import { useFavorites } from "../context/FavoritesContext";
+import WriteReviewModal from "../components/catalog/WriteReviewModal";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
 /** Mockup hero 166×370 — design invitation 430px (comme l’éditeur) */
@@ -209,6 +211,8 @@ function DigitalProductDetailPage() {
   const [openAcc, setOpenAcc] = useState(-1);
   const [heroSlide, setHeroSlide] = useState(0);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [reviews, setReviews] = useState(REVIEWS);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const heroRef = useRef(null);
   const slideLockRef = useRef(0);
   const dragRef = useRef({ active: false, startX: 0, moved: false });
@@ -407,11 +411,22 @@ function DigitalProductDetailPage() {
             <div className="relative h-full w-full overflow-hidden rounded-[28px] border-[2.5px] border-[#131313] bg-[#131313] shadow-[0_18px_40px_-16px_rgba(75,66,66,0.45)]">
               {demoOpen && DemoComponent ? (
                 <MockupScaledDemo>
-                  <DemoComponent
-                    invite={demoInvite}
-                    previewMode
-                    demoInMockup
-                  />
+                  <Suspense
+                    fallback={
+                      <div
+                        className="flex items-center justify-center bg-black text-[12px] text-white/70"
+                        style={{ width: 430, height: Math.ceil((430 * 370) / 166) }}
+                      >
+                        Chargement…
+                      </div>
+                    }
+                  >
+                    <DemoComponent
+                      invite={demoInvite}
+                      previewMode
+                      demoInMockup
+                    />
+                  </Suspense>
                 </MockupScaledDemo>
               ) : (
                 <>
@@ -563,9 +578,9 @@ function DigitalProductDetailPage() {
           </div>
 
           <div className="mt-[52px] flex flex-col gap-[18px]">
-            {REVIEWS.map((r, i) => (
+            {reviews.map((r, i) => (
               <article
-                key={`${r.name}-${i}`}
+                key={`${r.name}-${i}-${r.date}`}
                 className="rounded-[24px] border border-[#C4A69C] bg-white px-5 py-5"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -574,10 +589,12 @@ function DigitalProductDetailPage() {
                   </p>
                   <div
                     className="mt-2 flex shrink-0 gap-0 text-[12px] leading-none text-[#FFD220]"
-                    aria-label="5 étoiles"
+                    aria-label={`${r.rating || 5} étoiles`}
                   >
-                    {"★★★★★".split("").map((s, j) => (
-                      <span key={j}>{s}</span>
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <span key={j} className={j < (r.rating || 5) ? "" : "text-[#E8E0D8]"}>
+                        ★
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -596,6 +613,7 @@ function DigitalProductDetailPage() {
             <div className="flex justify-center">
               <button
                 type="button"
+                onClick={() => setReviewOpen(true)}
                 className="inline-flex h-12 items-center justify-center rounded-full border border-[#A97C72] bg-transparent px-6 font-glacial text-[14px] font-bold leading-6 text-[#A97C72] hover:bg-white/60"
               >
                 Ecrire un avis
@@ -659,6 +677,13 @@ function DigitalProductDetailPage() {
         </button>
       </div>
     </div>
+
+    <WriteReviewModal
+      open={reviewOpen}
+      onClose={() => setReviewOpen(false)}
+      productName={product.name}
+      onSubmit={(review) => setReviews((prev) => [review, ...prev])}
+    />
     </>
   );
 }

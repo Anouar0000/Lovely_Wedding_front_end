@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiChevronDown, FiStar, FiX } from "react-icons/fi";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import WriteReviewModal from "../components/catalog/WriteReviewModal";
 import {
   PERSONALIZE_CARD_BACK,
   PERSONALIZE_CARD_FRONT,
@@ -106,6 +107,8 @@ function InvitationModelPage() {
   const [motif, setMotif] = useState(MOTIF_OPTIONS[0]);
   const [popup, setPopup] = useState(null);
   const [openAcc, setOpenAcc] = useState(-1);
+  const [reviews, setReviews] = useState(REVIEWS);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const popupRef = useRef(null);
 
   const unitPrice = Number(model?.price) || UNIT_PRICE;
@@ -219,7 +222,7 @@ function InvitationModelPage() {
         }`}
       >
         Passer la commande
-        <span aria-hidden>?</span>
+        <span aria-hidden>→</span>
       </button>
     </>
   );
@@ -315,8 +318,8 @@ function InvitationModelPage() {
               ))}
             </div>
 
-            {/* CTA desktop in-flow ? barre mobile hors overflow (Firefox) */}
-            <div className="mt-[18px] hidden items-center justify-between gap-3 lg:flex">
+            {/* CTA toujours visible sous Motif (Safari iPhone : sticky parfois invisible) */}
+            <div className="mt-[18px] flex items-center justify-between gap-3">
               {orderSummary}
             </div>
 
@@ -352,9 +355,9 @@ function InvitationModelPage() {
               </div>
 
               <div className="mt-[52px] flex flex-col gap-[18px]">
-                {REVIEWS.map((r, i) => (
+                {reviews.map((r, i) => (
                   <article
-                    key={`${r.name}-${i}`}
+                    key={`${r.name}-${i}-${r.date}`}
                     className="rounded-[24px] border border-[#C4A69C] bg-white px-5 py-5"
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -363,10 +366,12 @@ function InvitationModelPage() {
                       </p>
                       <div
                         className="mt-2 flex shrink-0 gap-0 text-[12px] leading-none text-[#FFD220]"
-                        aria-label="5 étoiles"
+                        aria-label={`${r.rating || 5} étoiles`}
                       >
-                        {"★★★★★".split("").map((s, j) => (
-                          <span key={j}>{s}</span>
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <span key={j} className={j < (r.rating || 5) ? "" : "text-[#E8E0D8]"}>
+                            ★
+                          </span>
                         ))}
                       </div>
                     </div>
@@ -385,6 +390,7 @@ function InvitationModelPage() {
                 <div className="flex justify-center">
                   <button
                     type="button"
+                    onClick={() => setReviewOpen(true)}
                     className="inline-flex h-12 items-center justify-center rounded-full border border-[#A97C72] bg-transparent px-6 font-glacial text-[14px] font-bold leading-6 text-[#A97C72] hover:bg-white/60"
                   >
                     Ecrire un avis
@@ -545,12 +551,21 @@ function InvitationModelPage() {
       <DigitalHomeFooter />
     </div>
 
-    {/* Hors overflow-x-hidden : Firefox / Safari coupent sinon le fixed */}
-    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)] lg:hidden">
-      <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3">
-        {orderSummary}
+    {/* Barre sticky mobile — reste visible en scrollant les avis */}
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] lg:hidden">
+      <div className="pointer-events-auto border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
+        <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3">
+          {orderSummary}
+        </div>
       </div>
     </div>
+
+    <WriteReviewModal
+      open={reviewOpen}
+      onClose={() => setReviewOpen(false)}
+      productName={model?.name || ""}
+      onSubmit={(review) => setReviews((prev) => [review, ...prev])}
+    />
     </>
   );
 }

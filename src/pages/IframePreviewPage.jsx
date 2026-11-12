@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 import sidiBouSaidFullReference from "../assets/digital/sidi-bousaid/fresh-figma/sidi_bou_said_full_reference.png";
 import brezzaMarinaFullReference from "../assets/digital/brezza-marina/brezza_marina_full_reference.png";
@@ -56,16 +56,18 @@ export default function IframePreviewPage() {
   return (
     <div className="min-h-screen relative overflow-x-hidden overflow-y-auto" style={{ width: 430, minWidth: 430, maxWidth: 430, margin: '0 auto', backgroundColor: bgColor }}>
       {/* Active Template Component */}
-      <Component
-        invite={invite}
-        editable={true}
-        selectedElementId={selectedElementId}
-        onSelectElement={(id) => {
-          if (window.parent && window.parent !== window) {
-            window.parent.postMessage({ type: "SELECT_ELEMENT", id }, "*");
-          }
-        }}
-      />
+      <Suspense fallback={<div className="p-6 text-center text-sm text-gray-500">Chargement…</div>}>
+        <Component
+          invite={invite}
+          editable={true}
+          selectedElementId={selectedElementId}
+          onSelectElement={(id) => {
+            if (window.parent && window.parent !== window) {
+              window.parent.postMessage({ type: "SELECT_ELEMENT", id }, "*");
+            }
+          }}
+        />
+      </Suspense>
 
       {/* Figma Reference Image Overlay */}
       {overlayOpacity > 0 && (
