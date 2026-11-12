@@ -28,7 +28,9 @@ function InviteCard({ invite, index, onOpen }) {
           src={invite.cover}
           alt={index < 2 ? `Invitation ${invite.name}` : ""}
           className="pointer-events-none block h-full w-full object-cover object-center"
-          loading={index > 2 ? "lazy" : undefined}
+          loading={index > 1 ? "lazy" : "eager"}
+          decoding={index > 1 ? "async" : "sync"}
+          fetchPriority={index === 0 ? "high" : "low"}
           draggable={false}
         />
       </div>

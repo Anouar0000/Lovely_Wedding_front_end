@@ -213,6 +213,8 @@ function DigitalProductDetailPage() {
   const [demoOpen, setDemoOpen] = useState(false);
   const [reviews, setReviews] = useState(REVIEWS);
   const [reviewOpen, setReviewOpen] = useState(false);
+  /** Décor fleurs : différé pour ne pas télécharger ~3 Mo au premier paint */
+  const [decorReady, setDecorReady] = useState(false);
   const heroRef = useRef(null);
   const slideLockRef = useRef(0);
   const dragRef = useRef({ active: false, startX: 0, moved: false });
@@ -222,6 +224,21 @@ function DigitalProductDetailPage() {
       navigate("/invitations-digital/sakura-koi", { replace: true });
     }
   }, [slug, navigate]);
+
+  useEffect(() => {
+    const start = () => setDecorReady(true);
+    let idleId;
+    let timeoutId;
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(start, { timeout: 2500 });
+    } else {
+      timeoutId = window.setTimeout(start, 1200);
+    }
+    return () => {
+      if (idleId != null && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+      if (timeoutId != null) window.clearTimeout(timeoutId);
+    };
+  }, []);
 
   const selectedPack = useMemo(
     () => PACKS.find((p) => p.id === packId) || PACKS[0],
@@ -360,43 +377,47 @@ function DigitalProductDetailPage() {
           onPointerCancel={onHeroPointerUp}
           onPointerLeave={onHeroPointerUp}
         >
-          {/* Coin haut-gauche — fond crème = card (évite la bande noire native <video>) */}
-          <video
-            className="pointer-events-none absolute z-[1] object-cover"
-            style={{
-              width: 76,
-              height: 88,
-              left: -8,
-              top: -12,
-              transform: "rotate(-180deg)",
-              backgroundColor: "#F7F6F1",
-            }}
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden
-          >
-            <source src={a.flowerAppear} type="video/mp4" />
-          </video>
-          {/* Coin bas-droite */}
-          <video
-            className="pointer-events-none absolute z-[1] object-cover"
-            style={{
-              width: 76,
-              height: 88,
-              right: -8,
-              bottom: -12,
-              backgroundColor: "#F7F6F1",
-            }}
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden
-          >
-            <source src={a.flowerAppear} type="video/mp4" />
-          </video>
+          {decorReady ? (
+            <>
+              <video
+                className="pointer-events-none absolute z-[1] object-cover"
+                style={{
+                  width: 76,
+                  height: 88,
+                  left: -8,
+                  top: -12,
+                  transform: "rotate(-180deg)",
+                  backgroundColor: "#F7F6F1",
+                }}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                aria-hidden
+              >
+                <source src={a.flowerAppear} type="video/mp4" />
+              </video>
+              <video
+                className="pointer-events-none absolute z-[1] object-cover"
+                style={{
+                  width: 76,
+                  height: 88,
+                  right: -8,
+                  bottom: -12,
+                  backgroundColor: "#F7F6F1",
+                }}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                aria-hidden
+              >
+                <source src={a.flowerAppear} type="video/mp4" />
+              </video>
+            </>
+          ) : null}
 
           {activeSlide.play && !demoOpen ? (
             <p className="absolute left-1/2 top-[34px] z-10 w-[273px] -translate-x-1/2 text-center font-glacial text-[14px] leading-[18px] text-[#78716c]">
@@ -610,7 +631,7 @@ function DigitalProductDetailPage() {
               </article>
             ))}
 
-            <div className="flex justify-center">
+            <div className="flex justify-center pb-28">
               <button
                 type="button"
                 onClick={() => setReviewOpen(true)}
@@ -624,7 +645,7 @@ function DigitalProductDetailPage() {
         </div>
       </div>
 
-      <section className="mt-[53px] bg-white px-4 pb-[53px] pt-0 lg:px-8">
+      <section className="mt-[53px] bg-white px-4 pb-[max(100px,calc(80px+env(safe-area-inset-bottom,0px)))] pt-0 lg:px-8 lg:pb-[53px]">
         <div className="mx-auto w-full max-w-[428px] md:max-w-3xl lg:max-w-6xl">
           <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-[#4B4242]">
             Autres recommandations

@@ -73,7 +73,7 @@ function DigitalInviteEntrance({
             autoPlay
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             aria-label={alt}
           />
         ) : (
@@ -111,7 +111,7 @@ function DigitalInviteEntrance({
           autoPlay
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           aria-label={alt}
         />
       ) : (

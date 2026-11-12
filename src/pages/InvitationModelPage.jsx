@@ -387,7 +387,7 @@ function InvitationModelPage() {
                   </article>
                 ))}
 
-                <div className="flex justify-center">
+                <div className="flex justify-center pb-28 lg:pb-4">
                   <button
                     type="button"
                     onClick={() => setReviewOpen(true)}
@@ -402,7 +402,7 @@ function InvitationModelPage() {
         </div>
       </div>
 
-      <section className="mt-[53px] bg-white px-4 pb-[53px] pt-0 lg:px-8">
+      <section className="mt-[53px] bg-white px-4 pb-[max(100px,calc(80px+env(safe-area-inset-bottom,0px)))] pt-0 lg:px-8 lg:pb-[53px]">
         <div className="mx-auto w-full max-w-[428px] lg:max-w-3xl">
           <h2 className="text-center font-lora text-[26px] font-medium leading-9 tracking-[-0.26px] text-lw-text lg:text-[36px]">
             Autres recommandations

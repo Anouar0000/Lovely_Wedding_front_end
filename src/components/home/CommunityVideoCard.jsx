@@ -209,7 +209,7 @@ function CommunityVideoCard({
     >
       <video
         ref={videoRef}
-        src={slide.video}
+        src={active || playing || failed ? slide.video : undefined}
         className="absolute inset-0 h-full w-full object-cover"
         playsInline
         muted
