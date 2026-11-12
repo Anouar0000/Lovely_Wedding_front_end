@@ -39,20 +39,8 @@ const ACCORDIONS = [
   },
 ];
 
-const REVIEWS = [
-  {
-    name: "Lilia & Rayen",
-    meta: "Achat vérifié • Formule Signature",
-    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
-    date: "Posté le 12 Septembre 2026",
-  },
-  {
-    name: "Lilia & Rayen",
-    meta: "Achat vérifié • Formule Signature",
-    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
-    date: "Posté le 12 Septembre 2026",
-  },
-];
+/** Avis catalogue : liste vide par défaut (plus de faux avis). */
+const REVIEWS = [];
 
 const PHYSICAL_PRODUCTS = [
   { id: "versailles", name: "Versailles", img: `${FIGMA}/catalog-4.png`, category: "Rustique", unitPrice: 1.5 },

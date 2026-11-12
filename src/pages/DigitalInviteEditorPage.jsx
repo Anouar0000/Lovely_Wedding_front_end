@@ -1453,7 +1453,7 @@ function DigitalInviteEditorPage() {
                           <p className="p-4 text-sm text-gray-500">Chargement de l&apos;aperçu…</p>
                         }
                       >
-                        <PreviewComponent invite={previewInvite} previewMode />
+                        <PreviewComponent invite={previewInvite} previewMode editorPreview />
                       </Suspense>
                     ) : (
                       <p className="p-4 text-sm text-gray-500">Aperçu indisponible.</p>

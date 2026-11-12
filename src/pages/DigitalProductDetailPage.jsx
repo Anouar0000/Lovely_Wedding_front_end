@@ -120,20 +120,8 @@ const ACCORDIONS = [
   },
 ];
 
-const REVIEWS = [
-  {
-    name: "Lilia & Rayen",
-    meta: "Achat vérifié • Formule Signature",
-    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
-    date: "Posté le 12 Septembre 2024",
-  },
-  {
-    name: "Lilia & Rayen",
-    meta: "Achat vérifié • Formule Signature",
-    text: "“Très professionnel ! Les invités ont particulièrement apprécié les invitations bilingues (français/arabe). On recommande à 100%.”",
-    date: "Posté le 12 Septembre 2024",
-  },
-];
+/** Avis catalogue : liste vide par défaut (plus de faux avis). Les nouveaux avis restent locaux via le formulaire. */
+const REVIEWS = [];
 
 /** Catalogue digital — slug → produit (Figma Product overview digital) */
 export const DIGITAL_PRODUCTS = {

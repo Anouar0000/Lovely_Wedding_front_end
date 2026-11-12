@@ -296,17 +296,21 @@ function SidiBouSaidInvitePage({
   previewMode = false,
   /** Démo produit : welcome dans le mockup (sans plein écran / sans toucher au body) */
   demoInMockup = false,
+  /** Aperçu latéral de l’éditeur dashboard — pas de welcome (le mockup produit / lien public /preview oui) */
+  editorPreview = false,
 }) {
   const sectionInvite = {
     ...invite,
     template: invite?.template || templateConfig.id,
   };
   /**
-   * Welcome plein écran :
-   * - éditeur (previewMode) : pas de welcome (sauf démo mockup)
-   * - lien public / démo produit : toujours le welcome vidéo
+   * Welcome vidéo :
+   * - masqué si « Ouverture Vidéo » = non dans le dashboard
+   * - masqué seulement dans l’aperçu latéral éditeur (editorPreview)
+   * - affiché sur lien public, /preview dashboard, et mockup produit
    */
-  const skipWelcome = Boolean(previewMode && !demoInMockup);
+  const welcomeEnabled = invite.videoIntroEnabled !== false;
+  const skipWelcome = !welcomeEnabled || Boolean(editorPreview);
   const [entered, setEntered] = useState(skipWelcome);
   const [doorFrame, setDoorFrame] = useState(0);
   const doorTimerRef = useRef(null);
@@ -364,8 +368,9 @@ function SidiBouSaidInvitePage({
   };
 
   useEffect(() => {
-    setEntered(Boolean(previewMode && !demoInMockup));
-  }, [previewMode, demoInMockup]);
+    const skip = invite.videoIntroEnabled === false || Boolean(editorPreview);
+    setEntered(skip);
+  }, [invite.videoIntroEnabled, editorPreview]);
 
   const lastEvent = useMemo(() => {
     return invite.timeline && invite.timeline.length > 0
@@ -464,11 +469,11 @@ function SidiBouSaidInvitePage({
           style={{ width: pageWidth, height: mockupPhoneH }}
         >
           <DigitalInviteEntrance
-            video={`${ENTRANCE_VIDEO}?v=4`}
+            video={`${ENTRANCE_VIDEO}?v=5`}
             alt="Sidi Bou Said — welcome"
             background="#000"
             autoOnly
-            autoOpenAfterMs={12000}
+            autoOpenAfterMs={8000}
             contained
             onOpen={() => setEntered(true)}
           />
@@ -477,11 +482,10 @@ function SidiBouSaidInvitePage({
     }
     return (
       <DigitalInviteEntrance
-        video={`${ENTRANCE_VIDEO}?v=4`}
+        video={`${ENTRANCE_VIDEO}?v=5`}
         alt="Sidi Bou Said — welcome"
         background="#000"
-        autoOnly
-        autoOpenAfterMs={12000}
+        openLabel="Ouvrir l'invitation"
         onOpen={() => {
           window.scrollTo(0, 0);
           setEntered(true);
