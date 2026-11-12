@@ -485,7 +485,8 @@ function SidiBouSaidInvitePage({
         video={`${ENTRANCE_VIDEO}?v=5`}
         alt="Sidi Bou Said — welcome"
         background="#000"
-        openLabel="Ouvrir l'invitation"
+        autoOnly
+        autoOpenAfterMs={12000}
         onOpen={() => {
           window.scrollTo(0, 0);
           setEntered(true);

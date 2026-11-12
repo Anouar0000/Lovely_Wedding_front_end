@@ -18,6 +18,13 @@ import {
 import { homeDigitalAssets as a } from "../components/home/homeDigitalAssets";
 import { useFavorites } from "../context/FavoritesContext";
 import WriteReviewModal from "../components/catalog/WriteReviewModal";
+import { isFirebaseConfigured } from "../lib/firebase";
+import {
+  createProductReview,
+  DEFAULT_PRODUCT_REVIEWS,
+  ensureDefaultProductReviews,
+  listProductReviews,
+} from "../services/productReviews";
 import { getDigitalInviteTemplate } from "../templates/digitalInviteTemplates";
 
 /** Mockup hero 166×370 — design invitation 430px (comme l’éditeur) */
@@ -120,9 +127,6 @@ const ACCORDIONS = [
   },
 ];
 
-/** Avis catalogue : liste vide par défaut (plus de faux avis). Les nouveaux avis restent locaux via le formulaire. */
-const REVIEWS = [];
-
 /** Catalogue digital — slug → produit (Figma Product overview digital) */
 export const DIGITAL_PRODUCTS = {
   "sidi-bousaid": {
@@ -199,7 +203,7 @@ function DigitalProductDetailPage() {
   const [openAcc, setOpenAcc] = useState(-1);
   const [heroSlide, setHeroSlide] = useState(0);
   const [demoOpen, setDemoOpen] = useState(false);
-  const [reviews, setReviews] = useState(REVIEWS);
+  const [reviews, setReviews] = useState(DEFAULT_PRODUCT_REVIEWS);
   const [reviewOpen, setReviewOpen] = useState(false);
   /** Décor fleurs : différé pour ne pas télécharger ~3 Mo au premier paint */
   const [decorReady, setDecorReady] = useState(false);
@@ -212,6 +216,26 @@ function DigitalProductDetailPage() {
       navigate("/invitations-digital/sakura-koi", { replace: true });
     }
   }, [slug, navigate]);
+
+  useEffect(() => {
+    let active = true;
+    const loadReviews = async () => {
+      if (!isFirebaseConfigured) {
+        if (active) setReviews(DEFAULT_PRODUCT_REVIEWS);
+        return;
+      }
+      try {
+        const items = await ensureDefaultProductReviews();
+        if (active) setReviews(items.length ? items : await listProductReviews());
+      } catch {
+        if (active) setReviews(DEFAULT_PRODUCT_REVIEWS);
+      }
+    };
+    loadReviews();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const start = () => setDecorReady(true);
@@ -693,7 +717,23 @@ function DigitalProductDetailPage() {
       open={reviewOpen}
       onClose={() => setReviewOpen(false)}
       productName={product.name}
-      onSubmit={(review) => setReviews((prev) => [review, ...prev])}
+      onSubmit={async (review) => {
+        const optimistic = { ...review, id: `local-${Date.now()}` };
+        setReviews((prev) => [optimistic, ...prev]);
+        if (!isFirebaseConfigured) return;
+        try {
+          const saved = await createProductReview({
+            ...review,
+            productSlug: product.slug,
+            productType: "digital",
+          });
+          setReviews((prev) =>
+            prev.map((item) => (item.id === optimistic.id ? saved : item))
+          );
+        } catch {
+          /* garde l’avis local si Firestore échoue */
+        }
+      }}
     />
     </>
   );

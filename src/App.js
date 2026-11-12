@@ -30,6 +30,7 @@ const AdminOrderDetailPage = lazy(() => import('./pages/admin/AdminOrderDetailPa
 const AdminClientsPage = lazy(() => import('./pages/admin/AdminClientsPage'));
 const AdminCatalogPage = lazy(() => import('./pages/admin/AdminCatalogPage'));
 const AdminDigitalPricingPage = lazy(() => import('./pages/admin/AdminDigitalPricingPage'));
+const AdminReviewsPage = lazy(() => import('./pages/admin/AdminReviewsPage'));
 const DashboardRsvpPage = lazy(() => import('./pages/DashboardRsvpPage'));
 const ClientEspacePage = lazy(() => import('./pages/ClientEspacePage'));
 const DigitalInviteEditorPage = lazy(() => import('./pages/DigitalInviteEditorPage'));
@@ -119,6 +120,7 @@ function App() {
               <Route path="clients" element={<AdminClientsPage />} />
               <Route path="catalog" element={<AdminCatalogPage />} />
               <Route path="pricing" element={<AdminDigitalPricingPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} />
             </Route>
 
             <Route

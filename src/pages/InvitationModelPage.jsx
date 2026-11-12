@@ -8,6 +8,13 @@ import {
   PERSONALIZE_CARD_BACK,
   PERSONALIZE_CARD_FRONT,
 } from "../components/home/homePhysicalAssets";
+import { isFirebaseConfigured } from "../lib/firebase";
+import {
+  createProductReview,
+  DEFAULT_PRODUCT_REVIEWS,
+  ensureDefaultProductReviews,
+  listProductReviews,
+} from "../services/productReviews";
 
 const FIGMA = "/assets/home-physical/figma";
 
@@ -38,9 +45,6 @@ const ACCORDIONS = [
     body: "Invitation imprimée, enveloppe assortie et finitions selon le motif choisi.",
   },
 ];
-
-/** Avis catalogue : liste vide par défaut (plus de faux avis). */
-const REVIEWS = [];
 
 const PHYSICAL_PRODUCTS = [
   { id: "versailles", name: "Versailles", img: `${FIGMA}/catalog-4.png`, category: "Rustique", unitPrice: 1.5 },
@@ -95,9 +99,29 @@ function InvitationModelPage() {
   const [motif, setMotif] = useState(MOTIF_OPTIONS[0]);
   const [popup, setPopup] = useState(null);
   const [openAcc, setOpenAcc] = useState(-1);
-  const [reviews, setReviews] = useState(REVIEWS);
+  const [reviews, setReviews] = useState(DEFAULT_PRODUCT_REVIEWS);
   const [reviewOpen, setReviewOpen] = useState(false);
   const popupRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    const loadReviews = async () => {
+      if (!isFirebaseConfigured) {
+        if (active) setReviews(DEFAULT_PRODUCT_REVIEWS);
+        return;
+      }
+      try {
+        const items = await ensureDefaultProductReviews();
+        if (active) setReviews(items.length ? items : await listProductReviews());
+      } catch {
+        if (active) setReviews(DEFAULT_PRODUCT_REVIEWS);
+      }
+    };
+    loadReviews();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const unitPrice = Number(model?.price) || UNIT_PRICE;
   const imageSrc = useMemo(() => {
@@ -554,7 +578,23 @@ function InvitationModelPage() {
       open={reviewOpen}
       onClose={() => setReviewOpen(false)}
       productName={model?.name || ""}
-      onSubmit={(review) => setReviews((prev) => [review, ...prev])}
+      onSubmit={async (review) => {
+        const optimistic = { ...review, id: `local-${Date.now()}` };
+        setReviews((prev) => [optimistic, ...prev]);
+        if (!isFirebaseConfigured) return;
+        try {
+          const saved = await createProductReview({
+            ...review,
+            productSlug: catalogProductId || model?.name || "",
+            productType: "physical",
+          });
+          setReviews((prev) =>
+            prev.map((item) => (item.id === optimistic.id ? saved : item))
+          );
+        } catch {
+          /* garde l’avis local si Firestore échoue */
+        }
+      }}
     />
     </>
   );
