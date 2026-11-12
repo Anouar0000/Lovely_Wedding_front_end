@@ -29,7 +29,7 @@ function CatalogFilterSheet({ open, options, value, onApply, onClose, title = "F
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#C4A69C]/50 sm:items-center"
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-[#C4A69C]/50 sm:items-center"
       role="presentation"
       onClick={onClose}
     >

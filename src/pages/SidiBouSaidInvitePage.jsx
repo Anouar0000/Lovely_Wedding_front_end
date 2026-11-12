@@ -301,8 +301,12 @@ function SidiBouSaidInvitePage({
     ...invite,
     template: invite?.template || templateConfig.id,
   };
-  const skipWelcome =
-    invite.videoIntroEnabled === false || (previewMode && !demoInMockup);
+  /**
+   * Welcome plein écran :
+   * - éditeur (previewMode) : pas de welcome (sauf démo mockup)
+   * - lien public / démo produit : toujours le welcome vidéo
+   */
+  const skipWelcome = Boolean(previewMode && !demoInMockup);
   const [entered, setEntered] = useState(skipWelcome);
   const [doorFrame, setDoorFrame] = useState(0);
   const doorTimerRef = useRef(null);
@@ -360,10 +364,8 @@ function SidiBouSaidInvitePage({
   };
 
   useEffect(() => {
-    const skip =
-      invite.videoIntroEnabled === false || (previewMode && !demoInMockup);
-    setEntered(skip);
-  }, [invite.videoIntroEnabled, previewMode, demoInMockup]);
+    setEntered(Boolean(previewMode && !demoInMockup));
+  }, [previewMode, demoInMockup]);
 
   const lastEvent = useMemo(() => {
     return invite.timeline && invite.timeline.length > 0
@@ -454,40 +456,41 @@ function SidiBouSaidInvitePage({
    */
   const mockupPhoneH = Math.ceil((pageWidth * 370) / 166);
 
-  if (demoInMockup && !entered) {
+  if (!entered) {
+    if (demoInMockup) {
+      return (
+        <div
+          className="relative overflow-hidden bg-black"
+          style={{ width: pageWidth, height: mockupPhoneH }}
+        >
+          <DigitalInviteEntrance
+            video={`${ENTRANCE_VIDEO}?v=4`}
+            alt="Sidi Bou Said — welcome"
+            background="#000"
+            autoOnly
+            autoOpenAfterMs={12000}
+            contained
+            onOpen={() => setEntered(true)}
+          />
+        </div>
+      );
+    }
     return (
-      <div
-        className="relative overflow-hidden bg-black"
-        style={{ width: pageWidth, height: mockupPhoneH }}
-      >
-        <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=3`}
-          alt="Sidi Bou Said — welcome"
-          background="#000"
-          autoOnly
-          autoOpenAfterMs={12000}
-          contained
-          onOpen={() => setEntered(true)}
-        />
-      </div>
+      <DigitalInviteEntrance
+        video={`${ENTRANCE_VIDEO}?v=4`}
+        alt="Sidi Bou Said — welcome"
+        background="#000"
+        autoOnly
+        autoOpenAfterMs={12000}
+        onOpen={() => {
+          window.scrollTo(0, 0);
+          setEntered(true);
+        }}
+      />
     );
   }
 
   return (
-    <>
-      {!entered ? (
-        <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=3`}
-          alt="Sidi Bou Said — welcome"
-          background="#000"
-          autoOnly
-          autoOpenAfterMs={12000}
-          onOpen={() => {
-            window.scrollTo(0, 0);
-            setEntered(true);
-          }}
-        />
-      ) : null}
     <main
       className={`${previewMode || demoInMockup ? "bg-[#dcebf0]" : "min-h-screen bg-[#dcebf0]"} font-urbanist text-[#0093d8]`}
       style={
@@ -1036,7 +1039,6 @@ function SidiBouSaidInvitePage({
 
       </div>
     </main>
-    </>
   );
 }
 

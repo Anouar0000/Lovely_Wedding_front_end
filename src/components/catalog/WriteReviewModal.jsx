@@ -61,7 +61,7 @@ function WriteReviewModal({ open, onClose, onSubmit, productName = "" }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#C4A69C]/50 sm:items-center"
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-[#C4A69C]/50 sm:items-center"
       role="presentation"
       onClick={onClose}
     >
@@ -89,7 +89,7 @@ function WriteReviewModal({ open, onClose, onSubmit, productName = "" }) {
           </button>
         </div>
 
-        <div className="max-h-[70vh] overflow-y-auto px-5 pb-6 pt-2">
+        <div className="max-h-[min(70vh,calc(100dvh-5rem))] overflow-y-auto px-5 pb-[max(24px,env(safe-area-inset-bottom,0px))] pt-2">
           {sent ? (
             <div className="py-8 text-center">
               <p className="font-lora text-[20px] text-lw-text">Merci pour votre avis !</p>

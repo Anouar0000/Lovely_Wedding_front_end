@@ -677,27 +677,29 @@ function DigitalProductDetailPage() {
       <DigitalHomeFooter />
     </div>
 
-    {/* Hors overflow-x-hidden : Safari iOS casse sinon le position:fixed */}
-    <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
-      <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-6xl">
-        <div className="min-w-0">
-          <p className="truncate font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
-            {selectedPack.label}
-          </p>
-          <p className="font-glacial text-[18px] font-bold leading-6 text-[#4B4242]">
-            {selectedPack.priceLabel}
-          </p>
+    {/* Hors overflow-x-hidden : Safari iOS casse sinon le position:fixed — masquée si modale avis ouverte */}
+    {!reviewOpen ? (
+      <div className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
+        <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3 lg:max-w-6xl">
+          <div className="min-w-0">
+            <p className="truncate font-lora text-[18px] font-normal leading-[34px] tracking-[-0.18px] text-[#4B4242]">
+              {selectedPack.label}
+            </p>
+            <p className="font-glacial text-[18px] font-bold leading-6 text-[#4B4242]">
+              {selectedPack.priceLabel}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleOrder}
+            className="inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#A97C72] px-5 font-glacial text-[14px] font-bold text-white shadow-[0px_8px_10px_rgba(168,125,115,0.28)] hover:bg-[#966B62]"
+          >
+            Passer la commande
+            <span aria-hidden>→</span>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleOrder}
-          className="inline-flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#A97C72] px-5 font-glacial text-[14px] font-bold text-white shadow-[0px_8px_10px_rgba(168,125,115,0.28)] hover:bg-[#966B62]"
-        >
-          Passer la commande
-          <span aria-hidden>→</span>
-        </button>
       </div>
-    </div>
+    ) : null}
 
     <WriteReviewModal
       open={reviewOpen}

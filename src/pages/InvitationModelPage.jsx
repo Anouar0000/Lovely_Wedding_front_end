@@ -551,14 +551,16 @@ function InvitationModelPage() {
       <DigitalHomeFooter />
     </div>
 
-    {/* Barre sticky mobile — reste visible en scrollant les avis */}
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] lg:hidden">
-      <div className="pointer-events-auto border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
-        <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3">
-          {orderSummary}
+    {/* Barre sticky mobile — masquée si modale avis ouverte */}
+    {!reviewOpen ? (
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] lg:hidden">
+        <div className="pointer-events-auto border-t border-[#C4BBB3] bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(75,66,66,0.12)]">
+          <div className="mx-auto flex w-full max-w-[428px] items-center justify-between gap-3">
+            {orderSummary}
+          </div>
         </div>
       </div>
-    </div>
+    ) : null}
 
     <WriteReviewModal
       open={reviewOpen}
