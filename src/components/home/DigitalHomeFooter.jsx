@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function scrollToSection(e, id) {
+function scrollToSection(e, id, navigateHome = false, navigate) {
   e.preventDefault();
   const el = document.getElementById(id);
-  if (!el) return;
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
-  window.history.replaceState(null, "", `#${id}`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", `#${id}`);
+    return;
+  }
+  if (navigateHome && navigate) {
+    navigate(`/#${id}`);
+  }
 }
 
 /** Footer — Figma 1702:664 */
 function DigitalHomeFooter() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
 
@@ -18,6 +24,8 @@ function DigitalHomeFooter() {
     e.preventDefault();
     setDone(true);
   };
+
+  const goSection = (e, id) => scrollToSection(e, id, true, navigate);
 
   return (
     <footer className="bg-[#483C38] px-4 pb-10 pt-12 text-[#E8DFD5] lg:px-8 lg:pb-14 lg:pt-16">
@@ -80,18 +88,18 @@ function DigitalHomeFooter() {
             <ul className="mt-2.5 space-y-0 font-glacial text-[14px] font-normal leading-[18px] text-[#E8DFD5]">
               <li>
                 <a
-                  href="#communaute"
+                  href="/#communaute"
                   className="hover:underline"
-                  onClick={(e) => scrollToSection(e, "communaute")}
+                  onClick={(e) => goSection(e, "communaute")}
                 >
                   Community
                 </a>
               </li>
               <li>
                 <a
-                  href="#our-story"
+                  href="/#our-story"
                   className="hover:underline"
-                  onClick={(e) => scrollToSection(e, "our-story")}
+                  onClick={(e) => goSection(e, "our-story")}
                 >
                   Our Story
                 </a>
@@ -102,17 +110,22 @@ function DigitalHomeFooter() {
             <h3 className="font-glacial text-[14px] font-bold leading-6 text-[#E8DFD5]">HELP</h3>
             <ul className="mt-2.5 space-y-0 font-glacial text-[14px] font-normal leading-[18px] text-[#E8DFD5]">
               <li>
-                <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+                <a href="/#faq" className="hover:underline" onClick={(e) => goSection(e, "faq")}>
                   FAQ
                 </a>
               </li>
               <li>
-                <Link to="/login" className="hover:underline">
+                <a
+                  href="https://www.instagram.com/invitationsmariagetn/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
                   Contact
-                </Link>
+                </a>
               </li>
               <li>
-                <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+                <a href="/#faq" className="hover:underline" onClick={(e) => goSection(e, "faq")}>
                   Shipping
                 </a>
               </li>
@@ -147,11 +160,11 @@ function DigitalHomeFooter() {
 
         <p className="mt-10 text-center font-glacial text-[12px] font-normal leading-6 text-[#A79C92] lg:mt-12">
           © 2026 Lovely Invitations ·{" "}
-          <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+          <a href="/#faq" className="hover:underline" onClick={(e) => goSection(e, "faq")}>
             Confidentialité
           </a>{" "}
           ·{" "}
-          <a href="#faq" className="hover:underline" onClick={(e) => scrollToSection(e, "faq")}>
+          <a href="/#faq" className="hover:underline" onClick={(e) => goSection(e, "faq")}>
             CGV
           </a>
         </p>

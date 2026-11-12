@@ -13,8 +13,8 @@ function PhysicalDrageesSection() {
   const [thumbLeft, setThumbLeft] = useState(0);
 
   const items = [
-    { title: "Sidi Bou Said", image: a.drageeSidi, price: "Start at 49$" },
-    { title: "La Dolce Vita", image: a.drageeDolce, isNew: true, price: "Start at 49$" },
+    { title: "Sidi Bou Said", image: a.drageeSidi, price: "À partir de 99 DT" },
+    { title: "La Dolce Vita", image: a.drageeDolce, isNew: true, price: "À partir de 99 DT" },
   ];
 
   const updateProgress = useCallback(() => {

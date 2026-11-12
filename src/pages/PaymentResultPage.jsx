@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import DigitalHomeHeader from "../components/home/DigitalHomeHeader";
 import DigitalHomeFooter from "../components/home/DigitalHomeFooter";
+import { useCart } from "../context/CartContext";
 import { getOrderById } from "../services/orders";
 import { verifyFlouciPaymentSession } from "../services/payments";
 
 function PaymentResultPage() {
   const [params] = useSearchParams();
+  const { clearCart } = useCart();
   const statusParam = params.get("status") || "";
   const orderId = params.get("orderId") || "";
   const paymentId =
@@ -69,6 +71,12 @@ function PaymentResultPage() {
       mounted = false;
     };
   }, [orderId, paymentId, isFail]);
+
+  useEffect(() => {
+    if (!loading && paid && !isFail) {
+      clearCart();
+    }
+  }, [loading, paid, isFail, clearCart]);
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-white font-glacial text-lw-text">

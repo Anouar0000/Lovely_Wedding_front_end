@@ -141,7 +141,10 @@ function FavoritesPage() {
                           : "Includes music, animations & guestbook"}
                       </p>
                       <p className="mt-1 font-glacial text-[14px] font-bold leading-6 text-[#4B4242]">
-                        {item.priceLabel || (item.productType === "print" ? "Start at 49$" : "Start at 49$")}
+                        {item.priceLabel ||
+                          (item.productType === "print"
+                            ? "À partir de 1,5 DT"
+                            : "À partir de 99 DT")}
                       </p>
                     </button>
                   </div>

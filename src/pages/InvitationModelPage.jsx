@@ -433,7 +433,7 @@ function InvitationModelPage() {
                   {"& guestbook"}
                 </p>
                 <p className="mt-2 font-glacial text-[14px] font-bold leading-6 text-lw-text">
-                  Start at 49$
+                  À partir de 1,5 DT
                 </p>
               </button>
             ))}

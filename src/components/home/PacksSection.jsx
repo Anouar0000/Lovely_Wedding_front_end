@@ -502,7 +502,8 @@ const TRUST_POINTS = [
 
 function PacksSection() {
   const navigate = useNavigate();
-  const choose = (packId) => navigate("/signup", { state: { pack: packId } });
+  const choose = (packId) =>
+    navigate("/invitations-digital", { state: { pack: packId } });
 
   return (
     <section id="forfaits" className="scroll-mt-24 bg-[#F7F2EC] px-4 py-10 lg:px-8 lg:py-24">

@@ -63,7 +63,8 @@ function CheckoutPage() {
           successLink,
           failLink,
         });
-        clearCart();
+        // Ne pas vider le panier ici : si le paiement échoue / est annulé, le client garde son panier.
+        // clearCart() se fait sur PaymentResultPage après paiement confirmé.
         window.location.href = payment.link;
         return;
       }

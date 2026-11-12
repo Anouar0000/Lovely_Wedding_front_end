@@ -106,7 +106,7 @@ function InvitationsWebSection() {
                       <br />& guestbook
                     </p>
                     <p className="mt-2 font-glacial text-[14px] font-bold leading-5 text-lw-text lg:mt-3 lg:text-[15px]">
-                      Start at 49$
+                      À partir de 99 DT
                     </p>
                   </button>
                 </div>

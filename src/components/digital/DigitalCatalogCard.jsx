@@ -14,7 +14,7 @@ export const DIGITAL_CATALOG_PRODUCTS = [
     img: a.catalogTileSidi,
     to: "/invitations-digital/sidi-bousaid",
     category: "Arabesque",
-    priceLabel: "Start at 49$",
+    priceLabel: "À partir de 99 DT",
   },
   {
     id: "dolce-vita",
@@ -22,15 +22,15 @@ export const DIGITAL_CATALOG_PRODUCTS = [
     img: a.catalogTileDolce,
     to: "/invitations-digital/dolce-vita",
     category: "Romantique",
-    priceLabel: "Start at 49$",
+    priceLabel: "À partir de 99 DT",
   },
   {
     id: "bridgerton",
-    name: "Bridgeton",
+    name: "Bridgerton",
     img: a.catalogTileBridgeton,
     to: "/invitations-digital/bridgerton",
     category: "Moderne",
-    priceLabel: "Start at 49$",
+    priceLabel: "À partir de 99 DT",
   },
   {
     id: "majestic-white",
@@ -38,7 +38,7 @@ export const DIGITAL_CATALOG_PRODUCTS = [
     img: a.catalogTileMajestic,
     to: "/invitations-digital/majestic-white",
     category: "Romantique",
-    priceLabel: "Start at 49$",
+    priceLabel: "À partir de 99 DT",
   },
   {
     id: "club-capri",
@@ -47,7 +47,7 @@ export const DIGITAL_CATALOG_PRODUCTS = [
     screen: a.screenCapri,
     to: "/invitations-digital/club-capri",
     category: "Moderne",
-    priceLabel: "Start at 49$",
+    priceLabel: "À partir de 99 DT",
   },
   {
     id: "sakura-koi",
@@ -56,7 +56,7 @@ export const DIGITAL_CATALOG_PRODUCTS = [
     screen: a.screenSakura,
     to: "/invitations-digital/sakura-koi",
     category: "Romantique",
-    priceLabel: "Start at 49$",
+    priceLabel: "À partir de 99 DT",
   },
 ];
 

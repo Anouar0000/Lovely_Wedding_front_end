@@ -178,7 +178,7 @@ export const DIGITAL_PRODUCTS = {
     category: "Romantique",
   },
   bridgerton: {
-    name: "Bridgeton",
+    name: "Bridgerton",
     slug: "bridgerton",
     cover: a.heroCoverBridgerton,
     invi: a.themeBridgeton,

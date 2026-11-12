@@ -17,14 +17,14 @@ function SaveTheDatesSection() {
       title: "Sidi Bou Said",
       image: a.std1,
       to: "/digital-invitation/sidi-bousaid",
-      price: "25$",
+      price: "À partir de 99 DT",
     },
     {
       title: "La Dolce Vita",
       image: a.std2,
       to: "/digital-invitation/dolce-vita",
       isNew: true,
-      price: "25$",
+      price: "À partir de 99 DT",
     },
   ];
 

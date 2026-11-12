@@ -74,7 +74,7 @@ function DigitalHomeHeader({
               <button
                 type="button"
                 className="hidden size-6 items-center justify-center lg:inline-flex"
-                aria-label="Recherche"
+                aria-label="Voir la collection"
                 onClick={() => navigate(collectionPath)}
               >
                 <LuSearch {...iconProps} />
@@ -88,7 +88,18 @@ function DigitalHomeHeader({
               >
                 Collection
               </button>
-              <a href="#faq" className="hover:text-lw-accent">
+              <a
+                href="/#faq"
+                className="hover:text-lw-accent"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (document.getElementById("faq")) {
+                    document.getElementById("faq").scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    navigate("/#faq");
+                  }
+                }}
+              >
                 FAQ
               </a>
             </nav>

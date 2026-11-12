@@ -158,16 +158,16 @@ function LovelyMobileDrawer({ open, onClose, mode = "digitale" }) {
             />
           </div>
 
-          <button
-            type="button"
+          <span
             className="relative z-10 inline-flex items-center gap-1.5 font-glacial text-[14px] font-bold leading-[23px] text-lw-text"
             aria-label="Langue : Français"
+            title="Français"
           >
             <LuGlobe size={24} strokeWidth={1.5} aria-hidden />
             <span className="inline-block h-[23px] min-w-[14px] text-[14px] font-bold leading-[23px]">
               Fr
             </span>
-          </button>
+          </span>
         </div>
 
         <nav className="mx-4 flex-1 overflow-y-auto pb-10">
