@@ -110,6 +110,8 @@ function ClubCapriInvitePage({
   invite = defaultInvite,
   previewMode = false,
   demoInMockup = false,
+  /** Aperçu latéral éditeur — pas de welcome (lien public /preview dashboard : oui) */
+  editorPreview = false,
 }) {
   const sectionInvite = {
     ...invite,
@@ -127,7 +129,12 @@ function ClubCapriInvitePage({
   const [rsvpStatus, setRsvpStatus] = useState("");
   const [rsvpError, setRsvpError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [entered, setEntered] = useState(Boolean(previewMode && !demoInMockup));
+  const welcomeEnabled = invite.videoIntroEnabled !== false;
+  const skipWelcome = !welcomeEnabled || Boolean(editorPreview);
+  const [entered, setEntered] = useState(skipWelcome);
+  useEffect(() => {
+    setEntered(invite.videoIntroEnabled === false || Boolean(editorPreview));
+  }, [invite.videoIntroEnabled, editorPreview]);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const musicPlayerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -444,11 +451,11 @@ function ClubCapriInvitePage({
         style={{ width: PAGE_W, height: mockupPhoneH, background: "#0a0a0a" }}
       >
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=1`}
+          video={`${ENTRANCE_VIDEO}?v=2`}
           alt="Club Capri invitation entrance"
           background="#0a0a0a"
           autoOnly
-          autoOpenAfterMs={4000}
+          autoOpenAfterMs={12000}
           contained
           onOpen={() => setEntered(true)}
         />
@@ -460,11 +467,11 @@ function ClubCapriInvitePage({
     <>
       {!entered ? (
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=1`}
+          video={`${ENTRANCE_VIDEO}?v=2`}
           alt="Club Capri invitation entrance"
           background="#0a0a0a"
           autoOnly
-          autoOpenAfterMs={4000}
+          autoOpenAfterMs={12000}
           onOpen={() => {
             window.scrollTo(0, 0);
             setEntered(true);

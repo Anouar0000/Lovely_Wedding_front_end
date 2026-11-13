@@ -156,6 +156,8 @@ function SakuraKoiInvitePage({
   invite = defaultInvite,
   previewMode = false,
   demoInMockup = false,
+  /** Aperçu latéral éditeur — pas de welcome (lien public /preview dashboard : oui) */
+  editorPreview = false,
 }) {
   const sectionInvite = {
     ...invite,
@@ -174,7 +176,12 @@ function SakuraKoiInvitePage({
   const [rsvpStatus, setRsvpStatus] = useState("");
   const [rsvpError, setRsvpError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [entered, setEntered] = useState(Boolean(previewMode && !demoInMockup));
+  const welcomeEnabled = invite.videoIntroEnabled !== false;
+  const skipWelcome = !welcomeEnabled || Boolean(editorPreview);
+  const [entered, setEntered] = useState(skipWelcome);
+  useEffect(() => {
+    setEntered(invite.videoIntroEnabled === false || Boolean(editorPreview));
+  }, [invite.videoIntroEnabled, editorPreview]);
   // Compute scale on first paint — avoids skewed/overflow layout until refresh
   // En previewMode le parent (éditeur) gère déjà le scale — rester à 1.
   const [scale, setScale] = useState(() => {
@@ -427,11 +434,11 @@ function SakuraKoiInvitePage({
         style={{ width: PAGE_W, height: mockupPhoneH, background: "#f7ebe8" }}
       >
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=1`}
+          video={`${ENTRANCE_VIDEO}?v=2`}
           alt="Sakura Koi invitation"
           background="#f7ebe8"
           autoOnly
-          autoOpenAfterMs={4000}
+          autoOpenAfterMs={12000}
           contained
           onOpen={() => setEntered(true)}
         />
@@ -443,11 +450,11 @@ function SakuraKoiInvitePage({
     <>
       {!entered ? (
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=1`}
+          video={`${ENTRANCE_VIDEO}?v=2`}
           alt="Sakura Koi invitation"
           background="#f7ebe8"
           autoOnly
-          autoOpenAfterMs={4000}
+          autoOpenAfterMs={12000}
           onOpen={() => {
             window.scrollTo(0, 0);
             setEntered(true);
