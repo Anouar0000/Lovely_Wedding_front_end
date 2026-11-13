@@ -1,26 +1,42 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const CHECK_ICON = "/assets/home-digital/figma/circle-check.svg";
-const CHECK_ICON_ROSE = "/assets/home-digital/figma/circle-check-rose.svg";
-const ARROW_ICON = "/assets/home-digital/figma/arrow-right.svg";
-const ARROW_ICON_DARK = "/assets/home-digital/figma/arrow-right-dark.svg";
-const ARROW_ICON_WHITE = "/assets/home-digital/figma/arrow-right-white.svg";
 const SUR_MESURE_STARS = "/assets/home-digital/figma/sur-mesure-stars.png";
 const SUR_MESURE_VIP_BADGE = "/assets/home-digital/figma/sur-mesure-vip-badge.svg";
 
-const CheckIcon = ({ className = "", tone = "currentColor", size = 18 }) => (
+/** Icônes inline — évite les SVG absents chez certains clients (cache / Safari / réseau). */
+const CheckIcon = ({ className = "", tone = "#A97C72", size = 20 }) => (
   <svg
     className={`shrink-0 ${className}`}
     width={size}
     height={size}
-    viewBox="0 0 18 18"
+    viewBox="0 0 20 20"
     fill="none"
     aria-hidden
   >
-    <circle cx="9" cy="9" r="7.25" stroke={tone} strokeWidth="1.5" />
+    <circle cx="10" cy="10" r="8.25" stroke={tone} strokeWidth="1.5" />
     <path
-      d="M5.5 9.2L7.8 11.5L12.5 6.5"
+      d="M7.5 10L9.16667 11.6667L12.5 8.33333"
+      stroke={tone}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const ArrowIcon = ({ className = "", tone = "#332B29", size = 18 }) => (
+  <svg
+    className={`shrink-0 ${className}`}
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden
+  >
+    <path d="M5 12H19" stroke={tone} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M12 5L19 12L12 19"
       stroke={tone}
       strokeWidth="1.5"
       strokeLinecap="round"
@@ -153,7 +169,7 @@ function SignaturePackCard({ onChoose }) {
             className="absolute left-0 right-0 flex h-5 items-center gap-3"
             style={{ top: row.y }}
           >
-            <img src={CHECK_ICON} alt="" width={20} height={20} className="size-5 shrink-0" />
+            <CheckIcon tone="#FFFFFF" />
             <p className="whitespace-nowrap font-glacial text-[16px] font-normal leading-5 text-white">
               {row.text}
             </p>
@@ -176,7 +192,7 @@ function SignaturePackCard({ onChoose }) {
         className="absolute left-8 right-8 top-[549px] inline-flex h-12 items-center justify-center gap-2.5 rounded-full bg-[#A97C72] pl-6 pr-5 font-glacial text-[14px] font-bold leading-6 text-white shadow-[0px_8px_10px_rgba(168,125,115,0.28)] transition-colors hover:bg-[#966c63]"
       >
         Choisir Signature
-        <img src={ARROW_ICON} alt="" width={18} height={18} className="size-[18px] shrink-0" />
+        <ArrowIcon tone="#FFFFFF" />
       </button>
     </article>
     </div>
@@ -254,13 +270,7 @@ function EssentielPackCard({ onChoose }) {
               className="absolute left-0 right-0 flex h-6 items-start gap-3"
               style={{ top: row.y }}
             >
-              <img
-                src={CHECK_ICON_ROSE}
-                alt=""
-                width={20}
-                height={20}
-                className="size-5 shrink-0"
-              />
+              <CheckIcon tone="#A97C72" />
               <p className="min-w-0 flex-1 font-glacial text-[16px] font-normal leading-6 text-[#332B29]">
                 {row.text}
               </p>
@@ -293,13 +303,7 @@ function EssentielPackCard({ onChoose }) {
           style={{ border: "1.5px solid #332B29" }}
         >
           Choisir Essentiel
-          <img
-            src={ARROW_ICON_DARK}
-            alt=""
-            width={18}
-            height={18}
-            className="size-[18px] shrink-0"
-          />
+          <ArrowIcon tone="#332B29" />
         </button>
       </article>
     </div>
@@ -438,13 +442,7 @@ function SurMesurePackCard({ onChoose }) {
               className="absolute left-0 right-0 flex h-6 items-start gap-3"
               style={{ top: row.y }}
             >
-              <img
-                src={CHECK_ICON_ROSE}
-                alt=""
-                width={20}
-                height={20}
-                className="size-5 shrink-0"
-              />
+              <CheckIcon tone="#A97C72" />
               <p className="min-w-0 flex-1 font-glacial text-[16px] font-normal leading-6 text-white">
                 {row.text}
               </p>
@@ -459,10 +457,10 @@ function SurMesurePackCard({ onChoose }) {
           </p>
           <div className="flex flex-wrap content-start gap-1.5">
             {[
-      "Musique",
-      "Vidéo save the date personnalisée",
-      "Illustrations animées",
-      "Monogramme",
+              "Musique",
+              "Vidéo save the date personnalisée",
+              "Illustrations animées",
+              "Monogramme",
             ].map((tag) => (
               <span
                 key={tag}
@@ -481,13 +479,7 @@ function SurMesurePackCard({ onChoose }) {
           className="absolute left-8 right-8 top-[589px] z-10 inline-flex h-12 items-center justify-center gap-2.5 rounded-full bg-[#A97C72] pl-6 pr-5 font-glacial text-[15px] font-bold leading-none tracking-[0.15px] text-white transition-colors hover:bg-[#966c63]"
         >
           Choisir Sur mesure
-          <img
-            src={ARROW_ICON_WHITE}
-            alt=""
-            width={18}
-            height={18}
-            className="size-[18px] shrink-0"
-          />
+          <ArrowIcon tone="#FFFFFF" />
         </button>
       </article>
     </div>
