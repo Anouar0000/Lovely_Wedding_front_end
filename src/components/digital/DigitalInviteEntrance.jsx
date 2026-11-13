@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 
 /**
  * Full-screen invitation entrance (Figma splash above the invite frame).
- * Image: tap to open (unless autoOnly). Video: auto-open after video end / autoOpenAfterMs.
+ * Image: tap to open (unless autoOnly).
+ * Video autoOnly: loops until autoOpenAfterMs, then opens (no click).
  */
 function DigitalInviteEntrance({
   image,
@@ -30,27 +31,38 @@ function DigitalInviteEntrance({
     const el = videoRef.current;
     if (!el) return undefined;
 
-    const onEnded = () => handleOpen();
-    el.addEventListener("ended", onEnded);
+    // En auto : on boucle jusqu'au délai — ne pas fermer dès la fin d'une vidéo courte.
+    if (!autoOnly) {
+      const onEnded = () => handleOpen();
+      el.addEventListener("ended", onEnded);
+      const playPromise = el.play?.();
+      if (playPromise?.catch) {
+        playPromise.catch(() => {
+          /* autoplay blocked */
+        });
+      }
+      return () => el.removeEventListener("ended", onEnded);
+    }
 
+    el.loop = true;
     const playPromise = el.play?.();
     if (playPromise?.catch) {
       playPromise.catch(() => {
-        /* autoplay blocked — fallback timeout still opens if autoOnly */
+        /* autoplay blocked — le timeout ouvre quand même */
       });
     }
-
-    return () => el.removeEventListener("ended", onEnded);
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [video]);
+  }, [video, autoOnly]);
 
-  // Auto-dismiss after N ms
+  // Auto-dismiss after N ms (auto welcome sans clic)
   useEffect(() => {
-    if (!autoOpenAfterMs || autoOpenAfterMs <= 0) return undefined;
-    const id = window.setTimeout(() => handleOpen(), autoOpenAfterMs);
+    if (!autoOnly) return undefined;
+    const delay = autoOpenAfterMs && autoOpenAfterMs > 0 ? autoOpenAfterMs : 6000;
+    const id = window.setTimeout(() => handleOpen(), delay);
     return () => window.clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoOpenAfterMs, video, image]);
+  }, [autoOnly, autoOpenAfterMs, video, image]);
 
   if (!image && !video) return null;
 
@@ -73,7 +85,8 @@ function DigitalInviteEntrance({
             autoPlay
             muted
             playsInline
-            preload="metadata"
+            loop
+            preload="auto"
             aria-label={alt}
           />
         ) : (

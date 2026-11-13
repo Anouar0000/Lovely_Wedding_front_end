@@ -451,11 +451,11 @@ function ClubCapriInvitePage({
         style={{ width: PAGE_W, height: mockupPhoneH, background: "#0a0a0a" }}
       >
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=2`}
+          video={`${ENTRANCE_VIDEO}?v=3`}
           alt="Club Capri invitation entrance"
           background="#0a0a0a"
           autoOnly
-          autoOpenAfterMs={12000}
+          autoOpenAfterMs={7000}
           contained
           onOpen={() => setEntered(true)}
         />
@@ -467,11 +467,11 @@ function ClubCapriInvitePage({
     <>
       {!entered ? (
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=2`}
+          video={`${ENTRANCE_VIDEO}?v=3`}
           alt="Club Capri invitation entrance"
           background="#0a0a0a"
           autoOnly
-          autoOpenAfterMs={12000}
+          autoOpenAfterMs={7000}
           onOpen={() => {
             window.scrollTo(0, 0);
             setEntered(true);

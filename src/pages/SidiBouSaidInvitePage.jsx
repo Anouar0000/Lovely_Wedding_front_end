@@ -473,7 +473,7 @@ function SidiBouSaidInvitePage({
             alt="Sidi Bou Said — welcome"
             background="#000"
             autoOnly
-            autoOpenAfterMs={8000}
+            autoOpenAfterMs={7000}
             contained
             onOpen={() => setEntered(true)}
           />
@@ -482,11 +482,11 @@ function SidiBouSaidInvitePage({
     }
     return (
       <DigitalInviteEntrance
-        video={`${ENTRANCE_VIDEO}?v=5`}
+        video={`${ENTRANCE_VIDEO}?v=6`}
         alt="Sidi Bou Said — welcome"
         background="#000"
         autoOnly
-        autoOpenAfterMs={12000}
+        autoOpenAfterMs={7000}
         onOpen={() => {
           window.scrollTo(0, 0);
           setEntered(true);
