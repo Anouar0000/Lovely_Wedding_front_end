@@ -2,7 +2,29 @@ import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SUR_MESURE_STARS = "/assets/home-digital/figma/sur-mesure-stars.png";
-const SUR_MESURE_VIP_BADGE = "/assets/home-digital/figma/sur-mesure-vip-badge.svg";
+
+const VipBadge = ({ className = "" }) => (
+  <svg
+    className={className}
+    width="118"
+    height="24"
+    viewBox="0 0 118 24"
+    fill="none"
+    aria-hidden
+  >
+    <path
+      d="M106 0H12C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24H106C112.627 24 118 18.6274 118 12C118 5.37258 112.627 0 106 0Z"
+      fill="url(#lwVipBadgeGrad)"
+    />
+    <defs>
+      <linearGradient id="lwVipBadgeGrad" x1="0" y1="0" x2="118" y2="0" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#B8925A" />
+        <stop offset="0.5" stopColor="#EAD1A6" />
+        <stop offset="1" stopColor="#A8824C" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 /** Icônes inline — évite les SVG absents chez certains clients (cache / Safari / réseau). */
 const CheckIcon = ({ className = "", tone = "#A97C72", size = 20 }) => (
@@ -399,13 +421,7 @@ function SurMesurePackCard({ onChoose }) {
               Sur Mesure
             </h3>
             <div className="absolute right-0 top-[6px] h-6 w-[118px]">
-              <img
-                src={SUR_MESURE_VIP_BADGE}
-                alt=""
-                width={118}
-                height={24}
-                className="absolute inset-0 size-full"
-              />
+              <VipBadge className="absolute inset-0 size-full" />
               <p className="absolute inset-0 flex items-center justify-center font-glacial text-[12px] font-bold leading-none text-white">
                 ✦ EXPÉRIENCE VIP
               </p>
