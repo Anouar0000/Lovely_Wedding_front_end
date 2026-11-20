@@ -220,6 +220,16 @@ export const SEED_DIGITAL_PRODUCTS = [
     filled: true,
     sortOrder: 6,
   },
+  {
+    type: CATALOG_TYPES.DIGITAL,
+    name: "Celestial",
+    slug: "celestial",
+    category: "Moderne",
+    priceLabel: "à partir de 99dt",
+    imageUrl: `${FIGMA_DIG}/screen-celestial.png`,
+    filled: true,
+    sortOrder: 7,
+  },
 ];
 
 /** Default physical products (same as shop static catalogue) */

@@ -26,6 +26,7 @@ export const homeDigitalAssets = {
   heroCoverSakura: `${FIGMA}/hero-cover-sakura.png`,
   heroCoverBridgerton: `${FIGMA}/hero-cover-bridgerton.png`,
   heroCoverMajestic: `${FIGMA}/hero-cover-majestic.png`,
+  heroCoverCelestial: `${FIGMA}/hero-cover-celestial.png`,
 
   // Best-sellers — Figma Rectangle 53/54/55
   bestsellerCenter: `${FIGMA}/bs-center.png`,
@@ -63,6 +64,7 @@ export const homeDigitalAssets = {
   catalogTileSakura: `${FIGMA}/card-sakura.png`,
   screenCapri: `${FIGMA}/screen-capri.png`,
   screenSakura: `${FIGMA}/screen-sakura.png`,
+  screenCelestial: `${FIGMA}/screen-celestial.png`,
   // Phones seuls (home / other)
   cardSidi: `${FIGMA}/phone-sidi.png`,
   cardDolce: `${FIGMA}/phone-dolce.png`,
@@ -101,6 +103,9 @@ export const homeDigitalAssets = {
   gallerySakura1: `${FIGMA}/gallery-sakura-1.jpg`,
   gallerySakura2: `${FIGMA}/gallery-sakura-2.jpg`,
   gallerySakura3: `${FIGMA}/gallery-sakura-3.jpg`,
+  galleryCelestial1: `${FIGMA}/gallery-celestial-1.jpg`,
+  galleryCelestial2: `${FIGMA}/gallery-celestial-2.jpg`,
+  galleryCelestial3: `${FIGMA}/gallery-celestial-3.jpg`,
   galleryCapri1: `${FIGMA}/gallery-capri-1.jpg`,
   galleryCapri2: `${FIGMA}/gallery-capri-2.jpg`,
   galleryCapri3: `${FIGMA}/gallery-capri-3.jpg`,

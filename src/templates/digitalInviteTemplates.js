@@ -5,6 +5,7 @@ import sakuraKoiTemplate from "../data/digital/templates/sakura-koi.json";
 import sidiBouSaidTemplate from "../data/digital/templates/sidi-bousaid.json";
 import bridgertonTemplate from "../data/digital/templates/bridgerton.json";
 import majesticWhiteTemplate from "../data/digital/templates/majestic-white.json";
+import celestialTemplate from "../data/digital/templates/celestial.json";
 import {
   TEMPLATE_SECTIONS,
   getDefaultActiveSections,
@@ -24,6 +25,7 @@ const SakuraKoiInvitePage = lazy(() => import("../pages/SakuraKoiInvitePage"));
 const SidiBouSaidInvitePage = lazy(() => import("../pages/SidiBouSaidInvitePage"));
 const BridgertonInvitePage = lazy(() => import("../pages/BridgertonInvitePage"));
 const MajesticWhiteInvitePage = lazy(() => import("../pages/MajesticWhiteInvitePage"));
+const CelestialInvitePage = lazy(() => import("../pages/CelestialInvitePage"));
 
 export const DIGITAL_TEMPLATE_IDS = {
   DOLCE_VITA: dolceVitaTemplate.id,
@@ -32,6 +34,7 @@ export const DIGITAL_TEMPLATE_IDS = {
   SAKURA_KOI: sakuraKoiTemplate.id,
   BRIDGERTON: bridgertonTemplate.id,
   MAJESTIC_WHITE: majesticWhiteTemplate.id,
+  CELESTIAL: celestialTemplate.id,
 };
 
 export {
@@ -107,6 +110,19 @@ export const digitalInviteTemplates = [
     ),
     sections: TEMPLATE_SECTIONS[sidiBouSaidTemplate.id],
     fixedTimelineSteps: sidiBouSaidTemplate.fixedTimelineSteps,
+  },
+  {
+    id: celestialTemplate.id,
+    label: celestialTemplate.label,
+    description: celestialTemplate.description,
+    Component: CelestialInvitePage,
+    defaults: withActiveSections(
+      celestialTemplate.sample || celestialTemplate.defaults,
+      celestialTemplate.id
+    ),
+    sections: TEMPLATE_SECTIONS[celestialTemplate.id],
+    // Programme steps are edited as texts (programmeStep1…5), not with the timeline editor
+    fixedTimelineSteps: [],
   },
 ];
 

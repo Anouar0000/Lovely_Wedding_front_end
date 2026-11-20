@@ -5,10 +5,9 @@ const LEGACY_STORAGE_KEY = "lovely_wedding_favorites_v1";
 
 const FavoritesContext = createContext(null);
 
-/** Alias → id canonique (évite doublons Celestial/Sakura, Bridgeton, etc.) */
+/** Alias → id canonique (évite doublons Bridgeton/Bridgerton, etc.) */
 const ID_ALIASES = {
   bridgeton: "bridgerton",
-  celestial: "sakura-koi",
   "sakura-koi": "sakura-koi",
 };
 

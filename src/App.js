@@ -19,6 +19,7 @@ const ClubCapriInvitePage = lazy(() => import('./pages/ClubCapriInvitePage'));
 const SakuraKoiInvitePage = lazy(() => import('./pages/SakuraKoiInvitePage'));
 const BridgertonInvitePage = lazy(() => import('./pages/BridgertonInvitePage'));
 const MajesticWhiteInvitePage = lazy(() => import('./pages/MajesticWhiteInvitePage'));
+const CelestialInvitePage = lazy(() => import('./pages/CelestialInvitePage'));
 const SharedDigitalInvitePage = lazy(() => import('./pages/SharedDigitalInvitePage'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -81,6 +82,7 @@ function App() {
             <Route path="/digital-invitation/sakura-koi" element={<SakuraKoiInvitePage />} />
             <Route path="/digital-invitation/bridgerton" element={<BridgertonInvitePage />} />
             <Route path="/digital-invitation/majestic-white" element={<MajesticWhiteInvitePage />} />
+            <Route path="/digital-invitation/celestial" element={<CelestialInvitePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/cart" element={<CartPage />} />

@@ -16,8 +16,6 @@ function FavoritesPage() {
   const catalogById = useMemo(() => {
     const map = new Map();
     DIGITAL_CATALOG_PRODUCTS.forEach((p) => map.set(p.id, p));
-    // Ancien nom marketing « Celestial » = Sakura Koi
-    map.set("celestial", map.get("sakura-koi"));
     return map;
   }, []);
 
@@ -69,11 +67,7 @@ function FavoritesPage() {
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-12 pb-12 md:grid-cols-3 md:gap-x-6 md:gap-y-14 lg:mt-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
             {items.map((item) => {
-              const catalog =
-                catalogById.get(item.id) ||
-                (item.title?.toLowerCase().includes("celestial")
-                  ? catalogById.get("sakura-koi")
-                  : null);
+              const catalog = catalogById.get(item.id) || null;
               if (catalog) {
                 return (
                   <DigitalCatalogCard

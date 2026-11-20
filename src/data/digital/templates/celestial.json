@@ -33,11 +33,26 @@
     "mapAddress": "Kobbet Ennhas Manouba",
     "programmeTitle": "PROGRAMME",
     "timelineEvents": [
-      { "time": "19:00", "title": "Accueil" },
-      { "time": "19:15", "title": "Contrat" },
-      { "time": "19:45", "title": "Réception" },
-      { "time": "20:30", "title": "Photos" },
-      { "time": "21:00", "title": "Fin" }
+      {
+        "time": "19:00",
+        "title": "Accueil"
+      },
+      {
+        "time": "19:15",
+        "title": "Contrat"
+      },
+      {
+        "time": "19:45",
+        "title": "Réception"
+      },
+      {
+        "time": "20:30",
+        "title": "Photos"
+      },
+      {
+        "time": "21:00",
+        "title": "Fin"
+      }
     ],
     "principlesTitle": "PRINCIPLES",
     "principlesP1": "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui. Non rem sunt fugiat numquam molestiae vero dolores dolores. Dolor ut sit quos accusantium vitae aliquid ducimus",
@@ -49,9 +64,9 @@
       "hero",
       "our-story",
       "reveal",
-      "location",
-      "timeline",
-      "celebrations",
+      "venue",
+      "programme",
+      "principles",
       "rsvp",
       "footer"
     ],
@@ -83,11 +98,26 @@
     "mapAddress": "Kobbet Ennhas Manouba",
     "programmeTitle": "programme",
     "timelineEvents": [
-      { "time": "19:00", "title": "Accueil" },
-      { "time": "19:15", "title": "Contrat" },
-      { "time": "19:45", "title": "Réception" },
-      { "time": "20:30", "title": "Photos" },
-      { "time": "21:00", "title": "Fin" }
+      {
+        "time": "19:00",
+        "title": "Accueil"
+      },
+      {
+        "time": "19:15",
+        "title": "Contrat"
+      },
+      {
+        "time": "19:45",
+        "title": "Réception"
+      },
+      {
+        "time": "20:30",
+        "title": "Photos"
+      },
+      {
+        "time": "21:00",
+        "title": "Fin"
+      }
     ],
     "principlesTitle": "principles",
     "principlesP1": "Voluptatum non fugiat qui ab non. At ut quasi dolorum numquam voluptas rerum qui. Non rem sunt fugiat numquam molestiae vero dolores dolores. Dolor ut sit quos accusantium vitae aliquid ducimus",
@@ -99,9 +129,9 @@
       "hero",
       "our-story",
       "reveal",
-      "location",
-      "timeline",
-      "celebrations",
+      "venue",
+      "programme",
+      "principles",
       "rsvp",
       "footer"
     ],

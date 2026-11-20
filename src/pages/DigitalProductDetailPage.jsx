@@ -189,6 +189,15 @@ export const DIGITAL_PRODUCTS = {
     desc: "Classic stationery-inspired design.",
     category: "Romantique",
   },
+  celestial: {
+    name: "Celestial",
+    slug: "celestial",
+    cover: a.heroCoverCelestial,
+    heroGallery: [a.galleryCelestial1, a.galleryCelestial2, a.galleryCelestial3],
+    demoTo: "/digital-invitation/celestial",
+    desc: "Cosmic design inspired by the moon, the sun and the constellations.",
+    category: "Moderne",
+  },
 };
 
 /** Product overview digital — Figma 1238:1953 */
@@ -196,8 +205,7 @@ function DigitalProductDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const resolvedSlug = slug === "celestial" ? "sakura-koi" : slug;
-  const product = DIGITAL_PRODUCTS[resolvedSlug] || DIGITAL_PRODUCTS["sidi-bousaid"];
+  const product = DIGITAL_PRODUCTS[slug] || DIGITAL_PRODUCTS["sidi-bousaid"];
 
   const [packId, setPackId] = useState("essentiel");
   const [openAcc, setOpenAcc] = useState(-1);
@@ -210,12 +218,6 @@ function DigitalProductDetailPage() {
   const heroRef = useRef(null);
   const slideLockRef = useRef(0);
   const dragRef = useRef({ active: false, startX: 0, moved: false });
-
-  useEffect(() => {
-    if (slug === "celestial") {
-      navigate("/invitations-digital/sakura-koi", { replace: true });
-    }
-  }, [slug, navigate]);
 
   useEffect(() => {
     let active = true;

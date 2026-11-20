@@ -1002,7 +1002,8 @@ function DigitalInviteEditorPage() {
               </Field>
               {(isSidiBouSaid ||
                 invite.template === "club-capri" ||
-                invite.template === "sakura-koi") && (
+                invite.template === "sakura-koi" ||
+                invite.template === "celestial") && (
                 <Field label="Ouverture Vidéo">
                   <select
                     value={invite.videoIntroEnabled !== false ? "yes" : "no"}
