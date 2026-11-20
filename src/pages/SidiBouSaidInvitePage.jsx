@@ -469,11 +469,11 @@ function SidiBouSaidInvitePage({
           style={{ width: pageWidth, height: mockupPhoneH }}
         >
           <DigitalInviteEntrance
-            video={`${ENTRANCE_VIDEO}?v=5`}
+            video={`${ENTRANCE_VIDEO}?v=7`}
             alt="Sidi Bou Said — welcome"
             background="#000"
             autoOnly
-            autoOpenAfterMs={7000}
+            autoOpenAfterMs={14000}
             contained
             onOpen={() => setEntered(true)}
           />
@@ -482,11 +482,11 @@ function SidiBouSaidInvitePage({
     }
     return (
       <DigitalInviteEntrance
-        video={`${ENTRANCE_VIDEO}?v=6`}
+        video={`${ENTRANCE_VIDEO}?v=7`}
         alt="Sidi Bou Said — welcome"
         background="#000"
         autoOnly
-        autoOpenAfterMs={7000}
+        autoOpenAfterMs={14000}
         onOpen={() => {
           window.scrollTo(0, 0);
           setEntered(true);

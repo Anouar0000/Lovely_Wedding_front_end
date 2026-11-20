@@ -434,11 +434,11 @@ function SakuraKoiInvitePage({
         style={{ width: PAGE_W, height: mockupPhoneH, background: "#f7ebe8" }}
       >
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=3`}
+          video={`${ENTRANCE_VIDEO}?v=4`}
           alt="Sakura Koi invitation"
           background="#f7ebe8"
           autoOnly
-          autoOpenAfterMs={7000}
+          autoOpenAfterMs={14000}
           contained
           onOpen={() => setEntered(true)}
         />
@@ -450,11 +450,11 @@ function SakuraKoiInvitePage({
     <>
       {!entered ? (
         <DigitalInviteEntrance
-          video={`${ENTRANCE_VIDEO}?v=3`}
+          video={`${ENTRANCE_VIDEO}?v=4`}
           alt="Sakura Koi invitation"
           background="#f7ebe8"
           autoOnly
-          autoOpenAfterMs={7000}
+          autoOpenAfterMs={14000}
           onOpen={() => {
             window.scrollTo(0, 0);
             setEntered(true);

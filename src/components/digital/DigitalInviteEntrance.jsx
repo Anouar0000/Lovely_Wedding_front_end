@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 /**
  * Full-screen invitation entrance (Figma splash above the invite frame).
  * Image: tap to open (unless autoOnly).
- * Video autoOnly: loops until autoOpenAfterMs, then opens (no click).
+ * Video autoOnly: plays once, then opens (no click, no loop).
  */
 function DigitalInviteEntrance({
   image,
@@ -31,34 +31,25 @@ function DigitalInviteEntrance({
     const el = videoRef.current;
     if (!el) return undefined;
 
-    // En auto : on boucle jusqu'au délai — ne pas fermer dès la fin d'une vidéo courte.
-    if (!autoOnly) {
-      const onEnded = () => handleOpen();
-      el.addEventListener("ended", onEnded);
-      const playPromise = el.play?.();
-      if (playPromise?.catch) {
-        playPromise.catch(() => {
-          /* autoplay blocked */
-        });
-      }
-      return () => el.removeEventListener("ended", onEnded);
-    }
+    el.loop = false;
+    const onEnded = () => handleOpen();
+    el.addEventListener("ended", onEnded);
 
-    el.loop = true;
     const playPromise = el.play?.();
     if (playPromise?.catch) {
       playPromise.catch(() => {
-        /* autoplay blocked — le timeout ouvre quand même */
+        /* autoplay blocked — fallback timeout still opens if autoOnly */
       });
     }
-    return undefined;
+
+    return () => el.removeEventListener("ended", onEnded);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [video, autoOnly]);
 
-  // Auto-dismiss after N ms (auto welcome sans clic)
+  // Fallback only if the video never ends / autoplay blocked
   useEffect(() => {
     if (!autoOnly) return undefined;
-    const delay = autoOpenAfterMs && autoOpenAfterMs > 0 ? autoOpenAfterMs : 6000;
+    const delay = autoOpenAfterMs && autoOpenAfterMs > 0 ? autoOpenAfterMs : 12000;
     const id = window.setTimeout(() => handleOpen(), delay);
     return () => window.clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +76,6 @@ function DigitalInviteEntrance({
             autoPlay
             muted
             playsInline
-            loop
             preload="auto"
             aria-label={alt}
           />
