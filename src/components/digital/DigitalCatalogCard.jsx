@@ -58,6 +58,15 @@ export const DIGITAL_CATALOG_PRODUCTS = [
     category: "Romantique",
     priceLabel: "À partir de 99 DT",
   },
+  {
+    id: "celestial",
+    name: "Celestial",
+    img: a.screenCelestial,
+    screen: a.screenCelestial,
+    to: "/invitations-digital/celestial",
+    category: "Moderne",
+    priceLabel: "À partir de 99 DT",
+  },
 ];
 
 /** Tuile responsive (ratio Figma 189×224) — chassis iPhone (cadre fin + Dynamic Island). */

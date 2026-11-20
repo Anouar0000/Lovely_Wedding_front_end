@@ -48,6 +48,17 @@ export const TEMPLATE_SECTIONS = {
     { id: "closing", label: "Closing", required: false },
     { id: "footer", label: "Footer", required: true },
   ],
+  celestial: [
+    { id: "hero", label: "Hero", required: true },
+    // Our story + Reveal share the arch / orbit artwork with the hero
+    { id: "our-story", label: "Our story", required: true },
+    { id: "reveal", label: "Reveal (date)", required: true },
+    { id: "venue", label: "Lieu", required: false },
+    { id: "programme", label: "Programme", required: false },
+    { id: "principles", label: "Principles", required: false },
+    { id: "rsvp", label: "RSVP", required: false },
+    { id: "footer", label: "Footer", required: true },
+  ],
   "sidi-bousaid": [
     { id: "hero", label: "Hero", required: true },
     { id: "story", label: "Story", required: false },

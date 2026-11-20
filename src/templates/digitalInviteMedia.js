@@ -34,6 +34,11 @@ export const TEMPLATE_MEDIA_FIELDS = {
     { key: "musicUrl", label: "Musique (URL ou fichier)", kind: "audio" },
     { key: "storyPhoto", label: "Our story — photo", kind: "image" },
   ],
+  celestial: [
+    { key: "musicUrl", label: "Musique (URL ou fichier)", kind: "audio" },
+    { key: "storyPhoto", label: "Our story — photo couple", kind: "image" },
+    { key: "venuePhoto", label: "Lieu — illustration", kind: "image" },
+  ],
 };
 
 export function getTemplateMediaFields(templateId) {

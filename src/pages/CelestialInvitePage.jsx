@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toSafeHttpUrl } from "../lib/safeUrl";
+import { isFirebaseConfigured } from "../lib/firebase";
+import { submitRsvpResponse } from "../services/rsvp";
+import {
+  absolutePackLayerStyle,
+  getAbsoluteSectionPacking,
+  isSectionActive,
+} from "../templates/digitalInviteSections";
 import AudioPlayer from "../components/audio/AudioPlayer";
+import DigitalInviteEntrance from "../components/digital/DigitalInviteEntrance";
 import CelestialMoonSunReveal from "../components/animations/CelestialMoonSunReveal";
 import CelestialOrbit from "../components/animations/CelestialOrbit";
 import blackEnvelope from "../assets/digital/celestial/black-enveloppe.png";
@@ -39,6 +47,43 @@ import footerNamesSvg from "../assets/digital/celestial/svg_text/footer-names.sv
 const CANVAS_WIDTH = 430;
 const CANVAS_HEIGHT = 4604;
 
+/** Welcome animation (star + moon + sun), shown before the invitation opens */
+const ENTRANCE_VIDEO = "/assets/digital/celestial/entrance.mp4";
+
+/**
+ * Contiguous Y ranges (Figma 1268:90) — when an optional section is off,
+ * the sections below move up and the canvas gets shorter.
+ * Hero / Our story / Reveal are drawn as one piece (arch + orbit), so they stay required.
+ * The RSVP card overlaps the top of the footer photo; footer starts where the photo starts.
+ */
+const CELESTIAL_PACK_RANGES = [
+  { id: "hero", y0: 0, y1: 474 },
+  { id: "our-story", y0: 474, y1: 891 },
+  { id: "reveal", y0: 891, y1: 1400 },
+  { id: "venue", y0: 1400, y1: 2094 },
+  { id: "programme", y0: 2094, y1: 3033 },
+  { id: "principles", y0: 3033, y1: 3716 },
+  { id: "rsvp", y0: 3716, y1: 4130 },
+  { id: "footer", y0: 4130, y1: CANVAS_HEIGHT },
+];
+
+const DEFAULT_PROGRAMME = [
+  { time: "19:00", title: "Accueil" },
+  { time: "19:15", title: "Contrat" },
+  { time: "19:45", title: "Réception" },
+  { time: "20:30", title: "Photos" },
+  { time: "21:00", title: "Fin" },
+];
+
+/** Dashboard texts/media live in invite.texts / invite.media — flatten them over the invite. */
+function pickFilled(bag) {
+  const out = {};
+  Object.entries(bag || {}).forEach(([key, value]) => {
+    if (typeof value === "string" && value.trim() !== "") out[key] = value;
+  });
+  return out;
+}
+
 // Colors
 const COLOR_WHITE = "#FFFFFF";
 const COLOR_BLACK = "#000000";
@@ -67,13 +112,51 @@ export default function CelestialInvitePage({
   /** Aperçu éditeur / démo mockup : le parent gère déjà l'échelle (zoom) → pas de scale viewport */
   previewMode = false,
   demoInMockup = false,
-  activeSection = null,
+  /** Aperçu latéral éditeur — pas de welcome */
+  editorPreview = false,
   onSelectElement = null,
   selectedElementId = null,
 }) {
   const fixedScale = editable || previewMode || demoInMockup;
-  const currentInvite = invite || templateConfig.sample;
+  const baseInvite = invite || templateConfig.sample;
+  const currentInvite = {
+    ...baseInvite,
+    ...pickFilled(baseInvite.media),
+    ...pickFilled(baseInvite.texts),
+    template: baseInvite.template || templateConfig.id,
+  };
   const overrides = currentInvite.styleOverrides || {};
+
+  // Sections on/off (dashboard "Blocs") — optional sections collapse
+  const { shifts: packShifts, packedHeight } = getAbsoluteSectionPacking(
+    currentInvite,
+    CELESTIAL_PACK_RANGES
+  );
+  const showSection = (id) => isSectionActive(currentInvite, id);
+  const canvasHeight = packedHeight || CANVAS_HEIGHT;
+  const sectionLayer = (id, zIndex) => ({
+    ...absolutePackLayerStyle(packShifts[id] || 0, CANVAS_WIDTH, CANVAS_HEIGHT),
+    zIndex,
+    pointerEvents: "none",
+  });
+
+  // Welcome video (same behaviour as Sakura / Capri / Sidi)
+  const welcomeEnabled = currentInvite.videoIntroEnabled !== false;
+  const skipWelcome = !welcomeEnabled || Boolean(editorPreview) || editable;
+  const [entered, setEntered] = useState(skipWelcome);
+  useEffect(() => {
+    setEntered(skipWelcome);
+  }, [skipWelcome]);
+
+  useEffect(() => {
+    if (previewMode || entered) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [entered, previewMode]);
 
   const getText = (id, fallback) => {
     const custom = overrides[id]?.text;
@@ -147,31 +230,63 @@ export default function CelestialInvitePage({
   // RSVP Form State
   const [selectedAttend, setSelectedAttend] = useState("yes");
   const [guestName, setGuestName] = useState("");
-  const [guestNotes, setGuestNotes] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestCount, setGuestCount] = useState("");
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
   const [rsvpSuccess, setRsvpSuccess] = useState(false);
+  const [rsvpError, setRsvpError] = useState("");
   const [isMoonJoined, setIsMoonJoined] = useState(false);
 
-  const handleRsvpSubmit = (e) => {
+  const inviteId = currentInvite.id || currentInvite.slug || "";
+  const canSubmitRsvp = Boolean(
+    currentInvite.ownerId && inviteId && isFirebaseConfigured && !previewMode && !editable
+  );
+
+  const handleRsvpSubmit = async (e) => {
     e?.preventDefault?.();
+    setRsvpError("");
+    setRsvpSuccess(false);
     if (!guestName.trim()) {
-      alert("Veuillez indiquer votre nom.");
+      setRsvpError("Veuillez indiquer votre nom.");
+      return;
+    }
+    if (!canSubmitRsvp) {
+      setRsvpError("RSVP disponible sur le lien publié de l'invitation.");
       return;
     }
     setRsvpSubmitting(true);
-    setTimeout(() => {
-      setRsvpSubmitting(false);
+    try {
+      await submitRsvpResponse({
+        inviteId,
+        ownerId: currentInvite.ownerId,
+        clientUserId: currentInvite.clientUserId || "",
+        clientEmail: currentInvite.clientEmail || "",
+        inviteSlug: currentInvite.slug || inviteId,
+        fullName: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        guestCount: guestCount || 1,
+        attending: selectedAttend === "yes",
+      });
       setRsvpSuccess(true);
-      setTimeout(() => setRsvpSuccess(false), 5000);
-    }, 800);
+      setGuestName("");
+      setGuestEmail("");
+      setGuestPhone("");
+      setGuestCount("");
+      setSelectedAttend("yes");
+    } catch (error) {
+      setRsvpError(error?.message || "Impossible d'enregistrer le RSVP.");
+    } finally {
+      setRsvpSubmitting(false);
+    }
   };
 
   // Dynamic values
   const coupleNames = currentInvite.coupleNames || "Jonathan & Marrisah";
-  const groomName = currentInvite.groomName || (coupleNames.split("&")[0]?.trim() || "Jonathan");
-  const brideName = currentInvite.brideName || (coupleNames.split("&")[1]?.trim() || "Marrisah");
+  // Dashboard edits "coupleNames" → it wins over the sample's groomName / brideName
+  const groomName = coupleNames.split("&")[0]?.trim() || currentInvite.groomName || "Jonathan";
+  const brideName = coupleNames.split("&")[1]?.trim() || currentInvite.brideName || "Marrisah";
   const eventDate = currentInvite.eventDate || "2026-10-10";
 
   // Format date as "10 . 10 .2026"
@@ -203,7 +318,54 @@ export default function CelestialInvitePage({
     currentInvite.venuePhoto ||
     venueDoor;
 
+  const musicUrl = currentInvite.musicUrl || "";
+
+  const programmeSteps = DEFAULT_PROGRAMME.map((fallback, index) => {
+    const custom = currentInvite[`programmeStep${index + 1}`];
+    if (custom) return custom;
+    const event = Array.isArray(currentInvite.timelineEvents)
+      ? currentInvite.timelineEvents[index]
+      : null;
+    const time = event?.time || fallback.time;
+    const title = event?.title || fallback.title;
+    return `${time}\n${title}`;
+  });
+
+  // Phone mockup on the product page: play the welcome video inside the phone first
+  if (demoInMockup && !entered) {
+    return (
+      <div
+        className="relative overflow-hidden"
+        style={{ width: CANVAS_WIDTH, height: Math.ceil((CANVAS_WIDTH * 370) / 166), background: COLOR_BLACK }}
+      >
+        <DigitalInviteEntrance
+          video={ENTRANCE_VIDEO}
+          alt="Celestial invitation"
+          background={COLOR_BLACK}
+          autoOnly
+          autoOpenAfterMs={7000}
+          contained
+          onOpen={() => setEntered(true)}
+        />
+      </div>
+    );
+  }
+
   return (
+    <>
+    {!entered ? (
+      <DigitalInviteEntrance
+        video={ENTRANCE_VIDEO}
+        alt="Celestial invitation"
+        background={COLOR_BLACK}
+        autoOnly
+        autoOpenAfterMs={7000}
+        onOpen={() => {
+          window.scrollTo(0, 0);
+          setEntered(true);
+        }}
+      />
+    ) : null}
     <div
       style={{
         position: "relative",
@@ -240,23 +402,22 @@ export default function CelestialInvitePage({
           .celestial-pulse {
             animation: celestialPulse 3.5s ease-in-out infinite;
           }
+          .celestial-pack-layer > * {
+            pointer-events: auto;
+          }
         `}
       </style>
 
       {/* Music Player if configured */}
-      {!demoInMockup && currentInvite.musicUrl && (
-        <AudioPlayer
-          musicUrl={currentInvite.musicUrl}
-          autoPlay={!editable}
-          themeColor="#D48744"
-        />
-      )}
+      {!demoInMockup && !editable && musicUrl ? (
+        <AudioPlayer src={musicUrl} active={entered} themeColor="#D48744" />
+      ) : null}
 
       {/* Scaling wrapper for mobile screen responsiveness */}
       <div
         style={{
           width: editable ? `${CANVAS_WIDTH}px` : `${CANVAS_WIDTH * scale}px`,
-          height: editable ? `${CANVAS_HEIGHT}px` : `${CANVAS_HEIGHT * scale}px`,
+          height: editable ? `${canvasHeight}px` : `${canvasHeight * scale}px`,
           position: "relative",
           display: "flex",
           justifyContent: "center",
@@ -268,7 +429,7 @@ export default function CelestialInvitePage({
           style={{
             position: "relative",
             width: `${CANVAS_WIDTH}px`,
-            height: `${CANVAS_HEIGHT}px`,
+            height: `${canvasHeight}px`,
             backgroundColor: COLOR_WHITE,
             overflow: "hidden",
             boxShadow: editable ? "none" : "0 30px 80px rgba(0,0,0,0.6)",
@@ -302,20 +463,6 @@ export default function CelestialInvitePage({
               height: 3116,
               zIndex: 1,
               extra: { backgroundColor: COLOR_BLACK },
-            })}
-          />
-
-          {/* Bottom Footer BG */}
-          <img
-            src={heroBg}
-            alt=""
-            style={figmaBox({
-              x: 0,
-              y: 4130,
-              width: 430,
-              height: 474,
-              zIndex: 1,
-              extra: { objectFit: "cover", filter: "grayscale(100%)" },
             })}
           />
 
@@ -381,8 +528,8 @@ export default function CelestialInvitePage({
             })}
           >
             {!overrides["hero-names"]?.text &&
-            (!currentInvite.groomName || currentInvite.groomName.toLowerCase() === "jonathan") &&
-            (!currentInvite.brideName || currentInvite.brideName.toLowerCase() === "marrisah") &&
+            groomName.toLowerCase() === "jonathan" &&
+            brideName.toLowerCase() === "marrisah" &&
             !overrides["hero-names"]?.fontFamily &&
             !overrides["hero-names"]?.fontSize ? (
               <img src={heroNamesSvg} alt="Jonathan & Marrisah" style={{ width: 106, height: 64, display: "block" }} />
@@ -696,6 +843,8 @@ export default function CelestialInvitePage({
           {/* =========================================================================
               SECTION 4: VENUE (y: 1400 - 2094)
               ========================================================================= */}
+          {showSection("venue") ? (
+          <div className="celestial-pack-layer" style={sectionLayer("venue", 2)}>
           {/* "Venue" Title */}
           <div
             id="preview-el-venue-title"
@@ -870,12 +1019,16 @@ export default function CelestialInvitePage({
               },
             })}
           >
-            {getText("venue-map-btn", "Open in maps")}
+            {getText("venue-map-btn", currentInvite.mapButton || "Open in maps")}
           </a>
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 5: PROGRAMME (y: 2094 - 3033)
               ========================================================================= */}
+          {showSection("programme") ? (
+          <div className="celestial-pack-layer" style={sectionLayer("programme", 2)}>
           {/* Rounded Beige Pill Container */}
           <div
             style={figmaBox({
@@ -932,11 +1085,11 @@ export default function CelestialInvitePage({
 
           {/* Timeline Items */}
           {[
-            { id: "timeline-1", icon: progIcon1, defTime: "19:00", defTitle: "Accueil", yIcon: 2287, yText: 2327 },
-            { id: "timeline-2", icon: progIcon2, defTime: "19:15", defTitle: "Contrat", yIcon: 2417, yText: 2457 },
-            { id: "timeline-3", icon: progIcon3, defTime: "19:45", defTitle: "Réception", yIcon: 2547, yText: 2587 },
-            { id: "timeline-4", icon: progIcon4, defTime: "20:30", defTitle: "Photos", yIcon: 2677, yText: 2717 },
-            { id: "timeline-5", icon: progIcon5, defTime: "21:00", defTitle: "Fin", yIcon: 2807, yText: 2847 },
+            { id: "timeline-1", icon: progIcon1, text: programmeSteps[0], yIcon: 2287, yText: 2327 },
+            { id: "timeline-2", icon: progIcon2, text: programmeSteps[1], yIcon: 2417, yText: 2457 },
+            { id: "timeline-3", icon: progIcon3, text: programmeSteps[2], yIcon: 2547, yText: 2587 },
+            { id: "timeline-4", icon: progIcon4, text: programmeSteps[3], yIcon: 2677, yText: 2717 },
+            { id: "timeline-5", icon: progIcon5, text: programmeSteps[4], yIcon: 2807, yText: 2847 },
           ].map((item) => (
             <React.Fragment key={item.id}>
               <img
@@ -976,14 +1129,18 @@ export default function CelestialInvitePage({
                   },
                 })}
               >
-                {getText(item.id, `${item.defTime}\n${item.defTitle}`)}
+                {getText(item.id, item.text)}
               </div>
             </React.Fragment>
           ))}
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 6: PRINCIPLES & CONSTELLATIONS (y: 3033 - 3716)
               ========================================================================= */}
+          {showSection("principles") ? (
+          <div className="celestial-pack-layer" style={sectionLayer("principles", 2)}>
           {/* "principles" Title */}
           <div
             id="preview-el-principles-title"
@@ -1154,10 +1311,14 @@ export default function CelestialInvitePage({
               extra: { objectFit: "contain", filter: "grayscale(100%)" },
             })}
           />
+          </div>
+          ) : null}
 
           {/* =========================================================================
-              SECTION 7: RSVP (y: 3716 - 4425)
+              SECTION 7: RSVP (y: 3716 - 4425) — card overlaps the footer photo, so it sits above it
               ========================================================================= */}
+          {showSection("rsvp") ? (
+          <div className="celestial-pack-layer" style={sectionLayer("rsvp", 3)}>
           {/* Rounded Beige Pill Container */}
           <div
             style={figmaBox({
@@ -1360,7 +1521,7 @@ export default function CelestialInvitePage({
               </div>
             </div>
 
-            {/* Field 2: Password / Notes */}
+            {/* Field 2: Email (Figma placeholder said "Password") */}
             <div style={figmaBox({ x: 55, y: 4052, width: 320, height: 70, zIndex: 3 })}>
               <div
                 style={{
@@ -1373,10 +1534,10 @@ export default function CelestialInvitePage({
                 }}
               >
                 <input
-                  type="text"
-                  placeholder="Password"
-                  value={guestNotes}
-                  onChange={(e) => setGuestNotes(e.target.value)}
+                  type="email"
+                  placeholder="Email"
+                  value={guestEmail}
+                  onChange={(e) => setGuestEmail(e.target.value)}
                   disabled={editable}
                   style={{
                     width: "100%",
@@ -1505,13 +1666,51 @@ export default function CelestialInvitePage({
                 ? "Envoi..."
                 : rsvpSuccess
                 ? "Merci !"
-                : getText("rsvp-submit-btn", "Send !")}
+                : getText("rsvp-submit-btn", currentInvite.sendButton || "Send !")}
             </button>
           </form>
+
+          {rsvpError || rsvpSuccess ? (
+            <div
+              role="status"
+              style={figmaBox({
+                x: 55,
+                y: 4350,
+                width: 320,
+                height: 40,
+                zIndex: 4,
+                extra: {
+                  fontFamily: FONT_ROSARIO,
+                  fontSize: "12px",
+                  lineHeight: "16px",
+                  textAlign: "center",
+                  color: rsvpError ? "#9F1239" : COLOR_BLACK,
+                },
+              })}
+            >
+              {rsvpError || "Merci ! Votre réponse a bien été enregistrée."}
+            </div>
+          ) : null}
+          </div>
+          ) : null}
 
           {/* =========================================================================
               SECTION 8: FOOTER (y: 4130 - 4604)
               ========================================================================= */}
+          <div className="celestial-pack-layer" style={sectionLayer("footer", 2)}>
+          {/* Footer photo (starts under the RSVP card) */}
+          <img
+            src={heroBg}
+            alt=""
+            style={figmaBox({
+              x: 0,
+              y: 4130,
+              width: 430,
+              height: 474,
+              zIndex: 1,
+              extra: { objectFit: "cover", filter: "grayscale(100%)", pointerEvents: "none" },
+            })}
+          />
           {/* "Untill infinity" Script */}
           <div
             id="preview-el-footer-infinity"
@@ -1587,8 +1786,10 @@ export default function CelestialInvitePage({
               getText("footer-names", coupleNames)
             )}
           </div>
+          </div>
         </div>
       </div>
     </div>
+    </>
   );
 }

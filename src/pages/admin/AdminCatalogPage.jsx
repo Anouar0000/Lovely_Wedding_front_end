@@ -35,6 +35,7 @@ function AdminCatalogPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -145,11 +146,14 @@ function AdminCatalogPage() {
   const handleSeed = async (type) => {
     setBusy(true);
     setError("");
+    setNotice("");
     try {
       const { created, skipped } = await seedCatalogProducts(type);
       await loadProducts();
       if (created === 0 && skipped > 0) {
         setError("Produits déjà importés.");
+      } else if (created > 0) {
+        setNotice(`${created} modèle(s) ajouté(s) au catalogue.`);
       }
     } catch (err) {
       setError(err.message || "Impossible d'importer le catalogue.");
@@ -167,14 +171,32 @@ function AdminCatalogPage() {
             Choisis Digital ou Physique, puis ajoute / modifie les produits.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={loadProducts}
-          className="inline-flex items-center gap-2 rounded-[5px] border border-[#E8E0D8] bg-white px-4 py-3 text-sm font-semibold"
-        >
-          <FiRefreshCw aria-hidden /> Actualiser
-        </button>
+        <div className="flex flex-wrap gap-2">
+          {typeFilter !== "all" ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => handleSeed(typeFilter)}
+              title="Ajoute les modèles du site absents de Firestore (ne modifie pas les produits existants)"
+              className="inline-flex items-center gap-2 rounded-[5px] border border-[#A97C72] bg-white px-4 py-3 text-sm font-semibold text-[#A97C72] disabled:opacity-50"
+            >
+              <FiPlus aria-hidden /> Ajouter les modèles manquants
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={loadProducts}
+            className="inline-flex items-center gap-2 rounded-[5px] border border-[#E8E0D8] bg-white px-4 py-3 text-sm font-semibold"
+          >
+            <FiRefreshCw aria-hidden /> Actualiser
+          </button>
+        </div>
       </div>
+      {notice ? (
+        <p className="mb-4 rounded-[5px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          {notice}
+        </p>
+      ) : null}
 
       <div className="mb-6 grid gap-3 sm:grid-cols-2">
         <button

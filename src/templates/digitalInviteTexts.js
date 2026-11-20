@@ -58,6 +58,29 @@ export const TEMPLATE_TEXT_FIELDS = {
     { key: "messageSubtitle", label: "Sous-titre message", multiline: true },
     { key: "rsvpTitle", label: "Titre RSVP" },
   ],
+  // Empty title = the original Figma lettering is kept
+  celestial: [
+    { key: "storyTitle", label: "Titre our story" },
+    { key: "storySubtitle", label: "Sous-titre our story", multiline: true },
+    { key: "revealTitle", label: "Titre reveal" },
+    { key: "revealSubtitle", label: "Sous-titre reveal", multiline: true },
+    { key: "venueTitle", label: "Titre lieu" },
+    { key: "eventTime", label: "Horaire (ex. 19:00 - 21:00)" },
+    { key: "mapButton", label: "Bouton maps" },
+    { key: "programmeTitle", label: "Titre programme" },
+    { key: "programmeStep1", label: "Programme 1 (heure ↵ titre)", multiline: true },
+    { key: "programmeStep2", label: "Programme 2 (heure ↵ titre)", multiline: true },
+    { key: "programmeStep3", label: "Programme 3 (heure ↵ titre)", multiline: true },
+    { key: "programmeStep4", label: "Programme 4 (heure ↵ titre)", multiline: true },
+    { key: "programmeStep5", label: "Programme 5 (heure ↵ titre)", multiline: true },
+    { key: "principlesTitle", label: "Titre principles" },
+    { key: "principlesP1", label: "Principles — paragraphe 1", multiline: true },
+    { key: "principlesP2", label: "Principles — paragraphe 2", multiline: true },
+    { key: "rsvpTitle", label: "Titre RSVP" },
+    { key: "rsvpAttendLabel", label: "RSVP — question" },
+    { key: "sendButton", label: "Bouton RSVP" },
+    { key: "footerQuote", label: "Footer — citation" },
+  ],
 };
 
 const DEFAULTS_FROM_FIXED = {
